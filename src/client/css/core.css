@@ -1,0 +1,40 @@
+/* 
+  core.css
+*/
+body {
+  background-color: #ddd;
+}
+
+.panelist {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+.panel {
+  border: 1px solid #eee;
+  border-bottom-color: #ccc;
+  margin-bottom: 5px;
+  border-radius: 6px;
+  min-height: 20px;
+}
+
+#drawer {
+  width: 200px;
+  position: absolute;
+  top: 5px; bottom: 5px; right: 5px;
+}
+#hud {
+  position: absolute;
+  top: 5px; right: 210px; left: 5px;
+  height: 60px;
+  
+  background-color: #666;
+}
+#main {
+  position: absolute;
+  top: 70px; right: 210px; left: 5px; bottom: 5px;
+  padding: 10px;
+  min-height: 60px;
+  
+  background-color: #fff;
+}
