@@ -1410,3 +1410,7 @@ window.Zepto = Zepto;
     $.fn[m] = function(callback){ return this.bind(m, callback) }
   });
 })(Zepto);
+
+if (typeof define === 'function' && define.amd) {
+  define(function() { return Zepto; });
+}
