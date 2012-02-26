@@ -1,0 +1,15 @@
+{
+	"coords": [0,0],
+	"width": 1,
+	"height": 1,
+	"region": "plains",
+	"moduleid": "resources/locations/plains",
+	"tiles": [
+		{
+			"coords": [0,0],
+			"width": 1,
+			"height": 1,
+			"description": "You see flat grasslang all around you."
+		}
+	]
+}
