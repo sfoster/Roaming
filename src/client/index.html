@@ -10,10 +10,11 @@
 <body>
 <section id="hud" class="panel"></section>  
 <section id="drawer" class="panel">
-    <ol class="panelist">
+    <ul class="panelist">
         <li class="panel world-map"></li>
         <li class="panel inventory"></li>
-    </ol>
+        <li class="panel weapon"></li>
+    </ul>
 </section>
 <section id="main" class="panel">
   main content goes here
@@ -23,18 +24,19 @@
   var config = {
     packages: {
       // package mappings
-      $: '../vendor/zepto',
-      underscore: '../vendor/underscore',
-      backbone: '../vendor/backbone'
+      $: 'vendor/zepto',
+      underscore: 'vendor/underscore',
+      backbone: 'vendor/backbone'
     }
   };
 </script>
 <script src="../vendor/require.js"></script>
 <script>
   require({
+    baseUrl: '..',
     // configure our AMD loader
     paths: config.packages
-  }, ['main']);
+  }, ['client/main']);
 </script>
 </body>
 </html>
