@@ -17,6 +17,27 @@ body {
   border-radius: 6px;
   min-height: 20px;
 }
+.horizontallist {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+.horizontallist li {
+  display: inline-block;
+}
+#tooldrawer {
+  padding: 8px 12px;
+}
+#tooldrawer button {
+  padding: 6px 14px;
+  border: 1px solid #eee;
+  border-bottom-color: #ccc;
+  margin-bottom: 5px;
+  border-radius: 6px;
+}
+#tooldrawer button:hover {
+  background-color: #99ffff;
+}
 
 #drawer {
   width: 200px;
