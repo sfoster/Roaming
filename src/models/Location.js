@@ -10,7 +10,8 @@ define(['$'], function(){
     return this[name];
   }
   Location.prototype.enter = function(player, game){
-    console.log("Location enter stub");
+    console.log("location enter: ", this);
+    $("#main").append("<p>"+ this.description +" at: " + this.coords + "</p>");
   }
   Location.prototype.exit = function(player, game){
     console.log("Location exit stub");

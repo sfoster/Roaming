@@ -1,9 +1,9 @@
 define(['$'], function($){
   function enter(player, game){
-    $('main').html("you enter the world");
+    $('#main').html("You enter the world");
   }
   function exit(player, game){
-    $('main').html("you leave the world");
+    $('#main').html("you leave the world");
   }
   
   return {

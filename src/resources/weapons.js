@@ -31,5 +31,30 @@ define([], function(){
     mediumRangeDamage: 5
   };
   
+  weapons.javelin = {
+    name: 'Javelin',
+    shortRangeDamage: 7,
+    longRangeDamage: 15,
+    mediumRangeDamage: 10
+  };
+  
+  weapons.spear = {
+    name: 'Spear',
+    shortRangeDamage: 1,
+    longRangeDamage: 0,
+    mediumRangeDamage: 20
+  };
+  weapons.sword = {
+    name: 'Sword',
+    shortRangeDamage: 25,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0
+  };
+  
+  
+  
+  
+  
+  
   return weapons;
 });
