@@ -35,6 +35,20 @@ body {
   top: 70px; right: 210px; left: 5px; bottom: 5px;
   padding: 10px;
   min-height: 60px;
-  
   background-color: #fff;
+}
+#grid {
+  position: absolute;
+  top: 0; right: 0; left: 0; bottom: 0;
+}
+#gridOverlay {
+  position: absolute;
+  top: 0; right: 0; left: 0; bottom: 0;
+}
+.tile {
+  position: absolute;
+  top: 0; left: 0;
+}
+.tile:hover {
+  outline: 1px dotted white;
 }
