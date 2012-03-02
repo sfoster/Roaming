@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Roaming: Map Editor/Viewer</title>
+  <meta name="viewport" content="initial-scale=1">
+  <link rel="stylesheet" href="./css/core.css" type="text/css">
+  <style>
+    #main { 
+      overflow: auto;
+      background: url('../resources/graphics/desertground.jpg');
+    }
+    #grid {
+      background: url('../resources/graphics/grid50whitetrans.png');
+    }
+    .desert {
+      background: url('../resources/graphics/dryground.jpg') no-repeat scroll top left;
+    }
+    .marsh {
+      background: url('../resources/graphics/marshyground.png') no-repeat scroll top left;
+    }
+    .tool span {
+      background-color: white;
+      display:block;
+      margin-left: 50px;
+      padding: 4px;
+      line-height: 40px;
+    }
+  </style>
+</head>
+<body>
+<section id="hud" class="panel"></section>  
+<section id="drawer" class="panel">
+    <ul id="toollist" class="panelist">
+        <li class="panel tool desert" id=""><span>desert</span></li>
+        <li class="panel tool marsh" id="marsh"><span>marsh</span></li>
+        <li class="panel nool mountains"><span>mountains</span></li>
+        <li class="panel nool plains"><span>plains</span></li>
+    </ul>
+</section>
+<section id="main" class="panel">
+<div id="grid"></div>  
+<div id="gridOverlay"></div>  
+</section>  
+
+<script type="text/javascript">
+  var config = {
+    packages: {
+      // package mappings
+      $: 'vendor/zepto',
+      underscore: 'vendor/underscore',
+      backbone: 'vendor/backbone'
+    }
+  };
+</script>
+<script src="../vendor/require.js"></script>
+<script>
+  require({
+    baseUrl: '..',
+    // configure our AMD loader
+    paths: config.packages
+  }, ['client/mapEditor']);
+</script>
+</body>
+</html>
