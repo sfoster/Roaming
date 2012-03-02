@@ -1,0 +1,38 @@
+resources: 
+
+* player
+  /:username
+* map
+  /map
+* region
+  /map/:region
+  -> { tiles: [], moduleid: 'regions/theplains' }
+* tile
+  /map/:region/:tile
+* npc
+  /:npcid
+* item
+  /:itemid
+* world
+  /:coords
+  -> { region: { tiles: [], bounds: {type:'rect', pts: []} }}
+
+
+place the player into the world, and the starting point
+ - the player object
+ - enough of the map to show the starting point
+ - any objects associated with that pt/region
+ - any encounter scripts or other region-logic
+ - trigger enter the region
+ - trigger enter the tile
+
+the game loads the world location: 
+  it gets any game state, starts timers, and so on.
+the game loads the player
+  it gets any saved location, stats, inventory
+the game loads the starting location 
+  it returns the region and the current tile
+  (we can pass a coord and it resolves this )
+
+
+  
