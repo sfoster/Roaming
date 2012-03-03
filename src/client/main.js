@@ -18,7 +18,7 @@ define(['$', 'resources/world', 'models/player', 'resources/map'], function($, w
 
   map.init();
   var mapData = {
-    src: '../resources/maps/map.png',
+    src: 'resources/maps/map.png',
     height: 100, width: 100
   };
   
