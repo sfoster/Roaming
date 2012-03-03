@@ -55,9 +55,36 @@ define([], function(){
     longRangeDamage: 0,
     mediumRangeDamage: 0
   };
-  
-  
-  
+  weapons.sling = {
+    name: 'Sling',
+    shortRangeDamage: 5,
+    longRangeDamage: 6,
+    mediumRangeDamage: 7
+  };
+  weapons.stick = {
+    name: 'Stick',
+    shortRangeDamage: 1,
+    longRangeDamage: 0,
+    mediumRangeDamage: 1
+  };
+  weapons.club = {
+    name: 'Club',
+    shortRangeDamage: 5,
+    longRangeDamage: 0,
+    mediumRangeDamage: 1
+  };
+  weapons.mace = {
+    name: 'Mace',
+    shortRangeDamage: 15,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0
+  };
+weapons.morningstar = {
+    name: 'Morningstar',
+    shortRangeDamage: 30,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0
+  };  
   
   
   
