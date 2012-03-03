@@ -11,10 +11,10 @@ define([], function(){
   };
 
   weapons.bowAndArrow = {
-    name: 'Bow and Arrow',
+    name: 'Bow',
     shortRangeDamage: 1,
-    longRangeDamage: 5,
-    mediumRangeDamage: 7
+    longRangeDamage: 10,
+    mediumRangeDamage: 15
   };
 
   weapons.fishingSpear = {
@@ -85,7 +85,12 @@ weapons.morningstar = {
     longRangeDamage: 0,
     mediumRangeDamage: 0
   };  
-  
+  weapons.longbowAndarrow = {
+    name: 'Longbow',
+    shortRangeDamage: 2,
+    longRangeDamage: 15,
+    mediumRangeDamage: 20
+  };  
   
   
   return weapons;
