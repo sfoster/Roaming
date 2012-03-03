@@ -51,7 +51,7 @@ define([], function(){
   };
   weapons.sword = {
     name: 'Sword',
-    shortRangeDamage: 25,
+    shortRangeDamage: 20,
     longRangeDamage: 0,
     mediumRangeDamage: 0
   };
@@ -91,7 +91,29 @@ weapons.morningstar = {
     longRangeDamage: 15,
     mediumRangeDamage: 20
   };  
-  
-  
+  weapons.shortsword = {
+    name: 'Shortsword',
+    shortRangeDamage: 15,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0
+  };  
+  weapons.longsword = {
+    name: 'Longsword',
+    shortRangeDamage: 25,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0
+  };
+  weapons.broadsword = {
+    name: 'Broadsword',
+    shortRangeDamage: 30,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0
+  };
+  weapons.dagger = {
+    name: 'Dagger',
+    shortRangeDamage: 7,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0
+  };  
   return weapons;
 });
