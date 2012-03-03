@@ -55,7 +55,12 @@ define([], function(){
     longRangeDamage: 0,
     mediumRangeDamage: 0
   };
-  
+  weapons.sling = {
+    name: 'Sling',
+    shortRangeDamage: 5,
+    longRangeDamage: 6,
+    mediumRangeDamage: 7
+  };
   
   
   
