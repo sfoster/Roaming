@@ -9,6 +9,30 @@ define(['$'], function($){
       console.log(event.currentTarget.className + " touched");
     });
   //     
+
+  $('#saveBtn').click(function(evt){
+    var tiles = Object.keys(tilesByCoords).map(function(id){
+      var node =  tilesByCoords[id], 
+          type = node.className.replace(/tile\s*/, ''), 
+          xy = id.split(',').map(Number);
+      return { x: xy[0], y: xy[1], type: type };
+    });
+    
+    console.log("saving this: ", tiles);
+    $.ajax({
+      type: 'POST',
+      dataType: 'json',
+      contentType: 'application/json',
+      url: '/location/world.json',
+      data: JSON.stringify(tiles),
+      success: function(resp){
+        console.log("save response: ", resp);
+        alert("update to world map was: ", resp.status);
+      }, 
+      error: function(err){ alert(err.message); }
+    });
+  });
+
   $('#toollist')
     .delegate('.tool', 'mouseup', function(event){ 
       var type = trim(event.currentTarget.innerText);
@@ -43,6 +67,23 @@ define(['$'], function($){
     }
     $(tile).removeClass().addClass('tile '+type);
     console.log("tile has class %s, coords: %s: ", tile.className, tile.getAttribute('data-coords'));
-  
   }
+  function fetchMap(){
+    $.ajax({
+      url: '/location/world.json', 
+      dataType: 'json',
+      success: function(resp){
+        console.log("drawing map data: ", resp);
+        resp.tiles.forEach(function(data){
+          console.log("drawing map data: ", resp);
+          placeTile(data.x, data.y, data.type);
+        });
+      }, 
+      error: function(err){
+        alert('Error fetching world data: ' + err.message);
+      }
+    })
+  }
+  
+  fetchMap();
 })
