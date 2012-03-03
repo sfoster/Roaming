@@ -12,7 +12,7 @@ define([], function(){
 
   weapons.bowAndArrow = {
     name: 'Bow',
-    shortRangeDamage: 1,
+    shortRangeDamage: 3,
     longRangeDamage: 10,
     mediumRangeDamage: 15
   };
@@ -87,7 +87,7 @@ weapons.morningstar = {
   };  
   weapons.longbowAndarrow = {
     name: 'Longbow',
-    shortRangeDamage: 2,
+    shortRangeDamage: 4,
     longRangeDamage: 15,
     mediumRangeDamage: 20
   };  
@@ -114,6 +114,7 @@ weapons.morningstar = {
     shortRangeDamage: 7,
     longRangeDamage: 0,
     mediumRangeDamage: 0
-  };  
+  };
+   
   return weapons;
 });
