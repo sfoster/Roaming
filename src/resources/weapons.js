@@ -63,13 +63,13 @@ define([], function(){
   };
   weapons.stick = {
     name: 'Stick',
-    shortRangeDamage: 1,
+    shortRangeDamage: 2,
     longRangeDamage: 0,
     mediumRangeDamage: 1
   };
   weapons.club = {
     name: 'Club',
-    shortRangeDamage: 5,
+    shortRangeDamage: 6,
     longRangeDamage: 0,
     mediumRangeDamage: 1
   };
