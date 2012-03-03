@@ -115,6 +115,6 @@ weapons.morningstar = {
     longRangeDamage: 0,
     mediumRangeDamage: 0
   };
-   
+
   return weapons;
 });
