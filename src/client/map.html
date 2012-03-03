@@ -20,12 +20,21 @@
     .marsh {
       background: url('resources/graphics/marshyground.png') no-repeat scroll top left;
     }
+    .plains {
+      background: url('resources/graphics/grassground.jpg') no-repeat scroll top left;
+    }
+    .tool.clear {
+      background: url('resources/graphics/desertground.jpg');
+    }
     .tool span {
       background-color: white;
       display:block;
       margin-left: 50px;
       padding: 4px;
       line-height: 40px;
+    }
+    .tool.active {
+      outline: 2px inset red;
     }
   </style>
 </head>
@@ -39,10 +48,11 @@
 </section>  
 <section id="drawer" class="panel">
     <ul id="toollist" class="panelist">
+        <li class="panel tool clear active"><span>clear</span></li>
         <li class="panel tool desert" id=""><span>desert</span></li>
         <li class="panel tool marsh" id="marsh"><span>marsh</span></li>
         <li class="panel nool mountains"><span>mountains</span></li>
-        <li class="panel nool plains"><span>plains</span></li>
+        <li class="panel tool plains"><span>plains</span></li>
     </ul>
 </section>
 <section id="main" class="panel">
