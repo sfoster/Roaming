@@ -21,7 +21,7 @@ define([], function(){
     name: 'Fishing Spear',
     shortRangeDamage: 1,
     longRangeDamage:0,
-    mediumRangeDamage: 15
+    mediumRangeDamage: 10
   };
   
   weapons.throwingKnife = {
@@ -30,7 +30,12 @@ define([], function(){
     longRangeDamage: 0,
     mediumRangeDamage: 5
   };
-  
+  weapons.trident = {
+    name: 'Trident',
+    shortRangeDamage: 1,
+    longRangeDamage: 0,
+    mediumRangeDamage: 25
+  };
   weapons.javelin = {
     name: 'Javelin',
     shortRangeDamage: 7,
@@ -42,7 +47,7 @@ define([], function(){
     name: 'Spear',
     shortRangeDamage: 1,
     longRangeDamage: 0,
-    mediumRangeDamage: 20
+    mediumRangeDamage: 15
   };
   weapons.sword = {
     name: 'Sword',
