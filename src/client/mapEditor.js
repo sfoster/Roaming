@@ -35,7 +35,9 @@ define(['$'], function($){
 
   $('#toollist')
     .delegate('.tool', 'mouseup', function(event){ 
-      var type = trim(event.currentTarget.innerText);
+      $('#toollist .tool.active').removeClass('active');
+      $(event.currentTarget).addClass('active');
+      var type = trim( $(event.currentTarget).text() );
       currentTool = type.toLowerCase();
       console.log("change currentTool: ", currentTool);
     });
@@ -43,8 +45,8 @@ define(['$'], function($){
   var offsets = $('#gridOverlay').offset();
   console.log("offsets: ", offsets);
   $('#gridOverlay').mousedown(function(event){
-      var x = Math.floor((event.x - offsets.left) / tileSize), 
-          y = Math.floor((event.y - offsets.top) / tileSize);
+      var x = Math.floor((event.pageX - offsets.left) / tileSize), 
+          y = Math.floor((event.pageY - offsets.top) / tileSize);
       console.log("place at: ", x, y);
       if(!currentTool) return;
       
