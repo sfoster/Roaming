@@ -72,7 +72,7 @@ npc.troll = {
   };
 npc.anaconda = {
     name: 'Anaconda',
-    strength: 15,
+    strength: 14,
     hp: 50,
     mp: 0
   };
