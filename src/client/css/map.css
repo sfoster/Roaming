@@ -21,8 +21,11 @@
 .mountains {
   background: url('../resources/graphics/mountianground.png') no-repeat scroll top left;
 }
+.barren {
+  background: url('../resources/graphics/desertground.jpg') no-repeat scroll top left;
+}
 .tool.clear {
-  background: url('../resources/graphics/desertground.jpg');
+  background: url('../resources/graphics/gridbg.gif');
 }
 .tool span {
   background-color: white;

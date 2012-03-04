@@ -1,6 +1,6 @@
 define(['$'], function($){
   var panel = $('main');
-  var currentTool = 'clear';
+  var currentTool = 'barren';
   var tileSize = 50, 
       worldSize = { width: 25, height: 25},
       tilesByCoords = {};
@@ -26,7 +26,10 @@ define(['$'], function($){
           console.log("save response: ", resp);
           alert("update to world map was: "+ resp.status);
         }, 
-        error: function(err){ alert(err.message); }
+        error: function(xhr){ 
+          console.log("error saving map: ", xhr.status);
+          alert("Unable to save map right now"); 
+        }
       });
     });
   }
