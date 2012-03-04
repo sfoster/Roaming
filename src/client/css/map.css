@@ -1,0 +1,57 @@
+#main { 
+  overflow: auto;
+}
+#grid {
+  margin: 0; padding: 0;
+}
+#map {
+  background: url('../resources/graphics/gridbg.gif');
+/*  background: url('../resources/graphics/sandygrid.png') 0 0;
+*/  margin: 0; padding: 0;
+}
+.desert {
+  background: url('../resources/graphics/dryground.jpg') no-repeat scroll top left;
+}
+.marsh {
+  background: url('../resources/graphics/marshyground.png') no-repeat scroll top left;
+}
+.plains {
+  background: url('../resources/graphics/grassground.jpg') no-repeat scroll top left;
+}
+.mountains {
+  background: url('../resources/graphics/mountianground.png') no-repeat scroll top left;
+}
+.tool.clear {
+  background: url('../resources/graphics/desertground.jpg');
+}
+.tool span {
+  background-color: white;
+  display:block;
+  margin-left: 50px;
+  padding: 4px;
+  line-height: 40px;
+}
+.tool.active {
+  outline: 2px inset red;
+}
+#map {
+  position: absolute;
+  margin: 0; padding: 0;
+}
+#grid {
+  position: absolute;
+  top: 0; right: 0; left: 0; bottom: 0;
+}
+#gridOverlay {
+  position: absolute;
+  top: 0; right: 0; left: 0; bottom: 0;
+  z-index: 10;
+}
+.tile {
+  position: absolute;
+  top: 0; left: 0;
+  margin: 0;
+}
+.tile:hover {
+  outline: 1px dotted white;
+}
