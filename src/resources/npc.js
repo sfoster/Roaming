@@ -65,14 +65,14 @@ npc.python = {
     mp: 0
   };
 npc.troll = {
-    name: 'Troll',
-    strength: 10,
-    hp: 75,
+    name: 'troll',
+    strength: 14,
+    hp: 60,
     mp: 0
   };
 npc.anaconda = {
     name: 'Anaconda',
-    strength: 14,
+    strength: 16,
     hp: 50,
     mp: 0
   };
@@ -81,9 +81,15 @@ npc.trollElder = {
     strength: 4,
     hp: 25,
     mp: 20
-  };// Troll Elder has camo spell/ability
+  };// Troll Elder has Camo spell/ability
   //(makes him much harder to hit)
-
+npc.gaintAdder = {
+    name: 'Gaint Adder',
+    strength: 5,
+    hp: 15,
+    mp: 20
+  };// Gaint Adder has Hypnotism spell/ability 
+// (target loses a turn)
 
   return npc;
 });
