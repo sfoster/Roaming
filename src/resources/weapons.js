@@ -115,6 +115,29 @@ weapons.morningstar = {
     longRangeDamage: 0,
     mediumRangeDamage: 0
   };
-
+weapons.hatchet = {
+    name: 'Hatchet',
+    shortRangeDamage: 7,
+    longRangeDamage: 0,
+    mediumRangeDamage: 3
+  };
+  weapons.Axe = {
+    name: 'Axe',
+    shortRangeDamage: 14,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0
+  };
+  weapons.throwingAxe = {
+    name: 'Throwing Axe',
+    shortRangeDamage: 4,
+    longRangeDamage: 0,
+    mediumRangeDamage: 6
+  };
+  weapons.battleaxe = {
+    name: 'Battleaxe',
+    shortRangeDamage: 25,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0
+  };
   return weapons;
 });
