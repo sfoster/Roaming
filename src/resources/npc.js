@@ -90,6 +90,23 @@ npc.gaintAdder = {
     mp: 20
   };// Gaint Adder has Hypnotism spell/ability 
 // (target loses a turn)
-
+npc.gaintCobra= {
+    name: 'Gaint Cobra',
+    strength: 20,
+    hp: 70,
+    mp: 0
+  };
+  npc.trollHulk = {
+    name: 'Troll Hulk',
+    strength: 18,
+    hp: 80,
+    mp: 0
+  };
+  npc.dragon = {
+    name: 'Dragon',
+    strength: 75,
+    hp: 500,
+    mp: 0
+  };
   return npc;
 });
