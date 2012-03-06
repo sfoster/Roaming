@@ -123,8 +123,9 @@ npc.gaintCobra= {
     name: 'Dragon',
     strength: 75,
     hp: 500,
-    mp: 0,
+    mp: 40,
     range: short, medium, long
-  };
+  };// Dragon has Flame Breath ability
+  // (ranged attack)
   return npc;
 });
