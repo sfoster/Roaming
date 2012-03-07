@@ -1,0 +1,70 @@
+table.listing {
+  border: none;
+}
+table.listing td {
+  padding: 5px 12px;
+}
+
+table.listing td {
+  border-left: 1px dotted #ddd;
+  border-bottom: 1px dotted #999;
+}
+table.listing thead th {
+  border-left: 1px solid #999;
+  border-bottom: 2px solid #999;
+}
+
+table.listing td:last-child {
+  border-right: 1px solid #ddd;
+}
+table.listing td:first-child {
+  border-left: 1px solid #ddd;
+}
+
+table.listing tbody tr:last-child td {
+  padding-bottom: 6px;
+  border-bottom: 2px solid #999;
+}
+
+table.listing tbody tr:last-child td, 
+table.listing thead tr:first-child td,
+table.listing td:last-child
+table.listing td:first-child
+{
+  border-bottom-style: solid;
+}
+table.listing thead tr:first-child td:first-child {
+  -moz-border-radius-topleft:6px;
+  -webkit-border-top-left-radius:6px;
+  border-top-left-radius:6px
+}
+
+table.listing tbody tr:last-child td:last-child {
+  -moz-border-radius-bottomright:6px;
+  -webkit-border-bottom-right-radius:6px;
+  border-bottom-right-radius:6px
+}
+
+.listing thead {
+  background-color: #ddd;
+}
+
+.listing tr:nth-child(odd) td {
+  background-color: #f9f9f9;
+}
+.listing tr:hover td {
+  background-color: #ffc;
+}
+.listing td, .listing th {
+  text-align: left;
+}
+
+.listing th {
+  padding: 4px 8px;
+}
+.item td {
+  padding: 4px 8px;
+}
+.item .digit {
+  text-align: right;
+}

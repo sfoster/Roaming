@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Roaming: Weapons Viewer</title>
+  <meta name="viewport" content="initial-scale=1">
+  <link rel="stylesheet" href="./css/core.css" type="text/css">
+  <link rel="stylesheet" href="./css/listing.css" type="text/css">
+  <style>
+    h1 {
+      margin: 0;
+      padding: 12px;
+      font-size: 1.8em;
+      color: #eee;
+    }
+    #main {
+      overflow: auto;
+    }
+    .item .field-id {
+      
+    }
+  </style>
+</head>
+<body>
+<section id="hud" class="panel">
+  <h1>Weapons Table</h1>
+</section>  
+<section id="drawer" class="panel">
+    <ul id="toollist" class="panelist">
+    </ul>
+</section>
+<section id="main" class="panel">
+  <table id="weapons" class="listing" cellspacing="0">
+    <thead>
+      <tr class="item">
+        <th class="field-{{id}} col-1of8"><code>id</code></th>
+        <th class="field-{{name}} col-3of8">name</th>
+        <th class="field-{{shortRangeDamage}} col-1of8 digit">shortRangeDamage</th>
+        <th class="field-{{mediumRangeDamage}} col-1of8 digit">mediumRangeDamage</th>
+        <th class="field-{{longRangeDamage}} col-1of8 digit">longRangeDamage</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+</section>  
+
+<script type="text/x-template" id="item-template">
+<tr class="item">
+  <td class="field-{{id}}"><code>{{id}}</code></td>
+  <td class="field-{{name}}">{{name}}</td>
+  <td class="field-{{shortRangeDamage}} digit">{{shortRangeDamage}}</td>
+  <td class="field-{{mediumRangeDamage}} digit">{{mediumRangeDamage}}</td>
+  <td class="field-{{longRangeDamage}} digit">{{longRangeDamage}}</td>
+</tr>
+</script>
+
+<script type="text/javascript">
+  var config = {
+    packages: {
+      // package mappings
+      $: 'vendor/zepto',
+      underscore: 'vendor/underscore',
+      backbone: 'vendor/backbone'
+    }
+  };
+</script>
+<script src="../vendor/require.js"></script>
+<script>
+  require({
+    baseUrl: '..',
+    // configure our AMD loader
+    paths: config.packages
+  }, ['$', 'resources/weapons'], function($, weapons){
+    var tmpl= $('#item-template')[0].innerHTML;
+    var itemsHtml = [], 
+        pattern = /\{\{([^}]+)\}\}/g;
+    Object.keys(weapons).forEach(function(id){
+      var data  = Object.create(weapons[id]);
+      data.id = id;
+      var str = tmpl.replace(pattern, function(m, name){
+        return (name in data) ? data[name] : "";
+      });
+      $(str).appendTo('#weapons tbody');
+    });
+  });
+</script>
+</body>
+</html>
