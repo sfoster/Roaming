@@ -155,7 +155,7 @@ weapons.hatchet = {
     shortRangeDamage: 15,
     longRangeDamage: 0,
     mediumRangeDamage: 0
-  };// Can carry 2 at once
+  };
   weapons.throwingStars = {
     name: 'Throwing Stars',
     shortRangeDamage: 5,
