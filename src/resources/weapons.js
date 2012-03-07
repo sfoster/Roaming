@@ -14,7 +14,8 @@ define([], function(){
     name: 'Bow',
     shortRangeDamage: 3,
     longRangeDamage: 10,
-    mediumRangeDamage: 15
+    mediumRangeDamage: 15,
+    ammo: 15
   };
 
   weapons.fishingSpear = {
@@ -28,7 +29,8 @@ define([], function(){
     name: 'Throwing Knife',
     shortRangeDamage: 3,
     longRangeDamage: 0,
-    mediumRangeDamage: 5
+    mediumRangeDamage: 5,
+    ammo: 5
   };
   weapons.trident = {
     name: 'Trident',
@@ -40,7 +42,8 @@ define([], function(){
     name: 'Javelin',
     shortRangeDamage: 7,
     longRangeDamage: 15,
-    mediumRangeDamage: 10
+    mediumRangeDamage: 10,
+    ammo: 3
   };
   
   weapons.spear = {
@@ -60,7 +63,7 @@ define([], function(){
     shortRangeDamage: 5,
     longRangeDamage: 6,
     mediumRangeDamage: 7
-  };
+  }; ammo: 20
   weapons.stick = {
     name: 'Stick',
     shortRangeDamage: 2,
@@ -89,8 +92,9 @@ weapons.morningstar = {
     name: 'Longbow',
     shortRangeDamage: 4,
     longRangeDamage: 15,
-    mediumRangeDamage: 20
-  };  
+    mediumRangeDamage: 20,
+    ammo: 15
+  };   
   weapons.shortsword = {
     name: 'Shortsword',
     shortRangeDamage: 15,
@@ -131,7 +135,8 @@ weapons.hatchet = {
     name: 'Throwing Axe',
     shortRangeDamage: 4,
     longRangeDamage: 0,
-    mediumRangeDamage: 6
+    mediumRangeDamage: 6,
+    ammo: 5
   };
   weapons.battleaxe = {
     name: 'Battleaxe',
@@ -139,5 +144,24 @@ weapons.hatchet = {
     longRangeDamage: 0,
     mediumRangeDamage: 0
   };
+ weapons.katana = {
+    name: 'Katana',
+    shortRangeDamage: 20,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0
+  };
+  weapons.ninja_to = {
+    name: 'Ninja-to',
+    shortRangeDamage: 15,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0
+  };// Can carry 2 at once
+  weapons.throwingStars = {
+    name: 'Throwing Stars',
+    shortRangeDamage: 5,
+    longRangeDamage: 5,
+    mediumRangeDamage: 10,
+    ammo: 10
+  }; 
   return weapons;
 });
