@@ -127,5 +127,7 @@ npc.gaintCobra= {
     range: 'short, medium, long'
   };// Dragon has Flame Breath ability
   // (ranged attack)
+  
+  // All spells cost 10 mp per cast
   return npc;
 });
