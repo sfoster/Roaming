@@ -4,35 +4,35 @@ define([], function(){
   
   npc.goblin = {
     name: 'Goblin',
-    strength: 2,
+    strength: 4,
     hp: 10,
     mp: 0,
     range: 'short'
   };
   npc.hugeRat = {
     name: 'Huge Rat',
-    strength: 2,
+    strength: 4,
     hp: 10,
     mp: 0,
     range: 'short'
   };
   npc.goblinChamp = {
     name: 'Goblin Champion',
-    strength: 4,
+    strength: 6,
     hp: 20,
     mp: 0,
     range: 'short'
   };
   npc.giantRat = {
     name: 'Giant Rat',
-    strength: 4,
+    strength: 6,
     hp: 20,
     mp: 0,
     range: 'short'
   };
 npc.goblinShaman = {
     name: 'Goblin Shaman',
-    strength: 1,
+    strength: 2,
     hp: 5,
     mp: 10,
     range: 'short, medium'
@@ -40,7 +40,7 @@ npc.goblinShaman = {
   //(doubles the damage of accompanying fighters )
 npc.mutantRat = {
     name: 'Mutant Rat',
-    strength: 1,
+    strength: 2,
     hp: 5,
     mp: 10,
     range: 'short, medium'
@@ -48,14 +48,14 @@ npc.mutantRat = {
   //( does half damage for 2-3 turns after attack )
 npc.goblinWarlord = {
     name: 'Goblin Warlord',
-    strength: 6,
+    strength: 8,
     hp: 30,
     mp: 0,
     range: 'short'
   };
 npc.ratHorde = {
     name: 'Rat Horde',
-    strength: 6,
+    strength: 8,
     hp: 30,
     mp: 0,
     range:'short'
@@ -63,28 +63,28 @@ npc.ratHorde = {
 
 npc.juvinileTroll = {
     name: 'Juvenile Troll',
-    strength: 8,
+    strength: 10,
     hp: 50,
     mp: 0,
     range: 'short'
   };
 npc.python = {
     name: 'Python',
-    strength: 10,
+    strength: 12,
     hp: 30,
     mp: 0,
     range: 'short'
   };
 npc.troll = {
     name: 'troll',
-    strength: 14,
+    strength: 16,
     hp: 60,
     mp: 0,
     range: 'short'
   };
 npc.anaconda = {
     name: 'Anaconda',
-    strength: 16,
+    strength: 18,
     hp: 50,
     mp: 0,
     range: 'short'
@@ -99,7 +99,7 @@ npc.trollElder = {
   //(makes him much harder to hit)
 npc.gaintAdder = {
     name: 'Gaint Adder',
-    strength: 5,
+    strength: 4,
     hp: 15,
     mp: 20,
     range: 'short,medium'
@@ -107,21 +107,21 @@ npc.gaintAdder = {
 // (target loses a turn)
 npc.gaintCobra= {
     name: 'Gaint Cobra',
-    strength: 20,
+    strength: 22,
     hp: 70,
     mp: 0,
     range: 'short'
   };
   npc.trollHulk = {
     name: 'Troll Hulk',
-    strength: 18,
+    strength: 20,
     hp: 80,
     mp: 0,
     range: 'short'
   };
   npc.dragon = {
     name: 'Dragon',
-    strength: 75,
+    strength: 80,
     hp: 500,
     mp: 50,
     range: 'short, medium, long'
@@ -129,5 +129,6 @@ npc.gaintCobra= {
   // (ranged attack)
   
   // All spells cost 10 mp per cast
+  // dmg=strength divided by 2 
   return npc;
 });
