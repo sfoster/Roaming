@@ -1,4 +1,4 @@
-define(['$', 'models/Location'], function($, Location){
+define(['$', 'compose', 'models/Location'], function($, Compose, Location){
   console.log("loading location plugin");
   
   window.locations = {};
@@ -12,7 +12,7 @@ define(['$', 'models/Location'], function($, Location){
     
     load: function (coords, req, onLoad, requireConfig) {
       console.log("location plugin load: ", coords);
-      var locn = window.locations[coords]; 
+      var locn = window.locations[coords];
       if(locn) {
         onLoad(locn);
       } else {
@@ -20,8 +20,11 @@ define(['$', 'models/Location'], function($, Location){
           dataType: 'json',
           url: '../data/location/' + coords + '.json',
           success: function(resp){
-            var tile = new Location(resp); 
-            onLoad(tile);
+            var ctorModule = resp.moduleid || 'models/Location';
+            require([ctorModule], function(Clazz){
+              var tile = new Clazz(resp); 
+              onLoad(tile);
+            });
           }, 
           error: function(err) {
             onLoad(err);

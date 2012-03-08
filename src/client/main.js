@@ -4,6 +4,7 @@ define(['$', 'resources/world', 'models/player', 'resources/map'], function($, w
   
   console.log("Player: ", player);
   
+  // display the player's inventory
   var inventoryNode = $("<ul></ul>");
   for(var i=0; i<player.inventory.length; i++){
     inventoryNode.append("<li>"+ player.inventory[i] +"</li>");
@@ -12,10 +13,11 @@ define(['$', 'resources/world', 'models/player', 'resources/map'], function($, w
     .html("<p>Maybe an Inventory list here?</p>")
     .append(inventoryNode);
     
+  // display the player's current weapon
   $('.weapon').html( "<p>" + player.currentWeapon.name + "</p>");
   
+  // display the 10,000ft view map
   $('.world-map').html("<p></p>");
-
   map.init();
   var mapData = {
     src: 'resources/maps/map.png',
@@ -57,11 +59,6 @@ define(['$', 'resources/world', 'models/player', 'resources/map'], function($, w
     console.log("enter the world");
     stack.push(world);
     console.log("got back location: ", location);
-    require([location.moduleid], function(region){
-      stack.push(region);
-      stack.push(location);
-    });
-    // stack.push(region);
-    // stack.push(tile);
+    stack.push(location);
   })
 });
