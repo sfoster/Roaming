@@ -53,6 +53,7 @@ define(['$', 'resources/world', 'models/player', 'resources/map'], function($, w
       }
     }
   })();
+  
   var route = location.hash || '0,0';
   
   require(['resources/location!0,0'], function(location){
