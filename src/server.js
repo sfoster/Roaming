@@ -32,8 +32,14 @@ app.post('/location/world.json', function(req, res){
   var resourcePath = root + '/data/location/world.json';
   console.log("got post: ", typeof req.body, req.body);
   var fileData = req.body;
-  
-  fs.writeFile(resourcePath, JSON.stringify(fileData), function(err) {
+  fileData.sort(function(a,b){
+    if(a.y == b.y) {
+      return a.x > b.x ? 1 : -1;
+    } else {
+      return a.y > b.y ? 1 : -1;
+    }
+  });
+  fs.writeFile(resourcePath, JSON.stringify(fileData, null, 2), function(err) {
     if(err) {
         console.log(err);
         res.send(500);
@@ -65,7 +71,7 @@ app.get(/^\/(resources|models|vendor|css)\/(.*)$/, function(req, res){
   }
   // console.log("resolved resourcePath: " + resourcePath);
   if(resourcePath && path.existsSync(resourcePath)){
-    res.sendfile(resourcePath)
+    res.sendfile(resourcePath);
   } else {
     res.send(404);
   }
