@@ -1,5 +1,5 @@
 define(['$'], function(){
-  // TODO: lots
+  // A basic tile in our map
   
   function Location(options){
     for(var i in options){
@@ -25,6 +25,11 @@ define(['$'], function(){
       hist.visits++;
       player.history[this.id] = hist;
     }
+    // what is in this tile? 
+    // does anything happen as I enter?
+    //  run any encounters
+    // have I been here before?
+    //  check player.history for this location id
   };
   Location.prototype.exit = function(player, game){
     console.log("Location exit stub");

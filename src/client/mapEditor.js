@@ -1,4 +1,7 @@
-define(['$'], function($){
+define(['$', 'text!data/terrain.json'], function($, terrainTypes){
+  if('string' == typeof terrainTypes) {
+    terrainTypes = JSON.parse(terrainTypes);
+  }
   var panel = $('main');
   var currentTool = 'barren';
   var tileSize = 50, 
@@ -31,19 +34,25 @@ define(['$'], function($){
           alert("Unable to save map right now"); 
         }
       });
+      
     });
   }
   function init(){
     toolbarInit();
     
-    fetchMap();
+    // fetchMap();
     
     $('#grid, #gridOverlay, #map').css({
       width: worldSize.width*tileSize,
       height: worldSize.height*tileSize
     });
+    
+    var $toollist = $('#toollist');
+    Object.keys(terrainTypes).forEach(function(type){
+      $('<li class="panel tool '+type+'"><span>'+type+'</span></li>').appendTo($toollist);
+    });
 
-    $('#toollist')
+    $toollist
       .delegate('.tool', 'mouseup', function(event){ 
         $('#toollist .tool.active').removeClass('active');
         $(event.currentTarget).addClass('active');
@@ -65,10 +74,10 @@ define(['$'], function($){
       console.log("scrollContainerNode offsets: ", mapOffsets);
       console.log("scrollOffsets: ", scrollOffsets);
       console.log("event.pageX,Y: ", event.pageX, event.pageY);
-      var clickX = event.pageX - mapOffsets.left + scrollOffsets.left;
-      var clickY = event.pageY - mapOffsets.top + scrollOffsets.top;
-      x = Math.floor(clickX / tileSize), 
-      y = Math.floor(clickY / tileSize);
+      var clickX = event.pageX - mapOffsets.left + scrollOffsets.left,
+          clickY = event.pageY - mapOffsets.top + scrollOffsets.top,
+          x = Math.floor(clickX / tileSize),
+          y = Math.floor(clickY / tileSize);
       console.log("place at: ", x, y);
       if(!currentTool) return;
 
@@ -109,8 +118,8 @@ define(['$'], function($){
       error: function(err){
         alert('Error fetching world data: ' + err.message);
       }
-    })
+    });
   }
   
   init();
-})
+});

@@ -20,7 +20,7 @@ define(['$', 'compose', 'models/Location'], function($, Compose, Location){
           dataType: 'json',
           url: '../data/location/' + coords + '.json',
           success: function(resp){
-            var ctorModule = resp.type || 'models/Location';
+            var ctorModule = resp.terrainType || 'models/Location';
             require([ctorModule], function(Clazz){
               var tile = new Clazz(resp); 
               onLoad(tile);

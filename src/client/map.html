@@ -18,13 +18,6 @@
 </section>  
 <section id="drawer" class="panel">
     <ul id="toollist" class="panelist">
-        <li class="panel tool clear"><span>clear</span></li>
-        <li class="panel tool barren active"><span>barren</span></li>
-        
-        <li class="panel tool desert" id=""><span>desert</span></li>
-        <li class="panel tool marsh" id="marsh"><span>marsh</span></li>
-        <li class="panel tool mountains"><span>mountains</span></li>
-        <li class="panel tool plains"><span>plains</span></li>
     </ul>
 </section>
 <section id="main" class="panel">
@@ -40,7 +33,10 @@
       // package mappings
       $: 'vendor/zepto',
       underscore: 'vendor/underscore',
-      backbone: 'vendor/backbone'
+      backbone: 'vendor/backbone',
+      compose: 'vendor/compose',
+      text: 'vendor/plugins/text',
+      image: 'vendor/plugins/image' 
     }
   };
 </script>

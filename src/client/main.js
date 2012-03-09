@@ -54,9 +54,11 @@ define(['$', 'resources/world', 'models/player', 'resources/map'], function($, w
     }
   })();
   
-  var route = location.hash || '0,0';
+  var coords = location.hash || '0,0', 
+      xy = coords.split(/,\s*/), 
+      adjacentTiles = world.getEdges(xy[0], xy[1]);
   
-  require(['resources/location!0,0'], function(location){
+  require(['resources/location!'+coords], function(location){
     console.log("enter the world");
     stack.push(world);
     console.log("got back location: ", location);
