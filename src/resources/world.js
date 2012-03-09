@@ -1,4 +1,5 @@
-define(['$'], function($){
+define(['$', 'text!data/location/world.json'], function($, worldData){
+
   function enter(player, game){
     $('#main').html("You enter the world");
   }
@@ -8,6 +9,9 @@ define(['$'], function($){
   
   return {
     enter: enter, 
-    exit: exit
+    exit: exit,
+    getEdges: function(x,y){
+      return [];
+    }
   };
 });
