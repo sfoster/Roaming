@@ -1,0 +1,8 @@
+{
+  "clear": {"url": "resources/graphics/dryground.jpg"},
+  "barren": {"url": "resources/graphics/desertground.jpg"},
+  "desert": {"url": "resources/graphics/dryground.jpg"},
+  "marsh": {"url": "resources/graphics/marshyground.png"},
+  "mountains": {"url": "resources/graphics/mountianground.png"},
+  "plains": {"url": "resources/graphics/grassground.jpg"}
+}
