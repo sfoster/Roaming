@@ -5,7 +5,8 @@ define([
   "image!resources/graphics/marshyground.png",
   "image!resources/graphics/mountianground.png",
   "image!resources/graphics/grassground.jpg",
-  "image!resources/graphics/water.jpg"
+  "image!resources/graphics/water.jpg",
+  "image!resources/graphics/abyss.jpg"
 ], function(
   clearImg,
   dryGroundImg, 
@@ -13,7 +14,8 @@ define([
   marshImg, 
   mountainsImg, 
   plainsImg,
-  waterImg
+  waterImg,
+  abyssImg
 ){
   var tmpContainer = document.createElement("div");
       tmpContainer.style.cssText = 'position: absolute; top: -2000px; left: -2000px; width: 1000px; height: 1000px';
@@ -41,6 +43,8 @@ define([
     "marsh":      { img: marshImg },
     "mountains":  { img: mountainsImg },
     "plains":     { img: plainsImg },
-    "water":     { img: waterImg }
+    "water":     { img: waterImg },
+    "abyss":     { img: abyssImg }
+    
   };
 });
