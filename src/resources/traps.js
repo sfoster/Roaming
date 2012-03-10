@@ -11,17 +11,22 @@ define([], function(){
   };
    traps.spikeTrap= {
     name: 'Spike Trap',
-    dmg:30,
+    dmg:50,
     uses: 10,
     difficulty: 20/100
   };  
    traps.rockFalltrap= {
-    name: 'Falling Rock Trap',
-    dmg:50,
+    name: 'Falling Rocks Trap',
+    dmg:40,
     uses: 1,
     difficulty: 50/100  
   };
-   
+    traps.boulderFalltrap= {
+    name: 'Falling Boulder Trap',
+    dmg:60,
+    uses: 1,
+    difficulty: 70/100  
+  };
   return traps
 
 });
