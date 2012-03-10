@@ -12,7 +12,8 @@ define([
   desertImg, 
   marshImg, 
   mountainsImg, 
-  plainsImg
+  plainsImg,
+  waterImg
 ){
   var tmpContainer = document.createElement("div");
       tmpContainer.style.cssText = 'position: absolute; top: -2000px; left: -2000px; width: 1000px; height: 1000px';
@@ -30,7 +31,7 @@ define([
       tmpContainer.appendChild(img);
       console.log("measure image: ", img, img.offsetWidth, img.offsetHeight);
     } else {
-      console.log("image has dimensions: ", img, img.width, img.height);
+      // console.log("image has dimensions: ", img, img.width, img.height);
     }
   });
   return {
@@ -39,6 +40,7 @@ define([
     "desert":     { img: dryGroundImg }, 
     "marsh":      { img: marshImg },
     "mountains":  { img: mountainsImg },
-    "plains":     { img: plainsImg }
+    "plains":     { img: plainsImg },
+    "water":     { img: waterImg }
   };
 });
