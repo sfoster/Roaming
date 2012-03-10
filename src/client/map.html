@@ -17,14 +17,25 @@
   </ul>
 </section>  
 <section id="drawer" class="panel">
+  <div id="palette">
+    <ul id="terrainlist" class="panelist">
+    </ul>
     <ul id="toollist" class="panelist">
     </ul>
+  </div>
 </section>
 <section id="main" class="panel">
   <div id="map">
     <canvas id="grid"></canvas>  
     <div id="gridOverlay"></div>  
   </div>
+  <div id="detail">
+    
+  </div>
+  <script type="text/x-template" id="detail-template">
+    <div class="field-{{id}}"><code>{{id}}</code></div>
+    <div class="field-{{name}}">{{name}}</div>
+  </script>
 </section>  
 
 <script type="text/javascript">
