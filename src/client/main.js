@@ -1,6 +1,7 @@
-define(['$', 'resources/world', 'models/player', 'resources/map'], function($, world, player, map){
+define(['$', 'resources/Promise', 'resources/world', 'models/player', 'resources/map'], function($, Promise, world, player, map){
   $('#main').html("It works (so far)");
   
+  var when = Promise.when;
   
   console.log("Player: ", player);
   console.log("map: ", map);
@@ -19,15 +20,21 @@ define(['$', 'resources/world', 'models/player', 'resources/map'], function($, w
   
   // display the 10,000ft view map
   $('.world-map').html("<p></p>");
-  map.init(function(){
+  
+  
+  console.log("init map");
+  // var promise = ;
+  map.init().then(function(val){
+    console.log("map.init callback: ", val);
     require(['json!data/location/world.json'], function(mapData){
+      console.log("require world data callback");
       var canvasNode = map.renderMap( mapData );
       // console.log("map rows: ", mapRows);
       $('.world-map').append( canvasNode );
       console.log("canvas node: ", canvasNode);
     });
   });
-  
+  console.log("/init map");
   
   // login or init player
   // set up main game stack

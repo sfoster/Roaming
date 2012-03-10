@@ -1,9 +1,13 @@
-define(['$', 'text!data/terrain.json'], function($, terrainTypes){
-  if('string' == typeof terrainTypes) {
-    terrainTypes = JSON.parse(terrainTypes);
-  }
-  var panel = $('main');
+define(['$', 'resources/util', 'resources/Promise', 'resources/map', 'resources/terrain'], function($, util, Promise, map, terrainTypes){
+
+  var pluck = util.pluck, 
+      values = util.values, 
+      keys = util.keys, 
+      mixin = util.mixin,
+      when = Promise.when;
+
   var currentTool = 'barren';
+  var mapNode = null;
   var tileSize = 50, 
       worldSize = { width: 25, height: 25},
       tilesByCoords = {};
@@ -11,20 +15,19 @@ define(['$', 'text!data/terrain.json'], function($, terrainTypes){
   //     
   function toolbarInit(){
     $('#saveBtn').click(function(evt){
-      var tiles = Object.keys(tilesByCoords).map(function(id){
-        var node =  tilesByCoords[id], 
-            type = node.className.replace(/tile\s*/, ''), 
-            xy = id.split(',').map(Number);
-        return { x: xy[0], y: xy[1], type: type };
+      var locations = values(tilesByCoords).map(function(tile){
+        var locn = mixin({}, tile);
+        delete locn.img;
+        return locn;
       });
 
-      console.log("saving this: ", tiles);
+      console.log("saving this: ", locations);
       $.ajax({
         type: 'POST',
         dataType: 'json',
         contentType: 'application/json',
         url: '/location/world.json',
-        data: JSON.stringify(tiles),
+        data: JSON.stringify(locations),
         success: function(resp){
           console.log("save response: ", resp);
           alert("update to world map was: "+ resp.status);
@@ -37,16 +40,8 @@ define(['$', 'text!data/terrain.json'], function($, terrainTypes){
       
     });
   }
-  function init(){
-    toolbarInit();
-    
-    // fetchMap();
-    
-    $('#grid, #gridOverlay, #map').css({
-      width: worldSize.width*tileSize,
-      height: worldSize.height*tileSize
-    });
-    
+
+  function paletteInit(){
     var $toollist = $('#toollist');
     Object.keys(terrainTypes).forEach(function(type){
       $('<li class="panel tool '+type+'"><span>'+type+'</span></li>').appendTo($toollist);
@@ -61,8 +56,17 @@ define(['$', 'text!data/terrain.json'], function($, terrainTypes){
         console.log("change currentTool: ", currentTool);
       });
 
-    // var offsets = $('#gridOverlay').offset();
-    // console.log("offsets: ", offsets);
+  }
+  
+  function editorInit(){
+    $('#gridOverlay, #map').css({
+      width: worldSize.width*tileSize,
+      height: worldSize.height*tileSize
+    });
+    mapNode = $('#grid')[0];
+    mapNode.width = worldSize.width*tileSize;
+    mapNode.height = worldSize.height*tileSize;
+    
     var scrollContainerNode = $('#main')[0],
         mapOffsets = $('#map').offset();
         
@@ -84,6 +88,26 @@ define(['$', 'text!data/terrain.json'], function($, terrainTypes){
       placeTile(x, y, currentTool);
     });
   }
+  
+  function init(){
+    toolbarInit();
+    paletteInit();
+    editorInit();
+    
+    map.init().then(function(){
+      require(['json!data/location/world.json'], function(mapData){
+        console.log("loaded mapData: ", mapData);
+        mapData.forEach(function(tile){
+          var tileId = [tile.x, tile.y].join(',');
+          tilesByCoords[tileId] = tile;
+        });
+        map.renderMap( mapData, {
+          tileSize: tileSize,
+          canvasNode: mapNode
+        });
+      });
+    });
+  }
 
 
   function trim(text){
@@ -91,35 +115,41 @@ define(['$', 'text!data/terrain.json'], function($, terrainTypes){
   }
 
   function placeTile(x, y, type){
-    var tileId = [x,y].join(',');
-    var tile = tilesByCoords[tileId];
+    var tileId = [x,y].join(','), 
+        tile = tilesByCoords[tileId];
     if(!tile){
-      tile = tilesByCoords[tileId] = $('<div class="tile" data-coords="'+tileId+'"></div>')
-        .css({
-          left: x*tileSize, top: y*tileSize,
-          width: tileSize, height: tileSize
-        })
-        .appendTo('#map')[0];
-      // console.log("created tile at: ", tile, tileId);
+      // create the tile object
+      tile = tilesByCoords[tileId] = {
+        x: x, y: y, type: type
+      };
     }
-    $(tile).removeClass().addClass('tile '+type);
-    // console.log("tile has class %s, coords: %s: ", tile.className, tile.getAttribute('data-coords'));
+    var img = tile.img = terrainTypes[type].img, 
+        ctx = mapNode.getContext('2d');
+
+    if(!img) {
+      console.log("no image?", tile, img);
+    }
+    ctx.clearRect(
+        tileSize*tile.x,        // dest-x
+        tileSize*tile.y,        // dest-y
+        tileSize,               // dest-width
+        tileSize                // dest-height
+    );
+    
+    if(img && type !== 'clear'){
+      ctx.drawImage(
+          img,                    // image
+          0,                      // source-x
+          0,                      // source-y
+          tileSize,              // source-width
+          tileSize,             // source-height
+          tileSize*tile.x,        // dest-x
+          tileSize*tile.y,        // dest-y
+          tileSize,               // dest-width
+          tileSize                // dest-height
+      );
+    }
   }
-  function fetchMap(){
-    $.ajax({
-      url: '/location/world.json', 
-      dataType: 'json',
-      success: function(resp){
-        // console.log("drawing map data: ", resp);
-        resp.tiles.forEach(function(data){
-          placeTile(data.x, data.y, data.type);
-        });
-      }, 
-      error: function(err){
-        alert('Error fetching world data: ' + err.message);
-      }
-    });
-  }
-  
+
   init();
 });
