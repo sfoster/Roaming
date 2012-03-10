@@ -45,7 +45,7 @@ npc.mutantRat = {
     mp: 10,
     range: 'short, medium'
   };// Mutant Rat has Poison spell/ability
-  //( does half damage for 2-3 turns after attack )
+  //( does reccuring half damage for 2-3 turns after attack )
 npc.goblinWarlord = {
     name: 'Goblin Warlord',
     strength: 8,
@@ -99,7 +99,7 @@ npc.trollElder = {
   //(makes him much harder to hit)
 npc.gaintAdder = {
     name: 'Gaint Adder',
-    strength: 4,
+    strength: 6,
     hp: 15,
     mp: 20,
     range: 'short,medium'
@@ -129,6 +129,6 @@ npc.gaintCobra= {
   // (ranged attack)
   
   // All spells cost 10 mp per cast
-  // dmg=strength divided by 2 
+  // dmg=strength divided by 2(?) 
   return npc;
 });
