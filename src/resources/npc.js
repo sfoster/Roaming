@@ -119,6 +119,41 @@ npc.gaintCobra= {
     mp: 0,
     range: 'short'
   };
+  npc.centaur = {
+    name: 'Centaur',
+    strength: 16,
+    hp: 50,
+    mp: 0,
+    weapon: 'long range'
+    };
+    npc.orc = {
+    name: 'Orc',
+    strength: 26,
+    hp: 90,
+    mp: 0,
+    weapon: 'short range'
+  };
+  npc.minotaur = {
+    name: 'Minotaur',
+    strength: 40,
+    hp: 100,
+    mp: 0,
+    weapon: 'medium range'
+  };
+  npc.humanSoldier = {
+    name: 'Soldier',
+    strength: 8,
+    hp: 25,
+    mp: 0,
+    weapon: 'any range'
+  };
+  npc.humanKnight = {
+    name: 'Knight',
+    strength: 20,
+    hp: 60,
+    mp: 0,
+    weapon: 'short range, medium range'
+  };
   npc.dragon = {
     name: 'Dragon',
     strength: 80,
