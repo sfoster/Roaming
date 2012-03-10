@@ -33,7 +33,7 @@
 .tool.clear {
   background: url('../resources/graphics/gridbg.gif');
 }
-.tool.tileedit {
+.tool.edittile {
   background: #DDD url('../../resources/graphics/tools/edit.png') no-repeat scroll top left;
 }
 .tool span {
@@ -41,7 +41,7 @@
   display:block;
   margin-left: 50px;
   padding: 4px;
-  line-height: 40px;
+  line-height: 30px;
 }
 .tool.active {
   outline: 2px inset red;

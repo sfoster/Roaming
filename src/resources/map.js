@@ -53,8 +53,8 @@ define(['$', 'resources/util', 'resources/Promise'], function($, util, Promise){
                 img,                    // image
                 0,                      // source-x
                 0,                      // source-y
-                tileSize,              // source-width
-                tileSize,             // source-height
+                tileSize,               // source-width
+                tileSize,               // source-height
                 tileSize*tile.x,        // dest-x
                 tileSize*tile.y,        // dest-y
                 tileSize,               // dest-width
