@@ -2,62 +2,137 @@
   {
     "x": 0,
     "y": 0,
-    "type": "plains"
+    "type": "abyss"
   },
   {
     "x": 1,
     "y": 0,
-    "type": "plains"
+    "type": "abyss"
   },
   {
     "x": 2,
     "y": 0,
-    "type": "plains"
+    "type": "abyss"
   },
   {
     "x": 3,
     "y": 0,
-    "type": "desert"
+    "type": "abyss"
   },
   {
     "x": 4,
     "y": 0,
-    "type": "desert"
+    "type": "abyss"
   },
   {
     "x": 5,
     "y": 0,
-    "type": "desert"
+    "type": "abyss"
   },
   {
     "x": 6,
     "y": 0,
-    "type": "mountains"
+    "type": "abyss"
   },
   {
     "x": 7,
     "y": 0,
-    "type": "mountains"
+    "type": "abyss"
   },
   {
     "x": 8,
     "y": 0,
-    "type": "mountains"
+    "type": "abyss"
   },
   {
     "x": 9,
     "y": 0,
-    "type": "mountains"
+    "type": "abyss"
+  },
+  {
+    "x": 10,
+    "y": 0,
+    "type": "abyss"
+  },
+  {
+    "x": 11,
+    "y": 0,
+    "type": "abyss"
+  },
+  {
+    "x": 12,
+    "y": 0,
+    "type": "abyss"
+  },
+  {
+    "x": 13,
+    "y": 0,
+    "type": "abyss"
+  },
+  {
+    "x": 14,
+    "y": 0,
+    "type": "abyss"
+  },
+  {
+    "x": 15,
+    "y": 0,
+    "type": "abyss"
+  },
+  {
+    "x": 16,
+    "y": 0,
+    "type": "abyss"
+  },
+  {
+    "x": 17,
+    "y": 0,
+    "type": "abyss"
+  },
+  {
+    "x": 18,
+    "y": 0,
+    "type": "abyss"
+  },
+  {
+    "x": 19,
+    "y": 0,
+    "type": "abyss"
+  },
+  {
+    "x": 20,
+    "y": 0,
+    "type": "abyss"
+  },
+  {
+    "x": 21,
+    "y": 0,
+    "type": "abyss"
+  },
+  {
+    "x": 22,
+    "y": 0,
+    "type": "abyss"
+  },
+  {
+    "x": 23,
+    "y": 0,
+    "type": "abyss"
+  },
+  {
+    "x": 24,
+    "y": 0,
+    "type": "abyss"
   },
   {
     "x": 0,
     "y": 1,
-    "type": "barren"
+    "type": "abyss"
   },
   {
     "x": 1,
     "y": 1,
-    "type": "plains"
+    "type": "mountains"
   },
   {
     "x": 2,
@@ -67,47 +142,122 @@
   {
     "x": 3,
     "y": 1,
-    "type": "desert"
+    "type": "plains"
   },
   {
     "x": 4,
     "y": 1,
-    "type": "desert"
+    "type": "plains"
   },
   {
     "x": 5,
     "y": 1,
-    "type": "desert"
+    "type": "plains"
   },
   {
     "x": 6,
     "y": 1,
-    "type": "desert"
+    "type": "plains"
   },
   {
     "x": 7,
     "y": 1,
-    "type": "marsh"
+    "type": "plains"
   },
   {
     "x": 8,
     "y": 1,
-    "type": "marsh"
+    "type": "plains"
   },
   {
     "x": 9,
     "y": 1,
     "type": "mountains"
+  },
+  {
+    "x": 10,
+    "y": 1,
+    "type": "mountains"
+  },
+  {
+    "x": 11,
+    "y": 1,
+    "type": "desert"
+  },
+  {
+    "x": 12,
+    "y": 1,
+    "type": "plains"
+  },
+  {
+    "x": 13,
+    "y": 1,
+    "type": "plains"
+  },
+  {
+    "x": 14,
+    "y": 1,
+    "type": "mountains"
+  },
+  {
+    "x": 15,
+    "y": 1,
+    "type": "mountains"
+  },
+  {
+    "x": 16,
+    "y": 1,
+    "type": "mountains"
+  },
+  {
+    "x": 17,
+    "y": 1,
+    "type": "plains"
+  },
+  {
+    "x": 18,
+    "y": 1,
+    "type": "mountains"
+  },
+  {
+    "x": 19,
+    "y": 1,
+    "type": "mountains"
+  },
+  {
+    "x": 20,
+    "y": 1,
+    "type": "mountains"
+  },
+  {
+    "x": 21,
+    "y": 1,
+    "type": "plains"
+  },
+  {
+    "x": 22,
+    "y": 1,
+    "type": "mountains"
+  },
+  {
+    "x": 23,
+    "y": 1,
+    "type": "mountains"
+  },
+  {
+    "x": 24,
+    "y": 1,
+    "type": "abyss"
   },
   {
     "x": 0,
     "y": 2,
-    "type": "mountains"
+    "type": "abyss"
   },
   {
     "x": 1,
     "y": 2,
-    "type": "plains"
+    "type": "mountains"
   },
   {
     "x": 2,
@@ -117,42 +267,117 @@
   {
     "x": 3,
     "y": 2,
-    "type": "desert"
+    "type": "mountains"
   },
   {
     "x": 4,
     "y": 2,
-    "type": "desert"
+    "type": "mountains"
   },
   {
     "x": 5,
     "y": 2,
-    "type": "desert"
+    "type": "mountains"
   },
   {
     "x": 6,
     "y": 2,
-    "type": "desert"
+    "type": "mountains"
   },
   {
     "x": 7,
     "y": 2,
-    "type": "desert"
+    "type": "mountains"
   },
   {
     "x": 8,
     "y": 2,
-    "type": "marsh"
+    "type": "plains"
   },
   {
     "x": 9,
     "y": 2,
     "type": "mountains"
+  },
+  {
+    "x": 10,
+    "y": 2,
+    "type": "mountains"
+  },
+  {
+    "x": 11,
+    "y": 2,
+    "type": "desert"
+  },
+  {
+    "x": 12,
+    "y": 2,
+    "type": "plains"
+  },
+  {
+    "x": 13,
+    "y": 2,
+    "type": "plains"
+  },
+  {
+    "x": 14,
+    "y": 2,
+    "type": "mountains"
+  },
+  {
+    "x": 15,
+    "y": 2,
+    "type": "barren"
+  },
+  {
+    "x": 16,
+    "y": 2,
+    "type": "mountains"
+  },
+  {
+    "x": 17,
+    "y": 2,
+    "type": "plains"
+  },
+  {
+    "x": 18,
+    "y": 2,
+    "type": "mountains"
+  },
+  {
+    "x": 19,
+    "y": 2,
+    "type": "barren"
+  },
+  {
+    "x": 20,
+    "y": 2,
+    "type": "mountains"
+  },
+  {
+    "x": 21,
+    "y": 2,
+    "type": "plains"
+  },
+  {
+    "x": 22,
+    "y": 2,
+    "type": "mountains"
+  },
+  {
+    "x": 23,
+    "y": 2,
+    "type": "mountains"
+  },
+  {
+    "x": 24,
+    "y": 2,
+    "type": "abyss"
   },
   {
     "x": 0,
     "y": 3,
-    "type": "mountains"
+    "type": "abyss"
   },
   {
     "x": 1,
@@ -162,47 +387,122 @@
   {
     "x": 2,
     "y": 3,
-    "type": "barren"
+    "type": "plains"
   },
   {
     "x": 3,
     "y": 3,
-    "type": "desert"
+    "type": "mountains"
   },
   {
     "x": 4,
     "y": 3,
-    "type": "barren"
+    "type": "mountains"
   },
   {
     "x": 5,
     "y": 3,
-    "type": "desert"
+    "type": "barren"
   },
   {
     "x": 6,
     "y": 3,
-    "type": "desert"
+    "type": "mountains"
   },
   {
     "x": 7,
     "y": 3,
-    "type": "desert"
+    "type": "mountains"
   },
   {
     "x": 8,
     "y": 3,
-    "type": "mountains"
+    "type": "plains"
   },
   {
     "x": 9,
     "y": 3,
     "type": "mountains"
+  },
+  {
+    "x": 10,
+    "y": 3,
+    "type": "mountains"
+  },
+  {
+    "x": 11,
+    "y": 3,
+    "type": "desert"
+  },
+  {
+    "x": 12,
+    "y": 3,
+    "type": "plains"
+  },
+  {
+    "x": 13,
+    "y": 3,
+    "type": "plains"
+  },
+  {
+    "x": 14,
+    "y": 3,
+    "type": "mountains"
+  },
+  {
+    "x": 15,
+    "y": 3,
+    "type": "mountains"
+  },
+  {
+    "x": 16,
+    "y": 3,
+    "type": "mountains"
+  },
+  {
+    "x": 17,
+    "y": 3,
+    "type": "plains"
+  },
+  {
+    "x": 18,
+    "y": 3,
+    "type": "mountains"
+  },
+  {
+    "x": 19,
+    "y": 3,
+    "type": "mountains"
+  },
+  {
+    "x": 20,
+    "y": 3,
+    "type": "mountains"
+  },
+  {
+    "x": 21,
+    "y": 3,
+    "type": "plains"
+  },
+  {
+    "x": 22,
+    "y": 3,
+    "type": "mountains"
+  },
+  {
+    "x": 23,
+    "y": 3,
+    "type": "mountains"
+  },
+  {
+    "x": 24,
+    "y": 3,
+    "type": "abyss"
   },
   {
     "x": 0,
     "y": 4,
-    "type": "mountains"
+    "type": "abyss"
   },
   {
     "x": 1,
@@ -212,27 +512,27 @@
   {
     "x": 2,
     "y": 4,
-    "type": "barren"
+    "type": "plains"
   },
   {
     "x": 3,
     "y": 4,
-    "type": "barren"
+    "type": "mountains"
   },
   {
     "x": 4,
     "y": 4,
-    "type": "barren"
+    "type": "mountains"
   },
   {
     "x": 5,
     "y": 4,
-    "type": "desert"
+    "type": "mountains"
   },
   {
     "x": 6,
     "y": 4,
-    "type": "desert"
+    "type": "mountains"
   },
   {
     "x": 7,
@@ -242,47 +542,122 @@
   {
     "x": 8,
     "y": 4,
-    "type": "mountains"
+    "type": "plains"
   },
   {
     "x": 9,
     "y": 4,
     "type": "mountains"
+  },
+  {
+    "x": 10,
+    "y": 4,
+    "type": "mountains"
+  },
+  {
+    "x": 11,
+    "y": 4,
+    "type": "plains"
+  },
+  {
+    "x": 12,
+    "y": 4,
+    "type": "plains"
+  },
+  {
+    "x": 13,
+    "y": 4,
+    "type": "plains"
+  },
+  {
+    "x": 14,
+    "y": 4,
+    "type": "plains"
+  },
+  {
+    "x": 15,
+    "y": 4,
+    "type": "plains"
+  },
+  {
+    "x": 16,
+    "y": 4,
+    "type": "plains"
+  },
+  {
+    "x": 17,
+    "y": 4,
+    "type": "plains"
+  },
+  {
+    "x": 18,
+    "y": 4,
+    "type": "plains"
+  },
+  {
+    "x": 19,
+    "y": 4,
+    "type": "plains"
+  },
+  {
+    "x": 20,
+    "y": 4,
+    "type": "plains"
+  },
+  {
+    "x": 21,
+    "y": 4,
+    "type": "plains"
+  },
+  {
+    "x": 22,
+    "y": 4,
+    "type": "plains"
+  },
+  {
+    "x": 23,
+    "y": 4,
+    "type": "plains"
+  },
+  {
+    "x": 24,
+    "y": 4,
+    "type": "abyss"
   },
   {
     "x": 0,
     "y": 5,
-    "type": "marsh"
+    "type": "abyss"
   },
   {
     "x": 1,
     "y": 5,
-    "type": "marsh"
+    "type": "mountains"
   },
   {
     "x": 2,
     "y": 5,
-    "type": "barren"
+    "type": "plains"
   },
   {
     "x": 3,
     "y": 5,
-    "type": "barren"
+    "type": "plains"
   },
   {
     "x": 4,
     "y": 5,
-    "type": "barren"
+    "type": "plains"
   },
   {
     "x": 5,
     "y": 5,
-    "type": "desert"
+    "type": "plains"
   },
   {
     "x": 6,
     "y": 5,
-    "type": "desert"
+    "type": "plains"
   },
   {
     "x": 7,
@@ -297,56 +672,2456 @@
   {
     "x": 9,
     "y": 5,
+    "type": "mountains"
+  },
+  {
+    "x": 10,
+    "y": 5,
+    "type": "mountains"
+  },
+  {
+    "x": 11,
+    "y": 5,
+    "type": "desert"
+  },
+  {
+    "x": 12,
+    "y": 5,
     "type": "plains"
+  },
+  {
+    "x": 13,
+    "y": 5,
+    "type": "plains"
+  },
+  {
+    "x": 14,
+    "y": 5,
+    "type": "marsh"
+  },
+  {
+    "x": 15,
+    "y": 5,
+    "type": "marsh"
+  },
+  {
+    "x": 16,
+    "y": 5,
+    "type": "marsh"
+  },
+  {
+    "x": 17,
+    "y": 5,
+    "type": "marsh"
+  },
+  {
+    "x": 18,
+    "y": 5,
+    "type": "marsh"
+  },
+  {
+    "x": 19,
+    "y": 5,
+    "type": "plains"
+  },
+  {
+    "x": 20,
+    "y": 5,
+    "type": "plains"
+  },
+  {
+    "x": 21,
+    "y": 5,
+    "type": "plains"
+  },
+  {
+    "x": 22,
+    "y": 5,
+    "type": "plains"
+  },
+  {
+    "x": 23,
+    "y": 5,
+    "type": "plains"
+  },
+  {
+    "x": 24,
+    "y": 5,
+    "type": "abyss"
   },
   {
     "x": 0,
     "y": 6,
-    "type": "plains"
+    "type": "abyss"
   },
   {
     "x": 1,
     "y": 6,
-    "type": "marsh"
+    "type": "mountains"
   },
   {
     "x": 2,
     "y": 6,
-    "type": "barren"
+    "type": "mountains"
   },
   {
     "x": 3,
     "y": 6,
-    "type": "barren"
+    "type": "mountains"
   },
   {
     "x": 4,
     "y": 6,
-    "type": "barren"
+    "type": "mountains"
   },
   {
     "x": 5,
     "y": 6,
-    "type": "plains"
+    "type": "mountains"
   },
   {
     "x": 6,
     "y": 6,
-    "type": "plains"
+    "type": "mountains"
   },
   {
     "x": 7,
     "y": 6,
-    "type": "plains"
+    "type": "mountains"
   },
   {
     "x": 8,
     "y": 6,
-    "type": "plains"
+    "type": "mountains"
   },
   {
     "x": 9,
     "y": 6,
+    "type": "mountains"
+  },
+  {
+    "x": 10,
+    "y": 6,
+    "type": "mountains"
+  },
+  {
+    "x": 11,
+    "y": 6,
     "type": "plains"
+  },
+  {
+    "x": 12,
+    "y": 6,
+    "type": "plains"
+  },
+  {
+    "x": 13,
+    "y": 6,
+    "type": "plains"
+  },
+  {
+    "x": 14,
+    "y": 6,
+    "type": "marsh"
+  },
+  {
+    "x": 15,
+    "y": 6,
+    "type": "water"
+  },
+  {
+    "x": 16,
+    "y": 6,
+    "type": "water"
+  },
+  {
+    "x": 17,
+    "y": 6,
+    "type": "water"
+  },
+  {
+    "x": 18,
+    "y": 6,
+    "type": "marsh"
+  },
+  {
+    "x": 19,
+    "y": 6,
+    "type": "plains"
+  },
+  {
+    "x": 20,
+    "y": 6,
+    "type": "plains"
+  },
+  {
+    "x": 21,
+    "y": 6,
+    "type": "plains"
+  },
+  {
+    "x": 22,
+    "y": 6,
+    "type": "plains"
+  },
+  {
+    "x": 23,
+    "y": 6,
+    "type": "plains"
+  },
+  {
+    "x": 24,
+    "y": 6,
+    "type": "abyss"
+  },
+  {
+    "x": 0,
+    "y": 7,
+    "type": "abyss"
+  },
+  {
+    "x": 1,
+    "y": 7,
+    "type": "desert"
+  },
+  {
+    "x": 2,
+    "y": 7,
+    "type": "plains"
+  },
+  {
+    "x": 3,
+    "y": 7,
+    "type": "plains"
+  },
+  {
+    "x": 4,
+    "y": 7,
+    "type": "desert"
+  },
+  {
+    "x": 5,
+    "y": 7,
+    "type": "plains"
+  },
+  {
+    "x": 6,
+    "y": 7,
+    "type": "desert"
+  },
+  {
+    "x": 7,
+    "y": 7,
+    "type": "plains"
+  },
+  {
+    "x": 8,
+    "y": 7,
+    "type": "plains"
+  },
+  {
+    "x": 9,
+    "y": 7,
+    "type": "desert"
+  },
+  {
+    "x": 10,
+    "y": 7,
+    "type": "plains"
+  },
+  {
+    "x": 11,
+    "y": 7,
+    "type": "plains"
+  },
+  {
+    "x": 12,
+    "y": 7,
+    "type": "plains"
+  },
+  {
+    "x": 13,
+    "y": 7,
+    "type": "plains"
+  },
+  {
+    "x": 14,
+    "y": 7,
+    "type": "marsh"
+  },
+  {
+    "x": 15,
+    "y": 7,
+    "type": "marsh"
+  },
+  {
+    "x": 16,
+    "y": 7,
+    "type": "marsh"
+  },
+  {
+    "x": 17,
+    "y": 7,
+    "type": "marsh"
+  },
+  {
+    "x": 18,
+    "y": 7,
+    "type": "marsh"
+  },
+  {
+    "x": 19,
+    "y": 7,
+    "type": "plains"
+  },
+  {
+    "x": 20,
+    "y": 7,
+    "type": "plains"
+  },
+  {
+    "x": 21,
+    "y": 7,
+    "type": "plains"
+  },
+  {
+    "x": 22,
+    "y": 7,
+    "type": "plains"
+  },
+  {
+    "x": 23,
+    "y": 7,
+    "type": "plains"
+  },
+  {
+    "x": 24,
+    "y": 7,
+    "type": "abyss"
+  },
+  {
+    "x": 0,
+    "y": 8,
+    "type": "abyss"
+  },
+  {
+    "x": 1,
+    "y": 8,
+    "type": "desert"
+  },
+  {
+    "x": 2,
+    "y": 8,
+    "type": "plains"
+  },
+  {
+    "x": 3,
+    "y": 8,
+    "type": "plains"
+  },
+  {
+    "x": 4,
+    "y": 8,
+    "type": "desert"
+  },
+  {
+    "x": 5,
+    "y": 8,
+    "type": "plains"
+  },
+  {
+    "x": 6,
+    "y": 8,
+    "type": "desert"
+  },
+  {
+    "x": 7,
+    "y": 8,
+    "type": "plains"
+  },
+  {
+    "x": 8,
+    "y": 8,
+    "type": "plains"
+  },
+  {
+    "x": 9,
+    "y": 8,
+    "type": "desert"
+  },
+  {
+    "x": 10,
+    "y": 8,
+    "type": "plains"
+  },
+  {
+    "x": 11,
+    "y": 8,
+    "type": "plains"
+  },
+  {
+    "x": 12,
+    "y": 8,
+    "type": "plains"
+  },
+  {
+    "x": 13,
+    "y": 8,
+    "type": "plains"
+  },
+  {
+    "x": 14,
+    "y": 8,
+    "type": "plains"
+  },
+  {
+    "x": 15,
+    "y": 8,
+    "type": "plains"
+  },
+  {
+    "x": 16,
+    "y": 8,
+    "type": "plains"
+  },
+  {
+    "x": 17,
+    "y": 8,
+    "type": "plains"
+  },
+  {
+    "x": 18,
+    "y": 8,
+    "type": "plains"
+  },
+  {
+    "x": 19,
+    "y": 8,
+    "type": "plains"
+  },
+  {
+    "x": 20,
+    "y": 8,
+    "type": "plains"
+  },
+  {
+    "x": 21,
+    "y": 8,
+    "type": "plains"
+  },
+  {
+    "x": 22,
+    "y": 8,
+    "type": "plains"
+  },
+  {
+    "x": 23,
+    "y": 8,
+    "type": "plains"
+  },
+  {
+    "x": 24,
+    "y": 8,
+    "type": "abyss"
+  },
+  {
+    "x": 0,
+    "y": 9,
+    "type": "abyss"
+  },
+  {
+    "x": 1,
+    "y": 9,
+    "type": "desert"
+  },
+  {
+    "x": 2,
+    "y": 9,
+    "type": "desert"
+  },
+  {
+    "x": 3,
+    "y": 9,
+    "type": "desert"
+  },
+  {
+    "x": 4,
+    "y": 9,
+    "type": "desert"
+  },
+  {
+    "x": 5,
+    "y": 9,
+    "type": "desert"
+  },
+  {
+    "x": 6,
+    "y": 9,
+    "type": "desert"
+  },
+  {
+    "x": 7,
+    "y": 9,
+    "type": "desert"
+  },
+  {
+    "x": 8,
+    "y": 9,
+    "type": "desert"
+  },
+  {
+    "x": 9,
+    "y": 9,
+    "type": "desert"
+  },
+  {
+    "x": 10,
+    "y": 9,
+    "type": "desert"
+  },
+  {
+    "x": 11,
+    "y": 9,
+    "type": "desert"
+  },
+  {
+    "x": 12,
+    "y": 9,
+    "type": "desert"
+  },
+  {
+    "x": 13,
+    "y": 9,
+    "type": "desert"
+  },
+  {
+    "x": 14,
+    "y": 9,
+    "type": "desert"
+  },
+  {
+    "x": 15,
+    "y": 9,
+    "type": "desert"
+  },
+  {
+    "x": 16,
+    "y": 9,
+    "type": "desert"
+  },
+  {
+    "x": 17,
+    "y": 9,
+    "type": "desert"
+  },
+  {
+    "x": 18,
+    "y": 9,
+    "type": "desert"
+  },
+  {
+    "x": 19,
+    "y": 9,
+    "type": "desert"
+  },
+  {
+    "x": 20,
+    "y": 9,
+    "type": "desert"
+  },
+  {
+    "x": 21,
+    "y": 9,
+    "type": "desert"
+  },
+  {
+    "x": 22,
+    "y": 9,
+    "type": "desert"
+  },
+  {
+    "x": 23,
+    "y": 9,
+    "type": "desert"
+  },
+  {
+    "x": 24,
+    "y": 9,
+    "type": "abyss"
+  },
+  {
+    "x": 0,
+    "y": 10,
+    "type": "abyss"
+  },
+  {
+    "x": 1,
+    "y": 10,
+    "type": "desert"
+  },
+  {
+    "x": 2,
+    "y": 10,
+    "type": "desert"
+  },
+  {
+    "x": 3,
+    "y": 10,
+    "type": "desert"
+  },
+  {
+    "x": 4,
+    "y": 10,
+    "type": "desert"
+  },
+  {
+    "x": 5,
+    "y": 10,
+    "type": "desert"
+  },
+  {
+    "x": 6,
+    "y": 10,
+    "type": "desert"
+  },
+  {
+    "x": 7,
+    "y": 10,
+    "type": "desert"
+  },
+  {
+    "x": 8,
+    "y": 10,
+    "type": "desert"
+  },
+  {
+    "x": 9,
+    "y": 10,
+    "type": "desert"
+  },
+  {
+    "x": 10,
+    "y": 10,
+    "type": "desert"
+  },
+  {
+    "x": 11,
+    "y": 10,
+    "type": "desert"
+  },
+  {
+    "x": 12,
+    "y": 10,
+    "type": "desert"
+  },
+  {
+    "x": 13,
+    "y": 10,
+    "type": "desert"
+  },
+  {
+    "x": 14,
+    "y": 10,
+    "type": "desert"
+  },
+  {
+    "x": 15,
+    "y": 10,
+    "type": "desert"
+  },
+  {
+    "x": 16,
+    "y": 10,
+    "type": "desert"
+  },
+  {
+    "x": 17,
+    "y": 10,
+    "type": "desert"
+  },
+  {
+    "x": 18,
+    "y": 10,
+    "type": "desert"
+  },
+  {
+    "x": 19,
+    "y": 10,
+    "type": "desert"
+  },
+  {
+    "x": 20,
+    "y": 10,
+    "type": "desert"
+  },
+  {
+    "x": 21,
+    "y": 10,
+    "type": "desert"
+  },
+  {
+    "x": 22,
+    "y": 10,
+    "type": "desert"
+  },
+  {
+    "x": 23,
+    "y": 10,
+    "type": "desert"
+  },
+  {
+    "x": 24,
+    "y": 10,
+    "type": "abyss"
+  },
+  {
+    "x": 0,
+    "y": 11,
+    "type": "abyss"
+  },
+  {
+    "x": 1,
+    "y": 11,
+    "type": "desert"
+  },
+  {
+    "x": 2,
+    "y": 11,
+    "type": "desert"
+  },
+  {
+    "x": 3,
+    "y": 11,
+    "type": "desert"
+  },
+  {
+    "x": 4,
+    "y": 11,
+    "type": "desert"
+  },
+  {
+    "x": 5,
+    "y": 11,
+    "type": "desert"
+  },
+  {
+    "x": 6,
+    "y": 11,
+    "type": "desert"
+  },
+  {
+    "x": 7,
+    "y": 11,
+    "type": "desert"
+  },
+  {
+    "x": 8,
+    "y": 11,
+    "type": "desert"
+  },
+  {
+    "x": 9,
+    "y": 11,
+    "type": "desert"
+  },
+  {
+    "x": 10,
+    "y": 11,
+    "type": "desert"
+  },
+  {
+    "x": 11,
+    "y": 11,
+    "type": "desert"
+  },
+  {
+    "x": 12,
+    "y": 11,
+    "type": "desert"
+  },
+  {
+    "x": 13,
+    "y": 11,
+    "type": "desert"
+  },
+  {
+    "x": 14,
+    "y": 11,
+    "type": "desert"
+  },
+  {
+    "x": 15,
+    "y": 11,
+    "type": "desert"
+  },
+  {
+    "x": 16,
+    "y": 11,
+    "type": "desert"
+  },
+  {
+    "x": 17,
+    "y": 11,
+    "type": "desert"
+  },
+  {
+    "x": 18,
+    "y": 11,
+    "type": "desert"
+  },
+  {
+    "x": 19,
+    "y": 11,
+    "type": "desert"
+  },
+  {
+    "x": 20,
+    "y": 11,
+    "type": "desert"
+  },
+  {
+    "x": 21,
+    "y": 11,
+    "type": "desert"
+  },
+  {
+    "x": 22,
+    "y": 11,
+    "type": "desert"
+  },
+  {
+    "x": 23,
+    "y": 11,
+    "type": "desert"
+  },
+  {
+    "x": 24,
+    "y": 11,
+    "type": "abyss"
+  },
+  {
+    "x": 0,
+    "y": 12,
+    "type": "abyss"
+  },
+  {
+    "x": 1,
+    "y": 12,
+    "type": "desert"
+  },
+  {
+    "x": 2,
+    "y": 12,
+    "type": "desert"
+  },
+  {
+    "x": 3,
+    "y": 12,
+    "type": "desert"
+  },
+  {
+    "x": 4,
+    "y": 12,
+    "type": "desert"
+  },
+  {
+    "x": 5,
+    "y": 12,
+    "type": "desert"
+  },
+  {
+    "x": 6,
+    "y": 12,
+    "type": "desert"
+  },
+  {
+    "x": 7,
+    "y": 12,
+    "type": "desert"
+  },
+  {
+    "x": 8,
+    "y": 12,
+    "type": "desert"
+  },
+  {
+    "x": 9,
+    "y": 12,
+    "type": "desert"
+  },
+  {
+    "x": 10,
+    "y": 12,
+    "type": "desert"
+  },
+  {
+    "x": 11,
+    "y": 12,
+    "type": "desert"
+  },
+  {
+    "x": 12,
+    "y": 12,
+    "type": "desert"
+  },
+  {
+    "x": 13,
+    "y": 12,
+    "type": "desert"
+  },
+  {
+    "x": 14,
+    "y": 12,
+    "type": "desert"
+  },
+  {
+    "x": 15,
+    "y": 12,
+    "type": "desert"
+  },
+  {
+    "x": 16,
+    "y": 12,
+    "type": "desert"
+  },
+  {
+    "x": 17,
+    "y": 12,
+    "type": "desert"
+  },
+  {
+    "x": 18,
+    "y": 12,
+    "type": "desert"
+  },
+  {
+    "x": 19,
+    "y": 12,
+    "type": "desert"
+  },
+  {
+    "x": 20,
+    "y": 12,
+    "type": "desert"
+  },
+  {
+    "x": 21,
+    "y": 12,
+    "type": "desert"
+  },
+  {
+    "x": 22,
+    "y": 12,
+    "type": "desert"
+  },
+  {
+    "x": 23,
+    "y": 12,
+    "type": "desert"
+  },
+  {
+    "x": 24,
+    "y": 12,
+    "type": "abyss"
+  },
+  {
+    "x": 0,
+    "y": 13,
+    "type": "abyss"
+  },
+  {
+    "x": 1,
+    "y": 13,
+    "type": "desert"
+  },
+  {
+    "x": 2,
+    "y": 13,
+    "type": "desert"
+  },
+  {
+    "x": 3,
+    "y": 13,
+    "type": "desert"
+  },
+  {
+    "x": 4,
+    "y": 13,
+    "type": "desert"
+  },
+  {
+    "x": 5,
+    "y": 13,
+    "type": "desert"
+  },
+  {
+    "x": 6,
+    "y": 13,
+    "type": "desert"
+  },
+  {
+    "x": 7,
+    "y": 13,
+    "type": "desert"
+  },
+  {
+    "x": 8,
+    "y": 13,
+    "type": "desert"
+  },
+  {
+    "x": 9,
+    "y": 13,
+    "type": "desert"
+  },
+  {
+    "x": 10,
+    "y": 13,
+    "type": "desert"
+  },
+  {
+    "x": 11,
+    "y": 13,
+    "type": "desert"
+  },
+  {
+    "x": 12,
+    "y": 13,
+    "type": "desert"
+  },
+  {
+    "x": 13,
+    "y": 13,
+    "type": "desert"
+  },
+  {
+    "x": 14,
+    "y": 13,
+    "type": "desert"
+  },
+  {
+    "x": 15,
+    "y": 13,
+    "type": "desert"
+  },
+  {
+    "x": 16,
+    "y": 13,
+    "type": "desert"
+  },
+  {
+    "x": 17,
+    "y": 13,
+    "type": "desert"
+  },
+  {
+    "x": 18,
+    "y": 13,
+    "type": "desert"
+  },
+  {
+    "x": 19,
+    "y": 13,
+    "type": "desert"
+  },
+  {
+    "x": 20,
+    "y": 13,
+    "type": "desert"
+  },
+  {
+    "x": 21,
+    "y": 13,
+    "type": "desert"
+  },
+  {
+    "x": 22,
+    "y": 13,
+    "type": "desert"
+  },
+  {
+    "x": 23,
+    "y": 13,
+    "type": "desert"
+  },
+  {
+    "x": 24,
+    "y": 13,
+    "type": "abyss"
+  },
+  {
+    "x": 0,
+    "y": 14,
+    "type": "abyss"
+  },
+  {
+    "x": 1,
+    "y": 14,
+    "type": "desert"
+  },
+  {
+    "x": 2,
+    "y": 14,
+    "type": "desert"
+  },
+  {
+    "x": 3,
+    "y": 14,
+    "type": "desert"
+  },
+  {
+    "x": 4,
+    "y": 14,
+    "type": "desert"
+  },
+  {
+    "x": 5,
+    "y": 14,
+    "type": "desert"
+  },
+  {
+    "x": 6,
+    "y": 14,
+    "type": "desert"
+  },
+  {
+    "x": 7,
+    "y": 14,
+    "type": "desert"
+  },
+  {
+    "x": 8,
+    "y": 14,
+    "type": "desert"
+  },
+  {
+    "x": 9,
+    "y": 14,
+    "type": "desert"
+  },
+  {
+    "x": 10,
+    "y": 14,
+    "type": "desert"
+  },
+  {
+    "x": 11,
+    "y": 14,
+    "type": "desert"
+  },
+  {
+    "x": 12,
+    "y": 14,
+    "type": "desert"
+  },
+  {
+    "x": 13,
+    "y": 14,
+    "type": "desert"
+  },
+  {
+    "x": 14,
+    "y": 14,
+    "type": "desert"
+  },
+  {
+    "x": 15,
+    "y": 14,
+    "type": "desert"
+  },
+  {
+    "x": 16,
+    "y": 14,
+    "type": "desert"
+  },
+  {
+    "x": 17,
+    "y": 14,
+    "type": "desert"
+  },
+  {
+    "x": 18,
+    "y": 14,
+    "type": "desert"
+  },
+  {
+    "x": 19,
+    "y": 14,
+    "type": "desert"
+  },
+  {
+    "x": 20,
+    "y": 14,
+    "type": "desert"
+  },
+  {
+    "x": 21,
+    "y": 14,
+    "type": "desert"
+  },
+  {
+    "x": 22,
+    "y": 14,
+    "type": "desert"
+  },
+  {
+    "x": 23,
+    "y": 14,
+    "type": "desert"
+  },
+  {
+    "x": 24,
+    "y": 14,
+    "type": "abyss"
+  },
+  {
+    "x": 0,
+    "y": 15,
+    "type": "abyss"
+  },
+  {
+    "x": 1,
+    "y": 15,
+    "type": "desert"
+  },
+  {
+    "x": 2,
+    "y": 15,
+    "type": "desert"
+  },
+  {
+    "x": 3,
+    "y": 15,
+    "type": "desert"
+  },
+  {
+    "x": 4,
+    "y": 15,
+    "type": "desert"
+  },
+  {
+    "x": 5,
+    "y": 15,
+    "type": "desert"
+  },
+  {
+    "x": 6,
+    "y": 15,
+    "type": "desert"
+  },
+  {
+    "x": 7,
+    "y": 15,
+    "type": "desert"
+  },
+  {
+    "x": 8,
+    "y": 15,
+    "type": "desert"
+  },
+  {
+    "x": 9,
+    "y": 15,
+    "type": "desert"
+  },
+  {
+    "x": 10,
+    "y": 15,
+    "type": "desert"
+  },
+  {
+    "x": 11,
+    "y": 15,
+    "type": "desert"
+  },
+  {
+    "x": 12,
+    "y": 15,
+    "type": "desert"
+  },
+  {
+    "x": 13,
+    "y": 15,
+    "type": "desert"
+  },
+  {
+    "x": 14,
+    "y": 15,
+    "type": "desert"
+  },
+  {
+    "x": 15,
+    "y": 15,
+    "type": "desert"
+  },
+  {
+    "x": 16,
+    "y": 15,
+    "type": "desert"
+  },
+  {
+    "x": 17,
+    "y": 15,
+    "type": "desert"
+  },
+  {
+    "x": 18,
+    "y": 15,
+    "type": "desert"
+  },
+  {
+    "x": 19,
+    "y": 15,
+    "type": "desert"
+  },
+  {
+    "x": 20,
+    "y": 15,
+    "type": "desert"
+  },
+  {
+    "x": 21,
+    "y": 15,
+    "type": "desert"
+  },
+  {
+    "x": 22,
+    "y": 15,
+    "type": "desert"
+  },
+  {
+    "x": 23,
+    "y": 15,
+    "type": "desert"
+  },
+  {
+    "x": 24,
+    "y": 15,
+    "type": "abyss"
+  },
+  {
+    "x": 0,
+    "y": 16,
+    "type": "abyss"
+  },
+  {
+    "x": 1,
+    "y": 16,
+    "type": "desert"
+  },
+  {
+    "x": 2,
+    "y": 16,
+    "type": "desert"
+  },
+  {
+    "x": 3,
+    "y": 16,
+    "type": "desert"
+  },
+  {
+    "x": 4,
+    "y": 16,
+    "type": "desert"
+  },
+  {
+    "x": 5,
+    "y": 16,
+    "type": "desert"
+  },
+  {
+    "x": 6,
+    "y": 16,
+    "type": "desert"
+  },
+  {
+    "x": 7,
+    "y": 16,
+    "type": "desert"
+  },
+  {
+    "x": 8,
+    "y": 16,
+    "type": "desert"
+  },
+  {
+    "x": 9,
+    "y": 16,
+    "type": "desert"
+  },
+  {
+    "x": 10,
+    "y": 16,
+    "type": "desert"
+  },
+  {
+    "x": 11,
+    "y": 16,
+    "type": "desert"
+  },
+  {
+    "x": 12,
+    "y": 16,
+    "type": "desert"
+  },
+  {
+    "x": 13,
+    "y": 16,
+    "type": "desert"
+  },
+  {
+    "x": 14,
+    "y": 16,
+    "type": "desert"
+  },
+  {
+    "x": 15,
+    "y": 16,
+    "type": "desert"
+  },
+  {
+    "x": 16,
+    "y": 16,
+    "type": "desert"
+  },
+  {
+    "x": 17,
+    "y": 16,
+    "type": "desert"
+  },
+  {
+    "x": 18,
+    "y": 16,
+    "type": "desert"
+  },
+  {
+    "x": 19,
+    "y": 16,
+    "type": "desert"
+  },
+  {
+    "x": 20,
+    "y": 16,
+    "type": "desert"
+  },
+  {
+    "x": 21,
+    "y": 16,
+    "type": "desert"
+  },
+  {
+    "x": 22,
+    "y": 16,
+    "type": "desert"
+  },
+  {
+    "x": 23,
+    "y": 16,
+    "type": "desert"
+  },
+  {
+    "x": 24,
+    "y": 16,
+    "type": "abyss"
+  },
+  {
+    "x": 0,
+    "y": 17,
+    "type": "abyss"
+  },
+  {
+    "x": 1,
+    "y": 17,
+    "type": "desert"
+  },
+  {
+    "x": 2,
+    "y": 17,
+    "type": "desert"
+  },
+  {
+    "x": 3,
+    "y": 17,
+    "type": "desert"
+  },
+  {
+    "x": 4,
+    "y": 17,
+    "type": "desert"
+  },
+  {
+    "x": 5,
+    "y": 17,
+    "type": "desert"
+  },
+  {
+    "x": 6,
+    "y": 17,
+    "type": "desert"
+  },
+  {
+    "x": 7,
+    "y": 17,
+    "type": "desert"
+  },
+  {
+    "x": 8,
+    "y": 17,
+    "type": "desert"
+  },
+  {
+    "x": 9,
+    "y": 17,
+    "type": "desert"
+  },
+  {
+    "x": 10,
+    "y": 17,
+    "type": "desert"
+  },
+  {
+    "x": 11,
+    "y": 17,
+    "type": "desert"
+  },
+  {
+    "x": 12,
+    "y": 17,
+    "type": "desert"
+  },
+  {
+    "x": 13,
+    "y": 17,
+    "type": "desert"
+  },
+  {
+    "x": 14,
+    "y": 17,
+    "type": "desert"
+  },
+  {
+    "x": 15,
+    "y": 17,
+    "type": "desert"
+  },
+  {
+    "x": 16,
+    "y": 17,
+    "type": "desert"
+  },
+  {
+    "x": 17,
+    "y": 17,
+    "type": "desert"
+  },
+  {
+    "x": 18,
+    "y": 17,
+    "type": "desert"
+  },
+  {
+    "x": 19,
+    "y": 17,
+    "type": "desert"
+  },
+  {
+    "x": 20,
+    "y": 17,
+    "type": "desert"
+  },
+  {
+    "x": 21,
+    "y": 17,
+    "type": "desert"
+  },
+  {
+    "x": 22,
+    "y": 17,
+    "type": "desert"
+  },
+  {
+    "x": 23,
+    "y": 17,
+    "type": "desert"
+  },
+  {
+    "x": 24,
+    "y": 17,
+    "type": "abyss"
+  },
+  {
+    "x": 0,
+    "y": 18,
+    "type": "abyss"
+  },
+  {
+    "x": 1,
+    "y": 18,
+    "type": "desert"
+  },
+  {
+    "x": 2,
+    "y": 18,
+    "type": "desert"
+  },
+  {
+    "x": 3,
+    "y": 18,
+    "type": "desert"
+  },
+  {
+    "x": 4,
+    "y": 18,
+    "type": "desert"
+  },
+  {
+    "x": 5,
+    "y": 18,
+    "type": "desert"
+  },
+  {
+    "x": 6,
+    "y": 18,
+    "type": "desert"
+  },
+  {
+    "x": 7,
+    "y": 18,
+    "type": "desert"
+  },
+  {
+    "x": 8,
+    "y": 18,
+    "type": "desert"
+  },
+  {
+    "x": 9,
+    "y": 18,
+    "type": "desert"
+  },
+  {
+    "x": 10,
+    "y": 18,
+    "type": "plains"
+  },
+  {
+    "x": 11,
+    "y": 18,
+    "type": "plains"
+  },
+  {
+    "x": 12,
+    "y": 18,
+    "type": "plains"
+  },
+  {
+    "x": 13,
+    "y": 18,
+    "type": "plains"
+  },
+  {
+    "x": 14,
+    "y": 18,
+    "type": "plains"
+  },
+  {
+    "x": 15,
+    "y": 18,
+    "type": "desert"
+  },
+  {
+    "x": 16,
+    "y": 18,
+    "type": "desert"
+  },
+  {
+    "x": 17,
+    "y": 18,
+    "type": "desert"
+  },
+  {
+    "x": 18,
+    "y": 18,
+    "type": "desert"
+  },
+  {
+    "x": 19,
+    "y": 18,
+    "type": "desert"
+  },
+  {
+    "x": 20,
+    "y": 18,
+    "type": "desert"
+  },
+  {
+    "x": 21,
+    "y": 18,
+    "type": "desert"
+  },
+  {
+    "x": 22,
+    "y": 18,
+    "type": "desert"
+  },
+  {
+    "x": 23,
+    "y": 18,
+    "type": "desert"
+  },
+  {
+    "x": 24,
+    "y": 18,
+    "type": "abyss"
+  },
+  {
+    "x": 0,
+    "y": 19,
+    "type": "abyss"
+  },
+  {
+    "x": 1,
+    "y": 19,
+    "type": "desert"
+  },
+  {
+    "x": 2,
+    "y": 19,
+    "type": "desert"
+  },
+  {
+    "x": 3,
+    "y": 19,
+    "type": "desert"
+  },
+  {
+    "x": 4,
+    "y": 19,
+    "type": "desert"
+  },
+  {
+    "x": 5,
+    "y": 19,
+    "type": "desert"
+  },
+  {
+    "x": 6,
+    "y": 19,
+    "type": "desert"
+  },
+  {
+    "x": 7,
+    "y": 19,
+    "type": "desert"
+  },
+  {
+    "x": 8,
+    "y": 19,
+    "type": "desert"
+  },
+  {
+    "x": 9,
+    "y": 19,
+    "type": "desert"
+  },
+  {
+    "x": 10,
+    "y": 19,
+    "type": "plains"
+  },
+  {
+    "x": 11,
+    "y": 19,
+    "type": "water"
+  },
+  {
+    "x": 12,
+    "y": 19,
+    "type": "water"
+  },
+  {
+    "x": 13,
+    "y": 19,
+    "type": "water"
+  },
+  {
+    "x": 14,
+    "y": 19,
+    "type": "plains"
+  },
+  {
+    "x": 15,
+    "y": 19,
+    "type": "desert"
+  },
+  {
+    "x": 16,
+    "y": 19,
+    "type": "desert"
+  },
+  {
+    "x": 17,
+    "y": 19,
+    "type": "desert"
+  },
+  {
+    "x": 18,
+    "y": 19,
+    "type": "desert"
+  },
+  {
+    "x": 19,
+    "y": 19,
+    "type": "desert"
+  },
+  {
+    "x": 20,
+    "y": 19,
+    "type": "desert"
+  },
+  {
+    "x": 21,
+    "y": 19,
+    "type": "desert"
+  },
+  {
+    "x": 22,
+    "y": 19,
+    "type": "desert"
+  },
+  {
+    "x": 23,
+    "y": 19,
+    "type": "desert"
+  },
+  {
+    "x": 24,
+    "y": 19,
+    "type": "abyss"
+  },
+  {
+    "x": 0,
+    "y": 20,
+    "type": "abyss"
+  },
+  {
+    "x": 1,
+    "y": 20,
+    "type": "desert"
+  },
+  {
+    "x": 2,
+    "y": 20,
+    "type": "desert"
+  },
+  {
+    "x": 3,
+    "y": 20,
+    "type": "desert"
+  },
+  {
+    "x": 4,
+    "y": 20,
+    "type": "desert"
+  },
+  {
+    "x": 5,
+    "y": 20,
+    "type": "desert"
+  },
+  {
+    "x": 6,
+    "y": 20,
+    "type": "desert"
+  },
+  {
+    "x": 7,
+    "y": 20,
+    "type": "desert"
+  },
+  {
+    "x": 8,
+    "y": 20,
+    "type": "desert"
+  },
+  {
+    "x": 9,
+    "y": 20,
+    "type": "desert"
+  },
+  {
+    "x": 10,
+    "y": 20,
+    "type": "plains"
+  },
+  {
+    "x": 11,
+    "y": 20,
+    "type": "water"
+  },
+  {
+    "x": 12,
+    "y": 20,
+    "type": "barren"
+  },
+  {
+    "x": 13,
+    "y": 20,
+    "type": "water"
+  },
+  {
+    "x": 14,
+    "y": 20,
+    "type": "plains"
+  },
+  {
+    "x": 15,
+    "y": 20,
+    "type": "desert"
+  },
+  {
+    "x": 16,
+    "y": 20,
+    "type": "desert"
+  },
+  {
+    "x": 17,
+    "y": 20,
+    "type": "desert"
+  },
+  {
+    "x": 18,
+    "y": 20,
+    "type": "desert"
+  },
+  {
+    "x": 19,
+    "y": 20,
+    "type": "desert"
+  },
+  {
+    "x": 20,
+    "y": 20,
+    "type": "desert"
+  },
+  {
+    "x": 21,
+    "y": 20,
+    "type": "desert"
+  },
+  {
+    "x": 22,
+    "y": 20,
+    "type": "desert"
+  },
+  {
+    "x": 23,
+    "y": 20,
+    "type": "desert"
+  },
+  {
+    "x": 24,
+    "y": 20,
+    "type": "abyss"
+  },
+  {
+    "x": 0,
+    "y": 21,
+    "type": "abyss"
+  },
+  {
+    "x": 1,
+    "y": 21,
+    "type": "desert"
+  },
+  {
+    "x": 2,
+    "y": 21,
+    "type": "desert"
+  },
+  {
+    "x": 3,
+    "y": 21,
+    "type": "desert"
+  },
+  {
+    "x": 4,
+    "y": 21,
+    "type": "desert"
+  },
+  {
+    "x": 5,
+    "y": 21,
+    "type": "desert"
+  },
+  {
+    "x": 6,
+    "y": 21,
+    "type": "desert"
+  },
+  {
+    "x": 7,
+    "y": 21,
+    "type": "desert"
+  },
+  {
+    "x": 8,
+    "y": 21,
+    "type": "desert"
+  },
+  {
+    "x": 9,
+    "y": 21,
+    "type": "desert"
+  },
+  {
+    "x": 10,
+    "y": 21,
+    "type": "plains"
+  },
+  {
+    "x": 11,
+    "y": 21,
+    "type": "water"
+  },
+  {
+    "x": 12,
+    "y": 21,
+    "type": "water"
+  },
+  {
+    "x": 13,
+    "y": 21,
+    "type": "water"
+  },
+  {
+    "x": 14,
+    "y": 21,
+    "type": "plains"
+  },
+  {
+    "x": 15,
+    "y": 21,
+    "type": "desert"
+  },
+  {
+    "x": 16,
+    "y": 21,
+    "type": "desert"
+  },
+  {
+    "x": 17,
+    "y": 21,
+    "type": "desert"
+  },
+  {
+    "x": 18,
+    "y": 21,
+    "type": "desert"
+  },
+  {
+    "x": 19,
+    "y": 21,
+    "type": "desert"
+  },
+  {
+    "x": 20,
+    "y": 21,
+    "type": "desert"
+  },
+  {
+    "x": 21,
+    "y": 21,
+    "type": "desert"
+  },
+  {
+    "x": 22,
+    "y": 21,
+    "type": "desert"
+  },
+  {
+    "x": 23,
+    "y": 21,
+    "type": "desert"
+  },
+  {
+    "x": 24,
+    "y": 21,
+    "type": "abyss"
+  },
+  {
+    "x": 0,
+    "y": 22,
+    "type": "abyss"
+  },
+  {
+    "x": 1,
+    "y": 22,
+    "type": "desert"
+  },
+  {
+    "x": 2,
+    "y": 22,
+    "type": "desert"
+  },
+  {
+    "x": 3,
+    "y": 22,
+    "type": "desert"
+  },
+  {
+    "x": 4,
+    "y": 22,
+    "type": "desert"
+  },
+  {
+    "x": 5,
+    "y": 22,
+    "type": "desert"
+  },
+  {
+    "x": 6,
+    "y": 22,
+    "type": "desert"
+  },
+  {
+    "x": 7,
+    "y": 22,
+    "type": "desert"
+  },
+  {
+    "x": 8,
+    "y": 22,
+    "type": "desert"
+  },
+  {
+    "x": 9,
+    "y": 22,
+    "type": "desert"
+  },
+  {
+    "x": 10,
+    "y": 22,
+    "type": "plains"
+  },
+  {
+    "x": 11,
+    "y": 22,
+    "type": "plains"
+  },
+  {
+    "x": 12,
+    "y": 22,
+    "type": "plains"
+  },
+  {
+    "x": 13,
+    "y": 22,
+    "type": "plains"
+  },
+  {
+    "x": 14,
+    "y": 22,
+    "type": "plains"
+  },
+  {
+    "x": 15,
+    "y": 22,
+    "type": "desert"
+  },
+  {
+    "x": 16,
+    "y": 22,
+    "type": "desert"
+  },
+  {
+    "x": 17,
+    "y": 22,
+    "type": "desert"
+  },
+  {
+    "x": 18,
+    "y": 22,
+    "type": "desert"
+  },
+  {
+    "x": 19,
+    "y": 22,
+    "type": "desert"
+  },
+  {
+    "x": 20,
+    "y": 22,
+    "type": "desert"
+  },
+  {
+    "x": 21,
+    "y": 22,
+    "type": "desert"
+  },
+  {
+    "x": 22,
+    "y": 22,
+    "type": "desert"
+  },
+  {
+    "x": 23,
+    "y": 22,
+    "type": "desert"
+  },
+  {
+    "x": 24,
+    "y": 22,
+    "type": "abyss"
+  },
+  {
+    "x": 0,
+    "y": 23,
+    "type": "abyss"
+  },
+  {
+    "x": 1,
+    "y": 23,
+    "type": "desert"
+  },
+  {
+    "x": 2,
+    "y": 23,
+    "type": "desert"
+  },
+  {
+    "x": 3,
+    "y": 23,
+    "type": "desert"
+  },
+  {
+    "x": 4,
+    "y": 23,
+    "type": "desert"
+  },
+  {
+    "x": 5,
+    "y": 23,
+    "type": "desert"
+  },
+  {
+    "x": 6,
+    "y": 23,
+    "type": "desert"
+  },
+  {
+    "x": 7,
+    "y": 23,
+    "type": "desert"
+  },
+  {
+    "x": 8,
+    "y": 23,
+    "type": "desert"
+  },
+  {
+    "x": 9,
+    "y": 23,
+    "type": "desert"
+  },
+  {
+    "x": 10,
+    "y": 23,
+    "type": "desert"
+  },
+  {
+    "x": 11,
+    "y": 23,
+    "type": "desert"
+  },
+  {
+    "x": 12,
+    "y": 23,
+    "type": "desert"
+  },
+  {
+    "x": 13,
+    "y": 23,
+    "type": "desert"
+  },
+  {
+    "x": 14,
+    "y": 23,
+    "type": "desert"
+  },
+  {
+    "x": 15,
+    "y": 23,
+    "type": "desert"
+  },
+  {
+    "x": 16,
+    "y": 23,
+    "type": "desert"
+  },
+  {
+    "x": 17,
+    "y": 23,
+    "type": "desert"
+  },
+  {
+    "x": 18,
+    "y": 23,
+    "type": "desert"
+  },
+  {
+    "x": 19,
+    "y": 23,
+    "type": "desert"
+  },
+  {
+    "x": 20,
+    "y": 23,
+    "type": "desert"
+  },
+  {
+    "x": 21,
+    "y": 23,
+    "type": "desert"
+  },
+  {
+    "x": 22,
+    "y": 23,
+    "type": "desert"
+  },
+  {
+    "x": 23,
+    "y": 23,
+    "type": "desert"
+  },
+  {
+    "x": 24,
+    "y": 23,
+    "type": "abyss"
+  },
+  {
+    "x": 0,
+    "y": 24,
+    "type": "abyss"
+  },
+  {
+    "x": 1,
+    "y": 24,
+    "type": "abyss"
+  },
+  {
+    "x": 2,
+    "y": 24,
+    "type": "abyss"
+  },
+  {
+    "x": 3,
+    "y": 24,
+    "type": "abyss"
+  },
+  {
+    "x": 4,
+    "y": 24,
+    "type": "abyss"
+  },
+  {
+    "x": 5,
+    "y": 24,
+    "type": "abyss"
+  },
+  {
+    "x": 6,
+    "y": 24,
+    "type": "abyss"
+  },
+  {
+    "x": 7,
+    "y": 24,
+    "type": "abyss"
+  },
+  {
+    "x": 8,
+    "y": 24,
+    "type": "abyss"
+  },
+  {
+    "x": 9,
+    "y": 24,
+    "type": "abyss"
+  },
+  {
+    "x": 10,
+    "y": 24,
+    "type": "abyss"
+  },
+  {
+    "x": 11,
+    "y": 24,
+    "type": "abyss"
+  },
+  {
+    "x": 12,
+    "y": 24,
+    "type": "abyss"
+  },
+  {
+    "x": 13,
+    "y": 24,
+    "type": "abyss"
+  },
+  {
+    "x": 14,
+    "y": 24,
+    "type": "abyss"
+  },
+  {
+    "x": 15,
+    "y": 24,
+    "type": "abyss"
+  },
+  {
+    "x": 16,
+    "y": 24,
+    "type": "abyss"
+  },
+  {
+    "x": 17,
+    "y": 24,
+    "type": "abyss"
+  },
+  {
+    "x": 18,
+    "y": 24,
+    "type": "abyss"
+  },
+  {
+    "x": 19,
+    "y": 24,
+    "type": "abyss"
+  },
+  {
+    "x": 20,
+    "y": 24,
+    "type": "abyss"
+  },
+  {
+    "x": 21,
+    "y": 24,
+    "type": "abyss"
+  },
+  {
+    "x": 22,
+    "y": 24,
+    "type": "abyss"
+  },
+  {
+    "x": 23,
+    "y": 24,
+    "type": "abyss"
+  },
+  {
+    "x": 24,
+    "y": 24,
+    "type": "abyss"
   }
 ]
