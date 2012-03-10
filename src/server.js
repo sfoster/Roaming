@@ -44,7 +44,7 @@ app.post('/location/world.json', function(req, res){
         console.log(err);
         res.send(500);
     } else {
-        res.send({ status: 'ok' });
+        res.send({ status: 'ok', 'message': 'updated '+resourcePath });
         console.log(resourcePath + " saved");
     }
   });

@@ -46,24 +46,25 @@ define(['$', 'resources/util', 'resources/Promise', 'resources/map', 'resources/
   }
 
   function editDetail(id){
+    console.log("editDetail: ", id);
     var tmpl= $('#detail-template')[0].innerHTML;
-    var itemsHtml = [], 
-        pattern = /\{\{([^}]+)\}\}/g;
+    var pattern = /\{\{([^}]+)\}\}/g;
     var $detail = $('#detail');
     $detail.css({
       zIndex: 10,
       display: 'block'
     });
-    $detail.empty();
-
-    Object.keys(npc).forEach(function(id){
-      var data  = Object.create(tilesByCoords[id]);
-      data.id = id;
-      var str = tmpl.replace(pattern, function(m, name){
-        return (name in data) ? data[name] : "";
-      });
-      $(str).appendTo($detail);
-    });
+    return;
+    // $detail.empty();
+    // 
+    // Object.keys(npc).forEach(function(id){
+    //   var data  = Object.create(tilesByCoords[id]);
+    //   data.id = id;
+    //   var str = tmpl.replace(pattern, function(m, name){
+    //     return (name in data) ? data[name] : "";
+    //   });
+    //   $(str).appendTo($detail);
+    // });
     
   }
   
@@ -78,7 +79,7 @@ define(['$', 'resources/util', 'resources/Promise', 'resources/map', 'resources/
         $('#palette .tool.active').removeClass('active');
         $(event.currentTarget).addClass('active');
         var type = trim( $(event.currentTarget).text() );
-        currentTool = type.toLowerCase();
+        currentTool = type.replace(/\s+/g, '').toLowerCase();
         console.log("change currentTool: ", currentTool);
       });
   }
@@ -145,8 +146,10 @@ define(['$', 'resources/util', 'resources/Promise', 'resources/map', 'resources/
   function toolAction(x,y, type){
     if(terrainTypes[type]){
       placeTile(x,y,type);
-    } else if(type=='tileedit'){
-      editDetail(x,y)
+    } else if(type=='edittile'){
+      editDetail([x,y].join(','));
+    } else {
+      console.log("tool not implemented: ", type);
     }
   }
   function placeTile(x, y, type){
