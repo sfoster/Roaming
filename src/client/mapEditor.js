@@ -45,7 +45,7 @@ define(['$', 'resources/util', 'resources/Promise', 'resources/map', 'resources/
     })
   }
 
-  function editDetail(){
+  function editDetail(id){
     var tmpl= $('#detail-template')[0].innerHTML;
     var itemsHtml = [], 
         pattern = /\{\{([^}]+)\}\}/g;
@@ -145,8 +145,8 @@ define(['$', 'resources/util', 'resources/Promise', 'resources/map', 'resources/
   function toolAction(x,y, type){
     if(terrainTypes[type]){
       placeTile(x,y,type);
-    } else {
-      
+    } else if(type=='tileedit'){
+      editDetail(x,y)
     }
   }
   function placeTile(x, y, type){
