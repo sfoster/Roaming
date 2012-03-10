@@ -45,21 +45,42 @@ define(['$', 'resources/util', 'resources/Promise', 'resources/map', 'resources/
     })
   }
 
-  function paletteInit(){
-    var $toollist = $('#toollist');
-    Object.keys(terrainTypes).forEach(function(type){
-      $('<li class="panel tool '+type+'"><span>'+type+'</span></li>').appendTo($toollist);
+  function editDetail(){
+    var tmpl= $('#detail-template')[0].innerHTML;
+    var itemsHtml = [], 
+        pattern = /\{\{([^}]+)\}\}/g;
+    var $detail = $('#detail');
+    $detail.css({
+      zIndex: 10,
+      display: 'block'
     });
+    $detail.empty();
 
-    $toollist
+    Object.keys(npc).forEach(function(id){
+      var data  = Object.create(tilesByCoords[id]);
+      data.id = id;
+      var str = tmpl.replace(pattern, function(m, name){
+        return (name in data) ? data[name] : "";
+      });
+      $(str).appendTo($detail);
+    });
+    
+  }
+  
+  function paletteInit(){
+    var $terrainList = $('#terrainlist');
+    Object.keys(terrainTypes).forEach(function(type){
+      $('<li class="panel tool '+type+'"><span>'+type+'</span></li>').appendTo($terrainList);
+    });
+    var $palette = $('#palette');
+    $palette
       .delegate('.tool', 'mouseup', function(event){ 
-        $('#toollist .tool.active').removeClass('active');
+        $('#palette .tool.active').removeClass('active');
         $(event.currentTarget).addClass('active');
         var type = trim( $(event.currentTarget).text() );
         currentTool = type.toLowerCase();
         console.log("change currentTool: ", currentTool);
       });
-
   }
   
   function editorInit(){
@@ -89,7 +110,7 @@ define(['$', 'resources/util', 'resources/Promise', 'resources/map', 'resources/
       console.log("place at: ", x, y);
       if(!currentTool) return;
 
-      placeTile(x, y, currentTool);
+      toolAction(x, y, currentTool);
     });
   }
 
@@ -121,15 +142,24 @@ define(['$', 'resources/util', 'resources/Promise', 'resources/map', 'resources/
     return text.replace(/^\s+/, '').replace(/\s+$/, '');
   }
 
+  function toolAction(x,y, type){
+    if(terrainTypes[type]){
+      placeTile(x,y,type);
+    } else {
+      
+    }
+  }
   function placeTile(x, y, type){
     var tileId = [x,y].join(','), 
         tile = tilesByCoords[tileId];
     if(!tile){
       // create the tile object
       tile = tilesByCoords[tileId] = {
-        x: x, y: y, type: type
+        x: x, y: y
       };
     }
+    tile.type = type;
+    
     var img = tile.img = terrainTypes[type].img, 
         ctx = mapNode.getContext('2d');
 
