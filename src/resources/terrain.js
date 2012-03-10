@@ -4,7 +4,8 @@ define([
   "image!resources/graphics/desertground.jpg",
   "image!resources/graphics/marshyground.png",
   "image!resources/graphics/mountianground.png",
-  "image!resources/graphics/grassground.jpg"
+  "image!resources/graphics/grassground.jpg",
+  "image!resources/graphics/water.jpg"
 ], function(
   clearImg,
   dryGroundImg, 
