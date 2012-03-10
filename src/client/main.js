@@ -28,7 +28,11 @@ define(['$', 'resources/Promise', 'resources/world', 'models/player', 'resources
     console.log("map.init callback: ", val);
     require(['json!data/location/world.json'], function(mapData){
       console.log("require world data callback");
-      var canvasNode = map.renderMap( mapData );
+      var canvasNode = map.renderMap( mapData, { tileSize: 6 });
+      $(canvasNode).css({
+        margin: '0 auto',
+        display: 'block'
+      });
       // console.log("map rows: ", mapRows);
       $('.world-map').append( canvasNode );
       console.log("canvas node: ", canvasNode);
@@ -69,5 +73,14 @@ define(['$', 'resources/Promise', 'resources/world', 'models/player', 'resources
     stack.push(world);
     console.log("got back location: ", location);
     stack.push(location);
+    stack.push({
+      enter: function(){
+        var directions = adjacentTiles.map(function(tile){
+          return tile.x + "," + tile.y;
+        });
+        $("#main").append("<p>You can go:" + directions.join(', ') + "</p>");
+        stack.pop();
+      }
+    });
   });
 });

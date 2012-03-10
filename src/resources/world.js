@@ -1,4 +1,4 @@
-define(['$', 'text!data/location/world.json'], function($, worldData){
+define(['$', 'json!data/location/world.json'], function($, worldData){
 
   function enter(player, game){
     $('#main').html("You enter the world");
@@ -11,7 +11,17 @@ define(['$', 'text!data/location/world.json'], function($, worldData){
     enter: enter, 
     exit: exit,
     getEdges: function(x,y){
-      return [];
+      var nearby = worldData.filter(function(tile){
+        if(
+          Math.abs(tile.x - x) <= 1
+        ){
+          if(Math.abs(tile.y - y) <= 1){
+            return true;
+          }
+        }
+        return false;
+      });
+      return nearby;
     }
   };
 });
