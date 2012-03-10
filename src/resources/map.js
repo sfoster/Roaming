@@ -11,18 +11,25 @@ define(['$', 'resources/util', 'resources/Promise'], function($, util, Promise){
   var initialized = false;  
   var map = {
     init: function(cb){
-      if(initialized) return;
-      canvas = this.canvasNode = document.createElement("canvas");
-      canvas.style.cssText = "display:block;margin:4px auto";
-      canvas.id = "map_canvas";
-
       // lazy-load the terrain module
       var loadedPromise = new Promise();
-      require(['resources/terrain'], function(terrain){
-        terrainTypes = terrain;
-        return loadedPromise.resolve(true);
-      });
-      initialized = true;
+      if(initialized){
+        // had some trouble with Promise.when.. 
+        // so for now we force asnyc
+        setTimeout(function(){
+          loadedPromise.resolve(true);
+        },0)
+      } else{
+        canvas = this.canvasNode = document.createElement("canvas");
+        canvas.style.cssText = "display:block;margin:4px auto";
+        canvas.id = "map_canvas";
+
+        require(['resources/terrain'], function(terrain){
+          terrainTypes = terrain;
+          return loadedPromise.resolve(true);
+        });
+        initialized = true;
+      }
       return loadedPromise;
     },
     renderMap: function(mapData, options) {

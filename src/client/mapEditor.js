@@ -39,6 +39,10 @@ define(['$', 'resources/util', 'resources/Promise', 'resources/map', 'resources/
       });
       
     });
+    $('#resetBtn').click(function(evt){
+      // re-fetch the map data and re-render
+      populateMap();
+    })
   }
 
   function paletteInit(){
@@ -88,15 +92,11 @@ define(['$', 'resources/util', 'resources/Promise', 'resources/map', 'resources/
       placeTile(x, y, currentTool);
     });
   }
-  
-  function init(){
-    toolbarInit();
-    paletteInit();
-    editorInit();
-    
+
+  function populateMap(){
     map.init().then(function(){
       require(['json!data/location/world.json'], function(mapData){
-        console.log("loaded mapData: ", mapData);
+        // console.log("loaded mapData: ", mapData);
         mapData.forEach(function(tile){
           var tileId = [tile.x, tile.y].join(',');
           tilesByCoords[tileId] = tile;
@@ -107,6 +107,13 @@ define(['$', 'resources/util', 'resources/Promise', 'resources/map', 'resources/
         });
       });
     });
+    
+  }
+  function init(){
+    toolbarInit();
+    paletteInit();
+    editorInit();
+    populateMap();
   }
 
 
