@@ -248,5 +248,105 @@
     "x": 9,
     "y": 4,
     "type": "mountains"
+  },
+  {
+    "x": 0,
+    "y": 5,
+    "type": "marsh"
+  },
+  {
+    "x": 1,
+    "y": 5,
+    "type": "marsh"
+  },
+  {
+    "x": 2,
+    "y": 5,
+    "type": "barren"
+  },
+  {
+    "x": 3,
+    "y": 5,
+    "type": "barren"
+  },
+  {
+    "x": 4,
+    "y": 5,
+    "type": "barren"
+  },
+  {
+    "x": 5,
+    "y": 5,
+    "type": "desert"
+  },
+  {
+    "x": 6,
+    "y": 5,
+    "type": "desert"
+  },
+  {
+    "x": 7,
+    "y": 5,
+    "type": "plains"
+  },
+  {
+    "x": 8,
+    "y": 5,
+    "type": "plains"
+  },
+  {
+    "x": 9,
+    "y": 5,
+    "type": "plains"
+  },
+  {
+    "x": 0,
+    "y": 6,
+    "type": "plains"
+  },
+  {
+    "x": 1,
+    "y": 6,
+    "type": "marsh"
+  },
+  {
+    "x": 2,
+    "y": 6,
+    "type": "barren"
+  },
+  {
+    "x": 3,
+    "y": 6,
+    "type": "barren"
+  },
+  {
+    "x": 4,
+    "y": 6,
+    "type": "barren"
+  },
+  {
+    "x": 5,
+    "y": 6,
+    "type": "plains"
+  },
+  {
+    "x": 6,
+    "y": 6,
+    "type": "plains"
+  },
+  {
+    "x": 7,
+    "y": 6,
+    "type": "plains"
+  },
+  {
+    "x": 8,
+    "y": 6,
+    "type": "plains"
+  },
+  {
+    "x": 9,
+    "y": 6,
+    "type": "plains"
   }
 ]
