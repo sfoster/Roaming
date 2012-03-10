@@ -30,6 +30,9 @@
 .tool.clear {
   background: url('../resources/graphics/gridbg.gif');
 }
+.tool.tileedit {
+  background: #DDD url('../../resources/graphics/tools/edit.png') no-repeat scroll top left;
+}
 .tool span {
   background-color: white;
   display:block;
