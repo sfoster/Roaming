@@ -3,6 +3,7 @@ define(['$', 'resources/world', 'models/player', 'resources/map'], function($, w
   
   
   console.log("Player: ", player);
+  console.log("map: ", map);
   
   // display the player's inventory
   var inventoryNode = $("<ul></ul>");
@@ -18,17 +19,15 @@ define(['$', 'resources/world', 'models/player', 'resources/map'], function($, w
   
   // display the 10,000ft view map
   $('.world-map').html("<p></p>");
-  map.init();
-  var mapData = {
-    src: 'resources/maps/map.png',
-    height: 100, width: 100
-  };
-  
-  map.loadMap( mapData, function(mapRows){ 
-    console.log("map rows: ", mapRows);
-    $('.world-map').append( map.canvasNode );
-    console.log("canvas node: ", map.canvasNode);
+  map.init(function(){
+    require(['json!data/location/world.json'], function(mapData){
+      var canvasNode = map.renderMap( mapData );
+      // console.log("map rows: ", mapRows);
+      $('.world-map').append( canvasNode );
+      console.log("canvas node: ", canvasNode);
+    });
   });
+  
   
   // login or init player
   // set up main game stack
@@ -51,7 +50,7 @@ define(['$', 'resources/world', 'models/player', 'resources/map'], function($, w
         this.pop(); 
         this.push(state);
       }
-    }
+    };
   })();
   
   var coords = location.hash || '0,0', 
@@ -63,5 +62,5 @@ define(['$', 'resources/world', 'models/player', 'resources/map'], function($, w
     stack.push(world);
     console.log("got back location: ", location);
     stack.push(location);
-  })
+  });
 });
