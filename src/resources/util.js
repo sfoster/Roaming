@@ -26,7 +26,31 @@ define(function(){
     return obj;
   }
 
+  function create(obj){
+    var clone;
+    if(obj instanceof Array){
+      clone = obj.map(function(m){
+        return typeof m =="object" ? create(m) : m;
+      });
+    } else if(typeof obj == "object"){
+      clone = Object.create(obj);
+      for(var p in obj) {
+        if('object' == typeof obj[p]) {
+          // recursive treatment of objects
+          clone[p] = create(obj[p]);
+        }
+      }
+    } else {
+      clone = obj;
+    }
+    Array.prototype.slice.apply(arguments, 1).forEach(function(arg){
+      mixin(clone, arg);
+    });
+    return clone;
+  }
+
   return {
+    create: create,
     mixin: mixin,
     pluck: pluck,
     values: values, 
