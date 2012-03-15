@@ -68,7 +68,7 @@ define(['$', 'resources/Promise', 'resources/world', 'models/player', 'resources
       xy = coords.split(/,\s*/), 
       adjacentTiles = world.getEdges(xy[0], xy[1]);
   
-  require(['resources/location!'+coords], function(location){
+  require(['plugins/location!'+coords], function(location){
     console.log("enter the world");
     stack.push(world);
     console.log("got back location: ", location);

@@ -3,7 +3,7 @@ define(['$', 'compose', 'models/Location'], function($, Compose, Location){
   
   window.locations = {};
 
-  // usage: require(['location!0,0'], function(tile, region){ ... })
+  // usage: require(['plugins/location!0,0'], function(tile, region){ ... })
   var global = window, 
       config = global.config || (global.config = {});
   
