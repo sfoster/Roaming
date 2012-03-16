@@ -2,7 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var express = require('express');
 var app = express.createServer();
-var root = __dirname;
+var root = __dirname+'/src';
 
 app.configure(function(){
     app.use(express.logger({ format: ':method :url' }));
