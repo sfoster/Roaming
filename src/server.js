@@ -2,8 +2,8 @@ var fs = require('fs');
 var path = require('path');
 var express = require('express');
 var app = express.createServer();
-var root = __dirname+'/src';
-var port = 15718;
+var root = __dirname;
+var port = process.env.ROAMINGAPP_PORT || 80;
 
 app.configure(function(){
     app.use(express.logger({ format: ':method :url' }));
