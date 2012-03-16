@@ -3,6 +3,7 @@ var path = require('path');
 var express = require('express');
 var app = express.createServer();
 var root = __dirname+'/src';
+var port = 15718;
 
 app.configure(function(){
     app.use(express.logger({ format: ':method :url' }));
@@ -92,5 +93,5 @@ app.get('/:resource', function(req, res){
 });
 
 
-app.listen(3000);
-console.log("listening on localhost:3000");
+app.listen(port);
+console.log("listening on localhost:" + port);
