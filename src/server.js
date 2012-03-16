@@ -3,7 +3,7 @@ var path = require('path');
 var express = require('express');
 var app = express.createServer();
 var root = __dirname;
-var port = process.env.ROAMINGAPP_PORT || 80;
+var port = process.env.ROAMINGAPP_PORT || 3000;
 var datadir = process.env.ROAMINGAPP_DATADIR || path.resolve(root, '../data');
 console.log("datadir at: " + datadir);
 
