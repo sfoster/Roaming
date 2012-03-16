@@ -1,7 +1,12 @@
-define(['$', 'resources/Promise', 'resources/world', 'models/player', 'resources/map'], function($, Promise, world, player, map){
+define([
+  '$', 'resources/util', 'resources/event',
+  'resources/Promise', 'resources/world', 'models/player', 'resources/map'], function($, util, Evented, Promise, world, player, map){
   $('#main').html("It works (so far)");
   
   var when = Promise.when;
+  
+  // setup the global as an event sink and emitter
+  util.mixin(this, Evented);
   
   console.log("Player: ", player);
   console.log("map: ", map);
@@ -73,14 +78,5 @@ define(['$', 'resources/Promise', 'resources/world', 'models/player', 'resources
     stack.push(world);
     console.log("got back location: ", location);
     stack.push(location);
-    stack.push({
-      enter: function(){
-        var directions = adjacentTiles.map(function(tile){
-          return tile.x + "," + tile.y;
-        });
-        $("#main").append("<p>You can go:" + directions.join(', ') + "</p>");
-        stack.pop();
-      }
-    });
   });
 });
