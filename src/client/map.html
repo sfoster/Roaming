@@ -40,7 +40,12 @@
     <div id="detailContent"></div>
   </div>
   <script type="text/x-template" id="detail-template">
-    <div class="field-{{id}}"><h2>Location: <code>{{id}}</code></h2></div>
+    <div class="media attribution">
+      <div class="img"><span class="swatch {{type}}"></span></div>
+      <div class="bd field-{{id}}">
+        <h2>Location: <code>{{id}}</code></h2>
+      </div>
+    </div>  
     <input type="hidden" name="coords" value="{{id}}"/>
     <div class="field-description">
       <h3 class="caption"><label for="">Description</label></h3>

@@ -26,6 +26,13 @@ h1, h2, h3, h3, h4, h5 {
   padding: 0.1em 0 0.3em 0;
 }
 
+/* ====== media ====== */
+.media {margin:10px;}
+.media, .bd {overflow:hidden; _overflow:visible; zoom:1;}
+.media .img {float:left; margin-right: 10px;}
+.media .img img {display:block;}
+.media .imgExt{float:right; margin-left: 10px;}
+
 .fullwidth { 
   width: 100%; 
 }

@@ -49,6 +49,10 @@
 .tool.active {
   outline: 2px inset red;
 }
+.swatch {
+  width: 3em; height: 3em; 
+  display: block;
+}
 #map {
   position: absolute;
   margin: 0; padding: 0;

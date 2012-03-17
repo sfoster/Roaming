@@ -23,13 +23,13 @@ define([
   //  
   function saveDetail() {
     var $detail = $('#detailContent'); 
-    var formData = {};
+    var formData = locationModel;
     var fields = $('input[type="text"], input[type="hidden"], textarea', $detail).each(function(idx, el){
       formData[ el.name ] = $(el).val();
     });
     console.log("formData: ", formData);
     var id = formData.id = formData.coords;
-    formData.coords = formData.coords.split(',');
+    formData.coords = formData.coords.split(',').map(Number);
       
     var savePromise = new Promise();
     $.ajax({
@@ -66,14 +66,19 @@ define([
     $("#maptoolbar").removeClass("hidden");
   }
 
+  function cancelDetailEdit(){
+    hideDetail();
+    $('#detailContent').html("");
+    locationModel = null;
+  }
   function detailEditInit(){
     $('#detailSaveBtn').click(
       function(evt){
-        saveDetail().then(hideDetail);
+        saveDetail(locationModel).then(hideDetail);
       }, 
       function(){}
     );
-    $('#detailResetBtn').click(hideDetail);
+    $('#detailResetBtn').click(cancelDetailEdit);
   }
      
   function toolbarInit(){
@@ -108,7 +113,9 @@ define([
     });
   }
 
-  function editDetail(id){
+  var locationModel = null;
+  
+  function editDetail(id, tile){
     console.log("editDetail: ", id);
 
     showDetail();
@@ -117,21 +124,27 @@ define([
     var $detailContainer = $('#detail'), 
         $detail = $('#detailContent');
     
+    var defaults = terrainTypes[tile.type] || {};
+    console.log("defaults: ", defaults);
     require(['json!/location/'+id+'.json'], function(location){
       if(!location.coords){
         console.error("No location at: ", id);
         location = {
-          coords: id.split(','),
-          description: "enter description here",
-          afar: "enter afar description here"
+          coords: id.split(',')
         };
       } else {
         location.id = location.coords.join(',');
       }
+      if(location.description.match(/^--/)){
+        delete location.description;
+      }
+      if(location.afar.match(/^--/)){
+        delete location.afar;
+      }
+      location = util.mixin(defaults, location);
       console.log("got back location: ", location);
-      
-      $detail.html( tmpl(location) );
-      
+      locationModel = location;
+      $detail.html( tmpl( util.mixin(location, { type: tile.type }) ) );
     });
 
     // $detail.empty();
@@ -225,10 +238,11 @@ define([
   }
 
   function toolAction(x,y, type){
+    var id = [x,y].join(',');
     if(terrainTypes[type]){
       placeTile(x,y,type);
     } else if(type=='edittile'){
-      editDetail([x,y].join(','));
+      editDetail(id, tilesByCoords[id]);
     } else {
       console.log("tool not implemented: ", type);
     }
