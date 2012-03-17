@@ -3,6 +3,9 @@ var path = require('path');
 var express = require('express');
 var app = express.createServer();
 var root = __dirname;
+var port = process.env.ROAMINGAPP_PORT || 80;
+var datadir = process.env.ROAMINGAPP_DATADIR || path.resolve(root, '../data');
+console.log("datadir at: " + datadir);
 
 app.configure(function(){
     app.use(express.logger({ format: ':method :url' }));
@@ -16,7 +19,7 @@ app.get('/', function(req, res, next){
 });
 
 app.get('/location/world.json', function(req, res){
-  var resourcePath = root + '/data/location/world.json';
+  var resourcePath = fs.realpathSync(datadir + '/location/world.json');
   if(path.existsSync(resourcePath)){
     fs.readFile(resourcePath, function(err, contents){
       var data = JSON.parse(contents), 
@@ -29,7 +32,7 @@ app.get('/location/world.json', function(req, res){
   }
 });
 app.post('/location/world.json', function(req, res){
-  var resourcePath = root + '/data/location/world.json';
+  var resourcePath = fs.realpathSync(datadir + '/location/world.json');
   console.log("got post: ", typeof req.body, req.body);
   var fileData = req.body;
   fileData.sort(function(a,b){
@@ -50,12 +53,15 @@ app.post('/location/world.json', function(req, res){
   });
 });
 
-app.get(/^\/(resources|models|vendor|css)\/(.*)$/, function(req, res){
+app.get(/^\/(resources|models|vendor|css|plugins)\/(.*)$/, function(req, res){
   var resourcePath;
   // console.log("matched: ", req.params[0], req.params[1]);
   switch(req.params[0]){
     case 'resources': 
       resourcePath = root + '/resources/' + req.params[1];
+      break;
+    case 'plugins': 
+      resourcePath = root + '/plugins/' + req.params[1];
       break;
     case 'vendor': 
       resourcePath = root + '/vendor/' + req.params[1];
@@ -69,6 +75,9 @@ app.get(/^\/(resources|models|vendor|css)\/(.*)$/, function(req, res){
     default: 
       break;
   }
+  
+  resourcePath = fs.realpathSync(resourcePath);
+  
   // console.log("resolved resourcePath: " + resourcePath);
   if(resourcePath && path.existsSync(resourcePath)){
     res.sendfile(resourcePath);
@@ -79,15 +88,16 @@ app.get(/^\/(resources|models|vendor|css)\/(.*)$/, function(req, res){
 
 app.get('/data/*', function(req, res){
   // handle data as static files for now
-  var resourcePath = root + '/data/' + req.params[0];
-  
+  var relPath = req.params[0].replace(/^\.\//, '');
+  var resourcePath = fs.realpathSync(datadir + '/' + relPath);
   res.sendfile( resourcePath );
 });
 
 app.get('/:resource', function(req, res){
-  res.sendfile(root + '/client/' + req.params.resource);
+  var resourcePath = fs.realpathSync(root + '/client/' + req.params.resource);
+  res.sendfile(resourcePath);
 });
 
 
-app.listen(3000);
-console.log("listening on localhost:3000");
+app.listen(port);
+console.log("listening on localhost:" + port);

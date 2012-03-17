@@ -2,6 +2,24 @@ resources:
 
 * player
   /:username
+  properties like: 
+    role: "hero",
+    speed: 150,
+    hitPoints: 100,
+    damage: 0,
+    spriteSheet: "characters",
+    spriteY: 0,
+    animated: true,
+    sound: {
+      attack: "hero_attacks", // or is this a weapon property?
+      hit: "ugh",
+      reborn: "alive",
+      dies: "dead"
+    }
+    weapons: [
+      {id: "spear"}
+    ],
+	
 * map
   /map
 * region
