@@ -56,6 +56,9 @@ define([
           require(['plugins/location!'+id], function(location){
             console.log("enter the world");
             stack.push(world);
+            if(!location.enter) {
+              throw "Error loading location: " + id;
+            }
             console.log("got back location: ", location);
             stack.push(location);
           });
