@@ -1,0 +1,19 @@
+{
+	"width": 1,
+	"height": 1,
+	"terrainType": "models/Plains",
+	"coords": [0,0],
+	"edges": {
+	  "south": { "coords": [0,1] },
+	  "east": { "coords": [1,0] },
+	  "southeast": { "coords": [1,1], "description": "a thin trail leads to the south-east" }
+	},
+	"here": {
+	  "feather": { 
+	    "description": "At your feet is an unusually large feather. It could only have come from one kind of bird. If the roc was here, you are in the right place.", 
+	    "fixed": false
+	  }
+	},
+	"afar": "it looks like grass and more grass.",
+	"description": "You see flat grassland all around you."
+}
