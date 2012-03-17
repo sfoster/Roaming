@@ -1,4 +1,12 @@
-define(['$', 'resources/util', 'resources/Promise', 'resources/map', 'resources/terrain'], function($, util, Promise, map, terrainTypes){
+define([
+  '$', 'resources/util', 'resources/template',
+  'resources/Promise', 
+  'resources/map', 'resources/terrain'
+], function(
+  $, util, template,
+  Promise, 
+  map, terrainTypes
+){
 
   var pluck = util.pluck, 
       values = util.values, 
@@ -12,7 +20,54 @@ define(['$', 'resources/util', 'resources/Promise', 'resources/map', 'resources/
       worldSize = { width: 25, height: 25},
       tilesByCoords = {};
   
-  //     
+  //  
+  function saveDetail() {
+    var $detail = $('#detailContent'); 
+    var formData = {};
+    var fields = $('input[type="text"], input[type="hidden"], textarea', $detail).each(function(idx, el){
+      formData[ el.name ] = $(el).val();
+    });
+    console.log("formData: ", formData);
+    var id = formData.id = formData.coords;
+    formData.coords = formData.coords.split(',');
+      
+    var savePromise = new Promise();
+    $.ajax({
+      type: 'PUT',
+      dataType: 'json',
+      contentType: 'application/json',
+      url: '/location/'+id+'.json',
+      data: JSON.stringify(formData),
+      success: function(resp){
+        console.log("save response: ", resp);
+        alert("location saved: "+ resp.status);
+        savePromise.resolve(resp.status);
+      }, 
+      error: function(xhr){ 
+        console.warn("error saving location: ", xhr.status);
+        alert("Unable to save location right now"); 
+        savePromise.reject(xhr.status);
+      }
+    });
+    return savePromise;
+  }
+  
+  function hideDetail(){
+    $("#detail").css({
+      display: "none"
+    });
+  }
+
+  function detailEditInit(){
+    $('#detailSaveBtn').click(
+      function(evt){
+        saveDetail().then(hideDetail);
+      }, 
+      function(){}
+    );
+    $('#detailResetBtn').click(hideDetail);
+  }
+     
   function toolbarInit(){
     $('#saveBtn').click(function(evt){
       var locations = values(tilesByCoords).map(function(tile){
@@ -42,19 +97,37 @@ define(['$', 'resources/util', 'resources/Promise', 'resources/map', 'resources/
     $('#resetBtn').click(function(evt){
       // re-fetch the map data and re-render
       populateMap();
-    })
+    });
   }
 
   function editDetail(id){
     console.log("editDetail: ", id);
-    var tmpl= $('#detail-template')[0].innerHTML;
-    var pattern = /\{\{([^}]+)\}\}/g;
-    var $detail = $('#detail');
-    $detail.css({
+
+    var tmpl= template( $('#detail-template')[0].innerHTML );
+    var $detailContainer = $('#detail'), 
+        $detail = $('#detailContent');
+    $detailContainer.css({
       zIndex: 10,
       display: 'block'
     });
-    return;
+    
+    require(['json!/location/'+id+'.json'], function(location){
+      if(!location.coords){
+        console.error("No location at: ", id);
+        location = {
+          coords: id.split(','),
+          description: "enter description here",
+          afar: "enter afar description here"
+        };
+      } else {
+        location.id = location.coords.join(',');
+      }
+      console.log("got back location: ", location);
+      
+      $detail.html( tmpl(location) );
+      
+    });
+
     // $detail.empty();
     // 
     // Object.keys(npc).forEach(function(id){
@@ -117,13 +190,14 @@ define(['$', 'resources/util', 'resources/Promise', 'resources/map', 'resources/
 
   function populateMap(){
     map.init().then(function(){
-      require(['json!data/location/world.json'], function(mapData){
+      require(['json!/location/world.json'], function(mapData){
+        var tiles = mapData.tiles;
         // console.log("loaded mapData: ", mapData);
-        mapData.forEach(function(tile){
+        tiles.forEach(function(tile){
           var tileId = [tile.x, tile.y].join(',');
           tilesByCoords[tileId] = tile;
         });
-        map.renderMap( mapData, {
+        map.renderMap( tiles, {
           tileSize: tileSize,
           canvasNode: mapNode
         });
@@ -134,6 +208,7 @@ define(['$', 'resources/util', 'resources/Promise', 'resources/map', 'resources/
   function init(){
     toolbarInit();
     paletteInit();
+    detailEditInit();
     editorInit();
     populateMap();
   }
