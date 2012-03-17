@@ -6,7 +6,8 @@ define([
   "image!resources/graphics/mountianground.png",
   "image!resources/graphics/grassground.jpg",
   "image!resources/graphics/water.jpg",
-  "image!resources/graphics/abyss.jpg"
+  "image!resources/graphics/abyss.jpg",
+  "image!resources/graphics/sandground.jpg"
 ], function(
   clearImg,
   dryGroundImg, 
@@ -15,27 +16,10 @@ define([
   mountainsImg, 
   plainsImg,
   waterImg,
-  abyssImg
+  abyssImg,
+  sandImg
 ){
-  var tmpContainer = document.createElement("div");
-      tmpContainer.style.cssText = 'position: absolute; top: -2000px; left: -2000px; width: 1000px; height: 1000px';
-  
-  [
-      clearImg,
-      dryGroundImg, 
-      desertImg, 
-      marshImg, 
-      mountainsImg, 
-      plainsImg
-  ].forEach(function(img){
-    if(!(img.width && img.height)){
-      tmpContainer.removeChild(tmpContainer.firstChild);
-      tmpContainer.appendChild(img);
-      console.log("measure image: ", img, img.offsetWidth, img.offsetHeight);
-    } else {
-      // console.log("image has dimensions: ", img, img.width, img.height);
-    }
-  });
+
   return {
     "clear":      { img: clearImg },
     "barren":     { img: desertImg  },
@@ -44,7 +28,7 @@ define([
     "mountains":  { img: mountainsImg },
     "plains":     { img: plainsImg },
     "water":     { img: waterImg },
-    "abyss":     { img: abyssImg }
-    
+    "abyss":     { img: abyssImg },
+    "sand":     { img: sandImg }
   };
 });
