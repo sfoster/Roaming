@@ -284,6 +284,15 @@ define([], function(){
     weight: 12,
     mpbonus: 0
   };
+  weapons.lance = {
+    name: 'Lance',
+    shortRangeDamage: 1,
+    longRangeDamage: 0,
+    mediumRangeDamage: 20,
+    weaponclass: "mediumrange",
+    weight: 6,
+    mpbonus: 0
+  };
    weapons.holyKnife = {
     name: ' Holy Knife',
     shortRangeDamage: 5,
@@ -559,6 +568,15 @@ define([], function(){
     mediumRangeDamage: 0,
     weaponclass: "shortrange",
     weight: 12,
+    mpbonus: 3
+  };
+  weapons.holyLance = {
+    name: 'Holy Lance',
+    shortRangeDamage: 1,
+    longRangeDamage: 0,
+    mediumRangeDamage: 20,
+    weaponclass: "mediumrange",
+    weight: 6,
     mpbonus: 3
   };
   return weapons;
