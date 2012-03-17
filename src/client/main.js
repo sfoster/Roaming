@@ -1,6 +1,6 @@
 define([
-  '$', 'resources/util', 'resources/event',
-  'resources/Promise', 'resources/world', 'models/player', 'resources/map'], function($, util, Evented, Promise, world, player, map){
+  '$', 'resources/util', 'resources/event', 'resources/template',
+  'resources/Promise', 'resources/world', 'models/player', 'resources/map'], function($, util, Evented, template, Promise, world, player, map){
   $('#main').html("It works (so far)");
   
   var when = Promise.when;
@@ -26,11 +26,10 @@ define([
   // display the 10,000ft view map
   $('.world-map').html("<p></p>");
   
-  
   console.log("init map");
   // var promise = ;
   map.init().then(function(val){
-    console.log("map.init callback: ", val);
+
     require(['json!data/location/world.json'], function(mapData){
       console.log("require world data callback");
       var canvasNode = map.renderMap( mapData, { tileSize: 6 });
@@ -70,8 +69,7 @@ define([
   })();
   
   var coords = location.hash || '0,0', 
-      xy = coords.split(/,\s*/), 
-      adjacentTiles = world.getEdges(xy[0], xy[1]);
+      xy = coords.split(/,\s*/);
   
   require(['plugins/location!'+coords], function(location){
     console.log("enter the world");
@@ -79,4 +77,48 @@ define([
     console.log("got back location: ", location);
     stack.push(location);
   });
+  
+  function getCardinalDirection(origin, target){
+    var x = target.x - origin.x, 
+        y = target.y - origin.y;
+  
+    var names={              // 8 4 2 1 
+      1:"north",            // 0 0 0 1 north         1
+      3:"north-east",       // 0 0 1 1 north-east    3
+      2:"east",             // 0 0 1 0 east          2
+      6:"south-east",       // 0 1 1 0 south-east    6
+      4:"south",            // 0 1 0 0 south         4
+      12:"south-west",      // 1 1 0 0 south-west    12
+      8:"west",             // 1 0 0 0 west          8
+      9:"north-west"        // 1 0 0 1 north-west    9
+    };
+    var keyMask = 0;
+    if(y < 0) keyMask = 1;
+    if(y > 0) keyMask |=4;
+    if(x > 0) keyMask |=2;
+    if(x < 0) keyMask |=8;
+    
+    return names[keyMask];
+  }
+  
+  Evented.on("onafterlocationenter", function(evt){
+    console.log("onafterlocationenter: ", evt);
+    var tile = evt.target, 
+        directionsTemplate = template('{{coords}}: To the <a href="#{{coords}}" class="option">{{direction}}</a> you see {{terrain}}');
+        
+    var edges = world.getEdges(tile.x, tile.y);
+    var $options = $('<ol></ol>');
+    
+    edges.forEach(function(edge){
+      console.log("adjacent edge: ", edge);
+      var context = {
+        terrain: edge.afar || edge.type,
+        coords: edge.x +','+edge.y,
+        direction: getCardinalDirection(tile, edge)
+      };
+      $options.append("<li>" + directionsTemplate(context) + "</li>");
+    });
+    $("#main").append($options);
+  });
+  
 });
