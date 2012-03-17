@@ -6,6 +6,31 @@ body {
   font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
 }
 
+h1, h2, h3, h3, h4, h5 {
+  margin: 0;
+  padding: 0.2em 0 0.75em 0;
+}
+
+.hint {
+  color: #666;
+  font-size: smaller;
+  margin: 0.2em;
+}
+.caption {
+  margin: 0;
+  padding: 0.1em 0 0.3em 0;
+}
+
+.fullwidth { 
+  width: 100%; 
+}
+.mediumheight { 
+  height: 8em;
+}
+.shortheight { 
+  height: 3em;
+}
+
 .panelist {
   list-style-type: none;
   padding: 0;
@@ -59,3 +84,4 @@ body {
   min-height: 60px;
   background-color: #fff;
 }
+
