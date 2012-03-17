@@ -30,6 +30,9 @@
 .abyss {
   background: url('../resources/graphics/abyss.jpg') no-repeat scroll top left;
 }
+.sand {
+  background: url('../resources/graphics/sandground.jpg') no-repeat scroll top left;
+}
 .tool.clear {
   background: url('../resources/graphics/gridbg.gif');
 }
