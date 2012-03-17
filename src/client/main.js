@@ -1,6 +1,12 @@
 define([
-  '$', 'resources/util', 'resources/event', 'resources/template',
-  'resources/Promise', 'resources/world', 'models/player', 'resources/map'], function($, util, Evented, template, Promise, world, player, map){
+  '$', 'resources/util', 'resources/event', 'resources/template', 
+  'main-ui',
+  'resources/UrlRouter',
+  'resources/Promise', 'resources/world', 'models/player'], function(
+    $, util, Evented, template, 
+    ui,
+    UrlRouter, 
+    Promise, world, player){
   $('#main').html("It works (so far)");
   
   var when = Promise.when;
@@ -9,40 +15,9 @@ define([
   util.mixin(this, Evented);
   
   console.log("Player: ", player);
-  console.log("map: ", map);
   
-  // display the player's inventory
-  var inventoryNode = $("<ul></ul>");
-  for(var i=0; i<player.inventory.length; i++){
-    inventoryNode.append("<li>"+ player.inventory[i] +"</li>");
-  }
-  $('.inventory')
-    .html("<p>Maybe an Inventory list here?</p>")
-    .append(inventoryNode);
-    
-  // display the player's current weapon
-  $('.weapon').html( "<p>" + player.currentWeapon.name + "</p>");
-  
-  // display the 10,000ft view map
-  $('.world-map').html("<p></p>");
-  
-  console.log("init map");
-  // var promise = ;
-  map.init().then(function(val){
-
-    require(['json!data/location/world.json'], function(mapData){
-      console.log("require world data callback");
-      var canvasNode = map.renderMap( mapData, { tileSize: 6 });
-      $(canvasNode).css({
-        margin: '0 auto',
-        display: 'block'
-      });
-      // console.log("map rows: ", mapRows);
-      $('.world-map').append( canvasNode );
-      console.log("canvas node: ", canvasNode);
-    });
-  });
-  console.log("/init map");
+  // draw and fill the layout
+  ui.init( player );
   
   // login or init player
   // set up main game stack
@@ -68,15 +43,34 @@ define([
     };
   })();
   
-  var coords = location.hash || '0,0', 
-      xy = coords.split(/,\s*/);
+
+  var routes = [
+    [
+      "#:x,:y", 
+      function(req){
+        var x = Number(req.x), 
+            y = Number(req.y);
+            
+          var id = [x,y].join(',');
+          console.log("route match for location: ", x, y, id);
+          require(['plugins/location!'+id], function(location){
+            console.log("enter the world");
+            stack.push(world);
+            console.log("got back location: ", location);
+            stack.push(location);
+          });
+          
+      }
+    ]    
+  ];
+  var router = new UrlRouter(routes);
+  router.compile();
   
-  require(['plugins/location!'+coords], function(location){
-    console.log("enter the world");
-    stack.push(world);
-    console.log("got back location: ", location);
-    stack.push(location);
-  });
+  window.onhashchange = function() {
+    router.match(location.hash); // returns the data object if successfull, undefined if not.
+  };
+  
+  router.match(location.hash || '#0,0');
   
   function getCardinalDirection(origin, target){
     var x = target.x - origin.x, 
@@ -101,6 +95,7 @@ define([
     return names[keyMask];
   }
   
+
   Evented.on("onafterlocationenter", function(evt){
     console.log("onafterlocationenter: ", evt);
     var tile = evt.target, 
