@@ -156,7 +156,7 @@ npc.gaintCobra= {
   };
    npc.mammoth = {
     name: 'Mammoth',
-    strength: 50,
+    strength: 60,
     hp: 300,
     mp: 0,
     range: 'short'
