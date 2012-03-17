@@ -108,7 +108,7 @@ define([
     var $options = $('<ol></ol>');
     
     edges.forEach(function(edge){
-      console.log("adjacent edge: ", edge);
+      // console.log("adjacent edge: ", edge);
       var context = {
         terrain: edge.afar || edge.type,
         coords: edge.x +','+edge.y,
