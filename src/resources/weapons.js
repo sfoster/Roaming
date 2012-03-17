@@ -257,6 +257,33 @@ define([], function(){
     weight: 3,
     mpbonus: 0
   };
+   weapons.hammer = {
+    name: 'Hammer',
+    shortRangeDamage: 7,
+    longRangeDamage: 0,
+    mediumRangeDamage: 3,
+    weaponclass: shortrange,
+    weight: 2,
+    mpbonus: 0
+  };
+  weapons.warhammer = {
+    name: 'Warhammer',
+    shortRangeDamage: 15,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0,
+    weaponclass: shortrange,
+    weight: 4,
+    mpbonus: 0
+  };
+  weapons.maul = {
+    name: 'Maul',
+    shortRangeDamage: 35,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0,
+    weaponclass: shortrange,
+    weight: 12,
+    mpbonus: 0
+  };
    weapons.holyKnife = {
     name: ' Holy Knife',
     shortRangeDamage: 5,
@@ -505,6 +532,33 @@ define([], function(){
     mediumRangeDamage: 0,
     weaponclass: shortrange,
     weight: 3,
+    mpbonus: 3
+  };
+   weapons.holyHammer = {
+    name: 'Holy Hammer',
+    shortRangeDamage: 7,
+    longRangeDamage: 0,
+    mediumRangeDamage: 3,
+    weaponclass: shortrange,
+    weight: 3,
+    mpbonus: 3
+  };
+  weapons.holyWarhammer = {
+    name: 'Holy Warhammer',
+    shortRangeDamage: 15,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0,
+    weaponclass: shortrange,
+    weight: 4,
+    mpbonus: 3
+  };
+  weapons.holyMaul = {
+    name: 'Holy Maul',
+    shortRangeDamage: 35,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0,
+    weaponclass: shortrange,
+    weight: 12,
     mpbonus: 3
   };
   return weapons;
