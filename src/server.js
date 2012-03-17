@@ -1,5 +1,6 @@
 var fs = require('fs');
 var path = require('path');
+var assert = require('assert');
 var express = require('express');
 var app = express.createServer();
 var root = __dirname;
@@ -102,12 +103,34 @@ app.get('/location/:id.json', function(req, res){
     console.log(id + " does not exist");
     var emptyLocation = {
       coords: id.split(','),
-      description: "No description yet",
-      afar: "No afar description yet",
+      description: "--No description yet--",
+      afar: "--No afar description yet--",
       here: {} 
     };
     res.send( JSON.stringify(emptyLocation) );
   }
+});
+
+app.put('/location/:id.json', function(req, res){
+  var id = req.params.id;
+  var fileData = req.body;
+  assert(id);
+  assert(2 == id.split(',').length);
+  assert("string" == typeof fileData.description);
+
+  var relPath = 'location/' + id + '.json';
+  var resourcePath = datadir + '/' + relPath;
+
+  fs.writeFile(resourcePath, JSON.stringify(fileData, null, 2), function(err) {
+    if(err) {
+        console.log(err);
+        res.send(500);
+    } else {
+        res.send({ status: 'ok', 'message': 'updated '+resourcePath });
+        console.log(resourcePath + " saved");
+    }
+  });
+  
 });
 
 app.get('/data/*', function(req, res){
