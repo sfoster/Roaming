@@ -10,11 +10,17 @@
 </head>
 <body>
 <section id="hud" class="panel">
-  <ul id="tooldrawer" class="horizontallist">
-      <li class="btn" id="saveBtn"><button>Save</button></li>
-      <li class="btn" id="resetBtn"><button>Reset</button></li>
-      <li class="btn" id="resetBtn"><button>Load Map...</button></li>
-  </ul>
+  <div id="tooldrawer">
+    <ul id="maptoolbar" class="horizontallist">
+        <li class="btn" id="saveBtn"><button>Save</button></li>
+        <li class="btn" id="resetBtn"><button>Reset</button></li>
+        <li class="btn" id="resetBtn"><button>Load Map...</button></li>
+    </ul>
+    <ul id="detailtoolbar" class="hidden horizontallist">
+      <li class="btn"><button id="detailSaveBtn">Save Location</button></li>
+      <li class="btn"><button id="detailResetBtn">Cancel Edits</button></li>
+    </ul>
+  </div>
 </section>  
 <section id="drawer" class="panel">
   <div id="palette">
@@ -30,11 +36,7 @@
     <canvas id="grid"></canvas>  
     <div id="gridOverlay"></div>  
   </div>
-  <div id="detail">
-    <div class="panel">
-      <button id="detailSaveBtn">OK</button>
-      <button id="detailResetBtn">Cancel</button>
-    </div>
+  <div id="detail" class="hidden">
     <div id="detailContent"></div>
   </div>
   <script type="text/x-template" id="detail-template">

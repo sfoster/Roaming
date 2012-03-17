@@ -51,11 +51,19 @@ define([
     });
     return savePromise;
   }
+
+  function showDetail(){
+    $("#map").addClass("hidden");
+    $("#maptoolbar").addClass("hidden");
+    $("#detail").removeClass("hidden");
+    $("#detailtoolbar").removeClass("hidden");
+  }
   
   function hideDetail(){
-    $("#detail").css({
-      display: "none"
-    });
+    $("#detail").addClass("hidden");
+    $("#detailtoolbar").addClass("hidden");
+    $("#map").removeClass("hidden");
+    $("#maptoolbar").removeClass("hidden");
   }
 
   function detailEditInit(){
@@ -103,13 +111,11 @@ define([
   function editDetail(id){
     console.log("editDetail: ", id);
 
+    showDetail();
+    
     var tmpl= template( $('#detail-template')[0].innerHTML );
     var $detailContainer = $('#detail'), 
         $detail = $('#detailContent');
-    $detailContainer.css({
-      zIndex: 10,
-      display: 'block'
-    });
     
     require(['json!/location/'+id+'.json'], function(location){
       if(!location.coords){
