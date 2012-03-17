@@ -154,6 +154,13 @@ npc.gaintCobra= {
     mp: 0,
     weapon: 'weapons.lance'
   };
+   npc.giant = {
+    name: 'Gaint',
+    strength: 50,
+    hp: 300,
+    mp: 0,
+    range: 'short'
+  };
   npc.juggernaut = {
     name: 'Juggernaut',
     strength: 100,
