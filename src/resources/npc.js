@@ -145,7 +145,7 @@ npc.gaintCobra= {
     strength: 8,
     hp: 25,
     mp: 0,
-    weapon: 'any range'
+    weapon: 'short range, medium range, long range'
   };
   npc.humanKnight = {
     name: 'Knight',
@@ -153,6 +153,13 @@ npc.gaintCobra= {
     hp: 60,
     mp: 0,
     weapon: 'short range, medium range'
+  };
+  npc.juggernaut = {
+    name: 'Juggernaut',
+    strength: 100,
+    hp: 1000,
+    mp: 0,
+    weapon: 'short range'
   };
   npc.dragon = {
     name: 'Dragon',
