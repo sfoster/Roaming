@@ -20,15 +20,54 @@ define([
   sandImg
 ){
 
+  // each terrain includes an image and
+  // a default description and afar text value for the tile/location
+  // 
   return {
-    "clear":      { img: clearImg },
-    "barren":     { img: desertImg  },
-    "desert":     { img: dryGroundImg }, 
-    "marsh":      { img: marshImg },
-    "mountains":  { img: mountainsImg },
-    "plains":     { img: plainsImg },
-    "water":     { img: waterImg },
-    "abyss":     { img: abyssImg },
-    "sand":     { img: sandImg }
+    "clear": { 
+      img: clearImg,
+      description: "",
+      afar: ""
+    },
+    "barren":     { 
+      img: desertImg,
+      description: "This is barren land, with only a scattering of rocks to break the monotony.",
+      afar: "a flat and featureless landscape"
+    },
+    "desert":     {
+      img: dryGroundImg,
+      description: "You are in a sandy desert",
+      afar: "desert"
+    }, 
+    "marsh": {
+      img: marshImg,
+      description: "You are knee deep in a swampy marsh",
+      afar: "marshy landscape"
+    },
+    "mountains":  {
+      img: mountainsImg,
+      description: "You are in the mountains",
+      afar: "rugged mountains"
+    },
+    "plains":     {
+      img: plainsImg,
+      description: "You see flat grassland all around you.",
+      afar: "it looks like grass and more grass"
+    },
+    "water":     {
+      img: waterImg,
+      description: "You are submerged in deep water",
+      afar: "water"
+    },
+    "abyss":     {
+      img: abyssImg,
+      description: "The yawning abyss swallows you up. You fall for a night a day.",
+      afar: "the edge of the world. No man may pass here."
+    },
+    "sand":     {
+      img: sandImg,
+      description: "Sand",
+      afar: "sand"
+    }
   };
 });
