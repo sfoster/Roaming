@@ -237,12 +237,12 @@
   {
     "x": 22,
     "y": 1,
-    "type": "mountains"
+    "type": "plains"
   },
   {
     "x": 23,
     "y": 1,
-    "type": "mountains"
+    "type": "plains"
   },
   {
     "x": 24,
@@ -362,12 +362,12 @@
   {
     "x": 22,
     "y": 2,
-    "type": "mountains"
+    "type": "plains"
   },
   {
     "x": 23,
     "y": 2,
-    "type": "mountains"
+    "type": "plains"
   },
   {
     "x": 24,
@@ -487,12 +487,12 @@
   {
     "x": 22,
     "y": 3,
-    "type": "mountains"
+    "type": "plains"
   },
   {
     "x": 23,
     "y": 3,
-    "type": "mountains"
+    "type": "plains"
   },
   {
     "x": 24,
@@ -1242,7 +1242,7 @@
   {
     "x": 23,
     "y": 9,
-    "type": "abyss"
+    "type": "desert"
   },
   {
     "x": 24,
