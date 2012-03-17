@@ -73,7 +73,7 @@ define([
     router.match(location.hash); // returns the data object if successfull, undefined if not.
   };
   
-  router.match(location.hash || '#0,0');
+  router.match(location.hash || '#3,2');
   
   function getCardinalDirection(origin, target){
     var x = target.x - origin.x, 
