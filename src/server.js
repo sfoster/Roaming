@@ -86,6 +86,30 @@ app.get(/^\/(resources|models|vendor|css|plugins)\/(.*)$/, function(req, res){
   }
 });
 
+app.get('/location/:id.json', function(req, res){
+  // handle data as static files for now
+  var id = req.params.id;
+  console.log("request for location id: " + id);
+
+  var relPath = 'location/' + id + '.json';
+  var resourcePath = datadir + '/' + relPath;
+
+  if( path.existsSync(resourcePath) ){
+    resourcePath = fs.realpathSync(resourcePath);
+    console.log(id + " exists");
+    res.sendfile( resourcePath );
+  } else {
+    console.log(id + " does not exist");
+    var emptyLocation = {
+      coords: id.split(','),
+      description: "No description yet",
+      afar: "No afar description yet",
+      here: {} 
+    };
+    res.send( JSON.stringify(emptyLocation) );
+  }
+});
+
 app.get('/data/*', function(req, res){
   // handle data as static files for now
   var relPath = req.params[0].replace(/^\.\//, '');

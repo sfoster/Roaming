@@ -1,4 +1,4 @@
-define(['$', 'json!data/location/world.json'], function($, worldData){
+define(['$', 'json!/location/world.json'], function($, worldData){
 
   function enter(player, game){
     $('#main').html("You enter the world");

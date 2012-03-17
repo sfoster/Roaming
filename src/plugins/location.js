@@ -18,7 +18,7 @@ define(['$', 'compose', 'models/Location'], function($, Compose, Location){
       } else {
         $.ajax({
           dataType: 'json',
-          url: '../data/location/' + coords + '.json',
+          url: '/location/' + coords + '.json',
           success: function(resp){
             var ctorModule = resp.terrainType || 'models/Location';
             require([ctorModule], function(Clazz){
