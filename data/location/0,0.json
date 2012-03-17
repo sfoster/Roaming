@@ -1,11 +1,8 @@
 {
-	"coords": [0,0],
 	"width": 1,
 	"height": 1,
 	"terrainType": "models/Plains",
 	"coords": [0,0],
-	"width": 1,
-	"height": 1,
 	"edges": {
 	  "south": { "coords": [0,1] },
 	  "east": { "coords": [1,0] },
