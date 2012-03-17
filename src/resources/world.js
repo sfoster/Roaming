@@ -11,7 +11,7 @@ define(['$', 'json!/location/world.json'], function($, worldData){
     enter: enter, 
     exit: exit,
     getEdges: function(x,y){
-      var nearby = worldData.filter(function(tile){
+      var nearby = worldData.tiles.filter(function(tile){
         if(tile.x==x && tile.y==y) return false;
         if(
           Math.abs(tile.x - x) <= 1
