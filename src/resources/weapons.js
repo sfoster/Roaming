@@ -262,7 +262,7 @@ define([], function(){
     shortRangeDamage: 7,
     longRangeDamage: 0,
     mediumRangeDamage: 3,
-    weaponclass: shortrange,
+    weaponclass: "shortrange",
     weight: 2,
     mpbonus: 0
   };
@@ -271,7 +271,7 @@ define([], function(){
     shortRangeDamage: 15,
     longRangeDamage: 0,
     mediumRangeDamage: 0,
-    weaponclass: shortrange,
+    weaponclass: "shortrange",
     weight: 4,
     mpbonus: 0
   };
@@ -280,7 +280,7 @@ define([], function(){
     shortRangeDamage: 35,
     longRangeDamage: 0,
     mediumRangeDamage: 0,
-    weaponclass: shortrange,
+    weaponclass: "shortrange",
     weight: 12,
     mpbonus: 0
   };
@@ -539,7 +539,7 @@ define([], function(){
     shortRangeDamage: 7,
     longRangeDamage: 0,
     mediumRangeDamage: 3,
-    weaponclass: shortrange,
+    weaponclass: "shortrange",
     weight: 3,
     mpbonus: 3
   };
@@ -548,7 +548,7 @@ define([], function(){
     shortRangeDamage: 15,
     longRangeDamage: 0,
     mediumRangeDamage: 0,
-    weaponclass: shortrange,
+    weaponclass: "shortrange",
     weight: 4,
     mpbonus: 3
   };
@@ -557,7 +557,7 @@ define([], function(){
     shortRangeDamage: 35,
     longRangeDamage: 0,
     mediumRangeDamage: 0,
-    weaponclass: shortrange,
+    weaponclass: "shortrange",
     weight: 12,
     mpbonus: 3
   };
