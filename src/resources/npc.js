@@ -181,8 +181,15 @@ npc.gaintCobra= {
     hp: 500,
     mp: 50,
     range: 'short, medium, long'
-  };// Dragon has Flame Breath ability
+  };// Dragon has Flame Breath abilty
   // (ranged attack)
+  npc.theRoc = {
+    name: 'The Roc',
+    strength: 150,
+    hp: 500,
+    mp: 0,
+    range: 'short, medium'
+  };
   
   // All spells cost 10 mp per cast
   // dmg=strength divided by 2(?) 
