@@ -109,8 +109,10 @@ npc.gaintCobra= {
     name: 'Gaint Cobra',
     strength: 22,
     hp: 70,
-    mp: 0,
+    mp: 10,
     range: 'short'
+    // Giant Cobra has Poison ability
+    // (see Mutant Rat)
   };
   npc.trollHulk = {
     name: 'Troll Hulk',
@@ -154,6 +156,13 @@ npc.gaintCobra= {
     mp: 0,
     weapon: 'weapons.lance'
   };
+  npc.harpy = {
+    name: 'Harpy',
+    strength: 15,
+    hp: 15,
+    mp: 0,
+    range: 'short, medium, long'
+  };
    npc.mammoth = {
     name: 'Mammoth',
     strength: 60,
@@ -175,6 +184,22 @@ npc.gaintCobra= {
     mp: 0,
     weapon: 'weapons.maul'
   };
+  npc.hdyra = {
+    name: 'Hydra',
+    strength: 120,
+    hp: 300,
+    mp: 50,
+    range: 'short, medium'
+    // Hydra has Venom Spit ability
+    // (same as Poison, but medium range)
+  };
+  npc.cyclop = {
+    name: 'Cyclop',
+    strength: 130,
+    hp: 200,
+    mp: 0,
+    range: 'short, medium, long'
+  };
   npc.dragon = {
     name: 'Dragon',
     strength: 80,
@@ -182,7 +207,7 @@ npc.gaintCobra= {
     mp: 50,
     range: 'short, medium, long'
   };// Dragon has Flame Breath abilty
-  // (ranged attack)
+  // (medium+long range attack)
   npc.theRoc = {
     name: 'The Roc',
     strength: 150,
