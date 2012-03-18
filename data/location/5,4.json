@@ -1,0 +1,12 @@
+{
+  "img": {},
+  "description": "You are climbing a steep mountain",
+  "afar": "A steep, snowy mountain",
+  "coords": [
+    5,
+    4
+  ],
+  "here": {},
+  "id": "5,4",
+  "type": "mountains"
+}
