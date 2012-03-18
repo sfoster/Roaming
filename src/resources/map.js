@@ -18,7 +18,7 @@ define(['$', 'resources/util', 'resources/Promise'], function($, util, Promise){
         // so for now we force asnyc
         setTimeout(function(){
           loadedPromise.resolve(true);
-        },0)
+        },0);
       } else{
         canvas = this.canvasNode = document.createElement("canvas");
         canvas.style.cssText = "display:block;margin:4px auto";
@@ -45,6 +45,7 @@ define(['$', 'resources/util', 'resources/Promise'], function($, util, Promise){
       for(var i=0; i<mapData.length; i++){
         tile = mapData[i];
         terrain = terrainTypes[tile.type];
+        
         if(terrain){
           img = terrain.img;
           if(img){
@@ -56,7 +57,7 @@ define(['$', 'resources/util', 'resources/Promise'], function($, util, Promise){
                 tileSize,               // source-width
                 tileSize,               // source-height
                 tileSize*tile.x,        // dest-x
-                tileSize*tile.y,        // dest-y
+                tileSize*tile.y,        // dest-y (relative to moveTo)
                 tileSize,               // dest-width
                 tileSize                // dest-height
             );
@@ -64,6 +65,15 @@ define(['$', 'resources/util', 'resources/Promise'], function($, util, Promise){
           } else {
             console.log("no img property in: ", terrainTypes[tile.type]);
           }
+          if(options.showCoords) {
+            ctx.fillStyle = 'rgba(51,51,51,0.5)';
+            ctx.fillRect(tileSize*tile.x, tileSize*tile.y, 24, 12);
+            ctx.fillStyle = "#ffc"
+            ctx.textBaseline = 'top';
+            ctx.font = 'normal 9px sans-serif';
+            ctx.fillText( tile.x+","+tile.y, tileSize*tile.x+1, tileSize*tile.y+1 );
+          }
+          
         } else {
           console.warn("unknown terrain type in: ", tile);
         }

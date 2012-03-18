@@ -14,7 +14,7 @@ define([
       mixin = util.mixin,
       when = Promise.when;
 
-  var currentTool = 'barren';
+  var currentTool = 'edittile';
   var mapNode = null;
   var tileSize = 50, 
       worldSize = { width: 25, height: 25},
@@ -227,7 +227,8 @@ define([
         });
         map.renderMap( tiles, {
           tileSize: tileSize,
-          canvasNode: mapNode
+          canvasNode: mapNode,
+          showCoords: true
         });
       });
     });
