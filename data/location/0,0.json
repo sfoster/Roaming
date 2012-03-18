@@ -1,4 +1,7 @@
 {
+  "img": {},
+  "description": "The yawning abyss swallows you up. You fall for a night and a day. ",
+  "afar": "the edge of the world. No man may pass here.",
   "width": 1,
   "height": 1,
   "type": "abyss",
@@ -12,7 +15,5 @@
       "fixed": false
     }
   },
-  "afar": "the edge of the world. No man may pass here.",
-  "description": "The yawning abyss swallows you up. You fall for a night a day. ",
   "id": "0,0"
 }
