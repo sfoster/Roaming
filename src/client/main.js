@@ -25,6 +25,7 @@ define([
   // enter the region and tile
   
   var game ={};
+  var locationsByCoords = {};
   var stack = (function(){
     var _stack = [];
     return {
@@ -98,25 +99,81 @@ define([
     return names[keyMask];
   }
   
+  function loadLocation(id) {
+    var locationModel = locationsByCoords[id];
+    var locationPromise = new Promise();
+    if(locationModel) {
+      setTimeout(function(){
+        locationPromise.resolve(locationModel);
+      }, 10);
+    } else {
+      require(['json!/location/'+id+'.json'], function(location){
+        if(!location.coords){
+          console.error("No location at: ", id);
+          location = {
+            coords: id.split(',')
+          };
+        } else {
+          location.id = location.coords.join(',');
+        }
+        locationPromise.resolve(location);
+      });
+    }
+    return locationPromise;
+  }
+  
+  function loadLocations() {
+    var locations = [];
+    var allLocationsPromise = new Promise();
+    var ids = Array.prototype.slice.call(arguments, 0);
 
+    ids.forEach(function(id){
+      loadLocation(id).then(function(location){
+        locations.push(location);
+        if(locations.length >= ids.length){
+          // all loaded
+          allLocationsPromise.resolve(locations);
+        }
+      });
+    });
+    return allLocationsPromise;
+  }
+  
   Evented.on("onafterlocationenter", function(evt){
     console.log("onafterlocationenter: ", evt);
     var tile = evt.target, 
         directionsTemplate = template('{{coords}}: To the <a href="#{{coords}}" class="option">{{direction}}</a> you see {{terrain}}');
         
     var edges = world.getEdges(tile.x, tile.y);
-    var $options = $('<ol></ol>');
-    
-    edges.forEach(function(edge){
-      // console.log("adjacent edge: ", edge);
-      var context = {
-        terrain: edge.afar || edge.type,
-        coords: edge.x +','+edge.y,
-        direction: getCardinalDirection(tile, edge)
-      };
-      $options.append("<li>" + directionsTemplate(context) + "</li>");
+    var edgesById = {};
+    var ids = edges.map(function(tile){
+      var id = tile.x +',' + tile.y;
+      edgesById[id] = tile;
+      return id;
     });
-    $("#main").append($options);
+    loadLocations.apply(this, ids).then(function(locations){
+      var $options = $('<ol></ol>');
+      locations.forEach(function(edge){
+        console.log("adjacent edge: ", edge);
+        var coords = edge.id.split(','), 
+            x = coords[0], 
+            y = coords[1];
+        var afar = edge.afar; 
+        if(!afar || afar.match(/^--/)){
+          afar = edgesById[edge.id].type;
+        }
+        var context = {
+          terrain: afar,
+          coords: edge.id,
+          direction: getCardinalDirection(tile, { x: x, y: y }),
+          x: x,
+          y: y
+        };
+        console.log("template context: ", context);
+        $options.append("<li>" + directionsTemplate(context) + "</li>");
+      });
+      $("#main").append($options);
+    });
   });
   
 });
