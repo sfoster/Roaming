@@ -1,9 +1,10 @@
 var fs = require('fs');
 var path = require('path');
+var assert = require('assert');
 var express = require('express');
 var app = express.createServer();
 var root = __dirname;
-var port = process.env.ROAMINGAPP_PORT || 80;
+var port = process.env.ROAMINGAPP_PORT || 3000;
 var datadir = process.env.ROAMINGAPP_DATADIR || path.resolve(root, '../data');
 console.log("datadir at: " + datadir);
 
@@ -84,6 +85,52 @@ app.get(/^\/(resources|models|vendor|css|plugins)\/(.*)$/, function(req, res){
   } else {
     res.send(404);
   }
+});
+
+app.get('/location/:id.json', function(req, res){
+  // handle data as static files for now
+  var id = req.params.id;
+  console.log("request for location id: " + id);
+
+  var relPath = 'location/' + id + '.json';
+  var resourcePath = datadir + '/' + relPath;
+
+  if( path.existsSync(resourcePath) ){
+    resourcePath = fs.realpathSync(resourcePath);
+    console.log(id + " exists");
+    res.sendfile( resourcePath );
+  } else {
+    console.log(id + " does not exist");
+    var emptyLocation = {
+      coords: id.split(','),
+      description: "--No description yet--",
+      afar: "--No afar description yet--",
+      here: {} 
+    };
+    res.send( JSON.stringify(emptyLocation) );
+  }
+});
+
+app.put('/location/:id.json', function(req, res){
+  var id = req.params.id;
+  var fileData = req.body;
+  assert(id);
+  assert(2 == id.split(',').length);
+  assert("string" == typeof fileData.description);
+
+  var relPath = 'location/' + id + '.json';
+  var resourcePath = datadir + '/' + relPath;
+
+  fs.writeFile(resourcePath, JSON.stringify(fileData, null, 2), function(err) {
+    if(err) {
+        console.log(err);
+        res.send(500);
+    } else {
+        res.send({ status: 'ok', 'message': 'updated '+resourcePath });
+        console.log(resourcePath + " saved");
+    }
+  });
+  
 });
 
 app.get('/data/*', function(req, res){

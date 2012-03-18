@@ -49,6 +49,10 @@
 .tool.active {
   outline: 2px inset red;
 }
+.swatch {
+  width: 3em; height: 3em; 
+  display: block;
+}
 #map {
   position: absolute;
   margin: 0; padding: 0;
@@ -69,4 +73,20 @@
 }
 .tile:hover {
   outline: 1px dotted white;
+}
+
+/* tile editor */
+
+#detail {
+  z-index: 10;
+  overflow: "auto";
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  bottom: 10px;
+  left: 10px;
+  background-color: #eee;
+  border: 1px double #999;
+  border-radius: 8px;
+  padding: 10px;
 }

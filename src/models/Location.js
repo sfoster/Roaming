@@ -3,12 +3,16 @@ define(['$', 'resources/util', 'resources/event'], function($, util, Evented){
       create = util.create;
   
   function Location(options){
+    if(!options) return;
     for(var i in options){
       this[i] = options[i];
     }
     console.log("create location with data: ", options);
-    if(!this.id && this.data){
-      this.id = this.data.coords.join(',');
+    var coords = this.coords;
+    this.x = coords[0]; 
+    this.y = coords[1];
+    if(!this.id){
+      this.id = coords.join(',');
     }
   }
   Location.prototype.get = function(name){
@@ -16,10 +20,10 @@ define(['$', 'resources/util', 'resources/event'], function($, util, Evented){
   };
   Location.prototype.enter = function(player, game){
     var proceed = true;
-    emit("onbeforeenter", {
+    emit("onbeforelocationenter", {
       target: this,
       player: player,
-      cancel: function(){ proceed = false; },
+      cancel: function(){ proceed = false; }
     });
     if(proceed){
       console.log("location enter: ", this, player, game);
@@ -35,10 +39,10 @@ define(['$', 'resources/util', 'resources/event'], function($, util, Evented){
         player.history[this.id] = hist;
       }
     }
-    emit("onaftereenter", {
+    emit("onafterlocationenter", {
       target: this,
       player: player,
-      cancel: function(){ proceed = false; },
+      cancel: function(){ proceed = false; }
     });
     
     // what is in this tile? 
@@ -50,15 +54,6 @@ define(['$', 'resources/util', 'resources/event'], function($, util, Evented){
   Location.prototype.exit = function(player, game){
     console.log("Location exit stub");
   };
+
   return Location;
 });
-
-
-emit("onlocationenter", {
-  target: tile, 
-  stack: statck
-});
-var directions = adjacentTiles.map(function(tile){
-  return tile.x + "," + tile.y;
-});
-$("#main").append("<p>You can go:" + directions.join(', ') + "</p>");
