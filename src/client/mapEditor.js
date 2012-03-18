@@ -18,7 +18,8 @@ define([
   var mapNode = null;
   var tileSize = 50, 
       worldSize = { width: 25, height: 25},
-      tilesByCoords = {};
+      tilesByCoords = {}, 
+      locationsByCoords = {};
   
   //  
   function saveDetail() {
@@ -41,6 +42,7 @@ define([
       success: function(resp){
         console.log("save response: ", resp);
         alert("location saved: "+ resp.status);
+        locationsByCoords[id] = formData;
         savePromise.resolve(resp.status);
       }, 
       error: function(xhr){ 
@@ -74,7 +76,10 @@ define([
   function detailEditInit(){
     $('#detailSaveBtn').click(
       function(evt){
-        saveDetail(locationModel).then(hideDetail);
+        saveDetail(locationModel).then(function(){
+          hideDetail();
+          
+        });
       }, 
       function(){}
     );
@@ -115,6 +120,29 @@ define([
 
   var locationModel = null;
   
+  function loadDetail(id) {
+    var locationModel = locationsByCoords[id];
+    var detailPromise = new Promise();
+    if(locationModel) {
+      setTimeout(function(){
+        detailPromise.resolve(locationModel);
+      }, 10);
+    } else {
+      require(['json!/location/'+id+'.json'], function(location){
+        if(!location.coords){
+          console.error("No location at: ", id);
+          location = {
+            coords: id.split(',')
+          };
+        } else {
+          location.id = location.coords.join(',');
+        }
+        detailPromise.resolve(location);
+      });
+    }
+    return detailPromise;
+  }
+  
   function editDetail(id, tile){
     console.log("editDetail: ", id);
 
@@ -126,15 +154,8 @@ define([
     
     var defaults = terrainTypes[tile.type] || {};
     console.log("defaults: ", defaults);
-    require(['json!/location/'+id+'.json'], function(location){
-      if(!location.coords){
-        console.error("No location at: ", id);
-        location = {
-          coords: id.split(',')
-        };
-      } else {
-        location.id = location.coords.join(',');
-      }
+    
+    loadDetail(id).then(function(location){
       if(location.description.match(/^--/)){
         delete location.description;
       }
@@ -146,18 +167,6 @@ define([
       locationModel = location;
       $detail.html( tmpl( util.mixin(location, { type: tile.type }) ) );
     });
-
-    // $detail.empty();
-    // 
-    // Object.keys(npc).forEach(function(id){
-    //   var data  = Object.create(tilesByCoords[id]);
-    //   data.id = id;
-    //   var str = tmpl.replace(pattern, function(m, name){
-    //     return (name in data) ? data[name] : "";
-    //   });
-    //   $(str).appendTo($detail);
-    // });
-    
   }
   
   function paletteInit(){
