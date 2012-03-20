@@ -1,0 +1,12 @@
+{
+  "img": {},
+  "description": "You are climbing a circle of mountians",
+  "afar": "Mountains",
+  "coords": [
+    11,
+    1
+  ],
+  "here": {},
+  "id": "11,1",
+  "type": "mountains"
+}

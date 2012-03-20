@@ -6,7 +6,12 @@
     3,
     2
   ],
-  "here": {},
+  "here": {
+    "feather": {
+      "description": "At your feet is an unusually large feather. It could only have come from one kind of bird. If the roc was here, you are in the right place.",
+      "fixed": false
+    }
+  },
   "id": "3,2",
   "type": "plains"
 }
