@@ -57,7 +57,7 @@ define([
     "water":     {
       img: waterImg,
       description: "You are submerged in deep water",
-      afar: "water"
+      afar: "A deep blue pool"
     },
     "abyss":     {
       img: abyssImg,
