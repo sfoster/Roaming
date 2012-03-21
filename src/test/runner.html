@@ -46,11 +46,11 @@
       baseUrl: '..',
       // configure our AMD loader
       paths: config.packages
-    }, ['./runner.js'], function(runner){
+    }, ['./browserRunner.js'], function(runner){
       runner.config({ 
         logNode: document.getElementById("results"), 
         modules: [
-          'test/regions'
+          'test/spec/regions'
         ]
       })
       runner.run();

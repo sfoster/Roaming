@@ -6,4 +6,4 @@ root=`pwd`
 # not quite the same as config.paths, but good enough
 export NODE_PATH="$root:$root/lib:$NODE_PATH"
 
-echo `node_modules/vows/bin/vows ./test/* --spec`
+echo `node_modules/vows/bin/vows ./test/spec/* --spec`
