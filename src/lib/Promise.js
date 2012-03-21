@@ -46,11 +46,11 @@ define(function(){
 
   }
 
-  Promise.when = function(promiseOrValue, resolved, rejected){
-    if(promiseOrValue && typeof promiseOrValue.then === "function"){
-      return promiseOrValue.then(callback, errback, progressHandler);
+  Promise.when = function(promiseOrValue, resolved, rejected, progressHandler){
+    if(promiseOrValue instanceof Promise){
+      return promiseOrValue.then(resolved, rejected, progressHandler);
     }
-    return callback ? callback(promiseOrValue) : promiseOrValue;  // Promise
+    return resolved ? resolved(promiseOrValue) : promiseOrValue;  // Promise
   };
 
   return Promise;
