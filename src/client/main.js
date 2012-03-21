@@ -1,8 +1,8 @@
 define([
-  '$', 'resources/util', 'resources/event', 'resources/template', 
+  '$', 'lib/util', 'lib/event', 'resources/template', 
   'main-ui',
-  'resources/UrlRouter',
-  'resources/Promise', 'resources/world', 'models/player'], function(
+  'lib/UrlRouter',
+  'lib/Promise', 'resources/world', 'models/player'], function(
     $, util, Evented, template, 
     ui,
     UrlRouter, 

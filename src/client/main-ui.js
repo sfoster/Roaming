@@ -1,5 +1,5 @@
 define([
-  '$', 'resources/util', 'resources/template',
+  '$', 'lib/util', 'resources/template',
   'resources/map'
 ], function($, util, template, map){
 

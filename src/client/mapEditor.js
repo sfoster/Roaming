@@ -1,6 +1,6 @@
 define([
-  '$', 'resources/util', 'resources/template',
-  'resources/Promise', 
+  '$', 'lib/util', 'resources/template',
+  'lib/Promise', 
   'resources/map', 'resources/terrain'
 ], function(
   $, util, template,
