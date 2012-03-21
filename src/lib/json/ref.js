@@ -1,4 +1,4 @@
-define(['json/date'], function(util, date){
+define(['./date'], function(util, date){
   var escapeString = JSON.stringify;
 
   function map(arr, fn){
