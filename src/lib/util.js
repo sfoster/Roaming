@@ -63,6 +63,7 @@ define(function(){
   
   return {
     create: create,
+    map: map,
     mixin: mixin,
     pluck: pluck,
     values: values, 
