@@ -3,6 +3,10 @@ define([
   'resources/map'
 ], function($, util, template, map){
 
+  function initHud(){
+    $('<canvas id="nearbyMap" width="150" height="150"></canvas>').appendTo($("#nearby"));
+  }
+  
   function initMap(){
     console.log("init map");
     map.init().then(function(val){
@@ -25,6 +29,7 @@ define([
     init: function(player, world){
       
       initMap();
+      initHud();
       
       // display the player's inventory
       var $inventoryNode = $("<ul></ul>");

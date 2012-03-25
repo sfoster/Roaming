@@ -1,10 +1,12 @@
 define([
   '$', 'lib/util', 'lib/event', 'resources/template', 
   'main-ui',
+  'resources/map',
   'lib/UrlRouter',
   'lib/Promise', 'resources/world', 'models/player'], function(
     $, util, Evented, template, 
     ui,
+    map,
     UrlRouter, 
     Promise, world, player){
   $('#main').html("It works (so far)");
@@ -18,6 +20,7 @@ define([
   
   // draw and fill the layout
   ui.init( player );
+  map.init();
   
   // login or init player
   // set up main game stack
@@ -146,33 +149,61 @@ define([
         
     var edges = world.getEdges(tile.x, tile.y);
     var edgesById = {};
+    var locationsById = {};
     var ids = edges.map(function(tile){
       var id = tile.x +',' + tile.y;
       edgesById[id] = tile;
       return id;
     });
+
+
     loadLocations.apply(this, ids).then(function(locations){
-      var $options = $('<ol></ol>');
-      locations.forEach(function(edge){
-        console.log("adjacent edge: ", edge);
-        var coords = edge.id.split(','), 
-            x = coords[0], 
-            y = coords[1];
-        var afar = edge.afar; 
-        if(!afar || afar.match(/^--/)){
-          afar = edgesById[edge.id].type;
-        }
-        var context = {
-          terrain: afar,
-          coords: edge.id,
-          direction: getCardinalDirection(tile, { x: x, y: y }),
-          x: x,
-          y: y
-        };
-        console.log("template context: ", context);
-        $options.append("<li>" + directionsTemplate(context) + "</li>");
+      // populate the by-id lookup for the location objects
+      locations.forEach(function(){
+        locationsById[location.id] = location;
       });
-      $("#main").append($options);
+      
+      var locationTiles = util.map(edges, function(edgeTile){
+        var location = locationsById[edgeTile.id] || {};
+        var tile = util.mixin( Object.create(edgeTile), location);
+        return tile;
+      });
+      
+      var canvasNode = map.renderMap( locationTiles, { 
+        canvasNode: $('#nearbyMap')[0],
+        showCoords: true,
+        tileSize: 50,
+        startX: tile.x-1, 
+        startY: tile.y-1
+      });
+      
+      $('#nearby').css({
+        margin: '0',
+        padding: '5px',
+        display: 'block'
+      });
+      
+      // var $options = $('<ol></ol>');
+      // locations.forEach(function(edge){
+      //   console.log("adjacent edge: ", edge);
+      //   var coords = edge.id.split(','), 
+      //       x = coords[0], 
+      //       y = coords[1];
+      //   var afar = edge.afar; 
+      //   if(!afar || afar.match(/^--/)){
+      //     afar = edgesById[edge.id].type;
+      //   }
+      //   var context = {
+      //     terrain: afar,
+      //     coords: edge.id,
+      //     direction: getCardinalDirection(tile, { x: x, y: y }),
+      //     x: x,
+      //     y: y
+      //   };
+      //   console.log("template context: ", context);
+      //   $options.append("<li>" + directionsTemplate(context) + "</li>");
+      // });
+      // $("#main").append($options);
     });
   });
   

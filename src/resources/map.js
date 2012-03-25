@@ -39,7 +39,9 @@ define(['$', 'lib/util', 'lib/Promise'], function($, util, Promise){
           img = null,
           terrain = null,
           tileSize = options.tileSize || 10,
-          ctx = (options.canvasNode || this.canvasNode).getContext("2d");
+          ctx = (options.canvasNode || this.canvasNode).getContext("2d"), 
+          startX = options.startX || 0, 
+          startY = options.startY || 0;  
       
       console.log("renderMap at ", tileSize);
       for(var i=0; i<mapData.length; i++){
@@ -56,8 +58,8 @@ define(['$', 'lib/util', 'lib/Promise'], function($, util, Promise){
                 0,                      // source-y
                 tileSize,               // source-width
                 tileSize,               // source-height
-                tileSize*tile.x,        // dest-x
-                tileSize*tile.y,        // dest-y (relative to moveTo)
+                tileSize*(tile.x-startX),        // dest-x
+                tileSize*(tile.y-startY),        // dest-y (relative to moveTo)
                 tileSize,               // dest-width
                 tileSize                // dest-height
             );
@@ -67,11 +69,15 @@ define(['$', 'lib/util', 'lib/Promise'], function($, util, Promise){
           }
           if(options.showCoords) {
             ctx.fillStyle = 'rgba(51,51,51,0.5)';
-            ctx.fillRect(tileSize*tile.x, tileSize*tile.y, 24, 12);
-            ctx.fillStyle = "#ffc"
+            ctx.fillRect(tileSize*(tile.x-startX), tileSize*(tile.y-startY), 24, 12);
+            ctx.fillStyle = "#ffc";
             ctx.textBaseline = 'top';
             ctx.font = 'normal 9px sans-serif';
-            ctx.fillText( tile.x+","+tile.y, tileSize*tile.x+1, tileSize*tile.y+1 );
+            ctx.fillText( 
+              tile.x+","+tile.y, 
+              tileSize*(tile.x-startX)+1, 
+              tileSize*(tile.y-startY)+1
+            );
           }
           
         } else {
