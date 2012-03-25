@@ -85,13 +85,13 @@ h1, h2, h3, h3, h4, h5 {
 #hud {
   position: absolute;
   top: 5px; right: 210px; left: 5px;
-  height: 60px;
+  height: 160px;
   
   background-color: #666;
 }
 #main {
   position: absolute;
-  top: 70px; right: 210px; left: 5px; bottom: 5px;
+  top: 170px; right: 210px; left: 5px; bottom: 5px;
   padding: 10px;
   min-height: 60px;
   background-color: #fff;
