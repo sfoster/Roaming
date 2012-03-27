@@ -177,6 +177,15 @@ npc.gaintCobra= {
     weapon: 'weapons.lance',
     evasion: 1
   };
+  npc.humanElite = {
+    name: 'Elite Warrior',
+    strength: 30,
+    hp: 75,
+    mp: 30,
+    weapon: 'weapons.eliteSword',
+    evasion: 10
+  };
+
   npc.harpy = {
     name: 'Harpy',
     strength: 15,
