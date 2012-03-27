@@ -293,6 +293,33 @@ define([], function(){
     weight: 6,
     mpbonus: 0
   };
+   weapons.eliteSword = {
+    name: 'Elite Sword',
+    shortRangeDamage: 30,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0,
+    weaponclass: "shortrange",
+    weight: 3,
+    mpbonus: 1
+  };
+  weapons.eliteLance = {
+    name: 'Elite Lance',
+    shortRangeDamage: 2,
+    longRangeDamage: 0,
+    mediumRangeDamage: 25,
+    weaponclass: "mediumrange",
+    weight: 5,
+    mpbonus: 1
+  };
+  weapons.eliteLongbow = {
+    name: 'Elite Longbow',
+    shortRangeDamage: 5,
+    longRangeDamage: 20,
+    mediumRangeDamage: 25,
+    weaponclass: "longrange",
+    weight: 1,
+    mpbonus: 1
+  };
    weapons.holyKnife = {
     name: ' Holy Knife',
     shortRangeDamage: 5,
