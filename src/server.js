@@ -54,21 +54,17 @@ app.post('/location/world.json', function(req, res){
   });
 });
 
-app.get(/^\/(resources|models|vendor|css|plugins)\/(.*)$/, function(req, res){
+app.get(/^\/(resources|models|vendor|css|plugins|lib)\/(.*)$/, function(req, res){
   var resourcePath;
-  // console.log("matched: ", req.params[0], req.params[1]);
+  console.log("matched: ", req.params[0], req.params[1]);
+  console.log("prefix with root: ", root);
   switch(req.params[0]){
     case 'resources': 
-      resourcePath = root + '/resources/' + req.params[1];
-      break;
-    case 'plugins': 
-      resourcePath = root + '/plugins/' + req.params[1];
-      break;
     case 'vendor': 
-      resourcePath = root + '/vendor/' + req.params[1];
-      break;
+    case 'plugins': 
     case 'models': 
-      resourcePath = root + '/models/' + req.params[1];
+    case 'lib': 
+      resourcePath = root + '/' +req.params[0]+ '/' + req.params[1];
       break;
     case 'css': 
       resourcePath = root + '/client/css/' + req.params[1];

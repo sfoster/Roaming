@@ -1,0 +1,12 @@
+{
+  "img": {},
+  "description": "You are climbing a large rocky hill, not really a mountian at all",
+  "afar": "A rocky hill",
+  "coords": [
+    14,
+    2
+  ],
+  "here": {},
+  "id": "14,2",
+  "type": "mountains"
+}

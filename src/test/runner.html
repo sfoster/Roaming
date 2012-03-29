@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Test Runner</title>
+  <style>
+    .ok {
+      background-color: #9f9;
+    }
+    .fail {
+      background-color: #f99;
+    }
+    #results {
+      list-style-type: none;
+      margin: 0; padding: 0;
+    }
+    #results li {
+      margin: 0 0 2px 0;
+      padding: 2px 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Test Runner</h1>
+  <!-- Ask me why I wrote this not-terribly-good test runner? I dunno. It was late and I was yak-shaving -->
+  <ul id="results">
+    
+  </ul>
+  <script type="text/javascript">
+    var config = {
+      packages: {
+        // package mappings
+        $: 'vendor/zepto',
+        util: 'lib/util',
+        compose: 'vendor/compose',
+        text: 'plugins/vendor/text',
+        json: 'plugins/vendor/json',
+        image: 'plugins/vendor/image',
+        Fixture: 'test/Fixture'
+      }
+    };
+  </script>
+  <script src="../vendor/require.js"></script>
+  <script>
+    require({
+      baseUrl: '..',
+      // configure our AMD loader
+      paths: config.packages
+    }, ['./browserRunner.js'], function(runner){
+      runner.config({ 
+        logNode: document.getElementById("results"), 
+        modules: [
+          'test/spec/regions'
+        ]
+      })
+      runner.run();
+    });
+  </script>
+</body>
+</html>

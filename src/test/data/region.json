@@ -1,0 +1,14 @@
+[
+  {
+    "x": 0,
+    "y": 0,
+    "type": "abyss",
+    "$ref": "/location/0,0.json"
+  },
+  {
+    "x": 1,
+    "y": 0,
+    "type": "abyss",
+    "$ref": "/location/1,0.json"
+  }
+]

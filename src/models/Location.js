@@ -1,4 +1,4 @@
-define(['$', 'resources/util', 'resources/event'], function($, util, Evented){
+define(['$', 'lib/util', 'lib/event'], function($, util, Evented){
   var emit = Evented.emit.bind(this), // it matter what 'this' when we emit and listenr for events. Here, 'this' is the global context
       create = util.create;
   

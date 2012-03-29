@@ -49,8 +49,21 @@ define(function(){
     return clone;
   }
 
+  function map(obj, fn){
+    var result = {}; 
+    if(obj instanceof Array){
+      result = obj.map(fn);
+    } else {
+      Object.keys(obj).forEach(function(key){
+        result[key] = fn(obj[key], key, obj);
+      });
+    }
+    return result;
+  }
+  
   return {
     create: create,
+    map: map,
     mixin: mixin,
     pluck: pluck,
     values: values, 
