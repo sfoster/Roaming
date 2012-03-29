@@ -182,7 +182,7 @@ npc.gaintCobra= {
     strength: 30,
     hp: 75,
     mp: 30,
-    weapon: 'weapons.eliteSword, weapons.eliteLance',
+    weapon: 'weapons.eliteSword, weapons.eliteLance, weapons.elitelongbow',
     evasion: 10
   };
 
