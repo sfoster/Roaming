@@ -17,7 +17,8 @@ define([
   plainsImg,
   waterImg,
   abyssImg,
-  sandImg
+  sandImg,
+  forestImg
 ){
 
   // each terrain includes an image and
@@ -61,13 +62,19 @@ define([
     },
     "abyss":     {
       img: abyssImg,
-      description: "The yawning abyss swallows you up. You fall for a night a day.",
+      description: "The yawning abyss swallows you up. You fall for a night and a day.",
       afar: "the edge of the world. No man may pass here."
     },
     "sand":     {
       img: sandImg,
       description: "Sand",
       afar: "sand"
+    }, 
+    "forest":    {
+      img: forestImg,
+      description: "You are surrounded by huge trees of many types",
+      afar: "a vast forest"     
+     
     }
   };
 });
