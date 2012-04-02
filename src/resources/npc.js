@@ -48,7 +48,7 @@ npc.mutantRat = {
     strength: 2,
     hp: 5,
     mp: 10,
-    range: 'short, medium',
+    range: 'short,',
     evasion: 10
   };// Mutant Rat has Poison spell/ability
   //( does reccuring half damage for 2-3 turns after attack )
@@ -136,6 +136,65 @@ npc.gaintCobra= {
     mp: 0,
     range: 'short',
     evasion: 1
+  };
+  npc.wildcat = {
+    name: 'Wildcat',
+    strength: 8,
+    hp: 30,
+    mp: 0,
+    range: 'short',
+    evasion: 16
+  };
+  npc.angryDog = {
+    name: 'Angry Dog',
+    strength: 10,
+    hp: 35,
+    mp: 0,
+    range: 'short',
+    evasion: 14
+  };
+  npc.cheetah = {
+    name: 'Cheetah',
+    strength: 10,
+    hp: 35,
+    mp: 0,
+    range: 'short',
+    evasion: 24
+  };
+  npc.angryWolf = {
+    name: 'Angry Wolf',
+    strength: 12,
+    hp: 40,
+    mp: 0,
+    range: 'short',
+    evasion: 12
+  };
+  npc.tiger = {
+    name: 'Tiger',
+    strength: 14,
+    hp: 40,
+    mp: 0,
+    range: 'short',
+    evasion: 28
+  };
+ npc.rabidDog = {
+    name: 'Rabid Dog',
+    strength: 10,
+    hp: 35,
+    mp: 50,
+    range: 'short',
+    evasion: 12
+    // Rabid Dog has Poison spell/ability
+    // (see Mutant Rat)
+  };npc.sickCat = {
+    name: 'Sick Cat',
+    strength: 4,
+    hp: 10,
+    mp: 50,
+    range: 'short',
+    evasion: 6
+    // Sick Cat has poison spell/abilty
+    // (see Mutant Rat)
   };
   npc.centaur = {
     name: 'Centaur',
