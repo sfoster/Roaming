@@ -177,6 +177,24 @@ npc.gaintCobra= {
     range: 'short',
     evasion: 28
   };
+  npc.bear = {
+    name: 'Bear',
+    strength: 20,
+    hp: 50,
+    mp: 0,
+    range: 'short',
+    evasion: 2
+  };
+  npc.sickCat = {
+    name: 'Sick Cat',
+    strength: 4,
+    hp: 10,
+    mp: 50,
+    range: 'short',
+    evasion: 6
+    // Sick Cat has poison spell/abilty
+    // (see Mutant Rat)
+  };
  npc.rabidDog = {
     name: 'Rabid Dog',
     strength: 10,
@@ -186,15 +204,22 @@ npc.gaintCobra= {
     evasion: 12
     // Rabid Dog has Poison spell/ability
     // (see Mutant Rat)
-  };npc.sickCat = {
-    name: 'Sick Cat',
-    strength: 4,
-    hp: 10,
-    mp: 50,
+  };
+  npc.lioness = {
+    name: 'Lioness',
+    strength: 20,
+    hp: 50,
+    mp: 0,
     range: 'short',
-    evasion: 6
-    // Sick Cat has poison spell/abilty
-    // (see Mutant Rat)
+    evasion: 20
+  };
+  npc.gorrila = {
+    name: 'Gorrila',
+    strength: 22,
+    hp: 60,
+    mp: 0,
+    range: 'short',
+    evasion: 4
   };
   npc.centaur = {
     name: 'Centaur',
