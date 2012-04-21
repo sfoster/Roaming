@@ -8,7 +8,9 @@ define([
   "image!resources/graphics/water.jpg",
   "image!resources/graphics/abyss.jpg",
   "image!resources/graphics/sandground.jpg",
-  "image!resources/graphics/forest.jpg"
+  "image!resources/graphics/forest.jpg",
+  "image!resources/graphics/ice.jpg"
+  
 ], function(
   clearImg,
   dryGroundImg, 
@@ -19,7 +21,8 @@ define([
   waterImg,
   abyssImg,
   sandImg,
-  forestImg
+  forestImg,
+  iceImg
 ){
 
   // each terrain includes an image and
@@ -74,7 +77,12 @@ define([
     "forest":    {
       img: forestImg,
       description: "You are surrounded by huge trees of many types",
-      afar: "a vast forest"     
+      afar: "a vast forest"
+    }, 
+      "ice":    {
+      img: iceImg,
+      description: "You are slipping on smooth ice",
+      afar: "ice"     
      
     }
   };
