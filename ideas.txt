@@ -35,5 +35,30 @@ on a epic journey. He decided that HE would be the one...to bring back Corwen's 
 
 And so the story starts. YOU are Corwen's grandson and YOU are going to save the village!
 
+The player will quickly find one of the 10 heros. He tells this story: 
 
- 
+The 10 heros did find the Roc, but when they attempted to challenge it and steal back the Staff, they were defeated. 
+5 were killed, 5 managed to escape. 
+While they were there, they found a fragment of an ancient tome, with a drawing that looked very similar to the runes on the staff. 
+They deciphered enough to realize that the Staff could be used as a weapon of incredible power. Since that time, they have been scouring the continent for rest of this tome, in the hope that with the knowledge it contains, they might be able to defeat the Roc. 
+
+Each sets a task for the player to prove themselves before they will offer up information or stuff. 
+
+Task 1: Retrieve a fragment of the Tome from some creature. He will then give you weapons and his fragmetn
+Task 2: Retrieve a fragment of the Tome from some creature. He will then give you weapons and his fragmetn
+Task 3: Retrieve a fragment of the Tome from some creature. He will then give you weapons and his fragmetn
+Task 4: Retrieve a fragment of the Tome from some creature. He will then give you weapons and his fragmetn
+Task 5: Retrieve a fragment of the Tome from some creature. He will then give you weapons and his fragmetn
+
+Questions: 
+  Where does the player start
+  Where are they supposed to go
+  
+Outline: 
+Main objective: 
+  Find the Roc and return with the staff
+
+Quests: 
+  Find a guide through the mountains
+  
+  

@@ -7,7 +7,8 @@ define([
   "image!resources/graphics/grassground.jpg",
   "image!resources/graphics/water.jpg",
   "image!resources/graphics/abyss.jpg",
-  "image!resources/graphics/sandground.jpg"
+  "image!resources/graphics/sandground.jpg",
+  "image!resources/graphics/forest.jpg"
 ], function(
   clearImg,
   dryGroundImg, 
