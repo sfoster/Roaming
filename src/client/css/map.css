@@ -36,6 +36,9 @@
 .forest {
   background: url('../resources/graphics/forest.jpg') no-repeat scroll top left;
 }
+.ice {
+  background: url('../resources/graphics/ice.jpg') no-repeat scroll top left;
+}
 .tool.clear {
   background: url('../resources/graphics/gridbg.gif');
 }
