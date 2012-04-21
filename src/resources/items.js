@@ -24,7 +24,8 @@ items.lantern = {
   };
 items.whetstone = {
     name: 'Whetstone',
-    type: 'enhancement'
+    type: 'enhancement',
+    effect: '+3 dmg with sharp weapons'
   };  
   return items;
 });
