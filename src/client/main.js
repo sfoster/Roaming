@@ -149,7 +149,9 @@ define([
 
     // add the offsets for the current location
     var location = world.tileAt(nearbyMap.startX +x, nearbyMap.startY+y);
-    console.log("map clicked at: ", evt, location);
+    var hash = '#'+[location.x, location.y].join(',');
+    window.location.hash = hash;
+    console.log("map clicked at: ", evt, location, hash);
   });
   
   Evented.on("onafterlocationenter", function(evt){
