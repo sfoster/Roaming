@@ -142,6 +142,16 @@ define([
     return allLocationsPromise;
   }
   
+  $('#nearbyMap').click(function(evt){
+    var tileSize = nearbyMap.tileSize;
+    var x = Math.floor(evt.clientX / tileSize), 
+        y = Math.floor(evt.clientY / tileSize);
+
+    // add the offsets for the current location
+    var location = world.tileAt(nearbyMap.startX +x, nearbyMap.startY+y);
+    console.log("map clicked at: ", evt, location);
+  });
+  
   Evented.on("onafterlocationenter", function(evt){
     console.log("onafterlocationenter: ", evt);
     var tile = evt.target, 
@@ -156,7 +166,6 @@ define([
       return id;
     });
 
-
     loadLocations.apply(this, ids).then(function(locations){
       // populate the by-id lookup for the location objects
       locations.forEach(function(){
@@ -169,41 +178,23 @@ define([
         return tile;
       });
       
-      var canvasNode = map.renderMap( locationTiles, { 
+      // update the nearby map with tiles around the current location
+      nearbyMap = { 
         canvasNode: $('#nearbyMap')[0],
         showCoords: true,
         tileSize: 50,
         startX: tile.x-1, 
         startY: tile.y-1
-      });
+      };
+
+      var canvasNode = map.renderMap( locationTiles, nearbyMap);
       
       $('#nearby').css({
         margin: '0',
         padding: '5px',
         display: 'block'
       });
-      
-      // var $options = $('<ol></ol>');
-      // locations.forEach(function(edge){
-      //   console.log("adjacent edge: ", edge);
-      //   var coords = edge.id.split(','), 
-      //       x = coords[0], 
-      //       y = coords[1];
-      //   var afar = edge.afar; 
-      //   if(!afar || afar.match(/^--/)){
-      //     afar = edgesById[edge.id].type;
-      //   }
-      //   var context = {
-      //     terrain: afar,
-      //     coords: edge.id,
-      //     direction: getCardinalDirection(tile, { x: x, y: y }),
-      //     x: x,
-      //     y: y
-      //   };
-      //   console.log("template context: ", context);
-      //   $options.append("<li>" + directionsTemplate(context) + "</li>");
-      // });
-      // $("#main").append($options);
+
     });
   });
   
