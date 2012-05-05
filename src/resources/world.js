@@ -1,5 +1,16 @@
 define(['$', 'json!/location/world.json'], function($, worldData){
 
+  var tilesByCoords = {};
+  
+  function indexMap(){
+    worldData.tiles.forEach(function(tile){
+      var id = tile.x+','+tile.y;
+      tilesByCoords[id] = tile;
+    });
+  }
+  
+  console.log("worldData", worldData);
+  
   function enter(player, game){
     $('#main').html("You enter the world");
   }
@@ -7,9 +18,15 @@ define(['$', 'json!/location/world.json'], function($, worldData){
     $('#main').html("you leave the world");
   }
   
+  // build the by-coordinate lookup
+  indexMap();
+  
   return {
     enter: enter, 
     exit: exit,
+    tileAt: function(x,y){
+      return tilesByCoords[x+','+y];
+    },
     getEdges: function(x,y){
       var nearby = worldData.tiles.filter(function(tile){
         if(tile.x==x && tile.y==y) return false;
