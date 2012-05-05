@@ -37,7 +37,7 @@ And so the story starts. YOU are Corwen's grandson and YOU are going to save the
 
 The player will quickly find one of the 10 heros. He tells this story: 
 
-The 10 heros did find the Roc, but when they attempted to challenge it and steal back the Staff,
+The 10 heroes did find the Roc, but when they attempted to challenge it and steal back the Staff,
 they were defeated. 5 were killed, 5 managed to escape. 
 While they were there, they found a fragment of an ancient tome, with a drawing that looked very
 similar to the runes on the staff. Afterwards, they deciphered enough to realize that the Staff
@@ -54,8 +54,7 @@ Task 4: Collect 500 gold(or the equivalent of 500 gold). He will then give you a
 his fragment
 Task 5: Defeat him in single combat. He will then give you explosives, a map thruogh the moutains
 and his fragment
-Fragments to get: 6. Explosives can also be used to defeat the Roc, but only have a 20%-40% chance 
-of suceeding
+Fragments to get: 6. Explosives can be used to help defeat the Roc as a diverson 
 Questions: 
   Where does the player start?
   Where are they supposed to go?
