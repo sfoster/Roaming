@@ -81,6 +81,20 @@
   outline: 1px dotted white;
 }
 
+#hud {
+  position: absolute;
+  top: 5px; right: 210px; left: 5px;
+  height: 160px;
+  background-color: #666;
+}
+#main {
+  position: absolute;
+  top: 60px; right: 210px; left: 5px; bottom: 5px;
+  padding: 10px;
+  min-height: 60px;
+  background-color: #fff;
+}
+
 /* tile editor */
 
 #detail {
