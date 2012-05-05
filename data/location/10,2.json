@@ -6,7 +6,10 @@
     10,
     2
   ],
-  "here": {},
+  "here": [
+    {"$ref": "$.items.apple"},
+    {"$ref": "$.items.edibleMushrooms"}
+  ],
   "id": "10,2",
   "type": "plains"
 }
