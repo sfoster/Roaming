@@ -40,6 +40,9 @@ define(['resources/weapons'], function(weapons){
   };
   
   player.currentWeapon = weapons['fishingSpear'];
+
+  player.history = {};
+  console.log("player: ", player);
   
   return player
 });

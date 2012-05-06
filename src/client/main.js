@@ -27,7 +27,9 @@ define([
   // get world data for the starting position
   // enter the region and tile
   
-  var game ={};
+  var game ={
+    player: player
+  };
   var locationsByCoords = {};
   var stack = (function(){
     var _stack = [];
@@ -167,6 +169,16 @@ define([
       edgesById[id] = tile;
       return id;
     });
+
+    var history = player.history[tile.id], 
+        visits = history && history.visits;
+        
+    console.log("history for location: ", history);
+    $("#main").append("<p>"+ tile.description +" at: " + tile.coords + "</p>");
+
+    if(visits.length > 1){
+      $("#main").append("<p>It looks familiar, you think you've been here before.</p>");
+    }
 
     loadLocations.apply(this, ids).then(function(locations){
       // populate the by-id lookup for the location objects

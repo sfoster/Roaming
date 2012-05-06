@@ -26,24 +26,20 @@ define(['$', 'lib/util', 'lib/event'], function($, util, Evented){
       cancel: function(){ proceed = false; }
     });
     if(proceed){
-      console.log("location enter: ", this, player, game);
+      console.log("location enter: ", this, player, game, player.history);
       
-      $("#main").append("<p>"+ this.description +" at: " + this.coords + "</p>");
-      if(player && player.history){
-        var hist = player.history[this.id] || { visits: 0 }; 
-        if(hist && hist.visits){
-          console.log("history for location: ", hist);
-          $("#main").append("<p>It looks familiar, you think you've been here before.</p>");
-        }
-        hist.visits++;
-        player.history[this.id] = hist;
-      }
+      // update the player's history with details of this visit
+      var locationHistory = player.history[this.id] || (player.history[this.id] = {}), 
+          visits = locationHistory.visits || (locationHistory.visits = []);
+
+      visits.push(+new Date);
+
+      emit("onafterlocationenter", {
+        target: this,
+        player: player,
+        cancel: function(){ proceed = false; }
+      });
     }
-    emit("onafterlocationenter", {
-      target: this,
-      player: player,
-      cancel: function(){ proceed = false; }
-    });
     
     // what is in this tile? 
     // does anything happen as I enter?
