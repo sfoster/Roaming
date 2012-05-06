@@ -3,12 +3,20 @@ define([
   'main-ui',
   'resources/map',
   'lib/UrlRouter',
-  'lib/Promise', 'resources/world', 'models/player'], function(
+  'lib/Promise', 
+  'resources/world', 
+  'models/player',
+  'resources/encounters'
+], function(
     $, util, Evented, template, 
     ui,
     map,
     UrlRouter, 
-    Promise, world, player){
+    Promise, 
+    world, 
+    player, 
+    encounters
+){
   $('#main').html("It works (so far)");
   
   var when = Promise.when;
@@ -61,6 +69,13 @@ define([
           console.log("route match for location: ", x, y, id);
           require(['plugins/location!'+id], function(location){
             console.log("enter the world");
+            var encounterId = location.encounter;
+            if('string' == typeof encounterId) {
+              if(!(encounterId in encounters)){
+                throw "Encounter " + encounterId + " not defined";
+              }
+              location.encounter = encounters[encounterId];
+            }
             stack.push(world);
             if(!location.enter) {
               throw "Error loading location: " + id;
@@ -178,6 +193,14 @@ define([
 
     if(visits.length > 1){
       $("#main").append("<p>It looks familiar, you think you've been here before.</p>");
+    }
+
+    if(tile.encounter){
+      console.log("TODO: Run encounter", tile.encounter);
+      var encounterText = visits.length <= 1 ? tile.encounter.firstVisit : tile.encounter.reVisit;
+      encounterText.forEach(function(text){
+        $("#main").append("<p>"+text+"</p>");
+      });
     }
 
     loadLocations.apply(this, ids).then(function(locations){

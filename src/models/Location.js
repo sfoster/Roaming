@@ -27,8 +27,13 @@ define(['$', 'lib/util', 'lib/event'], function($, util, Evented){
     });
     if(proceed){
       console.log("location enter: ", this, player, game, player.history);
+      // what is in this tile? 
+      // does anything happen as I enter?
+      //  run any encounters
       
       // update the player's history with details of this visit
+      // have I been here before?
+      //  check player.history for this location id
       var locationHistory = player.history[this.id] || (player.history[this.id] = {}), 
           visits = locationHistory.visits || (locationHistory.visits = []);
 
@@ -41,11 +46,6 @@ define(['$', 'lib/util', 'lib/event'], function($, util, Evented){
       });
     }
     
-    // what is in this tile? 
-    // does anything happen as I enter?
-    //  run any encounters
-    // have I been here before?
-    //  check player.history for this location id
   };
   Location.prototype.exit = function(player, game){
     console.log("Location exit stub");

@@ -22,12 +22,13 @@ define(['$', 'compose', 'lib/json/ref', 'models/Location'], function($, Compose,
   var locationPlugin = {
     
     load: function (coords, req, onLoad, requireConfig) {
-      console.log("location plugin load: ", coords);
       var locn = window.locations[coords];
+      console.log("location plugin load: ", locn);
       if(locn) {
         onLoad(locn);
       } else {
         get('/location/' + coords + '.json', function(resp){
+          resp = json.resolveJson(resp);
           var ctorModule = resp.terrainType || 'models/Location';
           require([ctorModule], function(Clazz){
             var tile = new Clazz(resp); 
