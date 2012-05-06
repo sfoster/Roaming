@@ -224,13 +224,13 @@
   {
     "x": 12,
     "y": 1,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/12,1.json"
   },
   {
     "x": 13,
     "y": 1,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/13,1.json"
   },
   {
@@ -254,7 +254,7 @@
   {
     "x": 17,
     "y": 1,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/17,1.json"
   },
   {
@@ -278,19 +278,19 @@
   {
     "x": 21,
     "y": 1,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/21,1.json"
   },
   {
     "x": 22,
     "y": 1,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/22,1.json"
   },
   {
     "x": 23,
     "y": 1,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/23,1.json"
   },
   {
@@ -314,55 +314,55 @@
   {
     "x": 2,
     "y": 2,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/2,2.json"
   },
   {
     "x": 3,
     "y": 2,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/3,2.json"
   },
   {
     "x": 4,
     "y": 2,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/4,2.json"
   },
   {
     "x": 5,
     "y": 2,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/5,2.json"
   },
   {
     "x": 6,
     "y": 2,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/6,2.json"
   },
   {
     "x": 7,
     "y": 2,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/7,2.json"
   },
   {
     "x": 8,
     "y": 2,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/8,2.json"
   },
   {
     "x": 9,
     "y": 2,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/9,2.json"
   },
   {
     "x": 10,
     "y": 2,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/10,2.json"
   },
   {
@@ -374,13 +374,13 @@
   {
     "x": 12,
     "y": 2,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/12,2.json"
   },
   {
     "x": 13,
     "y": 2,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/13,2.json"
   },
   {
@@ -404,7 +404,7 @@
   {
     "x": 17,
     "y": 2,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/17,2.json"
   },
   {
@@ -428,19 +428,19 @@
   {
     "x": 21,
     "y": 2,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/21,2.json"
   },
   {
     "x": 22,
     "y": 2,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/22,2.json"
   },
   {
     "x": 23,
     "y": 2,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/23,2.json"
   },
   {
@@ -464,13 +464,13 @@
   {
     "x": 2,
     "y": 3,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/2,3.json"
   },
   {
     "x": 3,
     "y": 3,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/3,3.json"
   },
   {
@@ -506,13 +506,13 @@
   {
     "x": 9,
     "y": 3,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/9,3.json"
   },
   {
     "x": 10,
     "y": 3,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/10,3.json"
   },
   {
@@ -524,13 +524,13 @@
   {
     "x": 12,
     "y": 3,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/12,3.json"
   },
   {
     "x": 13,
     "y": 3,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/13,3.json"
   },
   {
@@ -554,7 +554,7 @@
   {
     "x": 17,
     "y": 3,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/17,3.json"
   },
   {
@@ -578,19 +578,19 @@
   {
     "x": 21,
     "y": 3,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/21,3.json"
   },
   {
     "x": 22,
     "y": 3,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/22,3.json"
   },
   {
     "x": 23,
     "y": 3,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/23,3.json"
   },
   {
@@ -614,13 +614,13 @@
   {
     "x": 2,
     "y": 4,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/2,4.json"
   },
   {
     "x": 3,
     "y": 4,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/3,4.json"
   },
   {
@@ -656,13 +656,13 @@
   {
     "x": 9,
     "y": 4,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/9,4.json"
   },
   {
     "x": 10,
     "y": 4,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/10,4.json"
   },
   {
@@ -674,73 +674,73 @@
   {
     "x": 12,
     "y": 4,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/12,4.json"
   },
   {
     "x": 13,
     "y": 4,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/13,4.json"
   },
   {
     "x": 14,
     "y": 4,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/14,4.json"
   },
   {
     "x": 15,
     "y": 4,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/15,4.json"
   },
   {
     "x": 16,
     "y": 4,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/16,4.json"
   },
   {
     "x": 17,
     "y": 4,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/17,4.json"
   },
   {
     "x": 18,
     "y": 4,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/18,4.json"
   },
   {
     "x": 19,
     "y": 4,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/19,4.json"
   },
   {
     "x": 20,
     "y": 4,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/20,4.json"
   },
   {
     "x": 21,
     "y": 4,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/21,4.json"
   },
   {
     "x": 22,
     "y": 4,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/22,4.json"
   },
   {
     "x": 23,
     "y": 4,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/23,4.json"
   },
   {
@@ -764,13 +764,13 @@
   {
     "x": 2,
     "y": 5,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/2,5.json"
   },
   {
     "x": 3,
     "y": 5,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/3,5.json"
   },
   {
@@ -806,13 +806,13 @@
   {
     "x": 9,
     "y": 5,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/9,5.json"
   },
   {
     "x": 10,
     "y": 5,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/10,5.json"
   },
   {
@@ -824,13 +824,13 @@
   {
     "x": 12,
     "y": 5,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/12,5.json"
   },
   {
     "x": 13,
     "y": 5,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/13,5.json"
   },
   {
@@ -866,31 +866,31 @@
   {
     "x": 19,
     "y": 5,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/19,5.json"
   },
   {
     "x": 20,
     "y": 5,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/20,5.json"
   },
   {
     "x": 21,
     "y": 5,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/21,5.json"
   },
   {
     "x": 22,
     "y": 5,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/22,5.json"
   },
   {
     "x": 23,
     "y": 5,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/23,5.json"
   },
   {
@@ -914,55 +914,55 @@
   {
     "x": 2,
     "y": 6,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/2,6.json"
   },
   {
     "x": 3,
     "y": 6,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/3,6.json"
   },
   {
     "x": 4,
     "y": 6,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/4,6.json"
   },
   {
     "x": 5,
     "y": 6,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/5,6.json"
   },
   {
     "x": 6,
     "y": 6,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/6,6.json"
   },
   {
     "x": 7,
     "y": 6,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/7,6.json"
   },
   {
     "x": 8,
     "y": 6,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/8,6.json"
   },
   {
     "x": 9,
     "y": 6,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/9,6.json"
   },
   {
     "x": 10,
     "y": 6,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/10,6.json"
   },
   {
@@ -974,13 +974,13 @@
   {
     "x": 12,
     "y": 6,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/12,6.json"
   },
   {
     "x": 13,
     "y": 6,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/13,6.json"
   },
   {
@@ -1016,31 +1016,31 @@
   {
     "x": 19,
     "y": 6,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/19,6.json"
   },
   {
     "x": 20,
     "y": 6,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/20,6.json"
   },
   {
     "x": 21,
     "y": 6,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/21,6.json"
   },
   {
     "x": 22,
     "y": 6,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/22,6.json"
   },
   {
     "x": 23,
     "y": 6,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/23,6.json"
   },
   {
@@ -1124,13 +1124,13 @@
   {
     "x": 12,
     "y": 7,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/12,7.json"
   },
   {
     "x": 13,
     "y": 7,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/13,7.json"
   },
   {
@@ -1166,31 +1166,31 @@
   {
     "x": 19,
     "y": 7,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/19,7.json"
   },
   {
     "x": 20,
     "y": 7,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/20,7.json"
   },
   {
     "x": 21,
     "y": 7,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/21,7.json"
   },
   {
     "x": 22,
     "y": 7,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/22,7.json"
   },
   {
     "x": 23,
     "y": 7,
-    "type": "plains",
+    "type": "forest",
     "$ref": "/location/23,7.json"
   },
   {
@@ -2606,43 +2606,43 @@
   {
     "x": 9,
     "y": 17,
-    "type": "sand",
+    "type": "plains",
     "$ref": "/location/9,17.json"
   },
   {
     "x": 10,
     "y": 17,
-    "type": "sand",
+    "type": "plains",
     "$ref": "/location/10,17.json"
   },
   {
     "x": 11,
     "y": 17,
-    "type": "sand",
+    "type": "plains",
     "$ref": "/location/11,17.json"
   },
   {
     "x": 12,
     "y": 17,
-    "type": "sand",
+    "type": "plains",
     "$ref": "/location/12,17.json"
   },
   {
     "x": 13,
     "y": 17,
-    "type": "sand",
+    "type": "plains",
     "$ref": "/location/13,17.json"
   },
   {
     "x": 14,
     "y": 17,
-    "type": "sand",
+    "type": "plains",
     "$ref": "/location/14,17.json"
   },
   {
     "x": 15,
     "y": 17,
-    "type": "sand",
+    "type": "plains",
     "$ref": "/location/15,17.json"
   },
   {
@@ -2756,43 +2756,43 @@
   {
     "x": 9,
     "y": 18,
-    "type": "sand",
+    "type": "plains",
     "$ref": "/location/9,18.json"
   },
   {
     "x": 10,
     "y": 18,
-    "type": "plains",
+    "type": "sand",
     "$ref": "/location/10,18.json"
   },
   {
     "x": 11,
     "y": 18,
-    "type": "plains",
+    "type": "sand",
     "$ref": "/location/11,18.json"
   },
   {
     "x": 12,
     "y": 18,
-    "type": "plains",
+    "type": "sand",
     "$ref": "/location/12,18.json"
   },
   {
     "x": 13,
     "y": 18,
-    "type": "plains",
+    "type": "sand",
     "$ref": "/location/13,18.json"
   },
   {
     "x": 14,
     "y": 18,
-    "type": "plains",
+    "type": "sand",
     "$ref": "/location/14,18.json"
   },
   {
     "x": 15,
     "y": 18,
-    "type": "sand",
+    "type": "plains",
     "$ref": "/location/15,18.json"
   },
   {
@@ -2906,13 +2906,13 @@
   {
     "x": 9,
     "y": 19,
-    "type": "sand",
+    "type": "plains",
     "$ref": "/location/9,19.json"
   },
   {
     "x": 10,
     "y": 19,
-    "type": "plains",
+    "type": "sand",
     "$ref": "/location/10,19.json"
   },
   {
@@ -2936,13 +2936,13 @@
   {
     "x": 14,
     "y": 19,
-    "type": "plains",
+    "type": "sand",
     "$ref": "/location/14,19.json"
   },
   {
     "x": 15,
     "y": 19,
-    "type": "sand",
+    "type": "plains",
     "$ref": "/location/15,19.json"
   },
   {
@@ -3056,13 +3056,13 @@
   {
     "x": 9,
     "y": 20,
-    "type": "sand",
+    "type": "plains",
     "$ref": "/location/9,20.json"
   },
   {
     "x": 10,
     "y": 20,
-    "type": "plains",
+    "type": "sand",
     "$ref": "/location/10,20.json"
   },
   {
@@ -3074,7 +3074,7 @@
   {
     "x": 12,
     "y": 20,
-    "type": "barren",
+    "type": "forest",
     "$ref": "/location/12,20.json"
   },
   {
@@ -3086,13 +3086,13 @@
   {
     "x": 14,
     "y": 20,
-    "type": "plains",
+    "type": "sand",
     "$ref": "/location/14,20.json"
   },
   {
     "x": 15,
     "y": 20,
-    "type": "sand",
+    "type": "plains",
     "$ref": "/location/15,20.json"
   },
   {
@@ -3206,13 +3206,13 @@
   {
     "x": 9,
     "y": 21,
-    "type": "sand",
+    "type": "plains",
     "$ref": "/location/9,21.json"
   },
   {
     "x": 10,
     "y": 21,
-    "type": "plains",
+    "type": "sand",
     "$ref": "/location/10,21.json"
   },
   {
@@ -3236,13 +3236,13 @@
   {
     "x": 14,
     "y": 21,
-    "type": "plains",
+    "type": "sand",
     "$ref": "/location/14,21.json"
   },
   {
     "x": 15,
     "y": 21,
-    "type": "sand",
+    "type": "plains",
     "$ref": "/location/15,21.json"
   },
   {
@@ -3356,43 +3356,43 @@
   {
     "x": 9,
     "y": 22,
-    "type": "sand",
+    "type": "plains",
     "$ref": "/location/9,22.json"
   },
   {
     "x": 10,
     "y": 22,
-    "type": "plains",
+    "type": "sand",
     "$ref": "/location/10,22.json"
   },
   {
     "x": 11,
     "y": 22,
-    "type": "plains",
+    "type": "sand",
     "$ref": "/location/11,22.json"
   },
   {
     "x": 12,
     "y": 22,
-    "type": "plains",
+    "type": "sand",
     "$ref": "/location/12,22.json"
   },
   {
     "x": 13,
     "y": 22,
-    "type": "plains",
+    "type": "sand",
     "$ref": "/location/13,22.json"
   },
   {
     "x": 14,
     "y": 22,
-    "type": "plains",
+    "type": "sand",
     "$ref": "/location/14,22.json"
   },
   {
     "x": 15,
     "y": 22,
-    "type": "sand",
+    "type": "plains",
     "$ref": "/location/15,22.json"
   },
   {
@@ -3506,43 +3506,43 @@
   {
     "x": 9,
     "y": 23,
-    "type": "sand",
+    "type": "plains",
     "$ref": "/location/9,23.json"
   },
   {
     "x": 10,
     "y": 23,
-    "type": "sand",
+    "type": "plains",
     "$ref": "/location/10,23.json"
   },
   {
     "x": 11,
     "y": 23,
-    "type": "sand",
+    "type": "plains",
     "$ref": "/location/11,23.json"
   },
   {
     "x": 12,
     "y": 23,
-    "type": "sand",
+    "type": "plains",
     "$ref": "/location/12,23.json"
   },
   {
     "x": 13,
     "y": 23,
-    "type": "sand",
+    "type": "plains",
     "$ref": "/location/13,23.json"
   },
   {
     "x": 14,
     "y": 23,
-    "type": "sand",
+    "type": "plains",
     "$ref": "/location/14,23.json"
   },
   {
     "x": 15,
     "y": 23,
-    "type": "sand",
+    "type": "plains",
     "$ref": "/location/15,23.json"
   },
   {
