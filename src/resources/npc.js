@@ -319,7 +319,7 @@ npc.gaintCobra= {
     mp: 0,
     range: 'short, medium, long',
     evasion: 2
-  };
+  }; 
   npc.dragon = {
     name: 'Dragon',
     strength: 80,
@@ -339,6 +339,6 @@ npc.gaintCobra= {
   };
   
   // All spells cost 10 mp per cast
-  // dmg=strength divided by 2(?) 
+  // dmg=strength+wpn dmg divided by 4(?) 
   return npc;
 });
