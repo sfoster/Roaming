@@ -9,7 +9,7 @@
   "here": [
     {
       "id": "rocFeather",
-      "description": "At your feet is an unusually large feather. It could only have come from one kind of bird. If the roc was here, you are in the right place.",
+      "description": "At your *feet* is an unusually [large feather](item:rocFeather). It could only have come from one kind of bird. If the roc was here, you are in the right place.",
       "fixed": false
     }
   ],

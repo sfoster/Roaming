@@ -8,7 +8,7 @@ define([
   
   ui.initHud = function(player, world){
     $('<canvas id="nearbyMap" width="150" height="150"></canvas>').appendTo($("#nearby"));
-  }
+  };
   
   ui.initMap = function(player, world){
     console.log("init map");
@@ -25,7 +25,7 @@ define([
       });
     });
     console.log("/init map");
-  }
+  };
   
   ui.initSidebar = function(player, world){
     // display the player's inventory
@@ -56,22 +56,20 @@ define([
     
     // display the 10,000ft view map
     $('.world-map').html("<p></p>");
-  }
+  };
 
   ui.initMain = function(player, world){
-    $('#main').delegate("a[href^='take:']", "click", function(evt){
-      var parts = evt.href.split(':'), 
-          action = parts.shift();
-          item = parts.shift;
+    var self = this;
+    $('#main').delegate("a[href^='item:']", "click", function(evt){
+      evt.preventDefault();
+      var parts = evt.target.href.split(':');
 
-      console.log(instruction);
-      console.dir(evt.target);
+      self.emit("onitemclick", {
+       id:  parts[1],
+       href: evt.target.href
+      });
     });
-    // $('#main').delegate("a", "click", function(evt){
-    //   evt.preventDefault();
-    //   console.log(evt);
-    // });
-  }
+  };
 
   util.mixin(ui, Evented);
   
@@ -80,6 +78,10 @@ define([
     this.initHud(player, world);
     this.initSidebar(player, world);
     this.initMain(player, world);
+    
+    self.on("onitemclick", function(evt){
+      console.log("onitemclick event: ", evt);
+    });
   };
 
   return ui;
