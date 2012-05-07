@@ -4,6 +4,7 @@ define([
   'resources/map',
   'lib/UrlRouter',
   'lib/Promise', 
+  'lib/markdown',
   'resources/world', 
   'models/player',
   'resources/encounters'
@@ -13,6 +14,7 @@ define([
     map,
     UrlRouter, 
     Promise, 
+    markdown,
     world, 
     player, 
     encounters
@@ -197,19 +199,21 @@ define([
 
     if(tile.here){
       var hereText = tile.here.map(function(obj){
-        var label = obj.description || obj.title || obj.name;
-        if(!obj.fixed){
-          console.log("TODO: link things that can be examined or picked up");
-        }
-        return label;
+        var mdText = obj.description || obj.title || obj.name;
+        var html = markdown(mdText);
+        // if(!obj.fixed){
+        //   console.log("TODO: link things that can be examined or picked up");
+        // }
+        return html;
       }).join('<br>');
       $("#main").append("<p class='here'>"+hereText+"</p>");
     }
 
     if(tile.encounter){
       var encounterText = visits.length <= 1 ? tile.encounter.firstVisit : tile.encounter.reVisit;
-      encounterText.forEach(function(text){
-        $("#main").append("<p class='encounter'>"+text+"</p>");
+      encounterText.forEach(function(mdText){
+        var html = markdown(mdText);
+        $("#main").append("<p class='encounter'>"+html+"</p>");
       });
     }
 
