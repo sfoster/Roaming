@@ -19,8 +19,6 @@ define([
     player, 
     encounters
 ){
-  $('#main').html("It works (so far)");
-  
   var when = Promise.when;
   
   // setup the global as an event sink and emitter
@@ -76,13 +74,13 @@ define([
               if(!(encounterId in encounters)){
                 throw "Encounter " + encounterId + " not defined";
               }
+              // resolve encounter ids to their contents
               location.encounter = encounters[encounterId];
             }
             stack.push(world);
             if(!location.enter) {
               throw "Error loading location: " + id;
             }
-            console.log("got back location: ", location);
             stack.push(location);
           });
           
@@ -191,10 +189,10 @@ define([
         visits = history && history.visits;
         
     console.log("history for location: ", history);
-    $("#main").append("<p>"+ tile.description +" at: " + tile.coords + "</p>");
+    ui.main("<p>"+ tile.description +" at: " + tile.coords + "</p>");
 
     if(visits.length > 1){
-      $("#main").append("<p>It looks familiar, you think you've been here before.</p>");
+      ui.main("<p>It looks familiar, you think you've been here before.</p>");
     }
 
     if(tile.here){
@@ -206,14 +204,14 @@ define([
         // }
         return html;
       }).join('<br>');
-      $("#main").append("<p class='here'>"+hereText+"</p>");
+      ui.main("<p class='here'>"+hereText+"</p>");
     }
 
     if(tile.encounter){
       var encounterText = visits.length <= 1 ? tile.encounter.firstVisit : tile.encounter.reVisit;
       encounterText.forEach(function(mdText){
         var html = markdown(mdText);
-        $("#main").append("<p class='encounter'>"+html+"</p>");
+        ui.main("<p class='encounter'>"+html+"</p>");
       });
     }
 

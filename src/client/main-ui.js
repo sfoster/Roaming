@@ -84,6 +84,10 @@ define([
     });
   };
 
+  ui.main = function(cont){
+    return $("#main").append(cont);
+  };
+  
   return ui;
 
 });
