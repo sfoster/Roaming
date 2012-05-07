@@ -195,13 +195,24 @@ define([
       $("#main").append("<p>It looks familiar, you think you've been here before.</p>");
     }
 
+    if(tile.here){
+      var hereText = tile.here.map(function(obj){
+        var label = obj.description || obj.title || obj.name;
+        if(!obj.fixed){
+          console.log("TODO: link things that can be examined or picked up");
+        }
+        return label;
+      }).join('<br>');
+      $("#main").append("<p class='here'>"+hereText+"</p>");
+    }
+
     if(tile.encounter){
-      console.log("TODO: Run encounter", tile.encounter);
       var encounterText = visits.length <= 1 ? tile.encounter.firstVisit : tile.encounter.reVisit;
       encounterText.forEach(function(text){
-        $("#main").append("<p>"+text+"</p>");
+        $("#main").append("<p class='encounter'>"+text+"</p>");
       });
     }
+
 
     loadLocations.apply(this, ids).then(function(locations){
       // populate the by-id lookup for the location objects

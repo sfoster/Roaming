@@ -23,22 +23,35 @@ define([
     });
     console.log("/init map");
   }
-  
 
   return {
     init: function(player, world){
       
       initMap();
       initHud();
-      
+
       // display the player's inventory
       var $inventoryNode = $("<ul></ul>");
-      for(var i=0; i<player.inventory.length; i++){
-        $inventoryNode.append("<li>"+ player.inventory[i] +"</li>");
-      }
       $('.inventory')
-        .html("<p>Maybe an Inventory list here?</p>")
+        // .html("<p>Maybe an Inventory list here?</p>")
         .append($inventoryNode);
+      
+      player.inventory.forEach(function(item){
+        $inventoryNode.append("<li>"+ item.name +"</li>");
+      });
+      
+      player.inventory.on('onafteradd', function(evt){
+        $inventoryNode.empty();
+        for(var i=0; i<player.inventory.length; i++){
+          $inventoryNode.append("<li>"+ player.inventory[i].name +"</li>");
+        }
+      });
+      player.inventory.on('onafterdrop', function(evt){
+        $inventoryNode.empty();
+        for(var i=0; i<player.inventory.length; i++){
+          $inventoryNode.append("<li>"+ player.inventory[i].name +"</li>");
+        }
+      });
 
       // display the player's current weapon
       $('.weapon').html( "<p>" + player.currentWeapon.name + "</p>");
