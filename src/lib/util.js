@@ -27,7 +27,7 @@ define(function(){
   }
 
   function create(obj){
-    var clone;
+    var clone, empty = {};
     if(obj instanceof Array){
       clone = obj.map(function(m){
         return typeof m =="object" ? create(m) : m;
@@ -35,6 +35,7 @@ define(function(){
     } else if(typeof obj == "object"){
       clone = Object.create(obj);
       for(var p in obj) {
+        if(p in empty || undefined === p) continue;
         if('object' == typeof obj[p]) {
           // recursive treatment of objects
           clone[p] = create(obj[p]);
@@ -43,7 +44,7 @@ define(function(){
     } else {
       clone = obj;
     }
-    Array.prototype.slice.apply(arguments, 1).forEach(function(arg){
+    Array.prototype.slice.call(arguments, 1).forEach(function(arg){
       mixin(clone, arg);
     });
     return clone;
