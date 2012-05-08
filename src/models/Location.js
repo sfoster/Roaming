@@ -14,6 +14,7 @@ define(['$', 'lib/util', 'lib/event'], function($, util, Evented){
     if(!this.id){
       this.id = coords.join(',');
     }
+    this._onexits = [];
   }
   util.mixin(Location.prototype, Evented, {
     get: function(name){
@@ -21,6 +22,7 @@ define(['$', 'lib/util', 'lib/event'], function($, util, Evented){
     }, 
     enter: function(player, game){
       var proceed = true;
+      this._onexits = [];
       emit("onbeforelocationenter", {
         target: this,
         player: player,
@@ -47,8 +49,20 @@ define(['$', 'lib/util', 'lib/event'], function($, util, Evented){
         });
       }
     }, 
+    onExit: function(fn){
+     this._onexits.push(fn); 
+    },
     exit: function(player, game){
       console.log("Location exit stub");
+      emit("onlocationexit", {
+        target: this,
+        player: player,
+        cancel: function(){ proceed = false; }
+      });
+      var fn; 
+      while((fn = this._onexits.shift())){
+        fn(player, game);
+      }
     }
   });
 
