@@ -1,4 +1,4 @@
-define(['$', 'json!/location/world.json'], function($, worldData){
+define(['$', 'json!/location/world.json', 'lib/util', 'lib/event'], function($, worldData, util, Evented){
 
   var tilesByCoords = {};
   
@@ -11,17 +11,17 @@ define(['$', 'json!/location/world.json'], function($, worldData){
   
   console.log("worldData", worldData);
   
-  function enter(player, game){
-    $('#main').html("You enter the world");
-  }
   function exit(player, game){
-    $('#main').html("you leave the world");
+    this.emit('exit');
+  }
+  function enter(player, game){
+    this.emit('enter');
   }
   
   // build the by-coordinate lookup
   indexMap();
   
-  return {
+  return util.mixin({
     enter: enter, 
     exit: exit,
     tileAt: function(x,y){
@@ -41,5 +41,5 @@ define(['$', 'json!/location/world.json'], function($, worldData){
       });
       return nearby;
     }
-  };
+  }, Evented);
 });
