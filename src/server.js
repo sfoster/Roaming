@@ -101,7 +101,7 @@ app.get('/location/:id.json', function(req, res){
       coords: id.split(','),
       description: "--No description yet--",
       afar: "--No afar description yet--",
-      here: {} 
+      here: [] 
     };
     res.send( JSON.stringify(emptyLocation) );
   }

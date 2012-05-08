@@ -1,0 +1,12 @@
+{
+  "img": {},
+  "description": "You are surrounded by huge trees of many types",
+  "afar": "a vast forest",
+  "coords": [
+    4,
+    2
+  ],
+  "here": ["items/edibleMushroom"],
+  "id": "4,2",
+  "type": "forest"
+}
