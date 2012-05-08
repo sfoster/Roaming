@@ -93,10 +93,10 @@ define([
   router.compile();
   
   window.onhashchange = function() {
-    router.match(location.hash); // returns the data object if successfull, undefined if not.
+    router.match(window.location.hash); // returns the data object if successfull, undefined if not.
   };
   
-  router.match(location.hash || '#3,2');
+  router.match(window.location.hash || '#3,2');
   
   function getCardinalDirection(origin, target){
     var x = target.x - origin.x, 
@@ -174,7 +174,7 @@ define([
   });
   
   function resolveItem(id, defaults){
-    var cat, 
+    var cat = 'items', 
         delimIdx = id.indexOf('/'), 
         item;
     if(delimIdx > -1){
@@ -197,8 +197,10 @@ define([
         break;
     }
     if(!item && defaults) {
-       item = util.create(defaults, { id: id, type: cat });
+       item = util.create(defaults, { id: id, category: cat });
     }
+    if(!item.id) item.id = id;
+    if(!item.category) item.category = cat;
     return item;
   }
   
@@ -235,12 +237,25 @@ define([
     }
 
     if(tile.here){
+      console.log(tile.id, "tile.here: ", tile.here);
+      
       var hereText = tile.here.map(function(obj){
-        var mdText = obj.description || obj.title || obj.name;
+        if('string' == typeof obj) {
+          obj = resolveItem(obj, { name: '??'} );
+        }
+        var mdText = obj.description;
+        if(!mdText) mdText = "You see: ["+obj.name+"](item:"+obj.category+"/"+obj.id+")";
         var html = markdown(mdText);
         return html;
       }).join('<br>');
+      
       ui.main("<p class='here'>"+hereText+"</p>");
+      
+      tile.onExit(
+        player.inventory.on('onafteradd', function(evt){
+          console.log(tile.id, "player took:", evt.target);
+        }).remove
+      );
     }
 
     if(tile.encounter){
@@ -250,7 +265,7 @@ define([
         ui.main("<p class='encounter'>"+html+"</p>");
       });
     }
-
+    
     loadLocations.apply(this, ids).then(function(locations){
       // populate the by-id lookup for the location objects
       locations.forEach(function(){
