@@ -253,7 +253,13 @@ define([
       
       tile.onExit(
         player.inventory.on('onafteradd', function(evt){
-          console.log(tile.id, "player took:", evt.target);
+          for(var i=0, hereItems = tile.here; i<hereItems.length; i++){
+            if(evt.target.id == hereItems[i].id) break;
+          }
+          if(i < hereItems.length) {
+            console.log("removing took item: ", hereItems[i]);
+            hereItems.splice(i, 1);
+          }
         }).remove
       );
     }
