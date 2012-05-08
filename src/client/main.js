@@ -28,6 +28,13 @@ define([
   
   console.log("Player: ", player);
   
+  world.on('enter', function(){
+    ui.status("You enter the world");
+  });
+  world.on('exit', function(){
+    ui.status("You leave this world");
+  });
+  
   // draw and fill the layout
   ui.init( player );
   map.init();
@@ -41,20 +48,26 @@ define([
     player: player
   };
   var locationsByCoords = {};
-  var stack = (function(){
+  var stack = window.stack = (function(){
     var _stack = [];
     return {
+      length: 0,
       push: function(state){
         _stack.push(state);
+        this.length++;
         state.enter(game.player, game);
       }, 
       pop: function(){
         var state = _stack.pop();
+        this.length--;
         state.exit(game.player, game);
       }, 
       replace: function(state) {
         this.pop(); 
         this.push(state);
+      },
+      get: function(idx){
+        return _stack[idx];
       }
     };
   })();
@@ -70,7 +83,6 @@ define([
           var id = [x,y].join(',');
           console.log("route match for location: ", x, y, id);
           require(['plugins/location!'+id], function(location){
-            console.log("enter the world");
             var encounterId = location.encounter;
             if('string' == typeof encounterId) {
               if(!(encounterId in encounters)){
@@ -79,9 +91,15 @@ define([
               // resolve encounter ids to their contents
               location.encounter = encounters[encounterId];
             }
-            stack.push(world);
             if(!location.enter) {
               throw "Error loading location: " + id;
+            }
+            // walk up the stack to the world
+            if(!stack.length){
+              stack.push(world);
+            } 
+            if(stack.length > 1){
+              stack.pop();
             }
             stack.push(location);
           });
@@ -214,6 +232,9 @@ define([
   
   Evented.on("onafterlocationenter", function(evt){
     console.log("onafterlocationenter: ", evt);
+    
+    ui.flush("main");
+    
     var tile = evt.target, 
         directionsTemplate = template('{{coords}}: To the <a href="#{{coords}}" class="option">{{direction}}</a> you see {{terrain}}');
         
@@ -250,18 +271,21 @@ define([
       }).join('<br>');
       
       ui.main("<p class='here'>"+hereText+"</p>");
-      
-      tile.onExit(
-        player.inventory.on('onafteradd', function(evt){
-          for(var i=0, hereItems = tile.here; i<hereItems.length; i++){
-            if(evt.target.id == hereItems[i].id) break;
-          }
-          if(i < hereItems.length) {
-            console.log("removing took item: ", hereItems[i]);
-            hereItems.splice(i, 1);
-          }
-        }).remove
-      );
+
+      var handle = player.inventory.on('onafteradd', function(evt){
+        for(var i=0, hereItems = tile.here; i<hereItems.length; i++){
+          if(evt.target.id == hereItems[i].id) break;
+        }
+        if(i < hereItems.length) {
+          console.log("removing took item: ", hereItems[i]);
+          hereItems.splice(i, 1);
+        }
+        ui.status("You take the "+evt.target.name);
+      });
+      tile.onExit(function(){
+        console.log("unhooking onaferadd handler for tile: ", tile.id);
+        handle.remove();
+      });
     }
 
     if(tile.encounter){
