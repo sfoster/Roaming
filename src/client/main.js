@@ -7,7 +7,8 @@ define([
   'lib/markdown',
   'resources/world', 
   'models/player',
-  'resources/encounters'
+  'resources/encounters',
+  'resources/items', 'resources/weapons', 'resources/armor', 'resources/traps'
 ], function(
     $, util, Evented, template, 
     ui,
@@ -17,7 +18,8 @@ define([
     markdown,
     world, 
     player, 
-    encounters
+    encounters,
+    items, weapons, armor, traps
 ){
   var when = Promise.when;
   
@@ -171,6 +173,43 @@ define([
     console.log("map clicked at: ", evt, location, hash);
   });
   
+  function resolveItem(id, defaults){
+    var cat, 
+        delimIdx = id.indexOf('/'), 
+        item;
+    if(delimIdx > -1){
+      cat = id.substring(0, delimIdx); 
+      id = id.substring(delimIdx+1);
+    }
+    switch(cat){
+      case 'misc':
+      case 'items':
+        item = items[id]; 
+        break;
+      case 'armor': 
+        item = armor[id]; 
+        break;
+      case 'weapons': 
+        item = weapons[id]; 
+        break;
+      default: 
+        item = items[id] || weapons[id] || armor[id];
+        break;
+    }
+    if(!item && defaults) {
+       item = util.create(defaults, { id: id, type: cat });
+    }
+    return item;
+  }
+  
+  ui.on('onitemclick', function(evt){
+    var id = evt.id, 
+        item = resolveItem(id, { name: evt.text }); 
+    console.log("taking item: ", item);
+    // just add it directly. We might want a context menu or something eventually with a list of avail. actions
+    player.inventory.add(item);
+  });
+  
   Evented.on("onafterlocationenter", function(evt){
     console.log("onafterlocationenter: ", evt);
     var tile = evt.target, 
@@ -199,9 +238,6 @@ define([
       var hereText = tile.here.map(function(obj){
         var mdText = obj.description || obj.title || obj.name;
         var html = markdown(mdText);
-        // if(!obj.fixed){
-        //   console.log("TODO: link things that can be examined or picked up");
-        // }
         return html;
       }).join('<br>');
       ui.main("<p class='here'>"+hereText+"</p>");
@@ -214,7 +250,6 @@ define([
         ui.main("<p class='encounter'>"+html+"</p>");
       });
     }
-
 
     loadLocations.apply(this, ids).then(function(locations){
       // populate the by-id lookup for the location objects

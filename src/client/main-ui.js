@@ -66,6 +66,7 @@ define([
 
       self.emit("onitemclick", {
        id:  parts[1],
+       text: evt.target.text,
        href: evt.target.href
       });
     });
