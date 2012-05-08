@@ -85,8 +85,18 @@ define([
     });
   };
 
+  ui.flush = function(id){
+    $("#"+id).empty();
+  };
+  
   ui.main = function(cont){
     return $("#main").append(cont);
+  };
+
+  ui.status = function(cont){
+    cont = cont.split('\n');
+    cont.push('\n');
+    return $("#status").append( cont.join('<br>') );
   };
   
   return ui;
