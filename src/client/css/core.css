@@ -101,8 +101,10 @@ h1, h2, h3, h3, h4, h5 {
   height: 55px;
   padding: 5px 10px;
   position: absolute;
-  background: #ffc;
-  overflow: visible;
+  background: #ccc;
+  color: #666;
+  font-size: 0.8em;
+  overflow: auto;
 }
 
 .encounter {
