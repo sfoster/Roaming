@@ -213,6 +213,14 @@ npc.gaintCobra= {
     range: 'short',
     evasion: 20
   };
+  npc.chimpanzee = {
+    name: 'Chimpanzee',
+    strength: 18,
+    hp: 40,
+    mp: 0,
+    range: 'short',
+    evasion: 12
+  };
   npc.gorrila = {
     name: 'Gorrila',
     strength: 22,
