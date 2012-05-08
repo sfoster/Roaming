@@ -46,7 +46,7 @@ define(['lib/event', 'lib/util', 'resources/weapons', 'resources/items'], functi
       } else if(item in weapons){
         item = weapons[item];
       } else {
-        item = { id: item, name: item, description: item };
+        item = items[id] = { id: item, name: item, description: item };
       }
     }
     player.inventory.add(item);
