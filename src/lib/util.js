@@ -62,12 +62,65 @@ define(function(){
     return result;
   }
   
+  // Shared empty constructor function to aid in prototype-chain creation.
+  var ctor = function(){};
+
+  // OO helpers barrowed from Backbone
+  var inherits = function(parent, protoProps, staticProps) {
+    var child;
+
+    // The constructor function for the new subclass is either defined by you
+    // (the "constructor" property in your `extend` definition), or defaulted
+    // by us to simply call `super()`.
+    if (protoProps && protoProps.hasOwnProperty('constructor')) {
+      child = protoProps.constructor;
+    } else {
+      child = function(){ return parent.apply(this, arguments); };
+    }
+
+    // Inherit class (static) properties from parent.
+    mixin(child, parent);
+
+    // Set the prototype chain to inherit from `parent`, without calling
+    // `parent`'s constructor function.
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor();
+
+    // Add prototype properties (instance properties) to the subclass,
+    // if supplied.
+    if (protoProps) mixin(child.prototype, protoProps);
+
+    // Add static properties to the constructor function, if supplied.
+    if (staticProps) mixin(child, staticProps);
+
+    // Correctly set child's `prototype.constructor`.
+    child.prototype.constructor = child;
+
+    // Set a convenience property in case the parent's prototype is needed later.
+    child.__super__ = parent.prototype;
+
+    return child;
+  };
+  
+  var extend = function (protoProps, classProps) {
+    var child = inherits(this, protoProps, classProps);
+    child.extend = this.extend;
+    return child;
+  };
+  
+  var clamp = function(lbound, ubound, value){
+    return value < lbound ? lbound : (value > ubound ? ubound : value);
+  };
+  
   return {
     create: create,
     map: map,
     mixin: mixin,
     pluck: pluck,
     values: values, 
-    keys: keys
+    keys: keys,
+    extend: extend,
+    inherits: inherits,
+    clamp: clamp
   };
 });
