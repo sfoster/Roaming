@@ -288,13 +288,13 @@ define([
       });
     }
 
-    if(tile.encounter){
-      var encounterText = visits.length <= 1 ? tile.encounter.firstVisit : tile.encounter.reVisit;
-      encounterText.forEach(function(mdText){
-        var html = markdown(mdText);
-        ui.main("<p class='encounter'>"+html+"</p>");
-      });
-    }
+    // if(tile.encounter){
+    //   var encounterText = visits.length <= 1 ? tile.encounter.firstVisit : tile.encounter.reVisit;
+    //   encounterText.forEach(function(mdText){
+    //     var html = markdown(mdText);
+    //     ui.main("<p class='encounter'>"+html+"</p>");
+    //   });
+    // }
     
     loadLocations.apply(this, ids).then(function(locations){
       // populate the by-id lookup for the location objects

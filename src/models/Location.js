@@ -41,6 +41,10 @@ define(['$', 'lib/util', 'lib/event'], function($, util, Evented){
             visits = locationHistory.visits || (locationHistory.visits = []);
 
         visits.push(+new Date());
+        
+        if(this.encounter && this.encounter.enter){
+          this.encounter.enter(this, player, game);
+        }
 
         emit("onafterlocationenter", {
           target: this,
