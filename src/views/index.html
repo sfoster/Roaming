@@ -8,15 +8,27 @@
   {{{head}}}
 </head>
 <body>
-<h1>About, Login</h1>
+<h1>{{title}}</h1>
+<section id="main" class="panel">
+  {{#user}}
+  <h1>Welcome back {{name}}({{email}})</h1>
+  <h3>Roles: {{keys roles}} </h3>
 
-{{^user}}
+  <ul>
+    <li><a href="/main">Main Page</a></li>
+    <li><a href="/map">Editor</a></li>
+  </ul>
+  {{/user}}
+  {{^user}}
+  <h1 class="btn-browserid">Login Here</h1>
+  
 <form action="/auth/browserid" method="post" style="display:none;">
 	<input type="text" name="assertion"/>
 </form>
 
-<img src="https://browserid.org/i/sign_in_red.png" id="browserid"/>
+<img src="https://browserid.org/i/sign_in_red.png" class="btn-browserid"/>
 {{/user}}
+</section>  
 
 <script src="vendor/require.js"></script>
 <script>
@@ -27,7 +39,7 @@ require({
 }, ['$'], function($){
 
   // index/login route
-  $("#browserid").click(function(){
+  $(".btn-browserid").click(function(){
     navigator.id.getVerifiedEmail(function(assertion) {
       if (assertion) {
         $("input").val(assertion);

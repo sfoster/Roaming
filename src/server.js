@@ -16,14 +16,50 @@ console.log("datadir at: " + datadir);
 
 app.register('.html', handlebars);
 
+handlebars.registerHelper('keys', function(context) {
+  var keys = [];
+  for(var i in context){
+    keys.push(i);
+  }
+  return keys.join(', ');
+});
+
 // Simple route middleware to ensure user is authenticated.
 //   Use this route middleware on any resource that needs to be protected.  If
 //   the request is authenticated (typically via a persistent login session),
 //   the request will proceed.  Otherwise, the user will be redirected to the
 //   login page.
 function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) { return next(); }
+  if (req.isAuthenticated()) { 
+    return next();
+  }
   res.redirect('/');
+}
+
+var users = {
+  'sfoster@mozilla.com': {
+    email: 'sfoster@mozilla.com',
+    name: 'Sam (Mozilla)',
+    roles: { player: 'player' }
+  },
+  'sam@sam-i-am.com': {
+    email: 'sam@sam-i-am.com',
+    name: 'Sam (Mozilla)',
+    roles: { player: 'player', admin: 'admin' }
+  }  
+};
+
+function getUserByEmail(email, callback){
+  callback(null, users[email]);
+}
+
+function ensureAdmin(req, res, next){
+  var user = req.user, 
+      roles = user && user.roles;
+  if(roles && roles.admin){
+    return next();
+  }
+  res.send(403);
 }
 
 // Passport session setup.`
@@ -40,7 +76,10 @@ passport.serializeUser(function(user, done) {
 
 passport.deserializeUser(function(email, done) {
   console.log('de-serializing user: ', email);
-  done(null, { email: email });
+  getUserByEmail(email, function(err, user){
+    // if(err)
+    done(null, user);
+  });
 });
 
 // Use the BrowserIDStrategy within Passport.
@@ -104,14 +143,14 @@ app.get('/', function(req, res, next){
   }));
 });
 
-app.get('/main', function(req, res, next){
+app.get('/main', ensureAuthenticated, function(req, res, next){
   res.render('main.html', createObject(viewModelProto, {
     // context data for the landing page
     user: req.user
   }));
 });
 
-app.get(/^(\/map|\/map\.html)$/, function(req, res, next){
+app.get(/^(\/map|\/map\.html)$/, ensureAuthenticated, ensureAdmin, function(req, res, next){
   res.render('map.html', createObject(viewModelProto, {
     // context data for the landing page
     title: 'Roaming: Editor',
