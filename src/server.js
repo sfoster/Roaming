@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var assert = require('assert');
 var express = require('express');
+
 var app = express.createServer();
 var root = __dirname;
 var port = process.env.ROAMINGAPP_PORT || 3000;
@@ -9,14 +10,31 @@ var datadir = process.env.ROAMINGAPP_DATADIR || path.resolve(root, '../data');
 console.log("datadir at: " + datadir);
 
 app.configure(function(){
-    app.use(express.logger({ format: ':method :url' }));
-    app.use(express.methodOverride());
-    app.use(express.bodyParser());
-    app.use(app.router);
+  app.set('views', __dirname + '/views');
+  app.set("view engine", "hbs");
+  app.use(express.logger({ format: ':method :url' }));
+  app.use(express.cookieParser());
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
+  // app.use(express.session({ secret: 'keyboard cat' }));
+  // Initialize Passport!  Also use passport.session() middleware, to support
+  // persistent login sessions (recommended).
+  // app.use(passport.initialize());
+  // app.use(passport.session());
+  app.use(app.router);
+  app.use(express.static(__dirname + '/client'));
 });
 
 app.get('/', function(req, res, next){
-  res.sendfile(root + '/client/index.html');
+  res.render('index', {
+    // context data for the landing page
+  });
+});
+
+app.get('/main', function(req, res, next){
+  res.render('main', {
+    // context data for the main gameplay page
+  });
 });
 
 app.get('/location/world.json', function(req, res){
@@ -54,7 +72,8 @@ app.post('/location/world.json', function(req, res){
   });
 });
 
-app.get(/^\/(resources|models|vendor|css|plugins|lib)\/(.*)$/, function(req, res){
+// app.get(/^\/(resources|models|vendor|css|plugins|lib)\/(.*)$/, function(req, res){
+app.get(/^\/(resources|models|vendor|plugins|lib)\/(.*)$/, function(req, res){
   var resourcePath;
   console.log("matched: ", req.params[0], req.params[1]);
   console.log("prefix with root: ", root);
@@ -136,10 +155,10 @@ app.get('/data/*', function(req, res){
   res.sendfile( resourcePath );
 });
 
-app.get('/:resource', function(req, res){
-  var resourcePath = fs.realpathSync(root + '/client/' + req.params.resource);
-  res.sendfile(resourcePath);
-});
+// app.get('/:resource', function(req, res){
+//   var resourcePath = fs.realpathSync(root + '/client/' + req.params.resource);
+//   res.sendfile(resourcePath);
+// });
 
 
 app.listen(port);
