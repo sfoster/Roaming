@@ -3,14 +3,66 @@ var path = require('path');
 var assert = require('assert');
 var express = require('express'); 
 var handlebars = require('hbs');
+var passport = require('passport'), 
+    BrowserIDStrategy = require('passport-browserid').Strategy;
 
 var app = express.createServer();
 var root = __dirname;
 var port = process.env.ROAMINGAPP_PORT || 3000;
+var hostname = process.env.ROAMINGAPP_HOSTNAME || 'localhost';
+var host = port == 80 ? hostname : hostname+':'+port;
 var datadir = process.env.ROAMINGAPP_DATADIR || path.resolve(root, '../data');
 console.log("datadir at: " + datadir);
 
 app.register('.html', handlebars);
+
+// Simple route middleware to ensure user is authenticated.
+//   Use this route middleware on any resource that needs to be protected.  If
+//   the request is authenticated (typically via a persistent login session),
+//   the request will proceed.  Otherwise, the user will be redirected to the
+//   login page.
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) { return next(); }
+  res.redirect('/');
+}
+
+// Passport session setup.`
+//   To support persistent login sessions, Passport needs to be able to
+//   serialize users into and deserialize users out of the session.  Typically,
+//   this will be as simple as storing the user ID when serializing, and finding
+//   the user by ID when deserializing.  However, since this example does not
+//   have a database of user records, the BrowserID verified email address
+//   is serialized and deserialized.
+passport.serializeUser(function(user, done) {
+  console.log('serializing user: ', user);
+  done(null, user.email);
+});
+
+passport.deserializeUser(function(email, done) {
+  console.log('de-serializing user: ', email);
+  done(null, { email: email });
+});
+
+// Use the BrowserIDStrategy within Passport.
+//   Strategies in passport require a `validate` function, which accept
+//   credentials (in this case, a BrowserID verified email address), and invoke
+//   a callback with a user object.
+passport.use(new BrowserIDStrategy({
+    audience: 'http://'+host
+  },
+  function(email, done) {
+    // asynchronous verification, for effect...
+    process.nextTick(function () {
+      
+      // To keep the example simple, the user's email address is returned to
+      // represent the logged-in user.  In a typical application, you would want
+      // to associate the email address with a user record in your database, and
+      // return that user instead.
+      console.log('user verified: ', email);
+      return done(null, { email: email });
+    });
+  }
+));
  
 app.configure(function(){
   app.set('views', __dirname + '/views');
@@ -19,13 +71,13 @@ app.configure(function(){
   app.use(express.cookieParser());
   app.use(express.bodyParser());
   app.use(express.methodOverride());
-  // app.use(express.session({ secret: 'keyboard cat' }));
+  app.use(express.session({ secret: 'keyboard00cat' }));
   // Initialize Passport!  Also use passport.session() middleware, to support
   // persistent login sessions (recommended).
-  // app.use(passport.initialize());
-  // app.use(passport.session());
+  app.use(passport.initialize());
+  app.use(passport.session());
   app.use(app.router);
-  app.use(express.static(__dirname + '/client'));
+  app.use(express['static'](__dirname + '/client'));
 });
 
 function createObject(proto, mixin){
@@ -44,7 +96,10 @@ var viewModelProto = {
 };
 
 app.get('/', function(req, res, next){
+  console.log('got user: ', req.user);
   res.render('index.html', createObject(viewModelProto, {
+    layout: false,
+    user: req.user
     // context data for the landing page
   }));
 });
@@ -52,6 +107,7 @@ app.get('/', function(req, res, next){
 app.get('/main', function(req, res, next){
   res.render('main.html', createObject(viewModelProto, {
     // context data for the landing page
+    user: req.user
   }));
 });
 
@@ -59,7 +115,8 @@ app.get(/^(\/map|\/map\.html)$/, function(req, res, next){
   res.render('map.html', createObject(viewModelProto, {
     // context data for the landing page
     title: 'Roaming: Editor',
-    head: '<link rel="stylesheet" href="./css/map.css" type="text/css">'
+    head: '<link rel="stylesheet" href="./css/map.css" type="text/css">',
+    user: req.user
   }));
 });
 
@@ -179,6 +236,21 @@ app.get('/data/*', function(req, res){
   var relPath = req.params[0].replace(/^\.\//, '');
   var resourcePath = fs.realpathSync(datadir + '/' + relPath);
   res.sendfile( resourcePath );
+});
+
+// POST /auth/browserid
+//   Use passport.authenticate() as route middleware to authenticate the
+//   request.  BrowserID authentication will verify the assertion obtained from
+//   the browser via the JavaScript API.
+app.post('/auth/browserid', 
+  passport.authenticate('browserid', { failureRedirect: '/' }),
+  function(req, res) {
+    res.redirect('/');
+  });
+
+app.get('/logout', function(req, res){
+  req.logout();
+  res.redirect('/');
 });
 
 // app.get('/:resource', function(req, res){
