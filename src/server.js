@@ -1,7 +1,8 @@
 var fs = require('fs');
 var path = require('path');
 var assert = require('assert');
-var express = require('express');
+var express = require('express'); 
+var handlebars = require('hbs');
 
 var app = express.createServer();
 var root = __dirname;
@@ -9,6 +10,8 @@ var port = process.env.ROAMINGAPP_PORT || 3000;
 var datadir = process.env.ROAMINGAPP_DATADIR || path.resolve(root, '../data');
 console.log("datadir at: " + datadir);
 
+app.register('.html', handlebars);
+ 
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set("view engine", "hbs");
@@ -25,16 +28,39 @@ app.configure(function(){
   app.use(express.static(__dirname + '/client'));
 });
 
+function createObject(proto, mixin){
+  var obj = Object.create(proto);
+  if(mixin){
+    for(var i in mixin) obj[i] = mixin[i];
+  }
+  return obj;
+}
+handlebars.registerPartial('globalhead', fs.readFileSync('./views/globalhead.html').toString());
+
+var viewModelProto = {
+  head: '', 
+  title: 'Roaming',
+  version: '0.0'
+};
+
 app.get('/', function(req, res, next){
-  res.render('index', {
+  res.render('index.html', createObject(viewModelProto, {
     // context data for the landing page
-  });
+  }));
 });
 
 app.get('/main', function(req, res, next){
-  res.render('main', {
-    // context data for the main gameplay page
-  });
+  res.render('main.html', createObject(viewModelProto, {
+    // context data for the landing page
+  }));
+});
+
+app.get(/^(\/map|\/map\.html)$/, function(req, res, next){
+  res.render('map.html', createObject(viewModelProto, {
+    // context data for the landing page
+    title: 'Roaming: Editor',
+    head: '<link rel="stylesheet" href="./css/map.css" type="text/css">'
+  }));
 });
 
 app.get('/location/world.json', function(req, res){
