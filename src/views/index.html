@@ -6,6 +6,15 @@
   <title>{{title}}</title>
   {{>globalhead}}
   {{{head}}}
+  <style>
+  #main {
+    position: relative;
+    top: 0; right: 0; left: 5px; bottom: 0;
+    padding: 10px;
+    min-height: 60px;
+    background-color: #fff;
+  }
+  </style>
 </head>
 <body>
 <h1>{{title}}</h1>
@@ -19,6 +28,7 @@
     <li><a href="/map">Editor</a></li>
   </ul>
   {{/user}}
+  <p>Roaming is a work-in-progress RPC/interactive fiction game.</p>
   {{^user}}
   <h1 class="btn-browserid">Login Here</h1>
   
@@ -26,7 +36,7 @@
 	<input type="text" name="assertion"/>
 </form>
 
-<img src="https://browserid.org/i/sign_in_red.png" class="btn-browserid"/>
+<p><img src="https://browserid.org/i/sign_in_green.png" class="btn-browserid" style="vertical-align: middle;" /> <label style="vertical-align: middle; font-size: 1.2em">Using Mozilla Persona (browserid)</label></p>
 {{/user}}
 </section>  
 
