@@ -219,7 +219,7 @@ npc.gaintCobra= {
     hp: 60,
     mp: 0,
     range: 'short',
-    evasion: 20
+    evasion: 20  
   };
   npc.chimpanzee = {
     name: 'Chimpanzee',
