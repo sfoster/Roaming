@@ -213,6 +213,14 @@ npc.gaintCobra= {
     range: 'short',
     evasion: 20
   };
+   npc.horse = {
+    name: 'Horse',
+    strength: 14,
+    hp: 60,
+    mp: 0,
+    range: 'short',
+    evasion: 20
+  };
   npc.chimpanzee = {
     name: 'Chimpanzee',
     strength: 18,
@@ -345,6 +353,7 @@ npc.gaintCobra= {
     range: 'short, medium',
     evasion: 20
   };
+  
   
   // All spells cost 10 mp per cast
   // dmg=strength+wpn dmg divided by 4(?) 
