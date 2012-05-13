@@ -14,7 +14,6 @@ var port = process.env.ROAMINGAPP_PORT || 3000;
 var hostname = process.env.ROAMINGAPP_HOSTNAME || 'localhost';
 var host = port == 80 ? hostname : hostname+':'+port;
 var datadir = process.env.ROAMINGAPP_DATADIR || path.resolve(root, '../data');
-console.log("datadir at: " + datadir);
 
 app.register('.html', handlebars);
 
@@ -55,12 +54,10 @@ function ensureAdmin(req, res, next){
 //   have a database of user records, the BrowserID verified email address
 //   is serialized and deserialized.
 passport.serializeUser(function(user, done) {
-  console.log('serializing user: ', user);
   done(null, user.email);
 });
 
 passport.deserializeUser(function(email, done) {
-  console.log('de-serializing user: ', email);
   users.get(email, function(err, user){
     // if(err)
     done(null, user);
@@ -71,6 +68,7 @@ passport.deserializeUser(function(email, done) {
 //   Strategies in passport require a `validate` function, which accept
 //   credentials (in this case, a BrowserID verified email address), and invoke
 //   a callback with a user object.
+console.log('configuring BrowserIDStrategy to use audience: http://'+host);
 passport.use(new BrowserIDStrategy({
     audience: 'http://'+host
   },
@@ -111,7 +109,7 @@ function createObject(proto, mixin){
   }
   return obj;
 }
-handlebars.registerPartial('globalhead', fs.readFileSync('./views/globalhead.html').toString());
+handlebars.registerPartial('globalhead', fs.readFileSync(__dirname + '/views/globalhead.html').toString());
 
 var viewModelProto = {
   head: '', 
@@ -120,7 +118,6 @@ var viewModelProto = {
 };
 
 app.get('/', function(req, res, next){
-  console.log('got user: ', req.user);
   res.render('index.html', createObject(viewModelProto, {
     layout: false,
     user: req.user
@@ -159,7 +156,7 @@ app.get('/location/world.json', function(req, res){
 });
 app.post('/location/world.json', function(req, res){
   var resourcePath = fs.realpathSync(datadir + '/location/world.json');
-  console.log("got post: ", typeof req.body, req.body);
+  // console.log("got post: ", typeof req.body, req.body);
   var fileData = req.body;
   fileData.sort(function(a,b){
     if(a.y == b.y) {
@@ -182,8 +179,8 @@ app.post('/location/world.json', function(req, res){
 // app.get(/^\/(resources|models|vendor|css|plugins|lib)\/(.*)$/, function(req, res){
 app.get(/^\/(resources|models|vendor|plugins|lib)\/(.*)$/, function(req, res){
   var resourcePath;
-  console.log("matched: ", req.params[0], req.params[1]);
-  console.log("prefix with root: ", root);
+  // console.log("matched: ", req.params[0], req.params[1]);
+  // console.log("prefix with root: ", root);
   switch(req.params[0]){
     case 'resources': 
     case 'vendor': 
@@ -212,17 +209,16 @@ app.get(/^\/(resources|models|vendor|plugins|lib)\/(.*)$/, function(req, res){
 app.get('/location/:id.json', function(req, res){
   // handle data as static files for now
   var id = req.params.id;
-  console.log("request for location id: " + id);
+  // console.log("request for location id: " + id);
 
   var relPath = 'location/' + id + '.json';
   var resourcePath = datadir + '/' + relPath;
 
   if( path.existsSync(resourcePath) ){
     resourcePath = fs.realpathSync(resourcePath);
-    console.log(id + " exists");
     res.sendfile( resourcePath );
   } else {
-    console.log(id + " does not exist");
+    console.log(id + " does not exist yet");
     var emptyLocation = {
       coords: id.split(','),
       description: "--No description yet--",
