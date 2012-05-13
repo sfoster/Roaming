@@ -1,3 +1,4 @@
+require("amd-loader");
 var fs = require('fs');
 var path = require('path');
 var assert = require('assert');
@@ -6,6 +7,7 @@ var handlebars = require('hbs');
 var passport = require('passport'), 
     BrowserIDStrategy = require('passport-browserid').Strategy;
 
+var users = require('./lib/users');
 var app = express.createServer();
 var root = __dirname;
 var port = process.env.ROAMINGAPP_PORT || 3000;
@@ -36,23 +38,6 @@ function ensureAuthenticated(req, res, next) {
   res.redirect('/');
 }
 
-var users = {
-  'sfoster@mozilla.com': {
-    email: 'sfoster@mozilla.com',
-    name: 'Sam (Mozilla)',
-    roles: { player: 'player' }
-  },
-  'sam@sam-i-am.com': {
-    email: 'sam@sam-i-am.com',
-    name: 'Sam (Mozilla)',
-    roles: { player: 'player', admin: 'admin' }
-  }  
-};
-
-function getUserByEmail(email, callback){
-  callback(null, users[email]);
-}
-
 function ensureAdmin(req, res, next){
   var user = req.user, 
       roles = user && user.roles;
@@ -76,7 +61,7 @@ passport.serializeUser(function(user, done) {
 
 passport.deserializeUser(function(email, done) {
   console.log('de-serializing user: ', email);
-  getUserByEmail(email, function(err, user){
+  users.get(email, function(err, user){
     // if(err)
     done(null, user);
   });
