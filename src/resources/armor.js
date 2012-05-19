@@ -140,5 +140,10 @@ define([], function(){
   effect: 16/100,
   encumberance: 0
   };
+    armor.juggernautPlate = {
+  name: 'Juggernaut Plate',
+  effect: 50/100,
+  encumberance: 10
+  };
   return armor;
 });

@@ -606,5 +606,23 @@ define([], function(){
     weight: 6,
     mpbonus: 3
   };
+    weapons.theStaff = {
+    name: 'Staff',
+    shortRangeDamage: 500,
+    longRangeDamage: 500,
+    mediumRangeDamage: 500,
+    weaponclass: "shortrange, mediumrange, longrange",
+    weight: 1,
+    mpbonus: 0
+  };
+    weapons.theDragonsword = {
+    name: 'Dragonsword',
+    shortRangeDamage: 500,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0,
+    weaponclass: "shortrange",
+    weight: 5,
+    mpbonus: 0
+  };
   return weapons;
 });

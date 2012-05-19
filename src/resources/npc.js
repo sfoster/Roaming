@@ -245,6 +245,22 @@ define([], function(){
     evasion: 20,
     terrain: ["plains"]
   };
+   npc.horse = {
+    name: 'Horse',
+    strength: 14,
+    hp: 60,
+    mp: 0,
+    range: 'short',
+    evasion: 20  
+  };
+  npc.chimpanzee = {
+    name: 'Chimpanzee',
+    strength: 18,
+    hp: 40,
+    mp: 0,
+    range: 'short',
+    evasion: 12
+  };
   npc.gorrila = {
     name: 'Gorrila',
     strength: 22,
@@ -365,6 +381,7 @@ define([], function(){
     evasion: 2, 
     terrain: ["desert", "sand", "barren", "mountains"]
   };
+
   npc.dragon = {
     name: 'Dragon',
     strength: 80,
@@ -385,7 +402,8 @@ define([], function(){
     terrain: ["mountains"]
   };
   
+  
   // All spells cost 10 mp per cast
-  // dmg=strength divided by 2(?) 
+  // dmg=strength+wpn dmg divided by 4(?) 
   return npc;
 });
