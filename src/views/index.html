@@ -51,6 +51,10 @@ require({
 
   // index/login route
   $(".btn-browserid").click(function(){
+    if(!navigator.id){
+      console.warn("browserid not loaded");
+      return;
+    }
     navigator.id.getVerifiedEmail(function(assertion) {
       if (assertion) {
         $("input").val(assertion);
