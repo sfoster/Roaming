@@ -1,4 +1,9 @@
-define(['$', 'lib/util', 'lib/event'], function($, util, Evented){
+define([
+  '$', 
+  'lib/util', 
+  'lib/event',
+  'lib/Promise'
+], function($, util, Evented, Promise){
   var emit = Evented.emit.bind(this), // it matter what 'this' when we emit and listenr for events. Here, 'this' is the global context
       create = util.create;
   
@@ -15,8 +20,10 @@ define(['$', 'lib/util', 'lib/event'], function($, util, Evented){
       this.id = coords.join(',');
     }
     this._onexits = [];
+    this.encounter = {};
   }
   util.mixin(Location.prototype, Evented, {
+    encounterType: "",
     get: function(name){
       return this[name];
     }, 
@@ -67,6 +74,38 @@ define(['$', 'lib/util', 'lib/event'], function($, util, Evented){
       while((fn = this._onexits.shift())){
         fn(player, game);
       }
+    },
+    save: function(){
+      var formData = {};
+      for(var p in this){
+        if(typeof this[p] !== 'function'){
+          formData[p] = this[p];
+        }
+      }
+      console.log("formData: ", formData);
+      var id = formData.id,
+          coords = formData.coords || id.split(',');
+      formData.coords = coords.map(Number);
+
+      var savePromise = new Promise();
+      $.ajax({
+        type: 'PUT',
+        dataType: 'json',
+        contentType: 'application/json',
+        url: '/location/'+id+'.json',
+        data: JSON.stringify(formData),
+        success: function(resp){
+          console.log("save response: ", resp);
+          alert("location saved: "+ resp.status);
+          savePromise.resolve(resp.status);
+        }, 
+        error: function(xhr){ 
+          console.warn("error saving location: ", xhr.status);
+          alert("Unable to save location right now"); 
+          savePromise.reject(xhr.status);
+        }
+      });
+      return savePromise;
     }
   });
 
