@@ -23,6 +23,28 @@
     .item .field-id {
       
     }
+    .tab-label {
+      display: inline-block;
+      padding: 4px 10px;
+      font-size: 1.4em;
+      border: 2px solid;
+      border-color: #fff #ccc #eee #ccc;
+      border-bottom-style: none;
+      opacity: 0.3;
+      cursor: pointer;
+    }
+    .tab-label.selected {
+      opacity: 1.0;
+      background-color: #fff;
+    }
+    .tab-panel {
+      border: 2px solid;
+      border-color: #fff #ccc #666 #ccc;
+      padding: 10px;
+    }
+    .tab-panels {
+      position:relative;
+    }
   </style>
 </head>
 <body>
@@ -31,7 +53,7 @@ Editor:
   * location
   * terrain
   * description
-  * encounter
+  * encounterType
     * encounter details
   * here
   
@@ -59,16 +81,21 @@ JSRender overview:
 </div>
 
 <div class="row">
-  <div class="col col-1of2 col-left">Edit</div>
-  <div class="col col-1of2 col-left">Preview</div>
-</div>
-<div class="row">
   <div class="col col-3of8 col-left">
-    <div id="locationEdit"></div>
+    <div id=""></div>
   </div>
   <div class="col col-1of8"></div>
   <div class="col col-1of2 col-left">
-    <div id="locationPreview"></div>
+    <div id=""></div>
+  </div>
+</div>
+
+<div class="tab-container">
+  <span class="tab-label selected" data-target="locationEdit">Edit</span>
+  <span class="tab-label" data-target="locationPreview">Preview</span>
+  <div class="tab-panels">
+    <div class="tab-panel" id="locationEdit"></div>
+    <div class="tab-panel" id="locationPreview" style="display:none"></div>
   </div>
 </div>
 
@@ -99,17 +126,17 @@ JSRender overview:
 <div class="field-description">
   <h3 class="caption"><label for="">Encounter</label></h3>
   <p class="hint">Pick what happens here</p>
-  <p><select id="selEncounterType" data-link="encounter">
+  <p><select id="selEncounterType" data-link="encounterType">
     <option value="none">None</option>
     {{for ~encounterTypes}}
       <option 
-        data-link="selected{:~matches(title, 'encounter')}"
+        data-link="selected{:~matches(title, 'encounterType')}"
         value="{{:title}}"
       >{{>title}}</option>
     {{/for}}
   </select></p>
 </div>
-<div data-link="visible{: encounter=='npc' }">
+<div data-link="visible{: encounterType=='npc' }">
   <div class="subhead">Encounter Details:</div>
   <div id="npc_encounters">
     <p>Type: <select name="npc_type1" id="npc_type1" class="npc_picker"></select> Number: <input type="number" value="0" min="0"></p>
@@ -134,7 +161,7 @@ JSRender overview:
   <p id="description_text" class="fullwidth mediumheight" data-link="description">{{>description}}</p>
 </div>
 <div class="field-description">
-  <h3 class="caption">Encounter: <span data-link="encounter">{{:encounter}}</span></h3>
+  <h3 class="caption">Encounter: <span data-link="encounterType">{{:encounterType}}</span></h3>
 </div>
 </script>
 
@@ -163,14 +190,28 @@ JSRender overview:
     'lib/dollar',
     'resources/encounters',
     'resources/terrain',
-    'plugins/location!3,2'
+    'plugins/location!3,3'
   ], function($, encounterTypes, terrainTypes, locn){
     window.locn = locn;
     // edit a location: 
     //  description, 
     //  terrain,  
-    //  encounter: [none, npc, etc.] (contents of resources/encounters)
+    //  encounterType: [none, npc, etc.] (contents of resources/encounters)
     //   
+    
+    // set up the edit/preview tabs
+    $('.tab-label').click(function(){
+      var targ = this.getAttribute("data-target"), 
+          parent = $(this).closest('.tab-container')[0];
+          
+      console.log("hiding panels: ", $('.tab-panel', parent));
+      $('.tab-panel', parent).hide();
+      $('.tab-label', parent).removeClass('selected');
+      $(this).addClass('selected');
+      console.log("tab label target: ", targ, $('#'+targ));
+      $('#'+targ).show();
+    });
+    
     $.templates({
       editTmpl: "#editLocationTemplate",
       previewTmpl: "#previewLocationTemplate"
@@ -201,8 +242,8 @@ JSRender overview:
           })
         })(),
         isEncounterSelected: function(type){
-          console.log("isEncounterSelected: ", type, locn.encounter);
-         return type == locn.encounter; 
+          console.log("isEncounterSelected: ", type, locn.encounterType);
+         return type == locn.encounterType; 
         },
         selectedEncounter: function(selectedEncounterType) {
           return (selectedEncounterType!=="none") ? encounterTypes[selectedEncounterType].title : "";
