@@ -51,11 +51,10 @@ define(['lib/util', 'lib/event', 'resources/npc'], function(util, Evented, npc){
     }
   });
   
-  var encounters = {
-    npc: new NPCEncounter({
-      description: 'Oh oh, you run smack into trouble.'
-    })
-  };
+  var encounters = {};
+  encounters.npc = new NPCEncounter({
+    description: 'Oh oh, you run smack into trouble.'
+  });
   
   encounters.beginning = new Encounter({
     firstVisit: [
