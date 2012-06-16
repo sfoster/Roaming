@@ -1,11 +1,14 @@
 define([
   '$', 'lib/util', 'resources/template',
   'lib/Promise', 
-  'resources/map', 'resources/terrain'
+  'resources/map', 
+  'resources/terrain',
+  'resources/encounters',
+  'resources/npc'
 ], function(
   $, util, template,
   Promise, 
-  map, terrainTypes
+  map, terrainTypes, encounterTypes, npcTypes
 ){
 
   var pluck = util.pluck, 
@@ -24,14 +27,15 @@ define([
   //  
   function saveDetail() {
     var $detail = $('#detailContent'); 
-    var formData = locationModel;
+    var formData = Object.create(locationModel);
     var fields = $('input[type="text"], input[type="hidden"], textarea', $detail).each(function(idx, el){
       formData[ el.name ] = $(el).val();
     });
     console.log("formData: ", formData);
-    var id = formData.id = formData.coords;
-    formData.coords = formData.coords.split(',').map(Number);
-      
+    var id = formData.id,
+        coords = formData.coords || id.split(',');
+    formData.coords = coords.map(Number);
+
     var savePromise = new Promise();
     $.ajax({
       type: 'PUT',
@@ -73,6 +77,7 @@ define([
     $('#detailContent').html("");
     locationModel = null;
   }
+  
   function detailEditInit(){
     $('#detailSaveBtn').click(
       function(evt){
@@ -116,6 +121,11 @@ define([
       // re-fetch the map data and re-render
       populateMap();
     });
+    $('#downloadMapBtn').click(function(evt){
+      var form = evt.target.form;
+      $('input[name="download"]', form).val(+new Date());
+    });
+    
   }
 
   var locationModel = null;
@@ -143,6 +153,10 @@ define([
     return detailPromise;
   }
   
+  function populateForm(form, data){
+    
+  }
+  
   function editDetail(id, tile){
     console.log("editDetail: ", id);
 
@@ -159,13 +173,29 @@ define([
       if(location.description.match(/^--/)){
         delete location.description;
       }
-      if(location.afar.match(/^--/)){
+      if(location.afar && location.afar.match(/^--/)){
         delete location.afar;
       }
       location = util.mixin(defaults, location);
       console.log("got back location: ", location);
       locationModel = location;
       $detail.html( tmpl( util.mixin(location, { type: tile.type }) ) );
+
+      var encounterPicker = $('#encounter_type')[0];
+      if(encounterPicker){
+        for(var encounterType in encounterTypes){
+          encounterPicker.options[encounterPicker.options.length] = new Option(encounterType, encounterType);
+        }
+      }
+      var npcPickers = $('.npc_picker');
+      console.log("npcPickers: ", npcPickers);
+      npcPickers.each(function(idx, npcPicker){
+        console.log("npcPicker: ", npcPicker);
+        npcPicker.options[npcPicker.options.length] = new Option('--None--', '');
+        for(var npcType in npcTypes){
+          npcPicker.options[npcPicker.options.length] = new Option(npcTypes[npcType].name, npcType);
+        }
+      });
     });
   }
   
