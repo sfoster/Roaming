@@ -42,9 +42,14 @@
       <p><textarea name="description" id="description_text" class="fullwidth mediumheight">{{description}}</textarea></p>
     </div>
     <div class="field-description">
-      <h3 class="caption"><label for="">Afar</label></h3>
-      <p class="hint">From afar, this location looks like: </p>
-      <p><textarea name="afar" id="afar_text" class="fullwidth shortheight">{{afar}}</textarea></p>
+      <h3 class="caption"><label for="">Encounter</label></h3>
+      <p class="hint">Pick what happens here</p>
+      <p><select name="encounterlist" id="encounter_type"></select></p>
+      <div id="npc_encounters">
+        <p>Type: <select name="npc_type1" id="npc_type1" class="npc_picker"></select> Number: <input type="number" value="0" min="0"></p>
+        <p>Type: <select name="npc_type2" id="npc_type2" class="npc_picker"></select> Number: <input type="number" value="0" min="0"></p>
+        <p>Type: <select name="npc_type3" id="npc_type3" class="npc_picker"></select> Number: <input type="number" value="0" min="0"></p>
+      </div>
     </div>
   </script>
 </section>  
@@ -58,7 +63,8 @@
       compose: 'vendor/compose',
       text: 'plugins/vendor/text',
       json: 'plugins/vendor/json',
-      image: 'plugins/vendor/image'
+      image: 'plugins/vendor/image',
+      order: 'plugins/vendor/image'
     }
   };
 </script>
