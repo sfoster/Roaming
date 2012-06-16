@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Roaming: Data Binding test</title>
+  <meta name="viewport" content="initial-scale=1">
+  <meta name="viewport" content="initial-scale=1">
+  <link rel="stylesheet" href="./css/core.css" type="text/css">
+  <link rel="stylesheet" href="./css/listing.css" type="text/css">
+  <link rel="stylesheet" href="./css/map.css" type="text/css">
+  <link rel="stylesheet" href="./css/grid.css" type="text/css">
+  <style>
+    h1 {
+      margin: 0;
+      padding: 12px;
+      font-size: 1.8em;
+      color: #eee;
+    }
+    #main {
+      overflow: auto;
+    }
+    .item .field-id {
+      
+    }
+  </style>
+</head>
+<body>
+<div style="display:none">
+Editor: 
+  * location
+  * terrain
+  * description
+  * encounter
+    * encounter details
+  * here
+  
+JSRender overview: 
+  {:name}         property access, returns the .name property
+  {:foo.name}     deep property access, returns the foo.name property
+  {>name}         property access, returns the html-entity-ized.name property
+  {:value > 1}    comparison - returns true/false
+  {{for somelist}}        iterate a list
+    {{:title}} {{:#data}}  #data is the list being iterated
+    {{:#index}}            #index is counter in the iteration
+  {{/for}}
+  {{if something !== somethingelse}}        if/else by evaluating expression
+    true block
+    {{else otherclause}}
+      elsif block 
+    {{/else}}
+    {{else}}
+      else block 
+    {{/else}}
+  {{/if}}
+
+  {{for somelist          # using nested item templates for a list iteration
+    tmpl="#itemtemplate"/}}
+</div>
+
+<div class="row">
+  <div class="col col-1of2 col-left">Edit</div>
+  <div class="col col-1of2 col-left">Preview</div>
+</div>
+<div class="row">
+  <div class="col col-3of8 col-left">
+    <div id="locationEdit"></div>
+  </div>
+  <div class="col col-1of8"></div>
+  <div class="col col-1of2 col-left">
+    <div id="locationPreview"></div>
+  </div>
+</div>
+
+<script id="editLocationTemplate" type="text/x-jsrender">
+<div class="media attribution">
+  <div class="img"><span data-link="class{:~swatchClass(type)}"></span></div>
+  <div class="bd field-{{:id}}">
+    <h2>Location: <code>{{:id}}</code></h2>
+  </div>
+</div>  
+<div class="field-description">
+  <h3 class="caption"><label for="">Terrain</label></h3>
+  <p><select id="selTerrainType" data-link="type">
+    {{for ~terrainTypes}}
+      <option 
+        data-link="selected{:~matches(name, 'type')}"
+        value="{{:name}}"
+      >{{>name}}</option>
+    {{/for}}
+  </select></p>
+</div>
+<input type="hidden" name="coords" value="{{:id}}" data-link="visible{:name}">
+<div class="field-description">
+  <h3 class="caption"><label for="">Description</label></h3>
+  <p class="hint">As you enter this location, you see: </p>
+  <p><textarea name="description" id="description_text" class="fullwidth mediumheight" data-link="description">{{>description}}</textarea></p>
+</div>
+<div class="field-description">
+  <h3 class="caption"><label for="">Encounter</label></h3>
+  <p class="hint">Pick what happens here</p>
+  <p><select id="selEncounterType" data-link="encounter">
+    <option value="none">None</option>
+    {{for ~encounterTypes}}
+      <option 
+        data-link="selected{:~matches(title, 'encounter')}"
+        value="{{:title}}"
+      >{{>title}}</option>
+    {{/for}}
+  </select></p>
+</div>
+<div data-link="visible{: encounter=='npc' }">
+  <div class="subhead">Encounter Details:</div>
+  <div id="npc_encounters">
+    <p>Type: <select name="npc_type1" id="npc_type1" class="npc_picker"></select> Number: <input type="number" value="0" min="0"></p>
+    <p>Type: <select name="npc_type2" id="npc_type2" class="npc_picker"></select> Number: <input type="number" value="0" min="0"></p>
+    <p>Type: <select name="npc_type3" id="npc_type3" class="npc_picker"></select> Number: <input type="number" value="0" min="0"></p>
+  </div>
+</div>
+
+<div data-link="visible{: ~and(selectedEncounterType!=='none', name) }">
+  <h3>Encounter details: {{:name}}</h3>
+</div>
+</script>
+<script id="previewLocationTemplate" type="text/x-jsrender">
+<div class="media attribution">
+  <div class="img"><span data-link="class{:~swatchClass(type)}"></span></div>
+  <div class="bd field-{{:id}}">
+    <h2>Location: <code>{{:id}}</code></h2>
+  </div>
+</div>  
+<div class="field-description">
+  <h3 class="caption">Description</h3>
+  <p id="description_text" class="fullwidth mediumheight" data-link="description">{{>description}}</p>
+</div>
+<div class="field-description">
+  <h3 class="caption">Encounter: <span data-link="encounter">{{:encounter}}</span></h3>
+</div>
+</script>
+
+
+<script type="text/javascript">
+  var config = {
+    packages: {
+      // package mappings
+      $: 'vendor/zepto',
+      util: 'lib/util',
+      compose: 'vendor/compose',
+      text: 'plugins/vendor/text',
+      json: 'plugins/vendor/json',
+      image: 'plugins/vendor/image',
+      order: 'plugins/vendor/order'
+    }
+  };
+</script>
+<script src="../vendor/require.js"></script>
+<script>
+  require({
+    baseUrl: '..',
+    // configure our AMD loader
+    paths: config.packages
+  }, [
+    'lib/dollar',
+    'resources/encounters',
+    'resources/terrain',
+    'plugins/location!3,2'
+  ], function($, encounterTypes, terrainTypes, locn){
+    window.locn = locn;
+    // edit a location: 
+    //  description, 
+    //  terrain,  
+    //  encounter: [none, npc, etc.] (contents of resources/encounters)
+    //   
+    $.templates({
+      editTmpl: "#editLocationTemplate",
+      previewTmpl: "#previewLocationTemplate"
+    });     
+
+    console.log("location data: ", locn);
+
+    var contextHelpers = {
+        app: {
+          selectedEncounterType: 'none'
+        },
+        swatchClass: function(type){
+          console.log("swatchClass: ", 'swatch ' + type);
+          return 'swatch ' + type;
+        },
+        matches: function(value, name) {
+          console.log("matches: ", value, name, locn[name]);
+          return value == locn[name];
+        },
+        encounterTypes: (function(){
+          return Object.keys(encounterTypes).map(function(name){
+            return { title: name };
+          })
+        })(),
+        terrainTypes: (function(){
+          return Object.keys(terrainTypes).map(function(name){
+            return { name: name };
+          })
+        })(),
+        isEncounterSelected: function(type){
+          console.log("isEncounterSelected: ", type, locn.encounter);
+         return type == locn.encounter; 
+        },
+        selectedEncounter: function(selectedEncounterType) {
+          return (selectedEncounterType!=="none") ? encounterTypes[selectedEncounterType].title : "";
+        },
+        and: function(a, b) {
+          return !!a && !!b;
+        }
+      };
+    $( "#editLocationTemplate" )
+            // data,      parentNode,       context,        prevNode, nextNode, index
+      .link( locn, "#locationEdit", contextHelpers );
+
+    $( "#previewLocationTemplate" )
+            // data,      parentNode,       context,        prevNode, nextNode, index
+      .link( locn, "#locationPreview", contextHelpers );
+
+  });
+</script>
+</body>
+</html>
