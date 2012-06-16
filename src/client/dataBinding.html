@@ -38,12 +38,23 @@
       background-color: #fff;
     }
     .tab-panel {
-      border: 2px solid;
-      border-color: #fff #ccc #666 #ccc;
       padding: 10px;
+      max-width: 64em;
     }
     .tab-panels {
       position:relative;
+      border: 2px solid;
+      border-color: #fff #ccc #666 #ccc;
+    }
+    .media.header {
+      margin-left: 0;
+    }
+    
+    .hint {
+      font-size: 0.8em;
+      color: #333;
+      padding-top: 0.4em;
+      margin: 0;
     }
   </style>
 </head>
@@ -80,16 +91,6 @@ JSRender overview:
     tmpl="#itemtemplate"/}}
 </div>
 
-<div class="row">
-  <div class="col col-3of8 col-left">
-    <div id=""></div>
-  </div>
-  <div class="col col-1of8"></div>
-  <div class="col col-1of2 col-left">
-    <div id=""></div>
-  </div>
-</div>
-
 <div class="tab-container">
   <span class="tab-label selected" data-target="locationEdit">Edit</span>
   <span class="tab-label" data-target="locationPreview">Preview</span>
@@ -100,53 +101,62 @@ JSRender overview:
 </div>
 
 <script id="editLocationTemplate" type="text/x-jsrender">
-<div class="media attribution">
+<div class="media header">
   <div class="img"><span data-link="class{:~swatchClass(type)}"></span></div>
   <div class="bd field-{{:id}}">
     <h2>Location: <code>{{:id}}</code></h2>
   </div>
 </div>  
-<div class="field-description">
-  <h3 class="caption"><label for="">Terrain</label></h3>
-  <p><select id="selTerrainType" data-link="type">
+<div class="field-description row">
+  <h3 class="caption col col-1of8"><label for="">Terrain</label></h3>
+  <div class="col col-7of8"><select id="selTerrainType" data-link="type">
     {{for ~terrainTypes}}
       <option 
         data-link="selected{:~matches(name, 'type')}"
         value="{{:name}}"
       >{{>name}}</option>
     {{/for}}
-  </select></p>
+  </select></div>
 </div>
 <input type="hidden" name="coords" value="{{:id}}" data-link="visible{:name}">
-<div class="field-description">
-  <h3 class="caption"><label for="">Description</label></h3>
-  <p class="hint">As you enter this location, you see: </p>
-  <p><textarea name="description" id="description_text" class="fullwidth mediumheight" data-link="description">{{>description}}</textarea></p>
+<div class="field-description row">
+  <h3 class="caption col col-1of8"><label for="">Description</label></h3>
+  <div class="col col-7of8">
+    <p class="hint">As you enter this location, you see: </p>
+    <p><textarea name="description" id="description_text" class="fullwidth mediumheight" data-link="description">{{>description}}</textarea></p>
+  </div>
 </div>
-<div class="field-description">
-  <h3 class="caption"><label for="">Encounter</label></h3>
-  <p class="hint">Pick what happens here</p>
-  <p><select id="selEncounterType" data-link="encounterType">
-    <option value="none">None</option>
-    {{for ~encounterTypes}}
-      <option 
-        data-link="selected{:~matches(title, 'encounterType')}"
-        value="{{:title}}"
-      >{{>title}}</option>
+<div class="field-description row">
+  <h3 class="caption col col-1of8"><label for="">Encounter</label></h3>
+  <div class="col col-7of8">
+    <p class="hint">Pick what happens here</p>
+    <p><select id="selEncounterType" data-link="encounterType">
+      <option value="none">None</option>
+      {{for ~encounterTypes}}
+        <option 
+          data-link="selected{:~matches(title, 'encounterType')}"
+          value="{{:title}}"
+        >{{>title}}</option>
+      {{/for}}
+    </select></p>
+  </div>
+</div>
+<div data-link="visible{: encounterType=='npc' }" class="row">
+  <div class="subhead col col-1of8"></div>
+  <div class="col col-7of8">
+    <div id="npc_encounters">
+    {{for encounter.npc }}
+      <p>Type: <select name="npc_type1" id="npc_type1" class="npc_picker">
+      {{for ~npcTypes tmpl="optionItemTmpl"/}}
+      </select> Number: <input type="number" value="0" min="0"></p>
     {{/for}}
-  </select></p>
-</div>
-<div data-link="visible{: encounterType=='npc' }">
-  <div class="subhead">Encounter Details:</div>
-  <div id="npc_encounters">
-    <p>Type: <select name="npc_type1" id="npc_type1" class="npc_picker"></select> Number: <input type="number" value="0" min="0"></p>
-    <p>Type: <select name="npc_type2" id="npc_type2" class="npc_picker"></select> Number: <input type="number" value="0" min="0"></p>
-    <p>Type: <select name="npc_type3" id="npc_type3" class="npc_picker"></select> Number: <input type="number" value="0" min="0"></p>
+    </div>
   </div>
 </div>
 
 <div data-link="visible{: ~and(selectedEncounterType!=='none', name) }">
-  <h3>Encounter details: {{:name}}</h3>
+  <div class="col col-7of8">
+  </div>
 </div>
 </script>
 <script id="previewLocationTemplate" type="text/x-jsrender">
@@ -190,8 +200,9 @@ JSRender overview:
     'lib/dollar',
     'resources/encounters',
     'resources/terrain',
+    'resources/npc',
     'plugins/location!3,3'
-  ], function($, encounterTypes, terrainTypes, locn){
+  ], function($, encounterTypes, terrainTypes, npcTypes, locn){
     window.locn = locn;
     // edit a location: 
     //  description, 
@@ -204,31 +215,26 @@ JSRender overview:
       var targ = this.getAttribute("data-target"), 
           parent = $(this).closest('.tab-container')[0];
           
-      console.log("hiding panels: ", $('.tab-panel', parent));
       $('.tab-panel', parent).hide();
       $('.tab-label', parent).removeClass('selected');
       $(this).addClass('selected');
-      console.log("tab label target: ", targ, $('#'+targ));
       $('#'+targ).show();
     });
     
     $.templates({
       editTmpl: "#editLocationTemplate",
-      previewTmpl: "#previewLocationTemplate"
+      previewTmpl: "#previewLocationTemplate",
+      optionItemTmpl: '<option value="{{:name}}">{{>name}}</option>'
     });     
-
-    console.log("location data: ", locn);
 
     var contextHelpers = {
         app: {
           selectedEncounterType: 'none'
         },
         swatchClass: function(type){
-          console.log("swatchClass: ", 'swatch ' + type);
           return 'swatch ' + type;
         },
         matches: function(value, name) {
-          console.log("matches: ", value, name, locn[name]);
           return value == locn[name];
         },
         encounterTypes: (function(){
@@ -238,6 +244,11 @@ JSRender overview:
         })(),
         terrainTypes: (function(){
           return Object.keys(terrainTypes).map(function(name){
+            return { name: name };
+          })
+        })(),
+        npcTypes: (function(){
+          return Object.keys(npcTypes).map(function(name){
             return { name: name };
           })
         })(),
