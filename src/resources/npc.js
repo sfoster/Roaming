@@ -306,6 +306,15 @@ define([], function(){
     evasion: 7,
     terrain: ["plains", "forest", "marsh", "sand", "barren"]
   };
+  npc.humanLongbowman = {
+    name: 'Longbowman',
+    strength: 10,
+    hp: 20,
+    mp: 0,
+    weapon: 'weapons.longbow',
+    evasion: 7,
+    terrain: ["plains", "forest", "marsh", "sand", "barren"]
+  };
   npc.humanKnight = {
     name: 'Knight',
     strength: 20,
@@ -350,7 +359,7 @@ define([], function(){
     mp: 0,
     range: 'short',
     evasion: 0, 
-    terrain: ["mountains", "barren", "forest"]
+    terrain: ["mountains", "ice", "barren", "forest"]
   };
   npc.juggernaut = {
     name: 'Juggernaut',
@@ -368,7 +377,7 @@ define([], function(){
     mp: 50,
     range: 'short, medium',
     evasion: 15, 
-    terrain: ["desert", "sand"]
+    terrain: ["desert", "sand", "forest"]
     // Hydra has Venom Spit ability
     // (same as Poison, but medium range)
   };
