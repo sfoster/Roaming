@@ -413,6 +413,6 @@ define([], function(){
   
   
   // All spells cost 10 mp per cast
-  // dmg=strength+wpn dmg divided by 4(?) 
+  // dmg=strength x wpn dmg divided by 5(?) 
   return npc;
 });
