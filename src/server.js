@@ -12,9 +12,11 @@ var app = express.createServer();
 var root = __dirname;
 var port = process.env.ROAMINGAPP_PORT || 3000;
 var hostname = process.env.ROAMINGAPP_HOSTNAME || 'localhost';
+var isDev = hostname === 'localhost';
 var host = port == 80 ? hostname : hostname+':'+port;
 var datadir = process.env.ROAMINGAPP_DATADIR || path.resolve(root, '../data');
 
+console.log("hostname: %s, isDev: %s", hostname, isDev);
 app.register('.html', handlebars);
 
 handlebars.registerHelper('keys', function(context) {
@@ -31,7 +33,8 @@ handlebars.registerHelper('keys', function(context) {
 //   the request will proceed.  Otherwise, the user will be redirected to the
 //   login page.
 function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) { 
+  if (isDev || req.isAuthenticated()) { 
+    console.log('ensureAuthenticated, ok, calling next');
     return next();
   }
   res.redirect('/');
@@ -139,6 +142,11 @@ app.get(/^(\/map|\/map\.html)$/, ensureAuthenticated, ensureAdmin, function(req,
     head: '<link rel="stylesheet" href="./css/map.css" type="text/css">',
     user: req.user
   }));
+});
+
+app.get('/location/world.json?download&ts=:ts', function(req, res){
+  var resourcePath = fs.realpathSync(datadir + '/location/world.json');
+  res.download( resourcePath, 'world.json' );
 });
 
 app.get('/location/world.json', function(req, res){
