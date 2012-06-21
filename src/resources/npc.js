@@ -311,7 +311,7 @@ define([], function(){
     strength: 20,
     hp: 60,
     mp: 0,
-    weapon: 'weapons.lance',
+    weapon: 'weapons.lance, weapons.longsword',
     evasion: 1,
     terrain: ["plains", "forest", "marsh", "sand", "barren"]
   };
