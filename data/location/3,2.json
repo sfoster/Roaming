@@ -13,7 +13,7 @@
       "fixed": false
     }
   ],
-  "encounter": "beginning",
+  "encounterType": "beginning",
   "id": "3,2",
   "type": "plains"
 }

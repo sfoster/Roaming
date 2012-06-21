@@ -7,6 +7,13 @@
     3
   ],
   "here": [],
+  "encounterType": "npc",
+  "encounter": {
+    "npc": [
+      { "type": "troll", "count": 3 },
+      { "type": "trollElder", "count": 2 }
+    ]
+  },
   "id": "3,3",
   "type": "plains"
 }
