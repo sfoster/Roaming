@@ -28,33 +28,20 @@ define([
   function saveDetail() {
     var $detail = $('#detailContent'); 
     var formData = Object.create(locationModel);
-    var fields = $('input[type="text"], input[type="hidden"], textarea', $detail).each(function(idx, el){
-      formData[ el.name ] = $(el).val();
+    var savePromise = locationModel.save();
+    
+    savePromise.then(function(){
+      console.log("Location " + locationModel.id + " saved");
     });
-    console.log("formData: ", formData);
-    var id = formData.id,
-        coords = formData.coords || id.split(',');
-    formData.coords = coords.map(Number);
-
-    var savePromise = new Promise();
-    $.ajax({
-      type: 'PUT',
-      dataType: 'json',
-      contentType: 'application/json',
-      url: '/location/'+id+'.json',
-      data: JSON.stringify(formData),
-      success: function(resp){
-        console.log("save response: ", resp);
-        alert("location saved: "+ resp.status);
-        locationsByCoords[id] = formData;
-        savePromise.resolve(resp.status);
-      }, 
-      error: function(xhr){ 
-        console.warn("error saving location: ", xhr.status);
-        alert("Unable to save location right now"); 
-        savePromise.reject(xhr.status);
-      }
-    });
+    
+    // var fields = $('input[type="text"], input[type="hidden"], textarea', $detail).each(function(idx, el){
+    //   formData[ el.name ] = $(el).val();
+    // });
+    // 
+    // console.log("formData: ", formData);
+    // var id = formData.id,
+    //     coords = formData.coords || id.split(',');
+    // formData.coords = coords.map(Number);
     return savePromise;
   }
 
