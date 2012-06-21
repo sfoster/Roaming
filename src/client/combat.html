@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Roaming: Combat</title>
+  <meta name="viewport" content="initial-scale=1">
+  <link rel="stylesheet" href="./css/core.css" type="text/css">
+  <link rel="stylesheet" href="./css/listing.css" type="text/css">
+  <style>
+    h1 {
+      margin: 0;
+      padding: 12px;
+      font-size: 1.8em;
+      color: #eee;
+    }
+    #main {
+      overflow: auto;
+    }
+  </style>
+</head>
+<body>
+<section id="hud" class="panel">
+  <h1>Combat</h1>
+</section>  
+<section id="drawer" class="panel">
+  <ul id="toollist" class="panelist">
+  </ul>
+</section>
+<section id="main" class="panel">
+  <table id="npcs" class="listing" cellspacing="0">
+    <thead>
+      <tr class="item">
+        <th class="field-{{id}}"><code>id</code></th>
+        <th class="field-{{name}}">name</th>
+        <th class="field-{{strength}}">strength</th>
+        <th class="field-{{hp}} digit">hit points</th>
+        <th class="field-{{mp}} digit">magic points</th>
+        <th class="field-{{notes}}">notes</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+</section>  
+<section id="detail" class="panel">
+</section>  
+
+<script type="text/javascript">
+  var config = {
+    packages: {
+      // package mappings
+      $: 'vendor/zepto',
+      util: 'lib/util'
+    }
+  };
+</script>
+<script src="../vendor/require.js"></script>
+<script>
+  require({
+    baseUrl: '..',
+    // configure our AMD loader
+    paths: config.packages
+  }, ['$', 'resources/npc', 'models/player', 'models/npc'], function($, npc, player, Npc){
+    
+    var goblin = Npc.create('goblin');
+    var goblinChamp = Npc.create('goblinChamp');
+    
+    function combat(player, monsters) {
+      var damage = player.damage(1); // short-range attack
+      var damageInflicted = 0;
+
+      // player attach - he magically attacks them all for now 
+      monsters.forEach(function(monster){
+        var chanceToHit = 0.5;
+        var doesHit = Math.random() >= chanceToHit; 
+        if(doesHit) {
+          console.log("You hit for " + damage + " of " + monster.stats.health);
+          monster.stats.health = monster.stats.health - damage;
+          damageInflicted += damage;
+        } else {
+          console.log("You miss the " + monster.name);
+        }
+      });
+      var deadMonsters = monsters.filter(function(monster){
+        return monster.stats.health <= 0;
+      });
+      console.log("You killed: ", deadMonsters.map(function(monster){ return monster.name; }));
+
+      monsters = monsters.filter(function(monster){
+        return monster.stats.health > 0;
+      });
+      return {
+        killed: deadMonsters,
+        remaining: monsters,
+        damageInflicted: damageInflicted
+      };
+    }
+    
+    var monsters = [goblin, goblinChamp];
+    var itv = setInterval(function(){
+      if(!monsters.length) {
+        clearInterval(itv); return;
+      };
+      console.log("Combat! ", monsters.length + " monsters");
+      var result = combat(player, monsters);
+      monsters = result.remaining;
+    }, 500);
+  });
+</script>
+</body>
+</html>
