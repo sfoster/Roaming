@@ -56,6 +56,19 @@
       padding-top: 0.4em;
       margin: 0;
     }
+    .btn {
+      display:inline-block;
+      padding: 3px 6px;
+      border: 2px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .add-row {
+      background-color: #ada;
+    }
+    .delete-row {
+      background-color: #daa;
+    }
   </style>
 </head>
 <body>
@@ -89,6 +102,8 @@ JSRender overview:
 
   {{for somelist          # using nested item templates for a list iteration
     tmpl="#itemtemplate"/}}
+  {{ myconverter: :somevalue }}   pass a value through a 'converter' (?)
+  {{ ~helper(...) }}   pass a value through a helper function
 </div>
 
 <div class="tab-container">
@@ -100,17 +115,10 @@ JSRender overview:
   </div>
 </div>
 
-<script id="editLocationTemplate" type="text/x-jsrender">
-<div class="media header">
-  <div class="img"><span data-link="class{:~swatchClass(type)}"></span></div>
-  <div class="bd field-{{:id}}">
-    <h2>Location: <code>{{:id}}</code></h2>
-  </div>
-</div>  
 <div class="field-description row">
   <h3 class="caption col col-1of8"><label for="">Terrain</label></h3>
-  <div class="col col-7of8"><select id="selTerrainType" data-link="type">
-    {{for ~terrainTypes}}
+  <div class="col col-7of8"><select id="selTerrainType" data-link="type" data-comment="'type' is the property on the location object which we bind to">
+    {{for ~asArray(~terrainTypes)}}
       <option 
         data-link="selected{:~matches(name, 'type')}"
         value="{{:name}}"
@@ -118,6 +126,16 @@ JSRender overview:
     {{/for}}
   </select></div>
 </div>
+
+
+<script id="editLocationTemplate" type="text/x-jsrender">
+{{: ~testContext('#view.data.coords', #view.data.coords)}}
+<div class="media header">
+  <div class="img"><span data-link="class{:~swatchClass(type)}"></span></div>
+  <div class="bd field-{{:id}}">
+    <h2>Location: <code>{{:id}}</code></h2>
+  </div>
+</div>  
 <input type="hidden" name="coords" value="{{:id}}" data-link="visible{:name}">
 <div class="field-description row">
   <h3 class="caption col col-1of8"><label for="">Description</label></h3>
@@ -132,24 +150,43 @@ JSRender overview:
     <p class="hint">Pick what happens here</p>
     <p><select id="selEncounterType" data-link="encounterType">
       <option value="none">None</option>
-      {{for ~encounterTypes}}
+      {{* sourceObject = 2;}}
+      {{: ~testContext('sourceObject', sourceObject)}}
+      {{for ~asArray(~encounterTypes)}}
         <option 
-          data-link="selected{:~matches(title, 'encounterType')}"
-          value="{{:title}}"
-        >{{>title}}</option>
+          data-link="selected{:~matches(name, 'encounterType', #view)}"
+          value="{{:name}}"
+        >{{>name}}</option>
       {{/for}}
     </select></p>
   </div>
 </div>
+
 <div data-link="visible{: encounterType=='npc' }" class="row">
   <div class="subhead col col-1of8"></div>
   <div class="col col-7of8">
     <div id="npc_encounters">
     {{for encounter.npc }}
-      <p>Type: <select name="npc_type1" id="npc_type1" class="npc_picker">
-      {{for ~npcTypes tmpl="optionItemTmpl"/}}
-      </select> Number: <input type="number" value="0" min="0"></p>
+      <p>Existing Type: <select name="npc_type1" id="npc_type1" class="npc_picker">
+      {{for ~asArray(~npcTypes) }}
+      <option 
+        data-link="selected{:~matches(name, 'type')}"
+        value="{{:name}}"
+      >{{>name}}</option>
+      {{/for}}
+      </select>
+      Number: <input type="number" value="0" min="0">
+      <span class="btn delete-row">-</span>
+      </p>
     {{/for}}
+      <p>Add Type: <select name="npc_type2" id="npc_type2" class="npc_picker">
+      {{for ~asArray(~npcTypes) }}
+      <option value="{{:name}}">{{>name}}</option>
+      {{/for}}
+      </select> Number: <input type="number" value="0" min="0">
+      <span class="btn add-row">+</span>
+      <span class="btn delete-row">-</span>
+      </p>
     </div>
   </div>
 </div>
@@ -204,6 +241,7 @@ JSRender overview:
     'plugins/location!3,3'
   ], function($, encounterTypes, terrainTypes, npcTypes, locn){
     window.locn = locn;
+    $.views.allowCode = true;
     // edit a location: 
     //  description, 
     //  terrain,  
@@ -223,35 +261,35 @@ JSRender overview:
     
     $.templates({
       editTmpl: "#editLocationTemplate",
-      previewTmpl: "#previewLocationTemplate",
-      optionItemTmpl: '<option value="{{:name}}">{{>name}}</option>'
+      previewTmpl: "#previewLocationTemplate"
     });     
 
     var contextHelpers = {
         app: {
           selectedEncounterType: 'none'
         },
+        terrainTypes: terrainTypes,
+        npcTypes: npcTypes,
+        encounterTypes: encounterTypes,
         swatchClass: function(type){
           return 'swatch ' + type;
         },
-        matches: function(value, name) {
-          return value == locn[name];
+        testContext: function(label, obj){
+          console.log("testContext: "+label, obj);
         },
-        encounterTypes: (function(){
-          return Object.keys(encounterTypes).map(function(name){
-            return { title: name };
-          })
-        })(),
-        terrainTypes: (function(){
-          return Object.keys(terrainTypes).map(function(name){
-            return { name: name };
-          })
-        })(),
-        npcTypes: (function(){
-          return Object.keys(npcTypes).map(function(name){
-            return { name: name };
-          })
-        })(),
+        matches: function(value, pname, obj) {
+          // this is the item in the array
+          // this.parent.data is the array
+          // this.parent.parent.data is the location
+          obj = obj || this.parent.parent.data || this.parent.parent.parent.data;
+          // console.log("matches value: %s, pname: %s, obj: %o, obj[pname]: %o", value, pname, obj, obj[pname]);
+          return value == obj[pname];
+        },
+        asArray: function(obj){
+          return Object.keys(obj).map(function(name){
+            return { name: name, value: obj[name] };
+          });
+        },
         isEncounterSelected: function(type){
           console.log("isEncounterSelected: ", type, locn.encounterType);
          return type == locn.encounterType; 
@@ -267,9 +305,9 @@ JSRender overview:
             // data,      parentNode,       context,        prevNode, nextNode, index
       .link( locn, "#locationEdit", contextHelpers );
 
-    $( "#previewLocationTemplate" )
-            // data,      parentNode,       context,        prevNode, nextNode, index
-      .link( locn, "#locationPreview", contextHelpers );
+    // $( "#previewLocationTemplate" )
+    //         // data,      parentNode,       context,        prevNode, nextNode, index
+    //   .link( locn, "#locationPreview", contextHelpers );
 
   });
 </script>
