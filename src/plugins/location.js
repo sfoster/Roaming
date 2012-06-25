@@ -22,7 +22,14 @@ define(['$', 'compose', 'lib/json/ref', 'models/Location'], function($, Compose,
   var locationPlugin = {
     
     load: function (coords, req, onLoad, requireConfig) {
-      var locn = window.locations[coords];
+      var parts = coords.split(/[!?]/),
+          params = parts[1], 
+          locn = null;
+      coords = parts[0];
+      
+      if(!params || params.indexOf('refresh') == -1){
+        locn = window.locations[coords];
+      }
       console.log("location plugin load: ", locn);
       if(locn) {
         onLoad(locn);
