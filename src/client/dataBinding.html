@@ -18,7 +18,7 @@
       color: #eee;
     }
     #main {
-      overflow: auto;
+      background-color: transparent;
     }
     .item .field-id {
       
@@ -69,6 +69,14 @@
     .delete-row {
       background-color: #daa;
     }
+    .divider {
+      display: block;
+      float: left;
+      margin-top: 2px;
+      border-left: 2px outset #333;
+      width: 1px;
+      height: 2em;
+    }
   </style>
 </head>
 <body>
@@ -106,14 +114,45 @@ JSRender overview:
   {{ ~helper(...) }}   pass a value through a helper function
 </div>
 
-<div class="tab-container">
-  <span class="tab-label selected" data-target="locationEdit">Edit</span>
-  <span class="tab-label" data-target="locationPreview">Preview</span>
-  <div class="tab-panels">
-    <div class="tab-panel" id="locationEdit"></div>
-    <div class="tab-panel" id="locationPreview" style="display:none"></div>
+<section id="hud" class="panel">
+  <div id="tooldrawer">
+    <div class="row">
+      <div class="col col-2of5">
+        <ul id="maptoolbar" class="horizontallist">
+            <li class="btn" id="saveBtn"><button>Save</button></li>
+            <li class="btn" id="resetBtn"><button>Reset</button></li>
+            <li class="btn" id="loadBtn"><button>Load Map...</button></li>
+        </ul>
+      </div>
+      <div class="col col-3of5">
+        <span class="divider"></span>
+        <ul id="detailtoolbar" class="horizontallist">
+          <li class="btn"><button id="detailSaveBtn">Save Location</button></li>
+          <li class="btn"><button id="detailResetBtn">Cancel Edits</button></li>
+        </ul>
+      </div>
   </div>
-</div>
+</section>  
+<section id="drawer" class="panel">
+  <div id="palette">
+    <ul id="terrainlist" class="panelist">
+    </ul>
+    <ul id="toollist" class="panelist">
+      <li class="panel tool edittile"><span>edit tile</span></li>
+    </ul>
+  </div>
+</section>
+<section id="main" class="panel">
+
+  <div class="tab-container">
+    <span class="tab-label selected" data-target="locationEdit">Edit</span>
+    <span class="tab-label" data-target="locationPreview">Preview</span>
+    <div class="tab-panels">
+      <div class="tab-panel" id="locationEdit"></div>
+      <div class="tab-panel" id="locationPreview" style="display:none"></div>
+    </div>
+  </div>
+</section>
 
 <script id="editLocationTemplate" type="text/x-jsrender">
 <div class="media header">
@@ -170,7 +209,7 @@ JSRender overview:
       >{{>name}}</option>
       {{/for}}
       </select>
-      Number: <input type="number" value="0" min="0">
+      Number: <input type="number" value="{{:count}}" min="0">
       <span class="btn delete-row">-</span>
       </p>
     {{/for}}
@@ -236,7 +275,7 @@ JSRender overview:
     'plugins/location!3,3'
   ], function($, encounterTypes, terrainTypes, npcTypes, locn){
     window.locn = locn;
-    $.views.allowCode = true;
+    $.views.allowCode = false;
     // edit a location: 
     //  description, 
     //  terrain,  
@@ -253,11 +292,30 @@ JSRender overview:
       $(this).addClass('selected');
       $('#'+targ).show();
     });
+
+    $('#detailSaveBtn').click(function(evt){
+      var savePromise = locn.save();
+      savePromise.then(function(){
+        console.log("Location " + locn.id + " saved");
+      });
+    });
     
-    $.templates({
-      editTmpl: "#editLocationTemplate",
-      previewTmpl: "#previewLocationTemplate"
-    });     
+    $('#detailResetBtn').click(function(){
+      require(['plugins/location!3,3'], function(locationModel){
+        window.locn = locn = locationModel;
+        init();
+      })
+    });
+
+    function init(){
+      $( "#editLocationTemplate" )
+              // data,      parentNode,       context,        prevNode, nextNode, index
+        .link( locn, "#locationEdit", contextHelpers );
+
+      $( "#previewLocationTemplate" )
+              // data,      parentNode,       context,        prevNode, nextNode, index
+        .link( locn, "#locationPreview", contextHelpers );
+    }
 
     var contextHelpers = {
         app: {
@@ -296,13 +354,12 @@ JSRender overview:
           return !!a && !!b;
         }
       };
-    $( "#editLocationTemplate" )
-            // data,      parentNode,       context,        prevNode, nextNode, index
-      .link( locn, "#locationEdit", contextHelpers );
 
-    // $( "#previewLocationTemplate" )
-    //         // data,      parentNode,       context,        prevNode, nextNode, index
-    //   .link( locn, "#locationPreview", contextHelpers );
+      $.templates({
+        editTmpl: "#editLocationTemplate",
+        previewTmpl: "#previewLocationTemplate"
+      });     
+      init();
 
   });
 </script>
