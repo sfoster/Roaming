@@ -301,7 +301,8 @@ JSRender overview:
     });
     
     $('#detailResetBtn').click(function(){
-      require(['plugins/location!3,3'], function(locationModel){
+      require(['plugins/location!3,3' + '!refresh'], function(locationModel){
+        console.log('reloaded location!3,3', locationModel.get('description'));
         window.locn = locn = locationModel;
         init();
       })
