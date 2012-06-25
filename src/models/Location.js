@@ -9,6 +9,8 @@ define([
   
   function Location(options){
     if(!options) return;
+    this._onexits = [];
+    this.encounter = {};
     for(var i in options){
       this[i] = options[i];
     }
@@ -19,8 +21,6 @@ define([
     if(!this.id){
       this.id = coords.join(',');
     }
-    this._onexits = [];
-    this.encounter = {};
   }
   util.mixin(Location.prototype, Evented, {
     encounterType: "",
