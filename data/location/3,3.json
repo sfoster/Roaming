@@ -1,6 +1,18 @@
 {
+  "encounter": {
+    "npc": [
+      {
+        "type": "troll",
+        "count": "5"
+      },
+      {
+        "type": "trollElder",
+        "count": "1"
+      }
+    ]
+  },
   "img": {},
-  "description": "You see flat grassland all around you.",
+  "description": "You see a coarse meadow criss-crossed by muddy trails.",
   "afar": "it looks like grass and more grass",
   "coords": [
     3,
@@ -8,12 +20,8 @@
   ],
   "here": [],
   "encounterType": "npc",
-  "encounter": {
-    "npc": [
-      { "type": "troll", "count": 3 },
-      { "type": "trollElder", "count": 2 }
-    ]
-  },
   "id": "3,3",
-  "type": "plains"
+  "type": "plains",
+  "x": 3,
+  "y": 3
 }
