@@ -209,7 +209,7 @@ JSRender overview:
       >{{>name}}</option>
       {{/for}}
       </select>
-      Number: <input type="number" value="{{:count}}" min="0">
+      Number: <input type="number" data-link="#data.count" value="{{:count}}" min="0">
       <span class="btn delete-row">-</span>
       </p>
     {{/for}}
@@ -296,7 +296,11 @@ JSRender overview:
     $('#detailSaveBtn').click(function(evt){
       var savePromise = locn.save();
       savePromise.then(function(){
-        console.log("Location " + locn.id + " saved");
+        require(['plugins/location!3,3' + '!refresh'], function(locationModel){
+          console.log('reloaded location!3,3', locationModel.get('description'));
+          window.locn = locn = locationModel;
+          init();
+        })
       });
     });
     
