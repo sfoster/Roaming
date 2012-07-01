@@ -287,5 +287,5 @@ app.get('/logout', function(req, res){
 // });
 
 
-app.listen(port);
-console.log("listening on localhost:" + port);
+app.listen(port, hostname);
+console.log("listening on "+ hostname + ":" + port);
