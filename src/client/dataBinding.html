@@ -47,6 +47,23 @@ JSRender overview:
   {{ ~helper(...) }}   pass a value through a helper function
 </div>
 
+<section id="toolbar">
+  context bar
+  master/detail/preview tabs
+</section>
+<section id="master" class="panel">
+  map toolbar
+  map canvas
+  map navigator
+</section>
+<section id="detail" class="panel">
+  tile editor
+  tile toolbar
+</section>
+<section id="preview" class="panel">
+  rendered tile
+</section>
+
 <section id="hud" class="panel">
   <div id="tooldrawer">
     <div class="row">
@@ -95,99 +112,6 @@ JSRender overview:
     </div>
   </div>
 </section>
-
-<script id="editLocationTemplate" type="text/x-jsrender">
-<div class="media header">
-  <div class="img"><span data-link="class{:~swatchClass(type)}"></span></div>
-  <div class="bd field-{{:id}}">
-    <h2>Location: <code>{{:id}}</code></h2>
-  </div>
-</div>  
-<input type="hidden" name="coords" value="{{:id}}" data-link="visible{:name}">
-<div class="field-description row">
-  <h3 class="caption col col-1of8"><label for="">Terrain</label></h3>
-  <div class="col col-7of8"><select id="selTerrainType" data-link="type" data-comment="'type' is the property on the location object which we bind to">
-    {{for ~asArray(~terrainTypes) ~matchContext=#view.data}}
-    <option 
-      data-link="selected{:~matches(name, 'type', ~matchContext)}"
-      value="{{:name}}"
-    >{{>name}}</option>
-    {{/for}}
-  </select></div>
-</div>
-<div class="field-description row">
-  <h3 class="caption col col-1of8"><label for="">Description</label></h3>
-  <div class="col col-7of8">
-    <p class="hint">As you enter this location, you see: </p>
-    <p><textarea name="description" id="description_text" class="fullwidth mediumheight" data-link="description">{{>description}}</textarea></p>
-  </div>
-</div>
-<div class="field-description row">
-  <h3 class="caption col col-1of8"><label for="">Encounter</label></h3>
-  <div class="col col-7of8">
-    <p class="hint">Pick what happens here</p>
-    <p><select id="selEncounterType" data-link="encounterType">
-      <option value="none">None</option>
-      {{for ~asArray(~encounterTypes) ~matchContext=#view.data}}
-        <option 
-          data-link="selected{:~matches(name, 'encounterType', ~matchContext)}"
-          value="{{:name}}"
-        >{{>name}}</option>
-      {{/for}}
-    </select></p>
-  </div>
-</div>
-
-<div data-link="visible{: encounterType=='npc' }" class="row">
-  <div class="subhead col col-1of8"></div>
-  <div class="col col-7of8">
-    <div id="npc_encounters">
-    {{for encounter.npc }}
-      <p>Existing Type: <select name="npc_type1" id="npc_type1" class="npc_picker">
-      {{for ~asArray(~npcTypes) ~matchContext=#data}}
-      <option 
-        data-link="selected{:~matches(name, 'type', ~matchContext)}"
-        value="{{:name}}"
-      >{{>name}}</option>
-      {{/for}}
-      </select>
-      Number: <input type="number" data-link="#data.count" value="{{:count}}" min="0">
-      <span class="btn delete-row">-</span>
-      </p>
-    {{/for}}
-      <p>Add Type: <select name="npc_type2" id="npc_type2" class="npc_picker">
-      {{for ~asArray(~npcTypes) }}
-      <option value="{{:name}}">{{>name}}</option>
-      {{/for}}
-      </select> Number: <input type="number" value="0" min="0">
-      <span class="btn add-row">+</span>
-      <span class="btn delete-row">-</span>
-      </p>
-    </div>
-  </div>
-</div>
-
-<div data-link="visible{: ~and(selectedEncounterType!=='none', name) }">
-  <div class="col col-7of8">
-  </div>
-</div>
-</script>
-<script id="previewLocationTemplate" type="text/x-jsrender">
-<div class="media attribution">
-  <div class="img"><span data-link="class{:~swatchClass(type)}"></span></div>
-  <div class="bd field-{{:id}}">
-    <h2>Location: <code>{{:id}}</code></h2>
-  </div>
-</div>  
-<div class="field-description">
-  <h3 class="caption">Description</h3>
-  <p id="description_text" class="fullwidth mediumheight" data-link="description">{{>description}}</p>
-</div>
-<div class="field-description">
-  <h3 class="caption">Encounter: <span data-link="encounterType">{{:encounterType}}</span></h3>
-</div>
-</script>
-
 
 <script type="text/javascript">
   var config = {

@@ -2,8 +2,13 @@ define([
   'lib/dollar',
   'resources/encounters',
   'resources/terrain',
-  'resources/npc'
-], function($, encounterTypes, terrainTypes, npcTypes){
+  'resources/npc',
+  'plugins/vendor/text!resources/templates/tileEditor.html',
+  'plugins/vendor/text!resources/templates/tilePreview.html'
+], function($, encounterTypes, terrainTypes, npcTypes, editTemplate, previewTemplate){
+  editTemplate = $.templates( editTemplate );
+  previewTemplate = $.templates( previewTemplate );
+
   $.views.allowCode = false;
   // edit a location: 
   //  description, 
@@ -56,13 +61,9 @@ define([
   });
 
   editor.init = function init(){
-    $( "#editLocationTemplate" )
-            // data,      parentNode,       context,        prevNode, nextNode, index
-      .link( editor.location, "#locationEdit", contextHelpers );
+    editTemplate.link( editor.location, "#locationEdit", contextHelpers );
 
-    $( "#previewLocationTemplate" )
-            // data,      parentNode,       context,        prevNode, nextNode, index
-      .link( editor.location, "#locationPreview", contextHelpers );
+    previewTemplate.link( editor.location, "#locationPreview", contextHelpers );
   };
 
   var contextHelpers = editor.context = {
@@ -117,10 +118,5 @@ define([
       }
     };
 
-    $.templates({
-      editTmpl: "#editLocationTemplate",
-      previewTmpl: "#previewLocationTemplate"
-    });     
-    
     return editor;
 });
