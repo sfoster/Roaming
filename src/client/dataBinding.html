@@ -47,71 +47,41 @@ JSRender overview:
   {{ ~helper(...) }}   pass a value through a helper function
 </div>
 
-<section id="toolbar">
-  context bar
-  master/detail/preview tabs
-</section>
-<section id="master" class="panel">
-  map toolbar
-  map canvas
-  map navigator
-</section>
-<section id="detail" class="panel">
-  tile editor
-  tile toolbar
-</section>
-<section id="preview" class="panel">
-  rendered tile
-</section>
-
-<section id="hud" class="panel">
-  <div id="tooldrawer">
-    <div class="row">
-      <div class="col col-2of5">
-        <ul id="maptoolbar" class="horizontallist">
-            <li class="btn" id="saveBtn"><button>Save</button></li>
-            <li class="btn" id="resetBtn"><button>Reset</button></li>
-            <li class="btn" id="loadBtn"><button>Load Map...</button></li>
-        </ul>
+<div id="editorGroup">
+  <div id="contextbar"><!-- context bar --></div>
+  <div class="tab-container">
+    <!-- master/detail/preview tabs -->
+    <span class="tab-label selected" data-target="mapEdit">Map</span>
+    <span class="tab-label" data-target="locationEdit">Edit Tile</span>
+    <span class="tab-label" data-target="locationPreview">Preview</span>
+    
+    <div class="tab-panels">
+      <div class="tab-panel" id="mapEdit">
       </div>
-      <div class="col col-3of5">
-        <span class="divider"></span>
-        <ul id="detailtoolbar" class="horizontallist">
-          <li class="btn"><button id="detailSaveBtn">Save Location</button></li>
-          <li class="btn"><button id="detailResetBtn">Cancel Edits</button></li>
-        </ul>
-      </div>
-  </div>
-</section>  
-
-<section id="drawer" class="panel">
-  <div id="palette">
-    <ul id="terrainlist" class="panelist">
-    </ul>
-    <ul id="toollist" class="panelist">
-      <li class="panel tool edittile"><span>edit tile</span></li>
-    </ul>
-  </div>
-</section>
-
-<section id="main" class="panel">
-  <div id="map">
-    <canvas id="grid"></canvas>  
-    <div id="gridOverlay"></div>  
-  </div>
-  <div id="detail">
-    <div id="detailContent">
-      <div class="tab-container">
-        <span class="tab-label selected" data-target="locationEdit">Edit</span>
-        <span class="tab-label" data-target="locationPreview">Preview</span>
-        <div class="tab-panels">
-          <div class="tab-panel" id="locationEdit"></div>
-          <div class="tab-panel" id="locationPreview" style="display:none"></div>
+      <div class="tab-panel" id="locationEdit" style="display:none">
+        <div class="tooldrawer" class="row">
+          <!-- tile toolbar -->
+          <div class="col col-3of5">
+            <span class="divider"></span>
+            <ul id="detailtoolbar" class="horizontallist">
+              <li class="btn"><button id="detailSaveBtn">Save Location</button></li>
+              <li class="btn"><button id="detailResetBtn">Cancel Edits</button></li>
+            </ul>
+          </div>
         </div>
+        <section id="detail" class="panel">
+          <!-- tile editor -->
+        </section>
+      </div>
+      <div class="tab-panel" id="locationPreview" style="display:none">
+        <section id="preview" class="panel">
+          rendered tile
+        </section>
       </div>
     </div>
   </div>
-</section>
+  
+</div>
 
 <script type="text/javascript">
   var config = {
@@ -135,12 +105,33 @@ JSRender overview:
     // configure our AMD loader
     paths: config.packages
   }, [
+    'mapEditor',
     'tileEditor',
-    'plugins/location!'+coord
-  ], function(editor, locn){
-    console.log("Editor: ", editor);
-    console.log("locn: ", locn);
-    editor.setLocation(locn); // implicitly inits
+    'plugins/region!world'
+  ], function(mapEditor, tileEditor, world){
+
+    // set up the edit/preview tabs
+    $('.tab-label').click(function(){
+      var targ = this.getAttribute("data-target"), 
+          parent = $(this).closest('.tab-container')[0];
+
+      $('.tab-panel', parent).hide();
+      $('.tab-label', parent).removeClass('selected');
+      $(this).addClass('selected');
+      $('#'+targ).show();
+    });
+
+    console.log("tile editor: ", tileEditor);
+    console.log("region editor: ", mapEditor);
+
+    mapEditor.init({
+      region: world
+    });
+    
+    mapEditor.on('tile:select', function(evt){
+        console.log("Tile selected: ", evt);
+        // tileEditor.setLocation(evt)
+      });
   });
 </script>
 </body>

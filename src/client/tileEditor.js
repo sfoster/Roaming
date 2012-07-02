@@ -14,7 +14,6 @@ define([
   //  description, 
   //  terrain,  
   //  encounterType: [none, npc, etc.] (contents of resources/encounters)
-  //   
 
   var editor = {
     location: null,
@@ -38,17 +37,6 @@ define([
     }
   };
   
-  // set up the edit/preview tabs
-  $('.tab-label').click(function(){
-    var targ = this.getAttribute("data-target"), 
-        parent = $(this).closest('.tab-container')[0];
-        
-    $('.tab-panel', parent).hide();
-    $('.tab-label', parent).removeClass('selected');
-    $(this).addClass('selected');
-    $('#'+targ).show();
-  });
-
   $('#detailSaveBtn').click(function(evt){
     var savePromise = editor.location.save();
     savePromise.then(function(){

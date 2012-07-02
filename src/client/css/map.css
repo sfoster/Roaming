@@ -60,7 +60,10 @@
   display: block;
 }
 #map {
-  position: absolute;
+  position: relative;
+  width: 640px;
+  height: 480px;
+  overflow: auto;
   margin: 0; padding: 0;
 }
 #grid {

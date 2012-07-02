@@ -1,47 +1,45 @@
-define(['lib/dollar', 'lib/util', 'lib/Promise'], function($, util, Promise){
+define(['lib/dollar', 'lib/util', 'lib/Promise', 'resources/terrain'], function($, util, Promise, terrainTypes){
   
   var pluck = util.pluck, 
       values = util.values, 
       keys = util.keys;
   
-  var terrainTypes;
-
-  var canvas, ctx;
+  function Map(options){
+    util.mixin(this, options || {});
+    if(!this.id){
+      this.id = 'map_'+Math.floor(Date.now() * Math.random());
+    }
+  }
+  Map.prototype = {
+    initialized: false,
+    tileSize: 10,
+    startX: 0, 
+    startY: 0, 
+    showCoords: false,
     
-  var initialized = false;  
-  var map = {
-    init: function(cb){
-      // lazy-load the terrain module
-      var loadedPromise = new Promise();
-      if(initialized){
-        // had some trouble with Promise.when.. 
-        // so for now we force asnyc
-        setTimeout(function(){
-          loadedPromise.resolve(true);
-        },0);
-      } else{
-        canvas = this.canvasNode = document.createElement("canvas");
+    init: function(){
+      if(!this.initialized){
+        var canvas = this.canvasNode || ( this.canvasNode = document.createElement("canvas") );
         canvas.style.cssText = "display:block;margin:4px auto";
-        canvas.id = "map_canvas";
-
-        require(['resources/terrain'], function(terrain){
-          terrainTypes = terrain;
-          return loadedPromise.resolve(true);
-        });
-        initialized = true;
+        if(! canvas.id){
+          canvas.id = this.id +"_canvas";
+        }
+        this.initialized = true;
       }
-      return loadedPromise;
+      return this;
     },
-    renderMap: function(mapData, options) {
+    render: function(mapData, options) {
       options = options || {};
       // loop over the array of locations
       var tile = null, 
           img = null,
           terrain = null,
-          tileSize = options.tileSize || 10,
-          ctx = (options.canvasNode || this.canvasNode).getContext("2d"), 
-          startX = options.startX || 0, 
-          startY = options.startY || 0;  
+          tileSize = options.tileSize ||this.tileSize,
+          canvasNode = options.canvasNode || this.canvasNode,
+          ctx = canvasNode.getContext("2d"), 
+          startX = options.startX || this.startX, 
+          startY = options.startY || this.startY, 
+          showCoords = ('showCoords' in options) ? options.showCoords : this.showCoords;  
       
       console.log("renderMap at ", tileSize);
       for(var i=0; i<mapData.length; i++){
@@ -67,7 +65,7 @@ define(['lib/dollar', 'lib/util', 'lib/Promise'], function($, util, Promise){
           } else {
             console.log("no img property in: ", terrainTypes[tile.type]);
           }
-          if(options.showCoords) {
+          if(showCoords) {
             ctx.fillStyle = 'rgba(51,51,51,0.5)';
             ctx.fillRect(tileSize*(tile.x-startX), tileSize*(tile.y-startY), 24, 12);
             ctx.fillStyle = "#ffc";
@@ -84,8 +82,17 @@ define(['lib/dollar', 'lib/util', 'lib/Promise'], function($, util, Promise){
           console.warn("unknown terrain type in: ", tile);
         }
       }
-      return this.canvasNode;
+      return canvasNode;
+    },
+    reset: function(options){
+      // some props need to be unbound, or set to defaults?
+      util.mixin(this, options || {})
     }
   };
-  return map;
+  
+  Map.create = function(options){
+    return new Map(options);
+  };
+  
+  return Map;
 });

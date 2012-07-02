@@ -1,14 +1,17 @@
 define([
   'lib/dollar', 'lib/util', 'resources/template',
   'lib/Promise', 
+  'lib/event', 
   'resources/map', 
   'resources/terrain',
   'resources/encounters',
-  'resources/npc'
+  'resources/npc',
+  'plugins/vendor/text!resources/templates/regionEditor.html'
 ], function(
   $, util, template,
-  Promise, 
-  map, terrainTypes, encounterTypes, npcTypes
+  Promise, Evented,
+  Map, terrainTypes, encounterTypes, npcTypes,
+  editTemplate
 ){
 
   var pluck = util.pluck, 
@@ -17,13 +20,27 @@ define([
       mixin = util.mixin,
       when = Promise.when;
 
-  var currentTool = 'edittile';
-  var mapNode = null;
-  var tileSize = 50, 
-      worldSize = { width: 25, height: 25},
-      tilesByCoords = {}, 
-      locationsByCoords = {};
-  
+
+  // compile the editor template
+  editTemplate = $.templates( editTemplate );
+
+  // map/region editor singleton
+  var editor = util.mixin({
+    currentTool: 'edittile',
+    mapNode: null,
+    tileSize: 50,
+    worldSize:  { width: 25, height: 25},
+    tilesByCoords: {},
+    locationsByCoords: {},
+    setRegion: function(region){
+      this.region = region;
+      if(this.region){
+        console.log("populating map for region: ", region.id);
+        this.populateMap();
+      }
+    } 
+  }, Evented);
+
   //  
   function saveDetail() {
     var $detail = $('#detailContent'); 
@@ -80,7 +97,7 @@ define([
      
   function toolbarInit(){
     $('#saveBtn').click(function(evt){
-      var locations = values(tilesByCoords).map(function(tile){
+      var locations = values(editor.tilesByCoords).map(function(tile){
         var locn = mixin({}, tile);
         delete locn.img;
         return locn;
@@ -202,17 +219,48 @@ define([
       });
   }
   
-  function editorInit(){
-    $('#gridOverlay, #map').css({
+  editor.populateMap = function populateMap(){
+    var region = editor.region, 
+        tiles = region.tiles;
+    editor.tilesByCoords = region.byCoords();  
+
+    var map = editor.map, 
+        mapOptions = {
+            tileSize: editor.tileSize,
+            canvasNode: editor.mapNode,
+            showCoords: true
+        };
+    if(map){
+      map.reset(mapOptions);
+    } else {
+      map = editor.map = Map.create(mapOptions);
+    }
+    map.init().render( region.tiles );
+  };
+  
+  editor.init = function init(options){
+    // toolbarInit();
+    // paletteInit();
+    // detailEditInit();
+    // editorInit();
+    util.mixin(this, options || {});
+
+    editTemplate.link( editor.region, "#mapEdit", contextHelpers );
+    
+    var mapNode = editor.mapNode = $('#grid')[0], 
+        worldSize = this.worldSize, 
+        tileSize = options.tileSize || this.tileSize;
+        
+    $('#gridOverlay').css({
       width: worldSize.width*tileSize,
       height: worldSize.height*tileSize
     });
-    mapNode = $('#grid')[0];
+    
     mapNode.width = worldSize.width*tileSize;
     mapNode.height = worldSize.height*tileSize;
     
-    var scrollContainerNode = $('#main')[0],
-        mapOffsets = $('#map').offset();
+    var scrollContainerNode = mapNode.parentNode,
+        mapOffsets = $(scrollContainerNode).offset();
         
     $('#gridOverlay').mousedown(function(event){
       var scrollOffsets = {
@@ -231,34 +279,12 @@ define([
 
       toolAction(x, y, currentTool);
     });
-  }
 
-  function populateMap(){
-    map.init().then(function(){
-      require(['json!/location/world.json'], function(mapData){
-        var tiles = mapData.tiles;
-        // console.log("loaded mapData: ", mapData);
-        tiles.forEach(function(tile){
-          var tileId = [tile.x, tile.y].join(',');
-          tilesByCoords[tileId] = tile;
-        });
-        map.renderMap( tiles, {
-          tileSize: tileSize,
-          canvasNode: mapNode,
-          showCoords: true
-        });
-      });
-    });
-    
-  }
-  function init(){
-    toolbarInit();
-    paletteInit();
-    detailEditInit();
-    editorInit();
-    populateMap();
-  }
+    if(this.region){
+      this.setRegion(this.region); 
+    }
 
+  };
 
   function trim(text){
     return text.replace(/^\s+/, '').replace(/\s+$/, '');
@@ -276,10 +302,11 @@ define([
   }
   function placeTile(x, y, type){
     var tileId = [x,y].join(','), 
-        tile = tilesByCoords[tileId];
+        tile = editor.tilesByCoords[tileId], 
+        tileSize = editor.tileSize;
     if(!tile){
       // create the tile object
-      tile = tilesByCoords[tileId] = {
+      tile = editor.tilesByCoords[tileId] = {
         x: x, y: y
       };
     }
@@ -313,5 +340,36 @@ define([
     }
   }
 
-  init();
+  var contextHelpers = editor.context = {
+      app: {},
+      terrainTypes: terrainTypes,
+      npcTypes: npcTypes,
+      encounterTypes: encounterTypes,
+      afterChange: function(evt){
+        console.log("onAfterChange: ", evt);
+      },
+      beforeChange: function(evt){
+        console.log("onAfterChange: ", evt);
+      },
+      swatchClass: function(type){
+        return 'swatch ' + type;
+      },
+      testContext: function(label, obj){
+        console.log("testContext: "+label, obj);
+      },
+      matches: function(value, pname, obj) {
+        obj = obj || this;
+        return value == obj[pname];
+      },
+      asArray: function(obj){
+        return Object.keys(obj).map(function(name){
+          return { name: name, value: obj[name] };
+        });
+      },
+      and: function(a, b) {
+        return !!a && !!b;
+      }
+    };
+
+  return editor;
 });
