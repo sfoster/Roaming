@@ -1,4 +1,4 @@
-define(['$', 'lib/util', 'lib/Promise'], function($, util, Promise){
+define(['lib/dollar', 'lib/util', 'lib/Promise'], function($, util, Promise){
   
   var pluck = util.pluck, 
       values = util.values, 

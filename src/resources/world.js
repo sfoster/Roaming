@@ -1,4 +1,4 @@
-define(['$', 'json!/location/world.json', 'lib/util', 'lib/event'], function($, worldData, util, Evented){
+define(['lib/dollar', 'json!/location/world.json', 'lib/util', 'lib/event'], function($, worldData, util, Evented){
 
   var tilesByCoords = {};
   

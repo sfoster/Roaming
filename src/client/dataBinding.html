@@ -66,6 +66,7 @@ JSRender overview:
       </div>
   </div>
 </section>  
+
 <section id="drawer" class="panel">
   <div id="palette">
     <ul id="terrainlist" class="panelist">
@@ -75,14 +76,22 @@ JSRender overview:
     </ul>
   </div>
 </section>
-<section id="main" class="panel">
 
-  <div class="tab-container">
-    <span class="tab-label selected" data-target="locationEdit">Edit</span>
-    <span class="tab-label" data-target="locationPreview">Preview</span>
-    <div class="tab-panels">
-      <div class="tab-panel" id="locationEdit"></div>
-      <div class="tab-panel" id="locationPreview" style="display:none"></div>
+<section id="main" class="panel">
+  <div id="map">
+    <canvas id="grid"></canvas>  
+    <div id="gridOverlay"></div>  
+  </div>
+  <div id="detail">
+    <div id="detailContent">
+      <div class="tab-container">
+        <span class="tab-label selected" data-target="locationEdit">Edit</span>
+        <span class="tab-label" data-target="locationPreview">Preview</span>
+        <div class="tab-panels">
+          <div class="tab-panel" id="locationEdit"></div>
+          <div class="tab-panel" id="locationPreview" style="display:none"></div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -184,7 +193,7 @@ JSRender overview:
   var config = {
     packages: {
       // package mappings
-      $: 'vendor/zepto',
+      $: 'lib/dollar',
       util: 'lib/util',
       compose: 'vendor/compose',
       text: 'plugins/vendor/text',
@@ -196,120 +205,18 @@ JSRender overview:
 </script>
 <script src="../vendor/require.js"></script>
 <script>
-  var coord = location.search ? location.search.substring(1) : '3,3'
+  var coord = location.search ? location.search.replace(/^\?(\d+,\d+)/, "$1") : '3,3'
   require({
     baseUrl: '..',
     // configure our AMD loader
     paths: config.packages
   }, [
-    'lib/dollar',
-    'resources/encounters',
-    'resources/terrain',
-    'resources/npc',
+    'tileEditor',
     'plugins/location!'+coord
-  ], function($, encounterTypes, terrainTypes, npcTypes, locn){
-    window.locn = locn;
-    $.views.allowCode = false;
-    // edit a location: 
-    //  description, 
-    //  terrain,  
-    //  encounterType: [none, npc, etc.] (contents of resources/encounters)
-    //   
-    
-    // set up the edit/preview tabs
-    $('.tab-label').click(function(){
-      var targ = this.getAttribute("data-target"), 
-          parent = $(this).closest('.tab-container')[0];
-          
-      $('.tab-panel', parent).hide();
-      $('.tab-label', parent).removeClass('selected');
-      $(this).addClass('selected');
-      $('#'+targ).show();
-    });
-
-    $('#detailSaveBtn').click(function(evt){
-      var savePromise = locn.save();
-      savePromise.then(function(){
-        require(['plugins/location!'+coord+ '!refresh'], function(locationModel){
-          console.log('reloaded location!' + coord, locationModel.get('description'));
-          window.locn = locn = locationModel;
-          init();
-        })
-      });
-    });
-    
-    $('#detailResetBtn').click(function(){
-      require(['plugins/location!'+coord + '!refresh'], function(locationModel){
-        console.log('reloaded location!'+coord, locationModel.get('description'));
-        window.locn = locn = locationModel;
-        init();
-      })
-    });
-
-    function init(){
-      $( "#editLocationTemplate" )
-              // data,      parentNode,       context,        prevNode, nextNode, index
-        .link( locn, "#locationEdit", contextHelpers );
-
-      $( "#previewLocationTemplate" )
-              // data,      parentNode,       context,        prevNode, nextNode, index
-        .link( locn, "#locationPreview", contextHelpers );
-
-      var view = $.fn.view("#editLocationTemplate");
-      console.log(view);
-      // $(  ).on('change:jsv', function(evt){
-      //   console.log('editLocationTemplate change:jsv event', evt);
-      // });
-        
-    }
-
-    var contextHelpers = {
-        app: {
-          selectedEncounterType: 'none'
-        },
-        terrainTypes: terrainTypes,
-        npcTypes: npcTypes,
-        encounterTypes: encounterTypes,
-        afterChange: function(evt){
-          
-        },
-        swatchClass: function(type){
-          return 'swatch ' + type;
-        },
-        testContext: function(label, obj){
-          console.log("testContext: "+label, obj);
-        },
-        matches: function(value, pname, obj) {
-          // this is the item in the array
-          // this.parent.data is the array
-          // this.parent.parent.data is the location
-          obj = obj || this;
-          // console.log("matches value: %s, pname: %s, obj: %o, obj[pname]: %o", value, pname, obj, obj[pname], value == obj[pname]);
-          return value == obj[pname];
-        },
-        asArray: function(obj){
-          return Object.keys(obj).map(function(name){
-            return { name: name, value: obj[name] };
-          });
-        },
-        isEncounterSelected: function(type){
-          console.log("isEncounterSelected: ", type, locn.encounterType);
-         return type == locn.encounterType; 
-        },
-        selectedEncounter: function(selectedEncounterType) {
-          return (selectedEncounterType!=="none") ? encounterTypes[selectedEncounterType].title : "";
-        },
-        and: function(a, b) {
-          return !!a && !!b;
-        }
-      };
-
-      $.templates({
-        editTmpl: "#editLocationTemplate",
-        previewTmpl: "#previewLocationTemplate"
-      });     
-      init();
-
+  ], function(editor, locn){
+    console.log("Editor: ", editor);
+    console.log("locn: ", locn);
+    editor.setLocation(locn); // implicitly inits
   });
 </script>
 </body>

@@ -1,5 +1,5 @@
 define([
-  '$', 
+  'lib/dollar', 
   'lib/util', 
   'lib/event',
   'lib/Promise'

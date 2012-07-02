@@ -1,0 +1,66 @@
+h1 {
+  margin: 0;
+  padding: 12px;
+  font-size: 1.8em;
+  color: #eee;
+}
+#main {
+  background-color: transparent;
+}
+.item .field-id {
+  
+}
+.tab-label {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 1.4em;
+  border: 2px solid;
+  border-color: #fff #ccc #eee #ccc;
+  border-bottom-style: none;
+  opacity: 0.3;
+  cursor: pointer;
+}
+.tab-label.selected {
+  opacity: 1.0;
+  background-color: #fff;
+}
+.tab-panel {
+  padding: 10px;
+  max-width: 64em;
+}
+.tab-panels {
+  position:relative;
+  border: 2px solid;
+  border-color: #fff #ccc #666 #ccc;
+}
+.media.header {
+  margin-left: 0;
+}
+
+.hint {
+  font-size: 0.8em;
+  color: #333;
+  padding-top: 0.4em;
+  margin: 0;
+}
+.btn {
+  display:inline-block;
+  padding: 3px 6px;
+  border: 2px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.add-row {
+  background-color: #ada;
+}
+.delete-row {
+  background-color: #daa;
+}
+.divider {
+  display: block;
+  float: left;
+  margin-top: 2px;
+  border-left: 2px outset #333;
+  width: 1px;
+  height: 2em;
+}

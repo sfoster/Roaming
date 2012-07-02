@@ -1,4 +1,4 @@
-define(['$', 'compose', 'lib/json/ref', 'models/Location'], function($, Compose, json, Location){
+define(['lib/dollar', 'compose', 'lib/json/ref', 'models/Location'], function($, Compose, json, Location){
   console.log("loading location plugin");
   
   window.locations = {};
