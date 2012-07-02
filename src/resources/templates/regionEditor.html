@@ -1,0 +1,32 @@
+<div class="tooldrawer">
+  <!-- map toolbar -->
+  <div class="row">
+    <div class="col col-2of5">
+      <ul id="maptoolbar" class="horizontallist">
+          <li class="btn" id="saveBtn"><button>Save</button></li>
+          <li class="btn" id="resetBtn"><button>Reset</button></li>
+          <li class="btn" id="loadBtn"><button>Load Map...</button></li>
+      </ul>
+    </div>
+  </div>
+</div>
+<div id="map">
+  <!-- map canvas -->
+  <canvas id="grid"></canvas>
+  <div id="gridOverlay"></div>
+</div>
+<div id="mapnavigator">
+  <!-- map navigator -->
+</div>
+<div id="drawer" class="panel">
+  <div id="palette">
+    <ul id="terrainlist" class="panelist">
+      {{for ~asArray(~terrainTypes) ~matchContext=#view.data}}
+        <li class="panel tool {{:name}}"><span>{{:name}}</span></li>
+      {{/for}}
+    </ul>
+    <ul id="toollist" class="panelist">
+      <li class="panel tool edittile"><span>edit tile</span></li>
+    </ul>
+  </div>
+</div>
