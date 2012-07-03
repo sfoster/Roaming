@@ -68,8 +68,20 @@ define([
       }
     },
     save: function(){
-      var formData = sanitizedClone(this.tilesByCoords(), {});
-      throw "need to re-reference location properties";
+      var formData = sanitizedClone(this.tiles(), []);
+      var keepers = {'$ref': 1, 'x': 1, 'y': 1, 'type': 1};
+      // de-reference
+      formData.forEach(function(tileData){
+        for(var pname in tileData){
+          if(! (pname in keepers) ) {
+            delete formData[pname];
+          }
+        }
+        // recreate the resource url for this tile as the $ref property
+        if(!tileData.$ref){
+          tileData.$ref = '/location/' + tileData.x+','+tileData.y+'.json';
+        }
+      });
       
       console.log("formData: ", formData);
       var id = formData.id;
@@ -93,6 +105,16 @@ define([
         }
       });
       return savePromise;
+    },
+    loadTile: function(stub){
+      // 
+      var url = stub.$ref, 
+          coords = stub.x+','+stub.y;
+      var loadPromise = new Promise();
+      require(['plugins/location!'+coords], function(tile){
+        loadPromise.resolve(tile);
+      });
+      return loadPromise;
     }
   });
 

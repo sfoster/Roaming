@@ -214,8 +214,8 @@ define([
         $('#palette .tool.active').removeClass('active');
         $(event.currentTarget).addClass('active');
         var type = trim( $(event.currentTarget).text() );
-        currentTool = type.replace(/\s+/g, '').toLowerCase();
-        console.log("change currentTool: ", currentTool);
+        editor.currentTool = type.replace(/\s+/g, '').toLowerCase();
+        console.log("change currentTool: ", editor.currentTool);
       });
   }
   
@@ -275,9 +275,9 @@ define([
           x = Math.floor(clickX / tileSize),
           y = Math.floor(clickY / tileSize);
       console.log("place at: ", x, y);
-      if(!currentTool) return;
+      if(!editor.currentTool) return;
 
-      toolAction(x, y, currentTool);
+      editor.toolAction(x, y, editor.currentTool);
     });
 
     if(this.region){
@@ -290,30 +290,33 @@ define([
     return text.replace(/^\s+/, '').replace(/\s+$/, '');
   }
 
-  function toolAction(x,y, type){
+  editor.toolAction = function toolAction(x,y, type){
     var id = [x,y].join(',');
     if(terrainTypes[type]){
-      placeTile(x,y,type);
+      this.placeTile(x,y,type);
     } else if(type=='edittile'){
-      editDetail(id, tilesByCoords[id]);
+      editor.emit('tile:edit', {
+        target: this.tilesByCoords[id]
+      });
     } else {
       console.log("tool not implemented: ", type);
     }
-  }
-  function placeTile(x, y, type){
+  };
+  
+  editor.placeTile = function placeTile(x, y, type){
     var tileId = [x,y].join(','), 
-        tile = editor.tilesByCoords[tileId], 
-        tileSize = editor.tileSize;
+        tile = this.tilesByCoords[tileId], 
+        tileSize = this.tileSize;
     if(!tile){
       // create the tile object
-      tile = editor.tilesByCoords[tileId] = {
+      tile = this.tilesByCoords[tileId] = {
         x: x, y: y
       };
     }
     tile.type = type;
     
     var img = tile.img = terrainTypes[type].img, 
-        ctx = mapNode.getContext('2d');
+        ctx = editor.mapNode.getContext('2d');
 
     if(!img) {
       console.log("no image?", tile, img);
@@ -338,7 +341,7 @@ define([
           tileSize                // dest-height
       );
     }
-  }
+  };
 
   var contextHelpers = editor.context = {
       app: {},

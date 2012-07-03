@@ -110,6 +110,15 @@ JSRender overview:
     'plugins/region!world'
   ], function(mapEditor, tileEditor, world){
 
+    function setActivePanel(targ){
+      var $tab = $('[data-target="'+targ+'"]'),
+          parent = $tab.closest('.tab-container')[0];
+
+      $('.tab-panel', parent).hide();
+      $('.tab-label', parent).removeClass('selected');
+      $tab.addClass('selected');
+      $('#'+targ).show();
+    }
     // set up the edit/preview tabs
     $('.tab-label').click(function(){
       var targ = this.getAttribute("data-target"), 
@@ -127,10 +136,14 @@ JSRender overview:
     mapEditor.init({
       region: world
     });
-    
-    mapEditor.on('tile:select', function(evt){
-        console.log("Tile selected: ", evt);
-        // tileEditor.setLocation(evt)
+
+    mapEditor.on('tile:edit', function(evt){
+        console.log("Tile selected: ", evt.target);
+        world.loadTile(evt.target).then(function(tile){
+          console.log("loadTile result: ", tile);
+          tileEditor.setLocation(tile);
+        })
+        setActivePanel('locationEdit');
       });
   });
 </script>

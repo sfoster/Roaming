@@ -22,6 +22,9 @@ define([
     if(!this.id){
       this.id = coords.join(',');
     }
+    if(!this.encounter){
+      this.encounter = {};
+    }
   }
   
   util.mixin(Location.prototype, Evented, {

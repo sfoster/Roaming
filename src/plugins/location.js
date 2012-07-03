@@ -26,6 +26,7 @@ define(['lib/dollar', 'compose', 'lib/json/ref', 'models/Location'], function($,
           params = parts[1], 
           locn = null;
       coords = parts[0];
+      console.assert( !(/^\d+\.\d+$/.test(coords)), "location plugin given bad coords param:" + coords);
       
       if(!params || params.indexOf('refresh') == -1){
         locn = window.locations[coords];

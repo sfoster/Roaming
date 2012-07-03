@@ -226,14 +226,37 @@ app.get('/location/:id.json', function(req, res){
     resourcePath = fs.realpathSync(resourcePath);
     res.sendfile( resourcePath );
   } else {
-    console.log(id + " does not exist yet");
     var emptyLocation = {
       coords: id.split(','),
       description: "--No description yet--",
       afar: "--No afar description yet--",
-      here: [] 
+      here: [],
+      encounter: {}
     };
-    res.send( JSON.stringify(emptyLocation) );
+    console.log(id + " does not exist yet");
+    var regionResourcePath = fs.realpathSync(datadir + '/location/world.json');
+    if(path.existsSync(regionResourcePath)){
+      // get the stub data we have for this location from the region 
+      console.log("reading the region data");
+      fs.readFile(regionResourcePath, function(err, contents){
+        if(!err){
+          var regionData = JSON.parse(contents), 
+              matched = regionData.filter(function(locn){
+                return locn.$ref.indexOf(relPath) > -1;
+              });
+          console.log("spotted stub data for " + relPath, matched);
+          if(matched.length) {
+            var stub = matched[0];
+            for(var i in stub){
+              emptyLocation[i] = stub[i];
+            }
+          }
+        }
+        res.send( JSON.stringify(emptyLocation) );
+     });
+    } else {
+      res.send( JSON.stringify(emptyLocation) );
+    }
   }
 });
 
