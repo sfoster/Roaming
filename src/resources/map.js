@@ -20,7 +20,7 @@ define(['lib/dollar', 'lib/util', 'lib/Promise', 'resources/terrain'], function(
     init: function(){
       if(!this.initialized){
         var canvas = this.canvasNode || ( this.canvasNode = document.createElement("canvas") );
-        canvas.style.cssText = "display:block;margin:4px auto";
+        // canvas.style.cssText = "display:block;margin:4px auto";
         if(! canvas.id){
           canvas.id = this.id +"_canvas";
         }

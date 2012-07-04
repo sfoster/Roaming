@@ -60,11 +60,9 @@
   display: block;
 }
 #map {
-  position: relative;
-  width: 640px;
-  height: 480px;
-  overflow: auto;
   margin: 0; padding: 0;
+  min-height: 460px;
+  position: relative;
 }
 #grid {
   position: absolute;
@@ -96,4 +94,7 @@
   padding: 10px;
   min-height: 60px;
   background-color: #fff;
+}
+#region-editor-detail {
+  overflow: auto;
 }

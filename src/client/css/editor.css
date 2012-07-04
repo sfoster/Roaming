@@ -11,7 +11,6 @@ h1 {
   
 }
 .tab-label {
-  display: inline-block;
   padding: 4px 10px;
   font-size: 1.4em;
   border: 2px solid;
@@ -19,13 +18,26 @@ h1 {
   border-bottom-style: none;
   opacity: 0.3;
   cursor: pointer;
+  display: table-cell;
+  vertical-align: bottom;
+}
+.smaller.tab-label {
+  padding: 4px 10px;
+  font-size: 1em;
+  cursor: pointer;
 }
 .tab-label.selected {
   opacity: 1.0;
   background-color: #fff;
 }
+.tab-tray {
+  display:table;
+  padding-left: 3px;
+  min-height: 2.5em;
+}
+
 .tab-panel {
-  padding: 10px;
+  padding: 5px 10px;
   max-width: 64em;
 }
 .tab-panels {
@@ -64,7 +76,10 @@ h1 {
   width: 1px;
   height: 2em;
 }
-
+.sidebar-right {
+  margin-top: 0.74em;
+  margin-left: 0.5em;
+}
 #tile-editor-detail {
   background-color: #eee;
   border: 1px double #999;
