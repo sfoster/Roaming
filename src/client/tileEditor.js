@@ -49,7 +49,7 @@ define([
   });
 
   editor.init = function init(){
-    editTemplate.link( editor.location, "#locationEdit", contextHelpers );
+    editTemplate.link( editor.location, "#tile-editor-detail", contextHelpers );
 
     previewTemplate.link( editor.location, "#locationPreview", contextHelpers );
   };

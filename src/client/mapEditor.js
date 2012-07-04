@@ -65,12 +65,12 @@ define([
   function showDetail(){
     $("#map").addClass("hidden");
     $("#maptoolbar").addClass("hidden");
-    $("#detail").removeClass("hidden");
+    $("#tile-editor-detail").removeClass("hidden");
     $("#detailtoolbar").removeClass("hidden");
   }
   
   function hideDetail(){
-    $("#detail").addClass("hidden");
+    $("#tile-editor-detail").addClass("hidden");
     $("#detailtoolbar").addClass("hidden");
     $("#map").removeClass("hidden");
     $("#maptoolbar").removeClass("hidden");
@@ -166,8 +166,8 @@ define([
 
     showDetail();
     
-    var tmpl= template( $('#detail-template')[0].innerHTML );
-    var $detailContainer = $('#detail'), 
+    var tmpl= template( $('#tile-editor-detail-template')[0].innerHTML );
+    var $detailContainer = $('#tile-editor-detail'), 
         $detail = $('#detailContent');
     
     var defaults = terrainTypes[tile.type] || {};

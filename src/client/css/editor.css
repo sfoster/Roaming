@@ -64,3 +64,10 @@ h1 {
   width: 1px;
   height: 2em;
 }
+
+#tile-editor-detail {
+  background-color: #eee;
+  border: 1px double #999;
+  border-radius: 8px;
+  padding: 10px;
+}
