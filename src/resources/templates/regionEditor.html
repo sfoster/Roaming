@@ -23,24 +23,26 @@
     </section>
   </div>
   <div class="col col-1of5">
-    <div class="tab-container sidebar-right">
+    <div class="tab-container sidebar-right" id="regionEditorDrawer">
       <div class="tab-tray">
-        <span class="tab-label smaller selected" data-target="terrainEditPanel">Terrain</span>
-        <span class="tab-label smaller" data-target="regionEditPanel">Region</span>
+        <span class="tab-label smaller" data-target="terrainEditPanel">Terrain</span>
+        <span class="tab-label smaller selected" data-target="regionEditPanel">Region</span>
       </div>
       <div class="tab-panels">
-        <div class="tab-panel" id="terrainEditPanel">
+        <div class="tab-panel" id="terrainEditPanel" style="display:none">
           <div id="palette">
             <ul id="terrainlist" class="panelist">
-              {{for ~asArray(~terrainTypes) ~matchContext=#view.data}}
-                <li class="panel tool {{:name}}"><span>{{:name}}</span></li>
+              {{for ~asArray(~terrainTypes) ~matchContext=#view.ctx.editor}}
+                <li 
+                  data-link="data-selected{:~matches(name, 'currentTool', ~matchContext)}"
+                  class="panel tool {{:name}}"><span>{{:name}}</span></li>
               {{/for}}
             </ul>
           </div>
         </div>
-        <div class="tab-panel" id="regionEditPanel" style="display:none">
+        <div class="tab-panel" id="regionEditPanel" >
           <ul id="toollist" class="panelist">
-            <li class="panel tool edittile"><span>edit tile</span></li>
+            <li class="panel tool edittile" data-action="edittile"><span>edit tile</span></li>
           </ul>
         </div>
       </div>

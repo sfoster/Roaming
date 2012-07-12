@@ -25,7 +25,7 @@ define([
   editTemplate = $.templates( editTemplate );
 
   // map/region editor singleton
-  var editor = util.mixin({
+  var editor = window.regionEditor = util.mixin({
     currentTool: 'edittile',
     mapNode: null,
     tileSize: 50,
@@ -42,59 +42,6 @@ define([
   }, Evented);
 
   //  
-  function saveDetail() {
-    var $detail = $('#detailContent'); 
-    var formData = Object.create(locationModel);
-    var savePromise = locationModel.save();
-    
-    savePromise.then(function(){
-      console.log("Location " + locationModel.id + " saved");
-    });
-    
-    // var fields = $('input[type="text"], input[type="hidden"], textarea', $detail).each(function(idx, el){
-    //   formData[ el.name ] = $(el).val();
-    // });
-    // 
-    // console.log("formData: ", formData);
-    // var id = formData.id,
-    //     coords = formData.coords || id.split(',');
-    // formData.coords = coords.map(Number);
-    return savePromise;
-  }
-
-  function showDetail(){
-    $("#map").addClass("hidden");
-    $("#maptoolbar").addClass("hidden");
-    $("#tile-editor-detail").removeClass("hidden");
-    $("#detailtoolbar").removeClass("hidden");
-  }
-  
-  function hideDetail(){
-    $("#tile-editor-detail").addClass("hidden");
-    $("#detailtoolbar").addClass("hidden");
-    $("#map").removeClass("hidden");
-    $("#maptoolbar").removeClass("hidden");
-  }
-
-  function cancelDetailEdit(){
-    hideDetail();
-    $('#detailContent').html("");
-    locationModel = null;
-  }
-  
-  function detailEditInit(){
-    $('#detailSaveBtn').click(
-      function(evt){
-        saveDetail(locationModel).then(function(){
-          hideDetail();
-          
-        });
-      }, 
-      function(){}
-    );
-    $('#detailResetBtn').click(cancelDetailEdit);
-  }
-     
   function toolbarInit(){
     $('#saveBtn').click(function(evt){
       var locations = values(editor.tilesByCoords).map(function(tile){
@@ -132,77 +79,6 @@ define([
     
   }
 
-  var locationModel = null;
-  
-  function loadDetail(id) {
-    var locationModel = locationsByCoords[id];
-    var detailPromise = new Promise();
-    if(locationModel) {
-      setTimeout(function(){
-        detailPromise.resolve(locationModel);
-      }, 10);
-    } else {
-      require(['json!/location/'+id+'.json'], function(location){
-        if(!location.coords){
-          console.error("No location at: ", id);
-          location = {
-            coords: id.split(',')
-          };
-        } else {
-          location.id = location.coords.join(',');
-        }
-        detailPromise.resolve(location);
-      });
-    }
-    return detailPromise;
-  }
-  
-  function populateForm(form, data){
-    
-  }
-  
-  function editDetail(id, tile){
-    console.log("editDetail: ", id);
-
-    showDetail();
-    
-    var tmpl= template( $('#tile-editor-detail-template')[0].innerHTML );
-    var $detailContainer = $('#tile-editor-detail'), 
-        $detail = $('#detailContent');
-    
-    var defaults = terrainTypes[tile.type] || {};
-    console.log("defaults: ", defaults);
-    
-    loadDetail(id).then(function(location){
-      if(location.description.match(/^--/)){
-        delete location.description;
-      }
-      if(location.afar && location.afar.match(/^--/)){
-        delete location.afar;
-      }
-      location = util.mixin(defaults, location);
-      console.log("got back location: ", location);
-      locationModel = location;
-      $detail.html( tmpl( util.mixin(location, { type: tile.type }) ) );
-
-      var encounterPicker = $('#encounter_type')[0];
-      if(encounterPicker){
-        for(var encounterType in encounterTypes){
-          encounterPicker.options[encounterPicker.options.length] = new Option(encounterType, encounterType);
-        }
-      }
-      var npcPickers = $('.npc_picker');
-      console.log("npcPickers: ", npcPickers);
-      npcPickers.each(function(idx, npcPicker){
-        console.log("npcPicker: ", npcPicker);
-        npcPicker.options[npcPicker.options.length] = new Option('--None--', '');
-        for(var npcType in npcTypes){
-          npcPicker.options[npcPicker.options.length] = new Option(npcTypes[npcType].name, npcType);
-        }
-      });
-    });
-  }
-  
   function paletteInit(){
     var $terrainList = $('#terrainlist');
     Object.keys(terrainTypes).forEach(function(type){
@@ -247,6 +123,14 @@ define([
 
     editTemplate.link( editor.region, "#mapEdit", contextHelpers );
     
+    $( "#regionEditorDrawer" ).on( "mouseup", 'li.tool', function(evt) {
+      var toolNode = evt.target;
+      $('#regionEditorDrawer .tool.active').removeClass('active');
+      $( toolNode ).addClass('active');
+      var action = toolNode.getAttribute('data-action');
+      $.observable( editor ).setProperty( "currentTool", action || toolNode.textContent || toolNode.innerText );
+    });
+
     var mapNode = editor.mapNode = $('#grid')[0], 
         worldSize = this.worldSize, 
         tileSize = options.tileSize || this.tileSize;
@@ -267,9 +151,9 @@ define([
         left: scrollContainerNode.scrollLeft,
         top: scrollContainerNode.scrollTop
       };
-      console.log("scrollContainerNode offsets: ", mapOffsets);
-      console.log("scrollOffsets: ", scrollOffsets);
-      console.log("event.pageX,Y: ", event.pageX, event.pageY);
+      // console.log("scrollContainerNode offsets: ", mapOffsets);
+      // console.log("scrollOffsets: ", scrollOffsets);
+      // console.log("event.pageX,Y: ", event.pageX, event.pageY);
       var clickX = event.pageX - mapOffsets.left + scrollOffsets.left,
           clickY = event.pageY - mapOffsets.top + scrollOffsets.top,
           x = Math.floor(clickX / tileSize),
@@ -291,6 +175,7 @@ define([
   }
 
   editor.toolAction = function toolAction(x,y, type){
+    console.log('toolAction: ', x, y, type);
     var id = [x,y].join(',');
     if(terrainTypes[type]){
       this.placeTile(x,y,type);
@@ -344,7 +229,8 @@ define([
   };
 
   var contextHelpers = editor.context = {
-      app: {},
+      toolbar: {},
+      editor: editor,
       terrainTypes: terrainTypes,
       npcTypes: npcTypes,
       encounterTypes: encounterTypes,
@@ -361,6 +247,7 @@ define([
         console.log("testContext: "+label, obj);
       },
       matches: function(value, pname, obj) {
+        console.log("match value %o against property %s in %o: %o", value, pname, obj, obj[pname]);
         obj = obj || this;
         return value == obj[pname];
       },
