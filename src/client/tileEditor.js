@@ -63,7 +63,7 @@ define([
             editor.refresh();
           }
         });
-      } else if(action === 'reset'){
+      } else if(action === 'reset' || action === 'cancel'){
         actionPromise = editor.refresh();
       }
       Promise.when(actionPromise, function(){
