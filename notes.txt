@@ -1,3 +1,42 @@
+Layer masks in pixelmator: http://www.pxm-tuts.com/tutorials/tools/layer-masks/
+Icons: 
+
+* Baddie icon for encounters and combat
+  Icon.1_22.png
+  Icon.1_28.png
+  Icon.4_95.png
+
+* Dead baddie
+  Icon.2_51.png
+  
+* Hero icon: you
+  Icon.1_80.png
+  Icon.1_05.png
+  Icon.2_67.png
+
+* Hero death:
+  Icon.4_63.png  
+
+* Weapon Attack icon
+  Icon.5_46.png
+  
+* Magic attack
+  Icon.5_97.png
+
+* Select target icon: 
+  Icon.1_07.png
+
+* Start battle
+  Icon.3_64.png
+  Icon.4_37.png
+
+* Flee battle
+  Icon.4_33.png
+
+* Money/gold icon: 
+  Icons8_78.png
+  
+--
 resources: 
 
 * player
