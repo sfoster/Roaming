@@ -96,11 +96,11 @@ JSRender overview:
     'tileEditor',
     'plugins/region!world'
   ], function(mapEditor, tileEditor, world){
-
-
+    
+    window.tileEditor = tileEditor; 
+    
     // set up the edit/preview tabs
     $(document).on('click', '.tab-label', function(){
-      console.log("tab-label clicked: ", this);
       var targ = this.getAttribute("data-target"), 
           parent = $(this).closest('.tab-container')[0];
 
@@ -119,8 +119,6 @@ JSRender overview:
       $tab.addClass('selected');
       $('#'+targ).show();
     }
-    console.log("tile editor: ", tileEditor);
-    console.log("region editor: ", mapEditor);
 
     mapEditor.init({
       region: world

@@ -120,6 +120,23 @@ define([
     // detailEditInit();
     // editorInit();
     util.mixin(this, options || {});
+    
+    // top toolbar
+    console.log("setting up #regionToolbar click handlers: ", $( "#regionToolbar" ).length);
+    $( document ).on("click", "#regionToolbar .btn", function(evt){
+      console.log("region toolbar btn click: ", evt.target);
+      var buttonNode = evt.target;
+      var action = buttonNode.getAttribute('data-action');
+      $( buttonNode ).addClass('busy');
+      var savePromise = editor.region.save();
+      savePromise.then(function(){
+        $( buttonNode ).removeClass('busy');
+        if(editor.refresh) {
+          editor.refresh();
+        }
+      });
+      
+    });
 
     editTemplate.link( editor.region, "#mapEdit", contextHelpers );
     

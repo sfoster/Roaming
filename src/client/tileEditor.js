@@ -1,11 +1,12 @@
 define([
   'lib/dollar',
+  'lib/Promise', 
   'resources/encounters',
   'resources/terrain',
   'resources/npc',
   'plugins/vendor/text!resources/templates/tileEditor.html',
   'plugins/vendor/text!resources/templates/tilePreview.html'
-], function($, encounterTypes, terrainTypes, npcTypes, editTemplate, previewTemplate){
+], function($, Promise, encounterTypes, terrainTypes, npcTypes, editTemplate, previewTemplate){
   editTemplate = $.templates( editTemplate );
   previewTemplate = $.templates( previewTemplate );
 
@@ -17,6 +18,7 @@ define([
 
   var editor = {
     location: null,
+  
     setLocation: function(coord){
       if(typeof coord == 'string') {
         require(['plugins/location!'+coord + '!refresh'], function(locationModel){
@@ -30,28 +32,44 @@ define([
     },
     refresh: function(coord){
       coord = coord || this.location.id;
-      require(['plugins/location!'+coord + '!refresh'], function(locationModel){
-        console.log('reloaded location!'+coord, locationModel.get('description'));
+      var promise = new Promise();
+      promise.then(function(locationModel){
         editor.setLocation(locationModel);
       });
+      require(['plugins/location!'+coord + '!refresh'], function(locationModel){
+        console.log('reloaded location!'+coord, locationModel.get('description'));
+        promise.resolve(locationModel);
+      });
+      return promise;
     }
   };
   
-  $('#detailSaveBtn').click(function(evt){
-    var savePromise = editor.location.save();
-    savePromise.then(function(){
-      editor.refresh();
-    });
-  });
-  
-  $('#detailResetBtn').click(function(){
-    editor.refresh();
-  });
-
   editor.init = function init(){
     editTemplate.link( editor.location, "#locationEdit", contextHelpers );
 
     previewTemplate.link( editor.location, "#locationPreview", contextHelpers );
+
+    $( document ).on("click", "#detailtoolbar .btn", function(evt){
+      console.log("region toolbar btn click: ", evt.target);
+      var buttonNode = evt.currentTarget;
+      var actionPromise = null;
+      var action = buttonNode.getAttribute('data-action') || String.trim(buttonNode.innerText || buttonNode.textContent);
+      $( buttonNode ).addClass('busy');
+      
+      if(action === 'save'){
+        actionPromise = editor.location.save();
+        actionPromise.then(function(){
+          if(editor.refresh) {
+            editor.refresh();
+          }
+        });
+      } else if(action === 'reset'){
+        actionPromise = editor.refresh();
+      }
+      Promise.when(actionPromise, function(){
+        $( buttonNode ).removeClass('busy');
+      });
+    });
   };
 
   var contextHelpers = editor.context = {

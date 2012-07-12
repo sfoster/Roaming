@@ -62,6 +62,9 @@ h1 {
   font-weight: bold;
   cursor: pointer;
 }
+.btn.busy button {
+  background: url('../img/ajax-loader.gif') no-repeat 1px 6px;
+}
 .add-row {
   background-color: #ada;
 }

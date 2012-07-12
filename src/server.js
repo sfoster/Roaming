@@ -162,7 +162,7 @@ app.get('/location/world.json', function(req, res){
     res.send({ tiles: [] });
   }
 });
-app.post('/location/world.json', function(req, res){
+app.put('/location/world.json', function(req, res){
   var resourcePath = fs.realpathSync(datadir + '/location/world.json');
   // console.log("got post: ", typeof req.body, req.body);
   var fileData = req.body;

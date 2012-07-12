@@ -68,13 +68,13 @@ define([
       }
     },
     save: function(){
-      var formData = sanitizedClone(this.tiles(), []);
+      var formData = sanitizedClone(this.tiles, []);
       var keepers = {'$ref': 1, 'x': 1, 'y': 1, 'type': 1};
       // de-reference
       formData.forEach(function(tileData){
         for(var pname in tileData){
-          if(! (pname in keepers) ) {
-            delete formData[pname];
+          if(! keepers[pname] ) {
+            delete tileData[pname];
           }
         }
         // recreate the resource url for this tile as the $ref property
@@ -84,7 +84,7 @@ define([
       });
       
       console.log("formData: ", formData);
-      var id = formData.id;
+      var id = this.id;
 
       var savePromise = new Promise();
       $.ajax({
