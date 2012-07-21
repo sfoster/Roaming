@@ -28,7 +28,7 @@ define([
   }
   
   util.mixin(Location.prototype, Evented, {
-    encounterType: "",
+    encounterType: "none",
     get: function(name){
       return this[name];
     }, 
