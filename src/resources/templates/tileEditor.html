@@ -50,37 +50,10 @@
     </div>
   </div>
 
-  <div data-link="visible{: encounterType=='npc' }" class="row">
-    <div class="subhead col col-1of8"></div>
+  <div data-link="visible{: ~and(selectedEncounterType!=='none', name) }">
     <div class="col col-7of8">
-      <div id="npc_encounters">
-      {{for encounter.npc }}
-        <p>Existing Type: <select name="npc_type1" id="npc_type1" class="npc_picker">
-        {{for ~asArray(~npcTypes) ~matchContext=#data}}
-        <option 
-          data-link="selected{:~matches(name, 'type', ~matchContext)}"
-          value="{{:name}}"
-        >{{>name}}</option>
-        {{/for}}
-        </select>
-        Number: <input type="number" data-link="#data.count" value="{{:count}}" min="0">
-        <span class="btn delete-row">-</span>
-        </p>
-      {{/for}}
-        <p>Add Type: <select name="npc_type2" id="npc_type2" class="npc_picker">
-        {{for ~asArray(~npcTypes) }}
-        <option value="{{:name}}">{{>name}}</option>
-        {{/for}}
-        </select> Number: <input type="number" value="0" min="0">
-        <span class="btn add-row">+</span>
-        <span class="btn delete-row">-</span>
-        </p>
-      </div>
+      somesuch
     </div>
   </div>
 
-  <div data-link="visible{: ~and(selectedEncounterType!=='none', name) }">
-    <div class="col col-7of8">
-    </div>
-  </div>
 </section>
