@@ -185,7 +185,7 @@ app.put('/location/world.json', function(req, res){
 });
 
 // app.get(/^\/(resources|models|vendor|css|plugins|lib)\/(.*)$/, function(req, res){
-app.get(/^\/(resources|models|vendor|plugins|lib)\/(.*)$/, function(req, res){
+app.get(/^\/(resources|models|vendor|plugins|lib|test)\/(.*)$/, function(req, res){
   var resourcePath;
   // console.log("matched: ", req.params[0], req.params[1]);
   // console.log("prefix with root: ", root);
@@ -195,6 +195,7 @@ app.get(/^\/(resources|models|vendor|plugins|lib)\/(.*)$/, function(req, res){
     case 'plugins': 
     case 'models': 
     case 'lib': 
+    case 'test':
       resourcePath = root + '/' +req.params[0]+ '/' + req.params[1];
       break;
     case 'css': 
