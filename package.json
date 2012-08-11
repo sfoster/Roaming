@@ -20,5 +20,11 @@
     "mime": "*",
     "handlebars": "*",
     "pkginfo": "*"
+  },
+  "volo": {
+    "baseUrl": "./src/vendor",
+    "dependencies": {
+      "store": "github:sfoster/amd-store/master"
+    }
   }
 }
