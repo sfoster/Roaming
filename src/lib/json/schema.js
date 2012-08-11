@@ -1,7 +1,7 @@
 // adapted from dojox/json/schema: 
 // http://download.dojotoolkit.org/release-1.7.1/dojo-release-1.7.1/dojox/json/schema.js
 
-define(['underscore'], function(util){
+define(function(){
   var schema = {};
 schema.validate = function(/*Any*/instance,/*Object*/schema){
 	// summary:
@@ -44,7 +44,7 @@ schema.mustBeValid = function(result){
 	//		This checks to ensure that the result is valid and will throw an appropriate error message if it is not
 	// result: the result returned from checkPropertyChange or validate
 	if(!result.valid){
-		throw new TypeError(util.map(result.errors,function(error){return "for property " + error.property + ': ' + error.message;}).join(", "));
+		throw new TypeError( result.errors.map(function(error){return "for property " + error.property + ': ' + error.message;}).join(", "));
 	}
 }
 schema._validate = function(/*Any*/instance,/*Object*/schema,/*Boolean*/ _changing){
