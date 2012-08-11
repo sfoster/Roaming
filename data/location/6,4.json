@@ -1,4 +1,8 @@
 {
+  "encounter": {
+    "npc": [],
+    "none": []
+  },
   "img": {},
   "description": "This is the barren peak of the mountain\nThe Roc is here. ",
   "afar": " A flat platau",
@@ -8,5 +12,8 @@
   ],
   "here": [],
   "id": "6,4",
-  "type": "barren"
+  "type": "desert",
+  "x": 6,
+  "y": 4,
+  "encounterType": "none"
 }
