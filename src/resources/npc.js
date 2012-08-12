@@ -30,8 +30,9 @@ define([], function(){
     range: 'short, medium',
     evasion: 3,
     terrain: ["marsh", "mountains", "plains", "forest"]
-  };// Goblin Shaman has Damage Aura spell/ability
+    // Goblin Shaman has Damage Aura spell/ability
   //(doubles the damage of accompanying fighters )
+  };
   npc.goblinWarlord = {
     name: 'Goblin Warlord',
     strength: 8,
@@ -68,8 +69,9 @@ define([], function(){
     range: 'short,',
     evasion: 10,
     terrain: ["marsh", "mountains", "plains", "forest", "desert"]
-  };// Mutant Rat has Poison spell/ability
+    // Mutant Rat has Poison spell/ability
   //( does reccuring half damage for 2-3 turns after attack )
+  };
   npc.ratHorde = {
     name: 'Rat Horde',
     strength: 8,
@@ -106,8 +108,9 @@ define([], function(){
     range: 'short, medium',
     evasion: 1,
     terrain: ["marsh", "mountains", "plains", "forest", "barren"]
-  };// Troll Elder has Camo spell/ability
+    // Troll Elder has Camo spell/ability
   //(makes him much harder to hit)
+  };
 
   npc.trollHulk = {
     name: 'Troll Hulk',
@@ -145,8 +148,9 @@ define([], function(){
     range: 'short,medium',
     evasion: 7,
     terrain: ["plains", "forest", "barren", "desert"]
-  };// Gaint Adder has Hypnotism spell/ability 
-  // (target loses a turn)
+    // Gaint Adder has Hypnotism spell/ability(target loses a turn) 
+  };
+ 
   
   npc.gaintCobra= {
     name: 'Gaint Cobra',
@@ -399,8 +403,9 @@ define([], function(){
     range: 'short, medium, long',
     evasion: 25, 
     terrain: ["mountains"]
-  };// Dragon has Flame Breath abilty
+    // Dragon has Flame Breath abilty
   // (medium+long range attack)
+  };
   npc.theRoc = {
     name: 'The Roc',
     strength: 150,
