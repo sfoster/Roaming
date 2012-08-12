@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Roaming: Data Store Prototyping</title>
+  <meta name="viewport" content="initial-scale=1">
+  <link rel="stylesheet" href="./css/core.css" type="text/css">
+  <link rel="stylesheet" href="./css/listing.css" type="text/css">
+  <style>
+    h1 {
+      margin: 0;
+      padding: 12px;
+      font-size: 1.8em;
+      color: #eee;
+    }
+    #main {
+      overflow: auto;
+    }
+    .item .field-id {
+
+    }
+  </style>
+</head>
+<body>
+<section id="hud" class="panel">
+  <h1>NPCs Table</h1>
+</section>  
+<section id="drawer" class="panel">
+    <ul id="toollist" class="panelist">
+    </ul>
+</section>
+<section id="main" class="panel">
+  <table id="npcs" class="listing" cellspacing="0">
+    <thead>
+      <tr class="item">
+        <th class="field-{{id}}"><code>id</code></th>
+        <th class="field-{{name}}">name</th>
+        <th class="field-{{strength}}">strength</th>
+        <th class="field-{{hp}} digit">hit points</th>
+        <th class="field-{{mp}} digit">magic points</th>
+        <th class="field-{{notes}}">notes</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+</section>  
+<section id="detail" class="panel">
+</section>  
+
+<script type="text/x-template" id="item-template">
+<tr class="item">
+  <td class="field-{{id}}"><code>{{id}}</code></td>
+  <td class="field-{{name}}">{{name}}</td>
+  <td class="field-{{strength}} digit">{{strength}}</td>
+  <td class="field-{{hp}} digit">{{hp}}</td>
+  <td class="field-{{mp}} digit">{{mp}}</td>
+  <td class="field-{{notes}}">{{notes}}</td>
+</tr>
+</script>
+
+<script type="text/javascript">
+  var config = {
+    packages: {
+      // package mappings
+      $: 'vendor/zepto',
+      util: 'lib/util',
+      store: 'vendor/store'
+    }
+  };
+</script>
+<script src="../vendor/require.js"></script>
+<script>
+  require({
+    baseUrl: '..',
+    // configure our AMD loader
+    paths: config.packages
+  }, ['$', 'store/main', 'resources/npc'], function($, store, npc){
+    var npcTable = [];
+    var tmpl= $('#item-template')[0].innerHTML;
+    var itemsHtml = [], 
+        pattern = /\{\{([^}]+)\}\}/g;
+    
+    var toItem = function(data, id){
+      data  = Object.create(data);
+      data.id = id;
+      return data;
+    };
+    
+    var npcTable = Object.keys(npc).map(function(id){
+      return toItem(npc[id], id);
+    });
+    console.log("npcTable: ", npcTable);
+    
+    var npcStore = store.Observable(new store.Memory({
+      data: npcTable
+    }));
+    
+    var results = npcStore.query({range: 'short'});
+    var renderItem = function(data){
+      var str = tmpl.replace(pattern, function(m, name){
+        return (name in data) ? data[name] : "";
+      });
+      $(str).appendTo('#npcs tbody');
+    }
+    results.forEach(renderItem);
+
+    aardvark = {
+      name: 'Aardvark',
+      strength: 4,
+      hp: 10,
+      mp: 0,
+      range: 'short',
+      evasion: 5,
+      terrain: ["plains"]
+    };
+    
+    results.observe(function(item){
+      console.log("range:short results observer: ", arguments);
+      renderItem(item);
+    });
+    setTimeout(function(){
+      npcStore.add( toItem(aardvark, "aardvark") )
+    });
+    console.log("query:", results);
+  });
+</script>
+</body>
+</html>
