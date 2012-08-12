@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,6 +8,7 @@
   <meta name="viewport" content="initial-scale=1">
   <link rel="stylesheet" href="./css/core.css" type="text/css">
   <link rel="stylesheet" href="./css/listing.css" type="text/css">
+  <link rel="stylesheet" href="./css/grid.css" type="text/css">
   <style>
     h1 {
       margin: 0;
@@ -16,6 +18,89 @@
     }
     #main {
       overflow: auto;
+    }
+    #combatPanel {
+      position: absolute;
+      width: 720px;
+      height: 500px;
+      top: 50px;
+      left: 50px;
+      border: 1px solid #ccc;
+      background-color: #333;
+      z-index: 1;
+      border-radius: 6px;
+      padding: 6px;
+    }
+    #playerRow, #baddiesRow, #arenaRow {
+      left: 5px;
+      right: 5px;
+    }
+    #playerRow {
+      position: absolute;
+      top: 5px;
+      height: 100px;
+    }
+    #arenaRow {
+      position: absolute;
+      top: 105px;
+      height: 285px;
+      background-color: #999;
+      border-radius: 6px;
+    }
+    #baddiesRow {
+      position: absolute;
+      bottom: 5px;
+      left: 5px;
+    }
+    .icon {
+      width: 64px; height: 64px;
+      vertical-align: middle;
+      display: inline-block;
+    }
+    .icon16 {
+      width: 16px; height: 16px;
+      display: inline-block;
+      overflow: hidden;
+    }
+    .icon32 {
+      width: 32px; height: 32px;
+      display: inline-block;
+      overflow: hidden;
+    }
+    .combatActor {
+      display: inline-block;
+      border: 1px solid #444;
+      border-radius: 3px;
+      margin: 1px 2px;
+      padding: 3px 4px;
+      color: #FDFCDC;
+    }
+    .combatActor h1 {
+      font-size: 1em;
+      padding: 0;
+      width: 10em;
+    }
+    .stats {
+      margin: 0.3em 0; padding: 0;
+      display: table;
+    }
+    .stats dt { display: inline-block; min-width: 3em; padding: 0; margin: 0 }
+    .stats dd { display: table-cell; min-width: 2em; }
+
+    .attack-icon {
+      transform: scale(1);
+      -moz-transform: scale(1);
+      border: 1px solid transparent;
+      border-radius: 2px;
+    }
+    .attack-icon:hover {
+      border: 1px solid red;
+    }
+    .attack-icon--magic {
+      background: url('../resources/graphics/MagicAttackIcon.png') no-repeat scroll top left;
+    }
+    .attack-icon--physical {
+      background: url('../resources/graphics/PhysicalAttackIcon.png') no-repeat scroll top left;
     }
   </style>
 </head>
@@ -28,23 +113,84 @@
   </ul>
 </section>
 <section id="main" class="panel">
-  <table id="npcs" class="listing" cellspacing="0">
-    <thead>
-      <tr class="item">
-        <th class="field-{{id}}"><code>id</code></th>
-        <th class="field-{{name}}">name</th>
-        <th class="field-{{strength}}">strength</th>
-        <th class="field-{{hp}} digit">hit points</th>
-        <th class="field-{{mp}} digit">magic points</th>
-        <th class="field-{{notes}}">notes</th>
-      </tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
+
 </section>  
 <section id="detail" class="panel">
 </section>  
+
+<div id="combatPanel">
+  <div id="playerRow" class="row">
+    <div class="col">
+      <div class="media combatActor">
+        <div class="img"><img src="../resources/graphics/HeroIcon.png" class="icon" width="64" height="64" alt="HeroIcon"></div>
+        <div class="bd">
+          <h1>You</h1>
+          <dl class="stats">
+            <dt>Health</dt><dd>10</dd>
+          </dl>
+        </div>
+      </div>  
+    </div>
+  </div>
+  <div id="arenaRow" class="row">
+    <div class="col col-1of1"><div id="fullWidth">
+      <pre>
+      for each turn in each round in combat:
+      -------------------------------------
+      show player vs. selected target
+      show physical hit animation
+      show physical miss animation
+      show magical hit animation</pre>
+    </div></div>
+  </div>
+  <div id="baddiesRow" class="row">
+    <div class="col">
+
+      <div class="media combatActor">
+        <div class="img"><img src="../resources/graphics/BaddieIcon.png" class="icon" width="64" height="64" alt="HeroIcon"></div>
+        <div class="bd">
+          <h1>Goblin</h1>
+          <dl class="stats">
+            <dt>Health</dt><dd>10</dd>
+          </dl>
+          <ul class="foot horizontallist">
+            <li class="icon32 attack-icon attack-icon--physical" title="Weapon Attack"></li>
+            <li class="icon32 attack-icon attack-icon--magic" title="Magic Attack"></li>
+          </ul>
+        </div>
+      </div>  
+
+      <div class="media combatActor">
+        <div class="img"><img src="../resources/graphics/BaddieIcon.png" class="icon" width="64" height="64" alt="HeroIcon"></div>
+        <div class="bd">
+          <h1>Goblin</h1>
+          <dl class="stats">
+            <dt>Health</dt><dd>10</dd>
+          </dl>
+          <ul class="foot horizontallist">
+            <li class="icon32 attack-icon attack-icon--physical" title="Weapon Attack"></li>
+            <li class="icon32 attack-icon attack-icon--magic" title="Magic Attack"></li>
+          </ul>
+        </div>
+      </div>  
+
+      <div class="media combatActor">
+        <div class="img"><img src="../resources/graphics/BaddieIcon.png" class="icon" width="64" height="64" alt="HeroIcon"></div>
+        <div class="bd">
+          <h1>Goblin</h1>
+          <dl class="stats">
+            <dt>Health</dt><dd>10</dd>
+          </dl>
+          <ul class="foot horizontallist">
+            <li class="icon32 attack-icon attack-icon--physical" title="Weapon Attack"></li>
+            <li class="icon32 attack-icon attack-icon--magic" title="Magic Attack"></li>
+          </ul>
+        </div>
+      </div>  
+
+    </div>
+  </div>
+</div>
 
 <script type="text/javascript">
   var config = {
@@ -75,6 +221,7 @@
         var chanceToHit = 0.5;
         var doesHit = Math.random() >= chanceToHit; 
         if(doesHit) {
+          
           console.log("You hit for " + damage + " of " + monster.stats.health);
           monster.stats.health = monster.stats.health - damage;
           damageInflicted += damage;
