@@ -1,7 +1,10 @@
 .nodester.appconfig
 
 # Library files managed with volo
-src/vendor/amd-store
+src/vendor/store
+
+# ignore node_modules in master branch for now
+node_modules
 
 # OS generated files
 .DS_Store
