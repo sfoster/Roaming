@@ -1,5 +1,56 @@
 define(function(){
 
+  var hasOwn = Object.prototype.hasOwnProperty;
+
+  function isPlainObject(obj){
+    if ( !obj || typeof obj !== "object" || obj.nodeType || isWindow( obj ) ) {
+      return false;
+    }
+    try {
+      // Not own constructor property must be Object
+      if ( obj.constructor &&
+        !hasOwn.call(obj, "constructor") &&
+        !hasOwn.call(obj.constructor.prototype, "isPrototypeOf") ) {
+        return false;
+      }
+    } catch ( e ) {
+      // IE8,9 Will throw exceptions on certain host objects #9897
+      return false;
+    }
+
+    // Own properties are enumerated firstly, so to speed up,
+    // if last one is own, then all properties are own.
+    var key;
+    for ( key in obj ) {}
+
+    return key === undefined || hasOwn.call( obj, key );
+  }
+  function isWindow(obj){
+    return obj && 
+      (typeof obj === "object") && 
+      ("setInterval" in obj) &&
+      ("navigator" in obj);
+  }
+  
+  function getType(thing) {
+    var t = typeof thing;
+    if('undefined' == t) return 'undefined';
+    if(null === thing) return 'null';
+    if('object' === t) {
+      if(thing instanceof Array) return 'array';
+      if( isWindow(thing) ) return 'window';
+      if(thing instanceof Date) return 'date';
+      if(thing instanceof RegExp) return 'regexp';
+      if(thing.nodeType) return 'domnode';
+      if(thing instanceof Error || (('message' in thing) && (('lineno' in thing) || ('lineNumber' in thing)))){
+        return 'error';
+      }
+      return isPlainObject(thing) ? 'object' : 'unknown';
+    } else {
+      return t;
+    }
+  }
+  
   function pluck(ar, pname) {
     return ar.map(function(item){
       return item[pname];
@@ -113,6 +164,7 @@ define(function(){
   };
   
   return {
+    getType: getType,
     create: create,
     map: map,
     mixin: mixin,

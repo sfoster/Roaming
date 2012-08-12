@@ -18,7 +18,7 @@
       color: #eee;
     }
     #main {
-      overflow: auto;
+      background-color: transparent;
     }
     .item .field-id {
       
@@ -69,6 +69,14 @@
     .delete-row {
       background-color: #daa;
     }
+    .divider {
+      display: block;
+      float: left;
+      margin-top: 2px;
+      border-left: 2px outset #333;
+      width: 1px;
+      height: 2em;
+    }
   </style>
 </head>
 <body>
@@ -106,30 +114,47 @@ JSRender overview:
   {{ ~helper(...) }}   pass a value through a helper function
 </div>
 
-<div class="tab-container">
-  <span class="tab-label selected" data-target="locationEdit">Edit</span>
-  <span class="tab-label" data-target="locationPreview">Preview</span>
-  <div class="tab-panels">
-    <div class="tab-panel" id="locationEdit"></div>
-    <div class="tab-panel" id="locationPreview" style="display:none"></div>
+<section id="hud" class="panel">
+  <div id="tooldrawer">
+    <div class="row">
+      <div class="col col-2of5">
+        <ul id="maptoolbar" class="horizontallist">
+            <li class="btn" id="saveBtn"><button>Save</button></li>
+            <li class="btn" id="resetBtn"><button>Reset</button></li>
+            <li class="btn" id="loadBtn"><button>Load Map...</button></li>
+        </ul>
+      </div>
+      <div class="col col-3of5">
+        <span class="divider"></span>
+        <ul id="detailtoolbar" class="horizontallist">
+          <li class="btn"><button id="detailSaveBtn">Save Location</button></li>
+          <li class="btn"><button id="detailResetBtn">Cancel Edits</button></li>
+        </ul>
+      </div>
   </div>
-</div>
+</section>  
+<section id="drawer" class="panel">
+  <div id="palette">
+    <ul id="terrainlist" class="panelist">
+    </ul>
+    <ul id="toollist" class="panelist">
+      <li class="panel tool edittile"><span>edit tile</span></li>
+    </ul>
+  </div>
+</section>
+<section id="main" class="panel">
 
-<div class="field-description row">
-  <h3 class="caption col col-1of8"><label for="">Terrain</label></h3>
-  <div class="col col-7of8"><select id="selTerrainType" data-link="type" data-comment="'type' is the property on the location object which we bind to">
-    {{for ~asArray(~terrainTypes)}}
-      <option 
-        data-link="selected{:~matches(name, 'type')}"
-        value="{{:name}}"
-      >{{>name}}</option>
-    {{/for}}
-  </select></div>
-</div>
-
+  <div class="tab-container">
+    <span class="tab-label selected" data-target="locationEdit">Edit</span>
+    <span class="tab-label" data-target="locationPreview">Preview</span>
+    <div class="tab-panels">
+      <div class="tab-panel" id="locationEdit"></div>
+      <div class="tab-panel" id="locationPreview" style="display:none"></div>
+    </div>
+  </div>
+</section>
 
 <script id="editLocationTemplate" type="text/x-jsrender">
-{{: ~testContext('#view.data.coords', #view.data.coords)}}
 <div class="media header">
   <div class="img"><span data-link="class{:~swatchClass(type)}"></span></div>
   <div class="bd field-{{:id}}">
@@ -137,6 +162,17 @@ JSRender overview:
   </div>
 </div>  
 <input type="hidden" name="coords" value="{{:id}}" data-link="visible{:name}">
+<div class="field-description row">
+  <h3 class="caption col col-1of8"><label for="">Terrain</label></h3>
+  <div class="col col-7of8"><select id="selTerrainType" data-link="type" data-comment="'type' is the property on the location object which we bind to">
+    {{for ~asArray(~terrainTypes) ~matchContext=#view.data}}
+    <option 
+      data-link="selected{:~matches(name, 'type', ~matchContext)}"
+      value="{{:name}}"
+    >{{>name}}</option>
+    {{/for}}
+  </select></div>
+</div>
 <div class="field-description row">
   <h3 class="caption col col-1of8"><label for="">Description</label></h3>
   <div class="col col-7of8">
@@ -150,11 +186,9 @@ JSRender overview:
     <p class="hint">Pick what happens here</p>
     <p><select id="selEncounterType" data-link="encounterType">
       <option value="none">None</option>
-      {{* sourceObject = 2;}}
-      {{: ~testContext('sourceObject', sourceObject)}}
-      {{for ~asArray(~encounterTypes)}}
+      {{for ~asArray(~encounterTypes) ~matchContext=#view.data}}
         <option 
-          data-link="selected{:~matches(name, 'encounterType', #view)}"
+          data-link="selected{:~matches(name, 'encounterType', ~matchContext)}"
           value="{{:name}}"
         >{{>name}}</option>
       {{/for}}
@@ -168,14 +202,14 @@ JSRender overview:
     <div id="npc_encounters">
     {{for encounter.npc }}
       <p>Existing Type: <select name="npc_type1" id="npc_type1" class="npc_picker">
-      {{for ~asArray(~npcTypes) }}
+      {{for ~asArray(~npcTypes) ~matchContext=#data}}
       <option 
-        data-link="selected{:~matches(name, 'type')}"
+        data-link="selected{:~matches(name, 'type', ~matchContext)}"
         value="{{:name}}"
       >{{>name}}</option>
       {{/for}}
       </select>
-      Number: <input type="number" value="0" min="0">
+      Number: <input type="number" data-link="#data.count" value="{{:count}}" min="0">
       <span class="btn delete-row">-</span>
       </p>
     {{/for}}
@@ -241,7 +275,7 @@ JSRender overview:
     'plugins/location!3,3'
   ], function($, encounterTypes, terrainTypes, npcTypes, locn){
     window.locn = locn;
-    $.views.allowCode = true;
+    $.views.allowCode = false;
     // edit a location: 
     //  description, 
     //  terrain,  
@@ -258,11 +292,35 @@ JSRender overview:
       $(this).addClass('selected');
       $('#'+targ).show();
     });
+
+    $('#detailSaveBtn').click(function(evt){
+      var savePromise = locn.save();
+      savePromise.then(function(){
+        require(['plugins/location!3,3' + '!refresh'], function(locationModel){
+          console.log('reloaded location!3,3', locationModel.get('description'));
+          window.locn = locn = locationModel;
+          init();
+        })
+      });
+    });
     
-    $.templates({
-      editTmpl: "#editLocationTemplate",
-      previewTmpl: "#previewLocationTemplate"
-    });     
+    $('#detailResetBtn').click(function(){
+      require(['plugins/location!3,3' + '!refresh'], function(locationModel){
+        console.log('reloaded location!3,3', locationModel.get('description'));
+        window.locn = locn = locationModel;
+        init();
+      })
+    });
+
+    function init(){
+      $( "#editLocationTemplate" )
+              // data,      parentNode,       context,        prevNode, nextNode, index
+        .link( locn, "#locationEdit", contextHelpers );
+
+      $( "#previewLocationTemplate" )
+              // data,      parentNode,       context,        prevNode, nextNode, index
+        .link( locn, "#locationPreview", contextHelpers );
+    }
 
     var contextHelpers = {
         app: {
@@ -281,8 +339,8 @@ JSRender overview:
           // this is the item in the array
           // this.parent.data is the array
           // this.parent.parent.data is the location
-          obj = obj || this.parent.parent.data || this.parent.parent.parent.data;
-          // console.log("matches value: %s, pname: %s, obj: %o, obj[pname]: %o", value, pname, obj, obj[pname]);
+          obj = obj || this;
+          // console.log("matches value: %s, pname: %s, obj: %o, obj[pname]: %o", value, pname, obj, obj[pname], value == obj[pname]);
           return value == obj[pname];
         },
         asArray: function(obj){
@@ -301,13 +359,12 @@ JSRender overview:
           return !!a && !!b;
         }
       };
-    $( "#editLocationTemplate" )
-            // data,      parentNode,       context,        prevNode, nextNode, index
-      .link( locn, "#locationEdit", contextHelpers );
 
-    // $( "#previewLocationTemplate" )
-    //         // data,      parentNode,       context,        prevNode, nextNode, index
-    //   .link( locn, "#locationPreview", contextHelpers );
+      $.templates({
+        editTmpl: "#editLocationTemplate",
+        previewTmpl: "#previewLocationTemplate"
+      });     
+      init();
 
   });
 </script>

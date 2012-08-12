@@ -84,7 +84,7 @@
 #hud {
   position: absolute;
   top: 5px; right: 210px; left: 5px;
-  height: 160px;
+  height: 3em;
   background-color: #666;
 }
 #main {
