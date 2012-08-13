@@ -20,6 +20,15 @@
     .item .field-id {
 
     }
+    .button {
+      cursor: pointer;
+    }
+    .button--remove > span {
+      border: 1px outset #ccc;
+      border-radius: 4px;
+      padding: 3px;
+      background-color: #fcc;
+    }
   </style>
 </head>
 <body>
@@ -34,12 +43,13 @@
   <table id="npcs" class="listing" cellspacing="0">
     <thead>
       <tr class="item">
+        <th class="field-{{rowIndex}}">#</th>
         <th class="field-{{id}}"><code>id</code></th>
         <th class="field-{{name}}">name</th>
         <th class="field-{{strength}}">strength</th>
         <th class="field-{{hp}} digit">hit points</th>
         <th class="field-{{mp}} digit">magic points</th>
-        <th class="field-{{notes}}">notes</th>
+        <th class="field-{{notes}}"></th>
       </tr>
     </thead>
     <tbody>
@@ -50,13 +60,14 @@
 </section>  
 
 <script type="text/x-template" id="item-template">
-<tr class="item">
+<tr class="item" data-itemid="{{id}}">
+  <td class="field-{{rowIndex}}">{{rowIndex}}</td>
   <td class="field-{{id}}"><code>{{id}}</code></td>
   <td class="field-{{name}}">{{name}}</td>
   <td class="field-{{strength}} digit">{{strength}}</td>
   <td class="field-{{hp}} digit">{{hp}}</td>
   <td class="field-{{mp}} digit">{{mp}}</td>
-  <td class="field-{{notes}}">{{notes}}</td>
+  <td class="field-{{remove}} button button--remove"><span>X</span></td>
 </tr>
 </script>
 
@@ -88,23 +99,64 @@
       return data;
     };
     
+    $('#npcs').delegate('.button--remove', 'click', function(evt){
+      var id = getIdFromNode(evt.target);
+      console.log("Click on node: ", id);
+      npcStore.remove(id);
+    });
+    
+    function getIdFromNode(node){
+      var id, $node = $(node);
+      return $(node).closest('.item')[0].getAttribute('data-itemid');
+    }
+
     var npcTable = Object.keys(npc).map(function(id){
       return toItem(npc[id], id);
     });
-    console.log("npcTable: ", npcTable);
     
     var npcStore = store.Observable(new store.Memory({
       data: npcTable
     }));
     
+    $.fn.insertAt = function(selector, idx) {
+      // jquery extension to insert contents at a particular position
+      var cont = this, 
+          $refNode = $(selector), 
+          children = $refNode.children();
+
+      if(undefined === idx || idx >= children.length) {
+        $refNode.append(cont);
+      } else {
+        $(children[idx+1]).insertBefore(cont);
+      }
+      return this;
+    }
+    
+    // TODO: need to drum up a quick quide to querying
+    // support * wildcard queries
     var results = npcStore.query({range: 'short'});
-    var renderItem = function(data){
+    var renderItem = function(data, idx){
       var str = tmpl.replace(pattern, function(m, name){
         return (name in data) ? data[name] : "";
       });
-      $(str).appendTo('#npcs tbody');
+      return str;
     }
-    results.forEach(renderItem);
+    function decorateWithIndex(item, idx){
+      item = Object.create(item); 
+      item.rowIndex = idx;
+      return item;
+    }
+    function insertInto(selector){
+      return function(str, idx, coln){
+        return $(str).insertAt(selector, idx);
+      };
+    }
+    
+    var insertNodes = insertInto('#npcs tbody');
+    results
+      .map(decorateWithIndex)
+      .map(renderItem)
+      .map(insertNodes);
 
     aardvark = {
       name: 'Aardvark',
@@ -116,14 +168,37 @@
       terrain: ["plains"]
     };
     
-    results.observe(function(item){
-      console.log("range:short results observer: ", arguments);
-      renderItem(item);
-    });
+    results.observe(function(item, removedFrom, insertedInto){
+      console.log("results observer, removed from: %s, inserted into: %s", removedFrom, insertedInto);
+      
+      if(insertedInto > -1) {
+        // item was added
+        var arr = new Array(insertedInto); // sparse array
+        arr.push(item);                    // index 'zeroed' at the store results index
+        arr
+          .map(decorateWithIndex)
+          .map(renderItem)
+          .map(insertNodes);
+      } else if(removedFrom > -1){
+        console.log("item was removed, at index: ", removedFrom, " of ", results.length);
+        // remove everything after and including the affected item
+        $('#npcs tbody').children().slice(removedFrom).remove();
+        
+        var arr = new Array(removedFrom); // sparse arrqy
+        // don't touch elements not needing changes
+        var dirtyitems= results.slice(removedFrom);
+        arr.push.apply(arr, dirtyitems);
+        arr
+          .map(decorateWithIndex)
+          .map(renderItem)
+          .map(insertNodes);
+      }
+    }, true);
+
+    // test out adding an entry to our store that should be matched in the query
     setTimeout(function(){
       npcStore.add( toItem(aardvark, "aardvark") )
-    });
-    console.log("query:", results);
+    }, 100);
   });
 </script>
 </body>
