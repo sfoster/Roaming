@@ -51,16 +51,17 @@ JSRender overview:
   <div id="contextbar"><!-- context bar --></div>
   <div class="tab-container">
     <!-- master/detail/preview tabs -->
-    <span class="tab-label selected" data-target="mapEdit">Map</span>
-    <span class="tab-label" data-target="locationEdit">Edit Tile</span>
-    <span class="tab-label" data-target="locationPreview">Preview</span>
-    
+    <div class="tab-tray" data-bind="click: onTabTrayClick">
+      <span class="tab-label" data-name="mapEdit" data-bind="css-matches-name: {selected: selectedTab}">Map</span>
+      <span class="tab-label" data-name="locationEdit" data-bind="css-matches-name: {selected: selectedTab}">Edit Tile</span>
+      <span class="tab-label" data-name="locationPreview" data-bind="css-matches-name: {selected: selectedTab}">Preview</span>
+    </div>
     <div class="tab-panels">
-      <div class="tab-panel" id="mapEdit">
+      <div class="tab-panel" data-name="mapEdit" id="mapEdit" data-bind="css-matches-name: {selected: selectedTab}" style="display:none">
       </div>
-      <div class="tab-panel" id="locationEdit" style="display:none">
+      <div class="tab-panel" data-name="locationEdit" id="locationEdit" data-bind="css-matches-name: {selected: selectedTab}" style="display:none">
       </div>
-      <div class="tab-panel" id="locationPreview" style="display:none">
+      <div class="tab-panel" data-name="locationPreview" id="locationPreview" data-bind="css-matches-name: {selected: selectedTab}" style="display:none">
         <section id="preview" class="panel">
           rendered tile
         </section>
@@ -92,26 +93,82 @@ JSRender overview:
     // configure our AMD loader
     paths: config.packages
   }, [
+    'lib/dollar',
+    'vendor/knockout',
     'mapEditor',
     'tileEditor',
     'plugins/region!world'
-  ], function(mapEditor, tileEditor, world){
+  ], function($, ko, mapEditor, tileEditor, world){
     
     window.tileEditor = tileEditor; 
+    window.knockout = ko;
     
-    // set up the edit/preview tabs
-    $(document).on('click', '.tab-label', function(){
-      var targ = this.getAttribute("data-target"), 
-          parent = $(this).closest('.tab-container')[0];
+    // data-bind="css-target: {  }"
+    ko.bindingHandlers['css-matches-name'] = {
+      init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
+        // This will be called when the binding is first applied to an element
+        // Set up any initial state, event handlers, etc. here
+      },
+      update: function(element, valueAccessor, allBindingsAccessor, viewModel) {
+        // variation on css binding which gets its boolean value for each given className
+        // from a match against the data-name attribute
+        var name = element.getAttribute('data-name');
+        var value = ko.utils.unwrapObservable(valueAccessor() || {});
+        for (var className in value) {
+          if (typeof className == "string") {
+            var shouldHaveClass = (name === ko.utils.unwrapObservable(value[className]));
+            ko.utils.toggleDomNodeCssClass(element, className, shouldHaveClass);
+          }
+        }
+      }
+    };
+    
+    function wrap(fn, before, after){
+      return function(){
+        var args = Array.prototype.slice.call(arguments);
+        var ret;
+        if(before){
+          args = before.apply(this, args);
+        }
+        ret = fn.apply(this, arguments);
+        if(after){
+          ret = after.apply(this, args);
+        }
+        return ret;
+      };
+    }
+    var vm = {
+      el: document.body,
+      selectedTab: 'mapEdit',
+      
+      initialize: function(){
+        this.selectedTab = ko.observable(this.selectedTab || '');
+        
+        this.applyBindings();
+      },
+      applyBindings: function(){
+        var selfNode = $(this.el)[0];
 
-      $('.tab-panel', parent).hide();
-      $('.tab-label', parent).removeClass('selected');
-      $(this).addClass('selected');
-      $('#'+targ).show();
-    });
+        console.log("Applying bindings in : ", selfNode);
+        ko.applyBindings(this, selfNode);
+        console.log("/Applying bindings");
 
-    function setActivePanel(targ){
-      var $tab = $('[data-target="'+targ+'"]'),
+        return this;
+      },
+      isTabSelected: function(){
+        console.log("isTabSelected: ", arguments);
+        return false;
+      },
+      onTabTrayClick: function(vm, evt){
+        var targ = $(evt.target).closest('.tab-label').attr('data-name'); 
+        this.selectedTab(targ);
+        // setActivePanel( targ );
+      },
+      
+    };
+
+    function setActivePanel(targ, node){
+      var $tab = node ? $(node) : $('[data-target="'+targ+'"]'),
           parent = $tab.closest('.tab-container')[0];
 
       $('.tab-panel', parent).hide();
@@ -120,6 +177,8 @@ JSRender overview:
       $('#'+targ).show();
     }
 
+    vm.initialize();
+    
     mapEditor.init({
       region: world
     });

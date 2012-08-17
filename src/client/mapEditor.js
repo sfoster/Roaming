@@ -264,7 +264,7 @@ define([
         console.log("testContext: "+label, obj);
       },
       matches: function(value, pname, obj) {
-        console.log("match value %o against property %s in %o: %o", value, pname, obj, obj[pname]);
+        // console.log("match value %o against property %s in %o: %o", value, pname, obj, obj[pname]);
         obj = obj || this;
         return value == obj[pname];
       },
