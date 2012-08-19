@@ -1,12 +1,14 @@
 define([
   'lib/dollar',
+  'lib/util',
   'lib/Promise', 
+  'knockout',
   'resources/encounters',
   'resources/terrain',
   'resources/npc',
   'plugins/vendor/text!resources/templates/tileEditor.html',
   'plugins/vendor/text!resources/templates/tilePreview.html'
-], function($, Promise, encounterTypes, terrainTypes, npcTypes, editTemplate, previewTemplate){
+], function($, util, Promise, ko, encounterTypes, terrainTypes, npcTypes, editTemplate, previewTemplate){
 
   // edit a location: 
   //  description, 
@@ -15,17 +17,28 @@ define([
 
   var editor = {
     location: null,
-    initialize: function initialize(){
+    initialize: function initialize(options){
       if(this.initialized) return this;
       this.initialized = true;
       
+      util.mixin(this, options || {});
+
       console.log("editor initialize");
       this.location = ko.observable(this.location || {});
 
-      // editTemplate.link( editor.location, "#locationEdit", contextHelpers );
-      previewTemplate.link( this.location(), "#locationPreview", contextHelpers );
-
-      $( document ).on("click", "#detailtoolbar .btn", function(evt){
+      this.render(editTemplate);
+    },
+    render: function(html){
+      console.log("mapEditor: rendering with el: ", this.el);
+      var $el = $(this.el);
+      $el.html( html );
+    },
+    applyBindings: function(){
+      var selfNode = $(this.el)[0];
+      ko.applyBindings(this.location(), selfNode);
+      return this;
+    },
+    onDetailToolbarClick: function(binding, evt){
         console.log("region toolbar btn click: ", evt.target);
         var buttonNode = evt.currentTarget;
         var actionPromise = null;
@@ -45,16 +58,6 @@ define([
         Promise.when(actionPromise, function(){
           $( buttonNode ).removeClass('busy');
         });
-      });
-    },
-  
-    applyBindings: function(){
-      var selfNode = $(this.el)[0];
-      ko.applyBindings(this.location(), selfNode);
-      return this;
-    },
-    onDetailToolbarClick: function(){
-      
     },
     setLocation: function(coord){
       if(typeof coord == 'string') {

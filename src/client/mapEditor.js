@@ -22,7 +22,6 @@ define([
 
 
   // compile the editor template
-  editTemplate = $.templates( editTemplate );
 
   // map/region editor singleton
   var editor = window.regionEditor = util.mixin({
@@ -40,8 +39,7 @@ define([
       }
     } 
   }, Evented);
-  console.log("editor.on: ", editor.on);
-  //  
+
   function toolbarInit(){
     $('#saveBtn').click(function(evt){
       var locations = values(editor.tilesByCoords).map(function(tile){
@@ -114,6 +112,12 @@ define([
     map.init().render( region.tiles );
   };
   
+  editor.render = function(html){
+    console.log("mapEditor: rendering with el: ", this.el);
+    var $el = $(this.el);
+    $el.html( html );
+  };
+  
   editor.initialize = function init(options){
     if(this.initialized) return;
     this.initialized = true;
@@ -123,7 +127,16 @@ define([
     // detailEditInit();
     // editorInit();
     util.mixin(this, options || {});
+  
+    // slop in the template
+    this.render(editTemplate);
     
+    if(this.region){
+      this.setRegion(this.region); 
+    }
+
+  };
+  function bindAllTheUiBits() {
     // top toolbar
     console.log("setting up #regionToolbar click handlers: ", $( "#regionToolbar" ).length);
     $( document ).on("click", "#regionToolbar .btn", function(evt){
@@ -184,11 +197,7 @@ define([
       editor.toolAction(x, y, editor.currentTool);
     });
 
-    if(this.region){
-      this.setRegion(this.region); 
-    }
-
-  };
+  }
 
   function trim(text){
     return text.replace(/^\s+/, '').replace(/\s+$/, '');
