@@ -76,12 +76,13 @@ JSRender overview:
     packages: {
       // package mappings
       $: 'lib/dollar',
-      util: 'lib/util',
-      compose: 'vendor/compose',
       text: 'plugins/vendor/text',
       json: 'plugins/vendor/json',
       image: 'plugins/vendor/image',
-      order: 'plugins/vendor/order'
+      order: 'plugins/vendor/order',
+      util: 'lib/util',
+      compose: 'vendor/compose',
+      knockout: 'vendor/knockout'
     }
   };
 </script>
@@ -94,11 +95,21 @@ JSRender overview:
     paths: config.packages
   }, [
     'lib/dollar',
-    'vendor/knockout',
+    'lib/event', 
+    'knockout',
+    'vendor/knockout.mapping',
     'mapEditor',
     'tileEditor',
     'plugins/region!world'
-  ], function($, ko, mapEditor, tileEditor, world){
+  ], function(
+    $, 
+    Evented,
+    ko, 
+    koMapping, 
+    mapEditor, 
+    tileEditor, 
+    world
+){
     
     window.tileEditor = tileEditor; 
     window.knockout = ko;
@@ -137,51 +148,92 @@ JSRender overview:
         return ret;
       };
     }
-    var vm = {
+
+    var app = {
       el: document.body,
       selectedTab: 'mapEdit',
       
       initialize: function(){
+        var self = this;
         this.selectedTab = ko.observable(this.selectedTab || '');
+        this.selectedTab.subscribe(function(newValue) {
+          // global broadcast: 
+          Evented.emit('editor:change', {
+            target: newValue
+          });
+        });
         
-        this.applyBindings();
+        Evented.on('editor:change', function(evt){
+          var editor; 
+          switch(evt.target) {
+            case "mapEdit": 
+              editor = mapEditor; break;
+            case "locationEdit": 
+              editor = regionEditor; break;
+          }
+          console.log("editor:change", evt.target, editor);
+          if(editor) editor.initialize();
+        });
+        return this;
       },
-      applyBindings: function(){
-        var selfNode = $(this.el)[0];
-
-        console.log("Applying bindings in : ", selfNode);
-        ko.applyBindings(this, selfNode);
-        console.log("/Applying bindings");
+      setStore: function(store){
+        var self = this;
+        store = this.store = store;
+      
+        // set up the live resultsets: 
+        var locations = this._locations = ko.observableArray([]);
+        
+        // the locations array is a computed value, delegating to an observable array
+        this.locations = ko.computed(function(){
+          console.log("computing the locations property");
+          return self.fetchLocations(locations);
+        });
 
         return this;
       },
-      isTabSelected: function(){
-        console.log("isTabSelected: ", arguments);
-        return false;
+      fetchLocations: function(rows){
+        var self = this;
+        var proto = { };
+        function item(data){
+          // util.defaults(data, proto);
+          var viewModel = ko.mapping.fromJS(data);
+          return viewModel;
+        }
+
+        // we return the observable array, but call splice on it with the results when the come back
+        // as its observable, it should result in updates to all listeners
+        Promise.when(this.store.query({ type: 'todo' }), function(results){
+          console.log("query callback, got results: ", results);
+          var len = ('function' == typeof rows) ? rows().length : rows.length;
+          rows.splice.apply(rows, [0, len].concat(results.map(item)) );
+        });
+
+        return rows; 
+      },
+      
+      applyBindings: function(){
+        var selfNode = $(this.el)[0];
+        ko.applyBindings(this, selfNode);
+        return this;
       },
       onTabTrayClick: function(vm, evt){
+        // event-delegation for tab-label clicks
         var targ = $(evt.target).closest('.tab-label').attr('data-name'); 
         this.selectedTab(targ);
-        // setActivePanel( targ );
       },
       
     };
 
-    function setActivePanel(targ, node){
-      var $tab = node ? $(node) : $('[data-target="'+targ+'"]'),
-          parent = $tab.closest('.tab-container')[0];
+    // TODO: wrap location GET/PUTs in JsonRest store
+    // var worldStore = new Store({
+    // });
 
-      $('.tab-panel', parent).hide();
-      $('.tab-label', parent).removeClass('selected');
-      $tab.addClass('selected');
-      $('#'+targ).show();
-    }
-
-    vm.initialize();
-    
-    mapEditor.init({
-      region: world
-    });
+    app
+      .initialize({
+        region: world
+      })
+      // .setStore(worldStore)
+      .applyBindings();
 
     mapEditor.on('tile:edit', function(evt){
       console.log("Tile selected: ", evt.target);
@@ -189,7 +241,7 @@ JSRender overview:
         console.log("loadTile result: ", tile);
         tileEditor.setLocation(tile);
       })
-      setActivePanel('locationEdit');
+      app.selectedTab('locationEdit');
     });
   });
 </script>

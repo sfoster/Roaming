@@ -40,7 +40,7 @@ define([
       }
     } 
   }, Evented);
-
+  console.log("editor.on: ", editor.on);
   //  
   function toolbarInit(){
     $('#saveBtn').click(function(evt){
@@ -114,7 +114,10 @@ define([
     map.init().render( region.tiles );
   };
   
-  editor.init = function init(options){
+  editor.initialize = function init(options){
+    if(this.initialized) return;
+    this.initialized = true;
+    
     // toolbarInit();
     // paletteInit();
     // detailEditInit();
@@ -278,5 +281,6 @@ define([
       }
     };
 
+  console.log("before module return, editor.on: ", editor.on);
   return editor;
 });

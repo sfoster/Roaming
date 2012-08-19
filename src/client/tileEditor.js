@@ -7,10 +7,7 @@ define([
   'plugins/vendor/text!resources/templates/tileEditor.html',
   'plugins/vendor/text!resources/templates/tilePreview.html'
 ], function($, Promise, encounterTypes, terrainTypes, npcTypes, editTemplate, previewTemplate){
-  editTemplate = $.templates( editTemplate );
-  previewTemplate = $.templates( previewTemplate );
 
-  $.views.allowCode = false;
   // edit a location: 
   //  description, 
   //  terrain,  
@@ -18,7 +15,47 @@ define([
 
   var editor = {
     location: null,
+    initialize: function initialize(){
+      if(this.initialized) return this;
+      this.initialized = true;
+      
+      console.log("editor initialize");
+      this.location = ko.observable(this.location || {});
+
+      // editTemplate.link( editor.location, "#locationEdit", contextHelpers );
+      previewTemplate.link( this.location(), "#locationPreview", contextHelpers );
+
+      $( document ).on("click", "#detailtoolbar .btn", function(evt){
+        console.log("region toolbar btn click: ", evt.target);
+        var buttonNode = evt.currentTarget;
+        var actionPromise = null;
+        var action = buttonNode.getAttribute('data-action') || String.trim(buttonNode.innerText || buttonNode.textContent);
+        $( buttonNode ).addClass('busy');
+
+        if(action === 'save'){
+          actionPromise = editor.location.save();
+          actionPromise.then(function(){
+            if(editor.refresh) {
+              editor.refresh();
+            }
+          });
+        } else if(action === 'reset' || action === 'cancel'){
+          actionPromise = editor.refresh();
+        }
+        Promise.when(actionPromise, function(){
+          $( buttonNode ).removeClass('busy');
+        });
+      });
+    },
   
+    applyBindings: function(){
+      var selfNode = $(this.el)[0];
+      ko.applyBindings(this.location(), selfNode);
+      return this;
+    },
+    onDetailToolbarClick: function(){
+      
+    },
     setLocation: function(coord){
       if(typeof coord == 'string') {
         require(['plugins/location!'+coord + '!refresh'], function(locationModel){
@@ -26,9 +63,8 @@ define([
         });
         return;
       } else {
-        this.location = coord;
+        this.location(coord);
       }
-      this.init();
     },
     refresh: function(coord){
       coord = coord || this.location.id;
@@ -42,34 +78,6 @@ define([
       });
       return promise;
     }
-  };
-  
-  editor.init = function init(){
-    editTemplate.link( editor.location, "#locationEdit", contextHelpers );
-
-    previewTemplate.link( editor.location, "#locationPreview", contextHelpers );
-
-    $( document ).on("click", "#detailtoolbar .btn", function(evt){
-      console.log("region toolbar btn click: ", evt.target);
-      var buttonNode = evt.currentTarget;
-      var actionPromise = null;
-      var action = buttonNode.getAttribute('data-action') || String.trim(buttonNode.innerText || buttonNode.textContent);
-      $( buttonNode ).addClass('busy');
-      
-      if(action === 'save'){
-        actionPromise = editor.location.save();
-        actionPromise.then(function(){
-          if(editor.refresh) {
-            editor.refresh();
-          }
-        });
-      } else if(action === 'reset' || action === 'cancel'){
-        actionPromise = editor.refresh();
-      }
-      Promise.when(actionPromise, function(){
-        $( buttonNode ).removeClass('busy');
-      });
-    });
   };
 
   var contextHelpers = editor.context = {
