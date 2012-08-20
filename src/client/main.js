@@ -1,5 +1,5 @@
 define([
-  '$', 'lib/util', 'lib/event', 'resources/template', 
+  'dollar', 'lib/util', 'lib/event', 'resources/template', 
   'main-ui',
   'resources/map',
   'lib/UrlRouter',

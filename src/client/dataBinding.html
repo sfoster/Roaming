@@ -56,9 +56,11 @@ JSRender overview:
       <span class="tab-label" data-name="locationPreview" data-bind="css-matches-name: {selected: editorMode}">Preview</span>
     </div>
     <div class="tab-panels">
-      <div class="tab-panel" data-name="mapEdit" id="mapEdit" data-bind="css-matches-name: {selected: editorMode}" style="display:none">
+      <div class="tab-panel" data-name="mapEdit" data-bind="css-matches-name: {selected: editorMode}" style="display:none">
+        <div id="mapEdit" data-bind="with: regionEditor"></div>
       </div>
-      <div class="tab-panel" data-name="locationEdit" id="locationEdit" data-bind="css-matches-name: {selected: editorMode}" style="display:none">
+      <div class="tab-panel" data-name="locationEdit" data-bind="css-matches-name: {selected: editorMode}" style="display:none">
+        <div id="locationEdit" data-bind="with: locationEditor"></div>
       </div>
       <div class="tab-panel" data-name="locationPreview" id="locationPreview" data-bind="css-matches-name: {selected: editorMode}" style="display:none">
         <section id="preview" class="panel">
@@ -74,7 +76,7 @@ JSRender overview:
   var config = {
     packages: {
       // package mappings
-      $: 'lib/dollar',
+      dollar: 'vendor/zepto',
       text: 'plugins/vendor/text',
       json: 'plugins/vendor/json',
       image: 'plugins/vendor/image',
@@ -87,7 +89,7 @@ JSRender overview:
 </script>
 <script src="../vendor/require.js"></script>
 <script>
-  var coord = location.search ? location.search.replace(/^\?(\d+,\d+)/, "$1") : '3,3'
+  var coord = location.search ? location.search.replace(/^\?(\d+,\d+)/, "$1") : '3,3';
   require({
     baseUrl: '..',
     // configure our AMD loader
@@ -95,19 +97,21 @@ JSRender overview:
   }, [
     'lib/dollar',
     'lib/event', 
+    'vendor/path',
     'knockout',
     'vendor/knockout.mapping',
+    'lib/RegionStore',
     'mapEditor',
-    'tileEditor',
-    'plugins/region!world'
+    'tileEditor'
   ], function(
     $, 
     Evented,
+    Path,
     ko, 
     koMapping, 
+    RegionStore,
     mapEditor, 
-    tileEditor, 
-    world
+    tileEditor
 ){
     
     window.tileEditor = tileEditor; 
@@ -154,10 +158,23 @@ JSRender overview:
       
       initialize: function(){
         var self = this;
+        console.log("setup editorMode");
         this.editorMode = ko.observable('');
         this.editorMode.subscribe(function(newValue) {
           // global broadcast: 
           Evented.emit('editor:change', {
+            target: newValue
+          });
+        });
+        
+        this.regionEditor = mapEditor;
+        this.locationEditor = tileEditor;
+
+        // RegionStore
+        this.region = ko.observable(null);
+        this.region.subscribe(function(newValue) {
+          // global broadcast: 
+          Evented.emit('region:change', {
             target: newValue
           });
         });
@@ -171,69 +188,96 @@ JSRender overview:
               editor = tileEditor; break;
           }
           console.log("editor:change", evt.target, editor, "in: " + '#'+evt.target);
-          if(editor) editor.initialize({ el: '#'+evt.target });
+          if(editor) editor.initialize({ el: '#'+evt.target, region: self.region });
         });
         
+        console.log("assign editorMode");
         this.editorMode('mapEdit');
         return this;
       },
-      setStore: function(store){
+      routeBindings: function(){
         var self = this;
-        store = this.store = store;
-      
-        // set up the live resultsets: 
-        var locations = this._locations = ko.observableArray([]);
-        
-        // the locations array is a computed value, delegating to an observable array
-        this.locations = ko.computed(function(){
-          console.log("computing the locations property");
-          return self.fetchLocations(locations);
+
+        // default
+        Path.map("#/world").to(function(){
+          console.log("Handling #/world (default) path");
+          var id = 'world';
+          self.region( new RegionStore({
+            target: '/location/world.json'
+          }) );
         });
 
+        // region route
+        Path.map("#/world/:region_id").to(function(){
+          console.log("Handling #/world/:region_id path");
+          var id = this.params.region_id;
+          self.region( new RegionStore({
+            target: '/location/'+id+'.json'
+          }) );
+        });
+        
+        Path.root('#/world');
+        Path.listen();
         return this;
       },
-      fetchLocations: function(rows){
-        var self = this;
-        var proto = { };
-        function item(data){
-          // util.defaults(data, proto);
-          var viewModel = ko.mapping.fromJS(data);
-          return viewModel;
-        }
-
-        // we return the observable array, but call splice on it with the results when the come back
-        // as its observable, it should result in updates to all listeners
-        Promise.when(this.store.query({ type: 'todo' }), function(results){
-          console.log("query callback, got results: ", results);
-          var len = ('function' == typeof rows) ? rows().length : rows.length;
-          rows.splice.apply(rows, [0, len].concat(results.map(item)) );
-        });
-
-        return rows; 
-      },
       
+      // setStore: function(store){
+      //   var self = this;
+      //   store = this.store = store;
+      // 
+      //   // set up the live resultsets: 
+      //   var locations = this._locations = ko.observableArray([]);
+      //   
+      //   // the locations array is a computed value, delegating to an observable array
+      //   this.locations = ko.computed(function(){
+      //     console.log("computing the locations property");
+      //     return self.fetchLocations(locations);
+      //   });
+      // 
+      //   return this;
+      // },
+      
+      // fetchLocations: function(rows){
+      //   var self = this;
+      //   var proto = { };
+      //   function item(data){
+      //     // util.defaults(data, proto);
+      //     var viewModel = ko.mapping.fromJS(data);
+      //     return viewModel;
+      //   }
+      // 
+      //   // we return the observable array, but call splice on it with the results when the come back
+      //   // as its observable, it should result in updates to all listeners
+      //   Promise.when(this.store.query({ type: 'todo' }), function(results){
+      //     console.log("query callback, got results: ", results);
+      //     var len = ('function' == typeof rows) ? rows().length : rows.length;
+      //     rows.splice.apply(rows, [0, len].concat(results.map(item)) );
+      //   });
+      // 
+      //   return rows; 
+      // },
+      // 
       applyBindings: function(){
         var selfNode = $(this.el)[0];
         ko.applyBindings(this, selfNode);
         return this;
       },
+
       onTabTrayClick: function(vm, evt){
         // event-delegation for tab-label clicks
         var targ = $(evt.target).closest('.tab-label').attr('data-name'); 
         this.editorMode(targ);
-      },
-      
+      }
     };
 
     // TODO: wrap location GET/PUTs in JsonRest store
     // var worldStore = new Store({
     // });
-
+    var settings = {};
     app
       .initialize({
-        region: world
       })
-      // .setStore(worldStore)
+      .routeBindings()
       .applyBindings();
 
     mapEditor.on('tile:edit', function(evt){
@@ -241,7 +285,7 @@ JSRender overview:
       world.loadTile(evt.target).then(function(tile){
         console.log("loadTile result: ", tile);
         tileEditor.setLocation(tile);
-      })
+      });
       app.editorMode('locationEdit');
     });
   });

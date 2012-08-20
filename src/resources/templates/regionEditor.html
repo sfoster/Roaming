@@ -5,13 +5,16 @@
           <li class="btn" id="loadBtn"><button disabled="disabled">Load Map...</button></li>
         </div>
         <div class="col col-3of5 col-right">
-          <ul id="regionToolbar" class="horizontallist">
-              <li class="btn" data-action="save"><button>Save</button></li>
-              <li class="btn" data-action="reset"><button>Reset</button></li>
+          <ul id="regionToolbar" class="horizontallist" data-bind="click: onRegionToolbarClick">
+              <li class="btn" data-name="save"><button>Save</button></li>
+              <li class="btn" data-name="reset"><button>Reset</button></li>
           </ul>
         </div>
     </div>
     <section id="region-editor-detail" class="panel">
+      <ul data-bind="foreach: tiles">
+        <li data-bind="text: type"></li>
+      </ul>
       <div id="map">
         <!-- map canvas -->
         <canvas id="grid"></canvas>

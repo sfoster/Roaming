@@ -218,7 +218,7 @@
   var config = {
     packages: {
       // package mappings
-      $: 'vendor/zepto',
+      dollar: 'vendor/zepto',
       util: 'lib/util'
     }
   };
@@ -229,7 +229,7 @@
     baseUrl: '..',
     // configure our AMD loader
     paths: config.packages
-  }, ['$', 'resources/npc', 'models/player', 'models/npc'], function($, npc, player, Npc){
+  }, ['dollar', 'resources/npc', 'models/player', 'models/npc'], function($, npc, player, Npc){
     
     var goblin = Npc.create('goblin');
     var goblinChamp = Npc.create('goblinChamp');

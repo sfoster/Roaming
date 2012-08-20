@@ -1,6 +1,9 @@
 define([
-  'lib/dollar', 'lib/util', 'resources/template',
+  'lib/dollar',
+  'lib/util',
   'lib/Promise', 
+  'knockout',
+
   'lib/event', 
   'resources/map', 
   'resources/terrain',
@@ -8,8 +11,11 @@ define([
   'resources/npc',
   'plugins/vendor/text!resources/templates/regionEditor.html'
 ], function(
-  $, util, template,
-  Promise, Evented,
+  $, 
+  util, 
+  Promise, 
+  ko, 
+  Evented,
   Map, terrainTypes, encounterTypes, npcTypes,
   editTemplate
 ){
@@ -30,15 +36,88 @@ define([
     tileSize: 50,
     worldSize:  { width: 25, height: 25},
     tilesByCoords: {},
-    locationsByCoords: {},
-    setRegion: function(region){
-      this.region = region;
-      if(this.region){
-        console.log("populating map for region: ", region.id);
-        this.populateMap();
+    locationsByCoords: {}
+  }, Evented, {
+    initialize: function init(options){
+      var self = this;
+      if(this.initialized) return;
+      this.initialized = true;
+
+      // toolbarInit();
+      // paletteInit();
+      // detailEditInit();
+      // editorInit();
+      util.mixin(this, options || {});
+
+      // slop in the template
+      this.render(editTemplate);
+      // this.applyBindings();
+
+      // set up the live list of tiles to render
+      this.tiles = ko.observableArray([]);
+      
+      if(!this.region) {
+        throw "mapEditor initialized without a region property";
       }
-    } 
-  }, Evented);
+      this.region.subscribe(function(newValue) {
+        console.log("mapEditor, region has value: ", newValue);
+        self.populateMap();
+      });
+    }, 
+    applyBindings: function(){
+      var selfNode = $(this.el)[0];
+      ko.applyBindings(this, selfNode);
+      return this;
+    },
+    populateMap: function populateMap(){
+      var region = this.region();
+      region.locations(null, { rows: this.tiles });
+
+      // var map = editor.map, 
+      //     mapOptions = {
+      //         tileSize: editor.tileSize,
+      //         canvasNode: editor.mapNode,
+      //         showCoords: true
+      //     };
+      // if(map){
+      //   map.reset(mapOptions);
+      // } else {
+      //   map = editor.map = Map.create(mapOptions);
+      // }
+      // map.init().render( region.tiles );
+    }, 
+    render: function(html){
+      console.log("mapEditor: rendering with el: ", this.el);
+      var $el = $(this.el);
+      $el.html( html );
+    }, 
+    onRegionToolbarClick: function(binding, evt){
+      console.log("region toolbar btn click: ", evt.target);
+      var buttonNode = evt.target;
+      var action = buttonNode.getAttribute('data-name');
+      $( buttonNode ).addClass('busy');
+      if('save' == action) {
+        var savePromise = editor.region().save();
+        savePromise.then(function(){
+          $( buttonNode ).removeClass('busy');
+          if(editor.refresh) {
+            editor.refresh();
+          }
+        });
+      } else {
+        if(editor.refresh) {
+          editor.refresh();
+        }
+      }
+    },
+    onRegionEditorDrawerToolMouseup: function(binding, evt){
+      var toolNode = evt.target;
+      $('#regionEditorDrawer .tool.active').removeClass('active');
+      $( toolNode ).addClass('active');
+      var action = toolNode.getAttribute('data-name');
+      // $.observable( editor ).setProperty( "currentTool", action || toolNode.textContent || toolNode.innerText );
+    }
+  });
 
   function toolbarInit(){
     $('#saveBtn').click(function(evt){
@@ -93,77 +172,8 @@ define([
       });
   }
   
-  editor.populateMap = function populateMap(){
-    var region = editor.region, 
-        tiles = region.tiles;
-    editor.tilesByCoords = region.byCoords();  
-
-    var map = editor.map, 
-        mapOptions = {
-            tileSize: editor.tileSize,
-            canvasNode: editor.mapNode,
-            showCoords: true
-        };
-    if(map){
-      map.reset(mapOptions);
-    } else {
-      map = editor.map = Map.create(mapOptions);
-    }
-    map.init().render( region.tiles );
-  };
-  
-  editor.render = function(html){
-    console.log("mapEditor: rendering with el: ", this.el);
-    var $el = $(this.el);
-    $el.html( html );
-  };
-  
-  editor.initialize = function init(options){
-    if(this.initialized) return;
-    this.initialized = true;
-    
-    // toolbarInit();
-    // paletteInit();
-    // detailEditInit();
-    // editorInit();
-    util.mixin(this, options || {});
-  
-    // slop in the template
-    this.render(editTemplate);
-    
-    if(this.region){
-      this.setRegion(this.region); 
-    }
-
-  };
   function bindAllTheUiBits() {
     // top toolbar
-    console.log("setting up #regionToolbar click handlers: ", $( "#regionToolbar" ).length);
-    $( document ).on("click", "#regionToolbar .btn", function(evt){
-      console.log("region toolbar btn click: ", evt.target);
-      var buttonNode = evt.target;
-      var action = buttonNode.getAttribute('data-action');
-      $( buttonNode ).addClass('busy');
-      var savePromise = editor.region.save();
-      savePromise.then(function(){
-        $( buttonNode ).removeClass('busy');
-        if(editor.refresh) {
-          editor.refresh();
-        }
-      });
-      
-    });
-
-    editTemplate.link( editor.region, "#mapEdit", contextHelpers );
-    
-    $( "#regionEditorDrawer" ).on( "mouseup", 'li.tool', function(evt) {
-      var toolNode = evt.target;
-      $('#regionEditorDrawer .tool.active').removeClass('active');
-      $( toolNode ).addClass('active');
-      var action = toolNode.getAttribute('data-action');
-      $.observable( editor ).setProperty( "currentTool", action || toolNode.textContent || toolNode.innerText );
-    });
-
     var mapNode = editor.mapNode = $('#grid')[0], 
         worldSize = this.worldSize, 
         tileSize = options.tileSize || this.tileSize;

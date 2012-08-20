@@ -64,7 +64,7 @@
   var config = {
     packages: {
       // package mappings
-      $: 'vendor/zepto',
+      dollar: 'vendor/zepto',
       util: 'lib/util'
     }
   };
@@ -75,7 +75,7 @@
     baseUrl: '..',
     // configure our AMD loader
     paths: config.packages
-  }, ['$', 'resources/npc'], function($, npc){
+  }, ['dollar', 'resources/npc'], function($, npc){
     var tmpl= $('#item-template')[0].innerHTML;
     var itemsHtml = [], 
         pattern = /\{\{([^}]+)\}\}/g;
