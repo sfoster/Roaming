@@ -149,21 +149,29 @@ app.get('/location/world.json?download&ts=:ts', function(req, res){
   res.download( resourcePath, 'world.json' );
 });
 
-app.get('/location/world.json', function(req, res){
-  var resourcePath = fs.realpathSync(datadir + '/location/world.json');
+function regionRequest(regionId, req, res) {
+  console.log("regionRequest for " + regionId);
+  var resourcePath = fs.realpathSync(datadir + '/location/' + regionId + '.json');
   if(path.existsSync(resourcePath)){
     fs.readFile(resourcePath, function(err, contents){
       var data = JSON.parse(contents), 
-          resp = { tiles: data, status: 'ok' };
-      res.send( JSON.stringify(resp), { 'Content-Type': 'application/json' }, 200);
+          respData = { tiles: data, status: 'ok' };
+      res.send( JSON.stringify(respData), { 'Content-Type': 'application/json' }, 200);
     });
   } else {
-    console.log("sending empty tiles data for world.json");
+    console.log('sending empty tiles data for ' + regionId + '.json');
     res.send({ tiles: [] });
   }
+}
+app.get('/location/world.json', function(req, res){
+  regionRequest('world', req, res);
 });
-app.put('/location/world.json', function(req, res){
-  var resourcePath = fs.realpathSync(datadir + '/location/world.json');
+app.get('/location/smallworld.json', function(req, res){
+  regionRequest('smallworld', req, res);
+});
+
+function regionPutRequest(regionId, req, resp) {
+  var resourcePath = fs.realpathSync(datadir + '/location/' + regionId + '.json');
   // console.log("got post: ", typeof req.body, req.body);
   var fileData = req.body;
   fileData.sort(function(a,b){
@@ -176,12 +184,19 @@ app.put('/location/world.json', function(req, res){
   fs.writeFile(resourcePath, JSON.stringify(fileData, null, 2), function(err) {
     if(err) {
         console.log(err);
-        res.send(500);
+        resp.send(500);
     } else {
-        res.send({ status: 'ok', 'message': 'updated '+resourcePath });
+        resp.send({ status: 'ok', 'message': 'updated '+resourcePath });
         console.log(resourcePath + " saved");
     }
   });
+}
+
+app.put('/location/world.json', function(req, resp){
+  regionPutRequest('world', req, resp);
+});
+app.put('/location/smallworld.json', function(req, resp){
+  regionPutRequest('world', req, resp);
 });
 
 // app.get(/^\/(resources|models|vendor|css|plugins|lib)\/(.*)$/, function(req, res){
