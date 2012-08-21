@@ -12,39 +12,6 @@
   <link rel="stylesheet" href="./css/editor.css" type="text/css">
 </head>
 <body>
-<div style="display:none">
-Editor: 
-  * location
-  * terrain
-  * description
-  * encounterType
-    * encounter details
-  * here
-  
-JSRender overview: 
-  {:name}         property access, returns the .name property
-  {:foo.name}     deep property access, returns the foo.name property
-  {>name}         property access, returns the html-entity-ized.name property
-  {:value > 1}    comparison - returns true/false
-  {{for somelist}}        iterate a list
-    {{:title}} {{:#data}}  #data is the list being iterated
-    {{:#index}}            #index is counter in the iteration
-  {{/for}}
-  {{if something !== somethingelse}}        if/else by evaluating expression
-    true block
-    {{else otherclause}}
-      elsif block 
-    {{/else}}
-    {{else}}
-      else block 
-    {{/else}}
-  {{/if}}
-
-  {{for somelist          # using nested item templates for a list iteration
-    tmpl="#itemtemplate"/}}
-  {{ myconverter: :somevalue }}   pass a value through a 'converter' (?)
-  {{ ~helper(...) }}   pass a value through a helper function
-</div>
 
 <div id="editorGroup">
   <div id="contextbar"><!-- context bar --></div>
