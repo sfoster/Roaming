@@ -87,6 +87,9 @@ define([
       this.applyBindings();
       this.region().locations(null, { rows: this.tiles });
     }, 
+    getTile: function(id){
+      return this.region().get(id);
+    },
     applyBindings: function(){
       console.log("Applying bindings in mapEditor");
       var selfNode = $(this.el)[0];
@@ -159,8 +162,10 @@ define([
     }, 
     onGridMouseDown: function(binding, evt) {
       // handle selection of a tile in the map
-      var editor = this;
-      var scrollContainerNode = editor.mapNode.parentNode,
+      var editor = this, 
+          tileSize = editor.tileSize();
+
+      var scrollContainerNode = evt.target.parentNode,
           mapOffsets = $(scrollContainerNode).offset();
 
       var scrollOffsets = {
@@ -175,15 +180,15 @@ define([
           x = Math.floor(clickX / tileSize),
           y = Math.floor(clickY / tileSize);
       console.log("place at: ", x, y);
-      if(!editor.currentTool) return;
+      if(!editor.currentTool()) return;
 
-      editor.toolAction(x, y, editor.currentTool);
+      editor.toolAction(x, y, editor.currentTool());
     }
   });
 
   function toolbarInit(){
     $('#saveBtn').click(function(evt){
-      var locations = values(editor.tilesByCoords).map(function(tile){
+      var locations = values(editor.regiontilesByCoords).map(function(tile){
         var locn = mixin({}, tile);
         delete locn.img;
         return locn;
@@ -229,8 +234,8 @@ define([
         $('#palette .tool.active').removeClass('active');
         $(event.currentTarget).addClass('active');
         var type = trim( $(event.currentTarget).text() );
-        editor.currentTool = type.replace(/\s+/g, '').toLowerCase();
-        console.log("change currentTool: ", editor.currentTool);
+        editor.currentTool(type.replace(/\s+/g, '').toLowerCase());
+        console.log("change currentTool: ", editor.currentTool());
       });
   }
   
@@ -246,11 +251,12 @@ define([
   editor.toolAction = function toolAction(x,y, type){
     console.log('toolAction: ', x, y, type);
     var id = [x,y].join(',');
+    var tile = editor.region()
     if(terrainTypes[type]){
       this.placeTile(x,y,type);
     } else if(type=='edittile'){
       editor.emit('tile:edit', {
-        target: this.tilesByCoords[id]
+        target: this.getTile(id)
       });
     } else {
       console.log("tool not implemented: ", type);
@@ -259,18 +265,19 @@ define([
   
   editor.placeTile = function placeTile(x, y, type){
     var tileId = [x,y].join(','), 
-        tile = this.tilesByCoords[tileId], 
-        tileSize = this.tileSize;
+        tile = this.getTile(tileId), 
+        tileSize = this.tileSize();
     if(!tile){
       // create the tile object
-      tile = this.tilesByCoords[tileId] = {
-        x: x, y: y
-      };
+      tile = this.region().add({
+        x: x, 
+        y: y, 
+        type: type
+      });
     }
-    tile.type = type;
     
     var img = tile.img = terrainTypes[type].img, 
-        ctx = editor.mapNode.getContext('2d');
+        ctx = $('canvas.grid', editor.el)[0].getContext('2d');
 
     if(!img) {
       console.log("no image?", tile, img);
@@ -330,6 +337,5 @@ define([
       }
     };
 
-  console.log("before module return, editor.on: ", editor.on);
   return editor;
 });

@@ -1,6 +1,7 @@
 define([
   'lib/dollar',
   'lib/event', 
+  'lib/promise', 
   'vendor/path',
   'knockout',
   'vendor/knockout.mapping',
@@ -10,6 +11,7 @@ define([
 ], function(
   $, 
   Evented,
+  Promise,
   Path,
   ko, 
   koMapping, 
@@ -178,11 +180,11 @@ define([
     .applyBindings();
 
   mapEditor.on('tile:edit', function(evt){
-    console.log("Tile selected: ", evt.target);
-    world.loadTile(evt.target).then(function(tile){
+    var tile = evt.target;
+    Promise.when(tile, function(){
       console.log("loadTile result: ", tile);
-      tileEditor.setLocation(tile);
-    });
-    app.editorMode('locationEdit');
+      app.locationEditor.location(tile);
+      app.editorMode('locationEdit');
+    }, function(err){ console.warn("Failed to load tile:", err); });
   });
 });
