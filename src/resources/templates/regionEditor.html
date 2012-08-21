@@ -12,13 +12,10 @@
         </div>
     </div>
     <section id="region-editor-detail" class="panel">
-      <ul data-bind="foreach: tiles">
-        <li data-bind="text: type"></li>
-      </ul>
       <div id="map">
         <!-- map canvas -->
-        <canvas id="grid"></canvas>
-        <div id="gridOverlay"></div>
+        <canvas class="grid" width="500" height="500" data-bind="attr: { 'width': mapWidth, 'height': mapHeight }"></canvas>
+        <div class="gridOverlay" data-bind="style: { 'width': mapWidthPx, 'height': mapHeightPx }, click: onGridMouseDown"></div>
       </div>
       <div id="mapnavigator">
         <!-- map navigator -->

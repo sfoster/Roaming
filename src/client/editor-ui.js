@@ -20,6 +20,7 @@ define([
   
   var coord = location.search ? location.search.replace(/^\?(\d+,\d+)/, "$1") : '3,3';
   window.tileEditor = tileEditor; 
+  window.regionEditor = mapEditor; 
   window.knockout = ko;
   
   // data-bind="css-target: {  }"
@@ -68,6 +69,7 @@ define([
           target: newValue
         });
       });
+      console.log("editor.region defined: ", this.region());
       
       Evented.on('editor:change', function(evt){
         var editor; 
@@ -80,12 +82,11 @@ define([
         console.log("editor:change", evt.target, editor, "in: " + '#'+evt.target);
         if(editor) {
           // pass the editor the region store when initializing
+          console.log("editor:change, initializing " + evt.target + ": with region:", self.region());
           editor.initialize({ el: '#'+evt.target, region: self.region });
         }
       });
       
-      console.log("assign editorMode");
-      this.editorMode('mapEdit');
       return this;
     },
     routeBindings: function(){
@@ -98,8 +99,9 @@ define([
         self.region( new RegionStore({
           target: '/location/world.json'
         }) );
+        console.log("assign editorMode");
+        self.editorMode('mapEdit');
       });
-
       // region route
       Path.map("#/world/:region_id").to(function(){
         console.log("Handling #/world/:region_id path");
@@ -107,6 +109,8 @@ define([
         self.region( new RegionStore({
           target: '/location/'+id+'.json'
         }) );
+        console.log("assign editorMode");
+        self.editorMode('mapEdit');
       });
       
       Path.root('#/world');

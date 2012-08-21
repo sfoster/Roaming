@@ -26,15 +26,15 @@ define([
       mixin = util.mixin,
       when = Promise.when;
 
-
   // compile the editor template
 
   // map/region editor singleton
   var editor = window.regionEditor = util.mixin({
-    currentTool: 'edittile',
+    currentTool: ko.observable('edittile'),
     mapNode: null,
     tileSize: 50,
-    worldSize:  { width: 25, height: 25},
+    worldWidth:  10,  // initial, default values
+    worldHeight: 10, 
     tilesByCoords: {},
     locationsByCoords: {}
   }, Evented, {
@@ -51,43 +51,83 @@ define([
 
       // slop in the template
       this.render(editTemplate);
-      // this.applyBindings();
 
-      // set up the live list of tiles to render
-      this.tiles = ko.observableArray([]);
-      
       if(!this.region) {
         throw "mapEditor initialized without a region property";
       }
-      this.region.subscribe(function(newValue) {
-        console.log("mapEditor, region has value: ", newValue);
-        self.populateMap();
+
+      // set up the live list of tiles to render
+      this.tiles        = ko.observableArray([]);
+      
+      // use prototype values as initial values of observable properties
+      this.tileSize     = ko.observable(this.tileSize);
+      this.worldWidth   = ko.observable(this.worldWidth);  // initial, default values
+      this.worldHeight  = ko.observable(this.worldHeight);
+
+      this.mapWidth     = ko.computed(function(){
+        console.log("mapWidth: ", self.worldWidth() * self.tileSize());
+        return self.worldWidth() * self.tileSize();
       });
+      this.mapHeight    = ko.computed(function(){
+        return self.worldHeight() * self.tileSize();
+      });
+
+      this.mapWidthPx   = ko.computed(function(){
+        return self.mapWidth() + 'px';
+      });
+      this.mapHeightPx  = ko.computed(function(){
+        return self.mapHeight() + 'px';
+      });
+
+      this.tiles.subscribe(function(tiles) {
+        console.log("tiles change, calling populateMap");
+        self.populateMap(tiles);
+      });
+
+      this.applyBindings();
+      this.region().locations(null, { rows: this.tiles });
     }, 
     applyBindings: function(){
+      console.log("Applying bindings in mapEditor");
       var selfNode = $(this.el)[0];
       ko.applyBindings(this, selfNode);
       return this;
     },
-    populateMap: function populateMap(){
-      var region = this.region();
-      region.locations(null, { rows: this.tiles });
+    populateMap: function populateMap(tiles){
+      var self = this;
+      // update height/width. 
+      // Will need to adjust if we ever have paged mapping where a query doesnt represent the whole region
 
-      // var map = editor.map, 
-      //     mapOptions = {
-      //         tileSize: editor.tileSize,
-      //         canvasNode: editor.mapNode,
-      //         showCoords: true
-      //     };
-      // if(map){
-      //   map.reset(mapOptions);
-      // } else {
-      //   map = editor.map = Map.create(mapOptions);
-      // }
-      // map.init().render( region.tiles );
+      console.log("populateMap: setting worldWidth/Height based on incoming tiles");
+      this.worldWidth( tiles.reduce(function(prev, value){ 
+        return Math.max(prev || 0, value.x || 0) || 0; 
+      }) );
+      this.worldHeight( tiles.reduce(function(prev, value){ 
+          return Math.max(prev || 0, value.y || 0) || 0; 
+      }) );
+      
+      var mapNode = $('.grid', this.el)[0]; 
+      
+      var map = self.map, 
+          mapOptions = {
+              tileSize: self.tileSize(),
+              canvasNode: mapNode,
+              showCoords: true
+          };
+      console.log("map options: ", mapOptions);
+      if(map){
+        map.reset(mapOptions);
+      } else {
+        map = editor.map = Map.create(mapOptions);
+      }
+      setTimeout(function(){
+        map.init().render( tiles, {
+         canvasNode: mapNode 
+        });
+      }, 200);
     }, 
     render: function(html){
-      console.log("mapEditor: rendering with el: ", this.el);
+      console.log("mapEditor: rendering with el: ", $(this.el)[0]);
       var $el = $(this.el);
       $el.html( html );
     }, 
@@ -116,6 +156,28 @@ define([
       $( toolNode ).addClass('active');
       var action = toolNode.getAttribute('data-name');
       // $.observable( editor ).setProperty( "currentTool", action || toolNode.textContent || toolNode.innerText );
+    }, 
+    onGridMouseDown: function(binding, evt) {
+      // handle selection of a tile in the map
+      var editor = this;
+      var scrollContainerNode = editor.mapNode.parentNode,
+          mapOffsets = $(scrollContainerNode).offset();
+
+      var scrollOffsets = {
+        left: scrollContainerNode.scrollLeft,
+        top: scrollContainerNode.scrollTop
+      };
+      // console.log("scrollContainerNode offsets: ", mapOffsets);
+      // console.log("scrollOffsets: ", scrollOffsets);
+      // console.log("event.pageX,Y: ", event.pageX, event.pageY);
+      var clickX = evt.pageX - mapOffsets.left + scrollOffsets.left,
+          clickY = evt.pageY - mapOffsets.top + scrollOffsets.top,
+          x = Math.floor(clickX / tileSize),
+          y = Math.floor(clickY / tileSize);
+      console.log("place at: ", x, y);
+      if(!editor.currentTool) return;
+
+      editor.toolAction(x, y, editor.currentTool);
     }
   });
 
@@ -173,39 +235,7 @@ define([
   }
   
   function bindAllTheUiBits() {
-    // top toolbar
-    var mapNode = editor.mapNode = $('#grid')[0], 
-        worldSize = this.worldSize, 
-        tileSize = options.tileSize || this.tileSize;
-        
-    $('#gridOverlay').css({
-      width: worldSize.width*tileSize,
-      height: worldSize.height*tileSize
-    });
-    
-    mapNode.width = worldSize.width*tileSize;
-    mapNode.height = worldSize.height*tileSize;
-    
-    var scrollContainerNode = mapNode.parentNode,
-        mapOffsets = $(scrollContainerNode).offset();
-        
-    $('#gridOverlay').mousedown(function(event){
-      var scrollOffsets = {
-        left: scrollContainerNode.scrollLeft,
-        top: scrollContainerNode.scrollTop
-      };
-      // console.log("scrollContainerNode offsets: ", mapOffsets);
-      // console.log("scrollOffsets: ", scrollOffsets);
-      // console.log("event.pageX,Y: ", event.pageX, event.pageY);
-      var clickX = event.pageX - mapOffsets.left + scrollOffsets.left,
-          clickY = event.pageY - mapOffsets.top + scrollOffsets.top,
-          x = Math.floor(clickX / tileSize),
-          y = Math.floor(clickY / tileSize);
-      console.log("place at: ", x, y);
-      if(!editor.currentTool) return;
-
-      editor.toolAction(x, y, editor.currentTool);
-    });
+    var viewModel = this;    
 
   }
 

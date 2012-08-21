@@ -1,7 +1,7 @@
 #main { 
   overflow: auto;
 }
-#grid {
+#grid, .grid {
   margin: 0; padding: 0;
 }
 #map {
@@ -65,11 +65,11 @@
   min-height: 460px;
   position: relative;
 }
-#grid {
+#grid, .grid {
   position: absolute;
   top: 0; right: 0; left: 0; bottom: 0;
 }
-#gridOverlay {
+#gridOverlay, .gridOverlay {
   position: absolute;
   top: 0; right: 0; left: 0; bottom: 0;
   z-index: 10;
