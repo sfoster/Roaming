@@ -72,8 +72,8 @@ define([], function(){
     // Mutant Rat has Poison spell/ability
   //( does reccuring half damage for 2-3 turns after attack )
   };
-  npc.ratHorde = {
-    name: 'Rat Horde',
+  npc.ratLord = {
+    name: 'Rat Lord',
     strength: 8,
     hp: 30,
     mp: 0,
