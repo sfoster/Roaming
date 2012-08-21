@@ -32,12 +32,12 @@ define(['compose', 'vendor/store/JsonRest'], function(Compose, JsonRest){
       console.log("RegionStore.locations");
       var rows = options.rows || [];
       var results = this.query(query || null, options || {});
-      console.log("RegionStore.locations, results: ", results);
       var onSuccess = successHandler( rows );
       results.then(onSuccess);
       // results.observe(function(item, removedFrom, insertedInto){
-      //   console.log("results observered: ", item, removedFrom, insertedInto);
+      //   console.log("results observed: ", item, removedFrom, insertedInto);
       // });
+      return rows;
     }
   });
   
