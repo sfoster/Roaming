@@ -3,12 +3,11 @@ var fs = require('fs');
 var path = require('path');
 var assert = require('assert');
 var express = require('express'); 
-var handlebars = require('hbs');
 var passport = require('passport'), 
     BrowserIDStrategy = require('passport-browserid').Strategy;
 
 var users = require('./lib/users');
-var app = express.createServer();
+
 var root = __dirname;
 var port = process.env.ROAMINGAPP_PORT || 3000;
 var hostname = process.env.ROAMINGAPP_HOSTNAME || 'localhost';
@@ -16,9 +15,7 @@ var isDev = hostname === 'localhost';
 var host = port == 80 ? hostname : hostname+':'+port;
 var datadir = process.env.ROAMINGAPP_DATADIR || path.resolve(root, '../data');
 
-console.log("hostname: %s, isDev: %s", hostname, isDev);
-app.register('.html', handlebars);
-
+var handlebars = require('hbs');
 handlebars.registerHelper('keys', function(context) {
   var keys = [];
   for(var i in context){
@@ -26,6 +23,21 @@ handlebars.registerHelper('keys', function(context) {
   }
   return keys.join(', ');
 });
+
+
+
+module.exports = function(app){
+
+  handlebars.registerPartial('globalhead', fs.readFileSync(app + '/views/globalhead.html').toString());
+
+  app.register('.html', handlebars);
+  
+}
+
+// app is global
+var app = express.createServer();
+    app.rootdir = root;
+    app.datadir = datadir;
 
 // Simple route middleware to ensure user is authenticated.
 //   Use this route middleware on any resource that needs to be protected.  If
@@ -112,13 +124,12 @@ function createObject(proto, mixin){
   }
   return obj;
 }
-handlebars.registerPartial('globalhead', fs.readFileSync(__dirname + '/views/globalhead.html').toString());
-
 var viewModelProto = {
   head: '', 
   title: 'Roaming',
   version: '0.0'
 };
+
 
 app.get('/', function(req, res, next){
   res.render('index.html', createObject(viewModelProto, {
@@ -135,6 +146,9 @@ app.get('/main', ensureAuthenticated, function(req, res, next){
   }));
 });
 
+handlebars.registerPartial('globalhead', fs.readFileSync(root + '/views/globalhead.html').toString());
+app.register('.html', handlebars);
+
 app.get(/^(\/map|\/map\.html)$/, ensureAuthenticated, ensureAdmin, function(req, res, next){
   res.render('map.html', createObject(viewModelProto, {
     // context data for the landing page
@@ -144,9 +158,9 @@ app.get(/^(\/map|\/map\.html)$/, ensureAuthenticated, ensureAdmin, function(req,
   }));
 });
 
-app.get('/location/world.json?download&ts=:ts', function(req, res){
-  var resourcePath = fs.realpathSync(datadir + '/location/world.json');
-  res.download( resourcePath, 'world.json' );
+app.get('/location/:region?download&ts=:ts', function(req, res){
+  var resourcePath = fs.realpathSync(datadir + '/location/' + req.params.region + '.json');
+  res.download( resourcePath, region+'.json' );
 });
 
 function regionRequest(regionId, req, res) {
@@ -163,11 +177,11 @@ function regionRequest(regionId, req, res) {
     res.send({ tiles: [] });
   }
 }
-app.get('/location/world.json', function(req, res){
-  regionRequest('world', req, res);
+app.get('/location/:region', function(req, res){
+  regionRequest(req.params.region + '/index', req, res);
 });
-app.get('/location/smallworld.json', function(req, res){
-  regionRequest('smallworld', req, res);
+app.get('/location/:region/:coord', function(req, res){
+  regionRequest(req.params.region +'/' + req.params.coord, req, res);
 });
 
 function regionPutRequest(regionId, req, resp) {
@@ -192,17 +206,14 @@ function regionPutRequest(regionId, req, resp) {
   });
 }
 
-app.put('/location/world.json', function(req, resp){
-  regionPutRequest('world', req, resp);
-});
-app.put('/location/smallworld.json', function(req, resp){
-  regionPutRequest('world', req, resp);
+app.put('/location/:region', function(req, resp){
+  regionPutRequest(req.params.region + '/index', req, res);
 });
 
 // app.get(/^\/(resources|models|vendor|css|plugins|lib)\/(.*)$/, function(req, res){
-app.get(/^\/(resources|models|vendor|plugins|lib|test)\/(.*)$/, function(req, res){
+app.get(/^\/(resources|models|vendor|plugins|lib|test)\/(.+)$/, function(req, res){
   var resourcePath;
-  // console.log("matched: ", req.params[0], req.params[1]);
+  console.log("matched: ", req.params[0], req.params[1]);
   // console.log("prefix with root: ", root);
   switch(req.params[0]){
     case 'resources': 
