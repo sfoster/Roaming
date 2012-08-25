@@ -1,5 +1,5 @@
 define([
-  'lib/dollar',
+  'dollar',
   'lib/event', 
   'lib/promise', 
   'vendor/path',
@@ -94,28 +94,20 @@ define([
     routeBindings: function(){
       var self = this;
 
-      // default
-      Path.map("#/world").to(function(){
-        console.log("Handling #/world (default) path");
-        var id = 'world';
-        self.region( new RegionStore({
-          target: '/location/world.json'
-        }) );
-        console.log("assign editorMode");
-        self.editorMode('mapEdit');
-      });
-      // region route
-      Path.map("#/world/:region_id").to(function(){
+      function worldRoute() {
         console.log("Handling #/world/:region_id path");
-        var id = this.params.region_id;
+        var id = this.params.region_id || 'world';
         self.region( new RegionStore({
-          target: '/location/'+id+'.json'
+          target: '/location/'+id
         }) );
         console.log("assign editorMode");
         self.editorMode('mapEdit');
-      });
+      }
       
-      Path.root('#/world');
+      Path.map("#/world").to(worldRoute);
+      Path.map("#/world/:region_id").to(worldRoute);
+      
+      Path.root('#/world/');
       Path.listen();
       return this;
     },

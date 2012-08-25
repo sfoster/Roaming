@@ -1,5 +1,5 @@
 define([
-  'lib/dollar', 'lib/util', 'resources/template',
+  'dollar', 'lib/util', 'resources/template',
   'lib/event',
   'resources/map'
 ], function($, util, template, Evented, map){

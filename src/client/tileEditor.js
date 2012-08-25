@@ -1,5 +1,5 @@
 define([
-  'lib/dollar',
+  'dollar',
   'lib/util',
   'lib/Promise', 
   'knockout',

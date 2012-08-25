@@ -4,16 +4,18 @@ define(['lib/util'], function(util){
     return reExcludeName.test(name) || 'function' == typeof value;
   }
   
-  function sanitizedClone(obj, clone){
+  function sanitizedClone(obj, clone, excludes){
     var type = util.getType(obj);
+    excludes = excludes || {};
     switch(type){
       case 'object' :
       case 'unknown' :
         clone = clone || {};
         Object.keys(obj).forEach(function(name){
-          if(! exclude(name, obj[name]) ) {
-            clone[name] = sanitizedClone(obj[name]);
+          if(name in excludes || exclude(name, obj[name]) ) {
+            return;
           }
+          clone[name] = sanitizedClone(obj[name]);
         });
         return clone;
       case 'array' :
