@@ -62,30 +62,51 @@ define([
       
       this.regionEditor = mapEditor;
       this.locationEditor = tileEditor;
+      
+      var editorOptions = {};
 
       // RegionStore
-      this.region = ko.observable(null);
+      this.region = editorOptions.region = ko.observable(null);
       this.region.subscribe(function(newValue) {
         // global broadcast: 
         Evented.emit('region:change', {
           target: newValue
         });
       });
-      console.log("editor.region defined: ", this.region());
+      this.location = editorOptions.location = ko.observable(null);
+      this.location.subscribe(function(newValue) {
+        // global broadcast: 
+        Evented.emit('location:change', {
+          target: newValue
+        });
+      });
+      
+      this.regionEditor.configure(editorOptions);
+      this.locationEditor.configure(editorOptions);
       
       Evented.on('editor:change', function(evt){
-        var editor; 
+        var editor, region, location;
         switch(evt.target) {
           case "mapEdit": 
             editor = mapEditor; break;
           case "locationEdit": 
-            editor = tileEditor; break;
+            editor = tileEditor; 
+            location = evt.location;
+            break;
         }
         console.log("editor:change", evt.target, editor, "in: " + '#'+evt.target);
         if(editor) {
           // pass the editor the region store when initializing
           console.log("editor:change, initializing " + evt.target + ": with region:", self.region());
-          editor.initialize({ el: '#'+evt.target, region: self.region });
+          editor.initialize({ 
+            el: '#'+evt.target, 
+            region: self.region, 
+            location: self.location,
+            go: function(path){
+              path = path.replace(/^[#\/]+/, '');
+              location.hash = "#/"+path;
+            }
+          });
         }
       });
       
@@ -98,16 +119,40 @@ define([
         console.log("Handling #/world/:region_id path");
         var id = this.params.region_id || 'world';
         self.region( new RegionStore({
-          target: '/location/'+id
+          target: '/location/'+id +'/'
         }) );
         console.log("assign editorMode");
         self.editorMode('mapEdit');
       }
-      
+
+      function locationRoute() {
+        console.log("Handling #/world/:region_id/:location_id path");
+        var regionId = this.params.region_id || 'world';
+        var locationId = this.params.location_id || '1,1';
+        if(! self.region() ) {
+          self.region( new RegionStore({
+            target: '/location/'+regionId +'/'
+          }) );
+        }
+        if(! self.location() ) {
+          self.location(locationId);
+        }
+        console.log("assign editorMode");
+        self.editorMode('locationEdit');
+      }
+      function notFound() {
+        console.log("Path not matched, this: ", this);
+      }
       Path.map("#/world").to(worldRoute);
       Path.map("#/world/:region_id").to(worldRoute);
       
+      // FIXME: doesn't match with /world/world/1,1 ? 
+      Path.map("#/world/:region_id/:location_id").to(locationRoute);
+      
       Path.root('#/world/');
+
+      Path.rescue(notFound);
+
       Path.listen();
       return this;
     },

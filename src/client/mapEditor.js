@@ -38,6 +38,10 @@ define([
     tilesByCoords: {},
     locationsByCoords: {}
   }, Evented, {
+    configure: function(options){
+      util.mixin(this, options || {});
+      return this;
+    },
     initialize: function init(options){
       var self = this;
       if(this.initialized) return;
@@ -88,7 +92,14 @@ define([
       this.region().locations(null, { rows: this.tiles });
     }, 
     getTile: function(id){
-      return this.region().get(id);
+      var defd = new Promise();
+      this.region().get(id).then(function(resp){
+        defd.resolve(resp);
+      }, function(err){
+        console.warn("Got error response when getting " + id, arguments);
+        defd.reject(err);
+      });
+      return defd;
     },
     applyBindings: function(){
       console.log("Applying bindings in mapEditor");
@@ -251,13 +262,11 @@ define([
   editor.toolAction = function toolAction(x,y, type){
     console.log('toolAction: ', x, y, type);
     var id = [x,y].join(',');
-    var tile = editor.region()
+    var tile = editor.region();
     if(terrainTypes[type]){
       this.placeTile(x,y,type);
     } else if(type=='edittile'){
-      editor.emit('tile:edit', {
-        target: this.getTile(id)
-      });
+      editor.go( this.region() + '/' + id );
     } else {
       console.log("tool not implemented: ", type);
     }

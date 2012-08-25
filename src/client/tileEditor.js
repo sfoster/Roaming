@@ -17,6 +17,10 @@ define([
 
   var editor = {
     location: null,
+    configure: function(options){
+      util.mixin(this, options || {});
+      return this;
+    },
     initialize: function initialize(options){
       if(this.initialized) return this;
       this.initialized = true;
