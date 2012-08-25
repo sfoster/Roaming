@@ -24,16 +24,6 @@ handlebars.registerHelper('keys', function(context) {
   return keys.join(', ');
 });
 
-
-
-module.exports = function(app){
-
-  handlebars.registerPartial('globalhead', fs.readFileSync(app + '/views/globalhead.html').toString());
-
-  app.register('.html', handlebars);
-  
-}
-
 // app is global
 var app = express.createServer();
     app.rootdir = root;
@@ -163,39 +153,40 @@ app.get('/location/:region?download&ts=:ts', function(req, res){
   res.download( resourcePath, region+'.json' );
 });
 
-function regionRequest(regionId, req, res) {
-  console.log("regionRequest for " + regionId);
-  var resourcePath = fs.realpathSync(datadir + '/location/' + regionId + '.json');
+function locationRequest(resourceId, req, res) {
+  console.log("locationRequest for " + resourceId);
+  
+  var resourcePath = fs.realpathSync(datadir + '/location/' + resourceId + '.json');
   if(path.existsSync(resourcePath)){
     fs.readFile(resourcePath, function(err, contents){
       var data = JSON.parse(contents), 
-          respData = { tiles: data, status: 'ok' };
+          respData = { status: 'ok', d: data };
       res.send( JSON.stringify(respData), { 'Content-Type': 'application/json' }, 200);
     });
   } else {
     console.log('sending empty tiles data for ' + regionId + '.json');
-    res.send({ tiles: [] });
+    res.send({ d: [] });
   }
 }
-app.get('/location/:region', function(req, res){
-  regionRequest(req.params.region + '/index', req, res);
-});
-app.get('/location/:region/:coord', function(req, res){
-  regionRequest(req.params.region +'/' + req.params.coord, req, res);
-});
 
-function regionPutRequest(regionId, req, resp) {
+function writeLocationResource(resourcePath, fileData, callback) {
+  // sort if possible, so we minimize the diff when saving changes
+  if('function' === typeof fileData.sort){
+    fileData.sort(function(a,b){
+      if(a.y == b.y) {
+        return a.x > b.x ? 1 : -1;
+      } else {
+        return a.y > b.y ? 1 : -1;
+      }
+    });
+  }
+  fs.writeFile(resourcePath, JSON.stringify(fileData, null, 2), callback);
+}
+
+function locationPutRequest(regionId, req, resp) {
   var resourcePath = fs.realpathSync(datadir + '/location/' + regionId + '.json');
-  // console.log("got post: ", typeof req.body, req.body);
   var fileData = req.body;
-  fileData.sort(function(a,b){
-    if(a.y == b.y) {
-      return a.x > b.x ? 1 : -1;
-    } else {
-      return a.y > b.y ? 1 : -1;
-    }
-  });
-  fs.writeFile(resourcePath, JSON.stringify(fileData, null, 2), function(err) {
+  writeLocationResource(resourcePath, fileData, function(err) {
     if(err) {
         console.log(err);
         resp.send(500);
@@ -206,11 +197,43 @@ function regionPutRequest(regionId, req, resp) {
   });
 }
 
-app.put('/location/:region', function(req, resp){
-  regionPutRequest(req.params.region + '/index', req, res);
+function safeish(path){
+  return path.replace(/^[\W]*/, '');
+}
+app.get('/location/:region', function(req, res){
+  locationRequest( safeish(req.params.region) + '/index', req, res);
+});
+app.get('/location/:region/:coord', function(req, res){
+  locationRequest( safeish(req.params.region) +'/' + safeish(req.params.coord), req, res);
 });
 
-// app.get(/^\/(resources|models|vendor|css|plugins|lib)\/(.*)$/, function(req, res){
+app.put('/location/:region', function(req, resp){
+  // replace entire document at /location/regionname/index
+  locationPutRequest(req.params.region + '/index', req, res);
+});
+
+app.put('/location/:region/:coord', function(req, res){
+  // create or wholly replace the contents of the tile at region/coord.json
+  var coord = req.params.coord;
+  var fileData = req.body;
+
+  assert(2 == coord.split(',').length);
+  assert("string" == typeof fileData.description);
+
+  var regionDir = fs.realpathSync(datadir + '/location/' + req.params.region);
+  var resourcePath = regionDir +'/' + coord + '.json';
+
+  writeLocationResource(resourcePath, fileData, function(err){
+    if(err) {
+        console.log(err);
+        res.send(500);
+    } else {
+        res.send({ status: 'ok', 'message': 'updated '+resourcePath });
+        console.log(resourcePath + " saved");
+    }
+  });
+});
+
 app.get(/^\/(resources|models|vendor|plugins|lib|test)\/(.+)$/, function(req, res){
   var resourcePath;
   console.log("matched: ", req.params[0], req.params[1]);
@@ -241,73 +264,6 @@ app.get(/^\/(resources|models|vendor|plugins|lib|test)\/(.+)$/, function(req, re
   }
 });
 
-app.get('/location/:id.json', function(req, res){
-  // handle data as static files for now
-  var id = req.params.id;
-  // console.log("request for location id: " + id);
-
-  var relPath = 'location/' + id + '.json';
-  var resourcePath = datadir + '/' + relPath;
-
-  if( path.existsSync(resourcePath) ){
-    resourcePath = fs.realpathSync(resourcePath);
-    res.sendfile( resourcePath );
-  } else {
-    var emptyLocation = {
-      coords: id.split(','),
-      description: "--No description yet--",
-      afar: "--No afar description yet--",
-      here: [],
-      encounter: {}
-    };
-    console.log(id + " does not exist yet");
-    var regionResourcePath = fs.realpathSync(datadir + '/location/world.json');
-    if(path.existsSync(regionResourcePath)){
-      // get the stub data we have for this location from the region 
-      console.log("reading the region data");
-      fs.readFile(regionResourcePath, function(err, contents){
-        if(!err){
-          var regionData = JSON.parse(contents), 
-              matched = regionData.filter(function(locn){
-                return locn.$ref.indexOf(relPath) > -1;
-              });
-          console.log("spotted stub data for " + relPath, matched);
-          if(matched.length) {
-            var stub = matched[0];
-            for(var i in stub){
-              emptyLocation[i] = stub[i];
-            }
-          }
-        }
-        res.send( JSON.stringify(emptyLocation) );
-     });
-    } else {
-      res.send( JSON.stringify(emptyLocation) );
-    }
-  }
-});
-
-app.put('/location/:id.json', function(req, res){
-  var id = req.params.id;
-  var fileData = req.body;
-  assert(id);
-  assert(2 == id.split(',').length);
-  assert("string" == typeof fileData.description);
-
-  var relPath = 'location/' + id + '.json';
-  var resourcePath = datadir + '/' + relPath;
-
-  fs.writeFile(resourcePath, JSON.stringify(fileData, null, 2), function(err) {
-    if(err) {
-        console.log(err);
-        res.send(500);
-    } else {
-        res.send({ status: 'ok', 'message': 'updated '+resourcePath });
-        console.log(resourcePath + " saved");
-    }
-  });
-  
-});
 
 app.get('/data/*', function(req, res){
   // handle data as static files for now
