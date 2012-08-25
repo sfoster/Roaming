@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Test</title>
+
+	<script type="text/javascript" src="../vendor/require.js"></script>
+
+	<script type="text/javascript">
+		require.config(
+			{
+			  baseUrl: '../',
+				paths: {
+          dollar: 'vendor/zepto',
+          text: 'plugins/vendor/text',
+          json: 'plugins/vendor/json',
+          image: 'plugins/vendor/image',
+          order: 'plugins/vendor/order',
+          util: 'lib/util',
+          compose: 'vendor/compose',
+          knockout: 'vendor/knockout',
+					'plugins' : 'plugins'
+				}
+			}
+		);
+		require([
+			'./lib/util',
+			'plugins/location!test/3,3'
+		],
+			function(util, tile) {
+				//run tests
+				console.log("ok? ", util, tile);
+			});
+	</script>
+</head>
+
+<body>
+</body>
+</html>
