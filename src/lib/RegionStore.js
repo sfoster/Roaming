@@ -17,7 +17,7 @@ define(['compose', 'vendor/store/JsonRest'], function(Compose, JsonRest){
       // rows is observable, so splice triggers updates in any bindings
       rows.splice.apply(
         rows, 
-        [0, len].concat( results.tiles.map( dataToViewModel ) )
+        [0, len].concat( results.d.map( dataToViewModel ) )
       );
     };
   }

@@ -1,4 +1,4 @@
-define(['lib/dollar', 'lib/json/ref', 'models/Region'], function($, json, Region){
+define(['dollar', 'lib/json/ref', 'models/Region'], function($, json, Region){
   console.log("loading region plugin");
   
   // usage: require(['plugins/region!world], function(region){ ... })
@@ -44,7 +44,7 @@ define(['lib/dollar', 'lib/json/ref', 'models/Region'], function($, json, Region
             region = new Region({ 
               id: id, 
               resourceUrl: resourceUrl,
-              tiles: resp.tiles
+              tiles: resp.d
             });
             onLoad(region);
           } else {
