@@ -155,8 +155,7 @@ app.get('/location/:region?download&ts=:ts', function(req, res){
 
 function locationRequest(resourceId, req, res) {
   console.log("locationRequest for " + resourceId);
-  
-  var resourcePath = fs.realpathSync(datadir + '/location/' + resourceId + '.json');
+  var resourcePath = path.join(datadir, '/location/', resourceId + '.json');
   if(path.existsSync(resourcePath)){
     fs.readFile(resourcePath, function(err, contents){
       var data = JSON.parse(contents), 
@@ -164,8 +163,8 @@ function locationRequest(resourceId, req, res) {
       res.send( JSON.stringify(respData), { 'Content-Type': 'application/json' }, 200);
     });
   } else {
-    console.log('sending empty tiles data for ' + regionId + '.json');
-    res.send({ d: [] });
+    console.log('sending 404 for ' + resourceId + '.json');
+    res.send(404);
   }
 }
 
@@ -200,6 +199,11 @@ function locationPutRequest(regionId, req, resp) {
 function safeish(path){
   return path.replace(/^[\W]*/, '');
 }
+
+// accept with or without the trailing slash
+app.get('/location/:region/', function(req, res){
+  locationRequest( safeish(req.params.region) + '/index', req, res);
+});
 app.get('/location/:region', function(req, res){
   locationRequest( safeish(req.params.region) + '/index', req, res);
 });
