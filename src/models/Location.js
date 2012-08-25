@@ -1,5 +1,5 @@
 define([
-  'lib/dollar', 
+  'dollar', 
   'lib/util', 
   'lib/event',
   'lib/Promise',
@@ -16,12 +16,9 @@ define([
       this[i] = options[i];
     }
     console.log("create location with data: ", options);
-    var coords = this.coords;
-    this.x = coords[0]; 
-    this.y = coords[1];
-    if(!this.id){
-      this.id = coords.join(',');
-    }
+    console.assert('x' in this, "Missing x property");
+    console.assert('y' in this, "Missing y property");
+    console.assert(this.resourceId, "Missing resourceId property");
     if(!this.encounter){
       this.encounter = {};
     }
@@ -81,11 +78,11 @@ define([
       }
     },
     save: function(){
-      var formData = sanitizedClone(this, {});
+      var id = this.id; 
+      // exclude id, coords, type from location file data
+      // as this is 
+      var formData = sanitizedClone(this, {}, { id: true, coords: true, type: true });
       console.log("formData: ", formData);
-      var id = formData.id,
-          coords = formData.coords || id.split(',');
-      formData.coords = coords.map(Number);
 
       var savePromise = new Promise();
       $.ajax({
