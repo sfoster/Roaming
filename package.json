@@ -27,7 +27,7 @@
       "store": "github:sfoster/amd-store/master",
       "knockout": "https://github.com/downloads/SteveSanderson/knockout/knockout-2.1.0.debug.js",
       "knockout.mapping": "https://raw.github.com/SteveSanderson/knockout.mapping/master/build/output/knockout.mapping-latest.debug.js",
-      "path": "https://raw.github.com/mtrpcic/pathjs/master/path.js"
+      "path": "https://raw.github.com/sfoster/pathjs/false-path-matches/path.js"
     }
   }
 }

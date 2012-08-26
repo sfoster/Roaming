@@ -57,30 +57,31 @@ var Path = {
     },
     'match': function (path, parameterize) {
         function matchPathToRoute(path, route) {
-          var tokens = route.split('/'); 
-          var re = /\/?([^\/]+)/;
-          var isMatch = true;
-          var params = {};
-          var match, routePart; 
+            var tokens = route.split('/'); 
+            var re = /\/?([^\/]+)/;
+            var isMatch = true;
+            var params = {};
+            var match, routePart; 
 
-          for(; 
-                isMatch && 
-                tokens.length && 
-                path.length && 
-                (match = re.exec(path)); 
-              path = path.substring(match[0].length)) {
-            var routePart = tokens.shift();
-            if(routePart.charAt(0) == ':') {
-              // keep this param
-              params[routePart.substring(1)] = match[1];
-            } else if(routePart !== match[1]) {
-              // non-parameterized part, they must match
-              isMatch = false; 
-            } // else just continue
-          }
-          return(isMatch && (0 === tokens.length) && (0 === path.length)) ? 
-              params : false;
+            for(; 
+                  isMatch && 
+                  tokens.length && 
+                  path.length && 
+                  (match = re.exec(path)); 
+                path = path.substring(match[0].length)) {
+                var routePart = tokens.shift();
+                if(routePart.charAt(0) == ':') {
+                    // keep this param
+                    params[routePart.substring(1)] = match[1];
+                } else if(routePart !== match[1]) {
+                    // non-parameterized part, they must match
+                    isMatch = false; 
+                } // else just continue
+            }
+            return(isMatch && (0 === tokens.length) && (0 === path.length)) ? 
+                params : false;
         }
+
         var params = {}, route = null, possible_routes, slice, i, j, compare;
         for (route in Path.routes.defined) {
             if (route !== null && route !== undefined) {
