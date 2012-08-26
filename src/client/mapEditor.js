@@ -262,11 +262,10 @@ define([
   editor.toolAction = function toolAction(x,y, type){
     console.log('toolAction: ', x, y, type);
     var id = [x,y].join(',');
-    var tile = editor.region();
     if(terrainTypes[type]){
       this.placeTile(x,y,type);
     } else if(type=='edittile'){
-      editor.go( this.region() + '/' + id );
+      editor.go( this.region().target, id );
     } else {
       console.log("tool not implemented: ", type);
     }

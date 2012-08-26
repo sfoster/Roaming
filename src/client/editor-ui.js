@@ -102,9 +102,15 @@ define([
             el: '#'+evt.target, 
             region: self.region, 
             location: self.location,
-            go: function(path){
+            go: function(path /*, path2, path3 */){
+              // join up part parts. Easier to do it here and normalize slashes etc
+              // than have the same logic spread across the app
+              path = Array.prototype.map.call(arguments, function(token){
+                return token.replace(/^[#\/]+/, '').replace(/\/$/, '');
+              }).join('/');
+              console.log("go:", path);
               path = path.replace(/^[#\/]+/, '');
-              location.hash = "#/"+path;
+              window.location.hash = "#/"+path;
             }
           });
         }
@@ -116,7 +122,7 @@ define([
       var self = this;
 
       function worldRoute() {
-        console.log("Handling #/world/:region_id path");
+        console.log("Handling #/location/:region_id path");
         var id = this.params.region_id || 'world';
         self.region( new RegionStore({
           target: '/location/'+id +'/'
@@ -126,7 +132,7 @@ define([
       }
 
       function locationRoute() {
-        console.log("Handling #/world/:region_id/:location_id path");
+        console.log("Handling #/location/:region_id/:location_id path");
         var regionId = this.params.region_id || 'world';
         var locationId = this.params.location_id || '1,1';
         if(! self.region() ) {
@@ -143,13 +149,13 @@ define([
       function notFound() {
         console.log("Path not matched, this: ", this);
       }
-      Path.map("#/world").to(worldRoute);
-      Path.map("#/world/:region_id").to(worldRoute);
+      Path.map("#/location").to(worldRoute);
+      Path.map("#/location/:region_id").to(worldRoute);
       
-      // FIXME: doesn't match with /world/world/1,1 ? 
-      Path.map("#/world/:region_id/:location_id").to(locationRoute);
+      // fixed in https://github.com/sfoster/pathjs/commit/df681065915f02949408888994a375e7ff2958bb
+      Path.map("#/location/:region_id/:location_id").to(locationRoute);
       
-      Path.root('#/world/');
+      Path.root('#/location/world');
 
       Path.rescue(notFound);
 
