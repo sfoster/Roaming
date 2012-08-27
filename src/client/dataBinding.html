@@ -24,10 +24,10 @@
     </div>
     <div class="tab-panels">
       <div class="tab-panel" data-name="mapEdit" data-bind="css-matches-name: {selected: editorMode}" style="display:none">
-        <div id="mapEdit" data-bind="with: regionEditor"></div>
+        <div id="mapEdit" data-bind="template: { name: 'regionEditor-template', data: regionEditor, if:regionEditor.initialized }"></div>
       </div>
       <div class="tab-panel" data-name="locationEdit" data-bind="css-matches-name: {selected: editorMode}" style="display:none">
-        <div id="locationEdit" data-bind="with: locationEditor"></div>
+        <div id="locationEdit" data-bind="template: { name: 'tileEditor-template', data: locationEditor, if:locationEditor.initialized  }"></div>
       </div>
       <div class="tab-panel" data-name="locationPreview" id="locationPreview" data-bind="css-matches-name: {selected: editorMode}" style="display:none">
         <section id="preview" class="panel">
@@ -38,6 +38,8 @@
   </div>
   
 </div>
+<script type="text/x-template" id="regionEditor-template" src="resources/templates/regionEditor.html"></script>
+<script type="text/x-template" id="tileEditor-template" src="resources/templates/tileEditor.html"></script>
 
 <script type="text/javascript">
   var config = {

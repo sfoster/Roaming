@@ -8,18 +8,15 @@ define([
   'resources/map', 
   'resources/terrain',
   'resources/encounters',
-  'resources/npc',
-  'plugins/vendor/text!resources/templates/regionEditor.html'
+  'resources/npc'
 ], function(
   $, 
   util, 
   Promise, 
   ko, 
   Evented,
-  Map, terrainTypes, encounterTypes, npcTypes,
-  editTemplate
+  Map, terrainTypes, encounterTypes, npcTypes
 ){
-
   var pluck = util.pluck, 
       values = util.values, 
       keys = util.keys, 
@@ -31,10 +28,12 @@ define([
   // map/region editor singleton
   var editor = window.regionEditor = util.mixin({
     currentTool: ko.observable('edittile'),
+    drawerMode: ko.observable('terrain'),
     mapNode: null,
     tileSize: 50,
     worldWidth:  10,  // initial, default values
     worldHeight: 10, 
+    terrainList: [],
     tilesByCoords: {},
     locationsByCoords: {}
   }, Evented, {
@@ -47,14 +46,13 @@ define([
       if(this.initialized) return;
       this.initialized = true;
 
-      // toolbarInit();
       // paletteInit();
       // detailEditInit();
       // editorInit();
       util.mixin(this, options || {});
 
       // slop in the template
-      this.render(editTemplate);
+      // this.render(editTemplate);
 
       if(!this.region) {
         throw "mapEditor initialized without a region property";
@@ -88,6 +86,14 @@ define([
         self.populateMap(tiles);
       });
 
+      this.terrainTypes = terrainTypes;
+      // this.terrainList = Object.keys(terrainTypes).map(function(name){
+      //   var terrainData= terrainTypes[name];
+      //   var terrain = util.mixin(Object.create(terrainData), { tname: name });
+      //   return terrain;
+      // });
+      // console.log("prepared terrainList: ", this.terrainList.length, this.terrainList);
+
       this.applyBindings();
       this.region().locations(null, { rows: this.tiles });
     }, 
@@ -102,10 +108,15 @@ define([
       return defd;
     },
     applyBindings: function(){
-      console.log("Applying bindings in mapEditor");
+      console.log("Applying bindings in mapEditor: ", this);
       var selfNode = $(this.el)[0];
       ko.applyBindings(this, selfNode);
       return this;
+    },
+    onTabTrayClick: function(vm, evt){
+      // event-delegation for tab-label clicks
+      var targ = $(evt.target).closest('.tab-label').attr('data-name'); 
+      this.drawerMode(targ);
     },
     populateMap: function populateMap(tiles){
       var self = this;
@@ -232,27 +243,6 @@ define([
       $('input[name="download"]', form).val(+new Date());
     });
     
-  }
-
-  function paletteInit(){
-    var $terrainList = $('#terrainlist');
-    Object.keys(terrainTypes).forEach(function(type){
-      $('<li class="panel tool '+type+'"><span>'+type+'</span></li>').appendTo($terrainList);
-    });
-    var $palette = $('#palette');
-    $palette
-      .delegate('.tool', 'mouseup', function(event){ 
-        $('#palette .tool.active').removeClass('active');
-        $(event.currentTarget).addClass('active');
-        var type = trim( $(event.currentTarget).text() );
-        editor.currentTool(type.replace(/\s+/g, '').toLowerCase());
-        console.log("change currentTool: ", editor.currentTool());
-      });
-  }
-  
-  function bindAllTheUiBits() {
-    var viewModel = this;    
-
   }
 
   function trim(text){

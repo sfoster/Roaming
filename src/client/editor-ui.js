@@ -5,9 +5,13 @@ define([
   'vendor/path',
   'knockout',
   'vendor/knockout.mapping',
+  'lib/knockout.ext',
   'lib/RegionStore',
   'mapEditor',
-  'tileEditor'
+  'tileEditor',
+  // preload templates
+  'plugins/vendor/text!resources/templates/regionEditor.html',
+  'plugins/vendor/text!resources/templates/regionEditor.html'
 ], function(
   $, 
   Evented,
@@ -15,9 +19,12 @@ define([
   Path,
   ko, 
   koMapping, 
+  koExt, 
   RegionStore,
   mapEditor, 
-  tileEditor
+  tileEditor,
+  regionEditorTemplate, 
+  tileEditorTemplate
 ){
   
   var coord = location.search ? location.search.replace(/^\?(\d+,\d+)/, "$1") : '3,3';
@@ -199,6 +206,24 @@ define([
     //   return rows; 
     // },
     // 
+    loadTemplates: function(){
+      var pending = 0;
+      var defd = new Promise();
+      $('[type="text/x-template"]').forEach(function(elm){
+        // Also, could just insert the text from a resource loaded as a dependency here where knockout can find it
+        var resource = 'plugins/vendor/text!'+elm.src;
+        console.log("template resource: ", resource);
+        pending++;
+        require([resource], function(tmpl){
+          elm.text = tmpl;
+          pending--;
+          if(!pending) {
+            defd.resolve(true);
+          }
+        });
+      });
+      return defd;
+    },
     applyBindings: function(){
       var selfNode = $(this.el)[0];
       ko.applyBindings(this, selfNode);
@@ -220,7 +245,9 @@ define([
     .initialize({
     })
     .routeBindings()
-    .applyBindings();
+    .loadTemplates().then(function(){
+      app.applyBindings();
+    });
 
   mapEditor.on('tile:edit', function(evt){
     var tile = evt.target;

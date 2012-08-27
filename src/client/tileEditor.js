@@ -6,9 +6,8 @@ define([
   'resources/encounters',
   'resources/terrain',
   'resources/npc',
-  'plugins/vendor/text!resources/templates/tileEditor.html',
   'plugins/vendor/text!resources/templates/tilePreview.html'
-], function($, util, Promise, ko, encounterTypes, terrainTypes, npcTypes, editTemplate, previewTemplate){
+], function($, util, Promise, ko, encounterTypes, terrainTypes, npcTypes, previewTemplate){
 
   // edit a location: 
   //  description, 
@@ -30,7 +29,7 @@ define([
       console.log("editor initialize");
       this.location = ko.observable(this.location || {});
 
-      this.render(editTemplate);
+      // this.render(editTemplate);
     },
     render: function(html){
       console.log("mapEditor: rendering with el: ", this.el);

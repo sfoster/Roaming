@@ -24,23 +24,20 @@
   </div>
   <div class="col col-1of5">
     <div class="tab-container sidebar-right" id="regionEditorDrawer">
-      <div class="tab-tray">
-        <span class="tab-label smaller" data-target="terrainEditPanel">Terrain</span>
-        <span class="tab-label smaller selected" data-target="regionEditPanel">Region</span>
+      <div class="tab-tray" data-bind="click: onTabTrayClick">
+        <span class="tab-label smaller" data-name="terrain" data-bind="css-matches-name: {selected: drawerMode}">Terrain</span>
+        <span class="tab-label smaller" data-name="region"  data-bind="css-matches-name: {selected: drawerMode}">Region</span>
       </div>
       <div class="tab-panels">
-        <div class="tab-panel" id="terrainEditPanel" style="display:none">
+        <div class="tab-panel" id="terrainEditPanel" data-name="terrain" data-bind="css-matches-name: {selected: drawerMode}" style="display:none">
           <div id="palette">
-            <ul id="terrainlist" class="panelist">
-              {{for ~asArray(~terrainTypes) ~matchContext=#view.ctx.editor}}
-                <li 
-                  data-link="data-selected{:~matches(name, 'currentTool', ~matchContext)}"
-                  class="panel tool {{:name}}"><span>{{:name}}</span></li>
-              {{/for}}
+            <!-- css-matches-name: {selected: currentTool} -->
+            <ul id="terrainlist" class="panelist" data-bind="forin: terrainTypes, attr: { title: terrainList.length }">
+                <li data-bind="attr: { 'data-name': name }" class="panel tool"><span data-bind="text: name"></span></li>
             </ul>
           </div>
         </div>
-        <div class="tab-panel" id="regionEditPanel" >
+        <div class="tab-panel" id="regionEditPanel" data-name="region" data-bind="css-matches-name: {selected: drawerMode}" style="display:none">
           <ul id="toollist" class="panelist">
             <li class="panel tool edittile" data-action="edittile"><span>edit tile</span></li>
           </ul>
