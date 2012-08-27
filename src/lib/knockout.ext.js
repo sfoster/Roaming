@@ -4,31 +4,6 @@ define([
 ], function(util, ko) {
   var mixin = util.mixin;
   
-  ko.bindingHandlers['strtemplate'] = {
-    'init': function(element, valueAccessor) {
-        // Support anonymous templates
-        var bindingValue = ko.utils.unwrapObservable(valueAccessor());
-        console.log("strtemplate: ", bindingValue);
-        if ((typeof bindingValue != "string") && (!bindingValue['name'])) {
-            // It's an anonymous template - store the element contents, then clear the element
-            var templateNodes = element.nodeType == 1 ? element.childNodes : ko.virtualElements.childNodes(element),
-                container = ko.utils.moveCleanedNodesToContainerElement(templateNodes); // This also removes the nodes from their current parent
-            new ko.templateSources.anonymousTemplate(element)['nodes'](container);
-        }
-        return { 'controlsDescendantBindings': true };
-    },
-    'update': function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-      return ko.bindingHandlers['template'].update.apply(ko.bindingHandlers, arguments);
-    }
-  };
-  
-  // Anonymous templates can't be rewritten. Give a nice error message if you try to do it.
-  ko.jsonExpressionRewriting.bindingRewriteValidators['strtemplate'] = function(bindingValue) {
-      return ko.jsonExpressionRewriting.bindingRewriteValidators['template'](bindingValue);
-  };
-
-  ko.virtualElements.allowedBindings['strtemplate'] = true;
-  
   ko.bindingHandlers['forin'] = {
       makeTemplateValueAccessor: function(valueAccessor) {
           return function() {
