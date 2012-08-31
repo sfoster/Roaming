@@ -1,7 +1,7 @@
 define([
   'dollar',
   'lib/event', 
-  'lib/promise', 
+  'promise', 
   'vendor/path',
   'knockout',
   'vendor/knockout.mapping',

@@ -3,7 +3,7 @@ define([
   'main-ui',
   'resources/map',
   'lib/UrlRouter',
-  'lib/Promise', 
+  'promise', 
   'lib/markdown',
   'resources/world', 
   'models/player',

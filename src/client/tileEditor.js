@@ -1,7 +1,7 @@
 define([
   'dollar',
   'lib/util',
-  'lib/Promise', 
+  'promise', 
   'knockout',
   'resources/encounters',
   'resources/terrain',

@@ -24,7 +24,7 @@ define(['compose', 'vendor/store/JsonRest'], function(Compose, JsonRest){
   
   return Compose(JsonRest, {
     target: '',
-    save: function(id) {
+    save: function(id, options) {
       console.log("Save id: ", id);
     },
     locations: function(query, options){

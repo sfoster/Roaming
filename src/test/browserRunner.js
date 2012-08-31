@@ -1,4 +1,4 @@
-define(['lib/Promise'], function(Promise){
+define(['promise'], function(Promise){
   var config = {};
   function assert(expr){
     var result = (typeof expr == 'function') ? expr.call(null) : expr;

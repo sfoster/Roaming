@@ -43,13 +43,14 @@
 
 <script type="text/javascript">
   var config = {
-    packages: {
-      // package mappings
+    paths: {
+      // path mappings
       dollar: 'vendor/zepto',
       text: 'plugins/vendor/text',
       json: 'plugins/vendor/json',
       image: 'plugins/vendor/image',
       order: 'plugins/vendor/order',
+      promise: 'vendor/store/lib/Promise',
       util: 'lib/util',
       compose: 'vendor/compose',
       knockout: 'vendor/knockout'
@@ -61,7 +62,7 @@
   require({
     baseUrl: '..',
     // configure our AMD loader
-    paths: config.packages
+    paths: config.paths
   }, [ './editor-ui' ]);
 </script>
 </body>

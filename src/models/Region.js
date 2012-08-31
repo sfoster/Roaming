@@ -2,7 +2,7 @@ define([
   'dollar', 
   'lib/util', 
   'lib/event',
-  'lib/Promise',
+  'promise',
   'lib/clone'
 ], function($, util, Evented, Promise, sanitizedClone){
   var emit = Evented.emit.bind(this), // it matter what 'this' when we emit and listenr for events. Here, 'this' is the global context

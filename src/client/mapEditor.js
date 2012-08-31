@@ -1,7 +1,7 @@
 define([
   'dollar',
   'lib/util',
-  'lib/Promise', 
+  'promise', 
   'knockout',
 
   'lib/event', 
@@ -139,13 +139,14 @@ define([
               canvasNode: mapNode,
               showCoords: true
           };
-      console.log("map options: ", mapOptions);
+      // console.log("map options: ", mapOptions, map);
       if(map){
         map.reset(mapOptions);
       } else {
         map = editor.map = Map.create(mapOptions);
       }
       setTimeout(function(){
+        // console.log("Calling init, render with tiles: ", tiles, " on node: ", mapNode);
         map.init().render( tiles, {
          canvasNode: mapNode 
         });

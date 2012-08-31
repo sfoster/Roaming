@@ -24,10 +24,11 @@
   "volo": {
     "baseUrl": "./src/vendor",
     "dependencies": {
-      "store": "github:sfoster/amd-store/master",
+      "store": "github:sfoster/amd-store/knockout-js",
       "knockout": "https://github.com/downloads/SteveSanderson/knockout/knockout-2.1.0.debug.js",
       "knockout.mapping": "https://raw.github.com/SteveSanderson/knockout.mapping/master/build/output/knockout.mapping-latest.debug.js",
-      "path": "https://raw.github.com/sfoster/pathjs/false-path-matches/path.js"
+      "path": "https://raw.github.com/sfoster/pathjs/false-path-matches/path.js",
+      "lodash": "https://raw.github.com/bestiejs/lodash/master/lodash.js"
     }
   }
 }

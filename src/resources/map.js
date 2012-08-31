@@ -1,4 +1,4 @@
-define(['dollar', 'lib/util', 'lib/Promise', 'resources/terrain'], function($, util, Promise, terrainTypes){
+define(['dollar', 'lib/util', 'promise', 'resources/terrain'], function($, util, Promise, terrainTypes){
   
   var pluck = util.pluck, 
       values = util.values, 
