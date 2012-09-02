@@ -92,4 +92,14 @@ the game loads the starting location
   (we can pass a coord and it resolves this )
 
 
+Rat infestation in house: 3 Huge Rats, 2 Giant Rats, 2 Mutant Rats.
+Goblins in plains:
+1. 3 Goblins, 1 Goblin Shaman
+2. 4 Goblins, 1 Goblin Shaman
+3. 5 Goblins, 1 Goblin Shaman, 1 Goblin Chieftain
+Trolls in pass:
+1. 2 Juvenile Trolls, 2 Trolls
+2. 4 Trolls, 1 Troll Elder, 1 Troll Hulk.
+
+
   

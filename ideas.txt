@@ -7,36 +7,58 @@ scholars, could read. Because of this Staff, plauges that devastated the rest of
 avoided Canchen, any crops grown there never died, and Canchens people were healthy and happy.
 
 But such wealth and its obvious source ( Corwen's Staff was well known ) could never pass 
-unnoticed. One day in the early spring, Canchen was attacked, not by an army, but a monstrus Roc! It was so large
-that one of its talons was bigger than a house, and a hundred men could have stood on its back if
-it had let them. Its wingbeats destroyed crops and houses alike, and, during the confusion caused
-by the swirling clouds of dust generated, it almost casually snached the Staff from Corwen's
-hands, sending him flying onto the sharp-edged debris of a crushed villa.
+unnoticed. One day in the early spring, Canchen was attacked, not by an army, but a monstrus Roc! 
+It was so large that one of its talons was bigger than a house, and a hundred men could have stood
+on its back if it had let them. Its wingbeats destroyed crops and houses alike, and, during the
+confusion caused by the swirling clouds of dust generated, it almost casually snached the Staff
+from Corwen's hands, sending him flying onto the sharp-edged debris of a crushed villa.
 
 Once the dust settled, the only thing the people of the town could find were wreckage, 
 devastation... and Corwen's Staffless corpse
 
-The suvivors, with the wealth that Canchen had accumulated over the years, immediatly purchased enough
-of the best weapons, armor, and horses they could find to outfit ten of the town's mightiest
-warriors. The  warriors's names were; Canto, Caldi, Cerchen, Cestrel, Ci, Ciden, Convolt, Colko,
-Culden, and finally eight-foot-tall Recorent, who had been appointed leader of the party. A month
-after the attack,the heroes set off.
+The suvivors, with the wealth that Canchen had accumulated over the years, immediatly purchased
+enough of the best weapons, armor, and horses they could find to outfit ten of the town's
+mightiest warriors. The  warriors's names were; Canto, Caldi, Cerchen, Cestrel, Ci, Ciden,
+Convolt, Colko, Culden, and finally eight-foot-tall Recorent, who had been appointed leader of
+the party. A month after the attack,the heroes set off.
 
 They never returned.
 
 
 20 years later...
     
-The once glorius town of Canchen is now a small, poor village. Where the beutiful houses and villas once stood,
-there are tiny mud huts. Where there used to be shining acres of golden wheat there are a few stalks of badly
-blighted grain among copius weeds, brambles, and stinging nettles. The people are sick, miserable, and nearly dead.
-Only a few people were not affected; Corwen's descendants! And that is why, one day, Corwen's grandson,______, set off
-on a epic journey. He decided that HE would be the one...to bring back Corwen's staff!
+The once glorius town of Canchen is now a small, poor village. Where the beutiful houses and
+villas once stood, there are tiny mud huts. Where there used to be shining acres of golden wheat
+there are a few stalks of badly blighted grain among copius weeds, brambles, and stinging nettles.
+The people are sick, miserable, and many are nearly dead. Only a few people were not
+affected; Corwen's descendants! And that is why, one day, Corwen's grandson,______, set off on a
+epic journey. He decided that HE would be the one to bring back Corwen's staff!
 
 
 And so the story starts. YOU are Corwen's grandson and YOU are going to save the village!
 
-The player will quickly find one of the 10 heros. He tells this story: 
+Demo/Beta thingy:
+ 
+You start off in early autumn, heading towards the mountains and searching for a person who could
+show you a pass, if there is one. Once you find her, she says that she will tell you the location
+of a pass in the mountains if you rid her of a plauge of massive rats. When you reach the end of 
+the pass, you find a huge set of double doors blocking the way, you cannot move them. You see this
+ensribed on them, along with 3 figurines (a rat, a snake, and a goblin) and a rectangular hole:
+
+"Set the answer to this riddle in the hole. If you choose correctly, you may pass. If you do not,
+you die.
+
+I spit like bacon, I am made in a egg.
+I have plenty of backbone, yet lack a good leg.
+I peel layers like onions, and still remain whole.
+I am long like a flagpole, yet fit in a hole."
+
+You have a month (90 turns) to get through the mountains, if you do not manage, you will
+have to try again from the start.
+
+Real game: 
+ 
+The player will quickly find one of the 10 heroes. He tells this story: 
 
 The 10 heroes did find the Roc, but when they attempted to challenge it and steal back the Staff,
 they were defeated. 5 were killed, 5 managed to escape. 
