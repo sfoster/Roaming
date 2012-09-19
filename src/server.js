@@ -6,7 +6,7 @@ var express = require('express');
 var passport = require('passport'), 
     BrowserIDStrategy = require('passport-browserid').Strategy;
 
-var users = require('./lib/users');
+var users = require('./server/lib/users');
 
 var root = __dirname;
 var port = process.env.ROAMINGAPP_PORT || 3000;
