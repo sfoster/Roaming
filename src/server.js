@@ -238,22 +238,20 @@ app.put('/location/:region/:coord', function(req, res){
   });
 });
 
-app.get(/^\/(resources|models|vendor|plugins|lib|test)\/(.+)$/, function(req, res){
+app.get(/^\/(resources|models|plugins|test)\/(.+)$/, function(req, res){
   var resourcePath;
   console.log("matched: ", req.params[0], req.params[1]);
   // console.log("prefix with root: ", root);
   switch(req.params[0]){
     case 'resources': 
-    case 'vendor': 
     case 'plugins': 
     case 'models': 
-    case 'lib': 
     case 'test':
       resourcePath = root + '/' +req.params[0]+ '/' + req.params[1];
       break;
-    case 'css': 
-      resourcePath = root + '/client/css/' + req.params[1];
-      break;
+    // case 'css': 
+    //   resourcePath = root + '/client/css/' + req.params[1];
+    //   break;
     default: 
       break;
   }
@@ -291,10 +289,27 @@ app.get('/logout', function(req, res){
   res.redirect('/');
 });
 
-// app.get('/:resource', function(req, res){
-//   var resourcePath = fs.realpathSync(root + '/client/' + req.params.resource);
-//   res.sendfile(resourcePath);
-// });
+
+function playerRequest(playerId, req, res) {
+  console.log("playerRequest for " + playerId);
+  var resourcePath = path.join(datadir, '/player/', playerId + '.json');
+  if(path.existsSync(resourcePath)){
+    fs.readFile(resourcePath, function(err, contents){
+      var data = JSON.parse(contents), 
+          respData = { status: 'ok', d: data };
+      res.send( JSON.stringify(respData), { 'Content-Type': 'application/json' }, 200);
+    });
+  } else {
+    console.log('sending 404 for ' + playerId + '.json');
+    res.send(404);
+  }
+}
+
+app.get('/player/:id', ensureAuthenticated, function(req, res, next){
+  // TODO: access control to ensure only correct user or admin can request player details
+  // so final resource might be /data/username@foo.com/playername
+  playerRequest( safeish(req.params.id), req, res);
+});
 
 
 app.listen(port, hostname);

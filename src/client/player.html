@@ -36,8 +36,8 @@
         <td data-bind="text:position"></td>
       </tr>
       <tr>
-        <th>Date</th>
-        <td data-bind="text:date"></td>
+        <th>Time Elapsed</th>
+        <td data-bind="text:elapsed"></td>
       </tr>
     </tbody>
   </table>
@@ -60,17 +60,18 @@
 <script src="./vendor/require.js"></script>
 <script src="./config.js"></script>
 <script>
-  require(['knockout'], function(ko){
+
+  require(['knockout', 'lib/util', 'plugins/resource!player/'+(config.playerid || 'guest')], function(ko, util, player){
     // get player id
     // load player data
     var viewModel = {
-      playerid: config.playerid || 'guest',
-      name: "Guest",
-      score: ko.observable(0),
-      position: ko.observable([0,0]),
-      date: ko.observable(new Date()),
-      inventoryItems: ko.observableArray([]),
-      visits: ko.observableArray([]),
+      playerid: player.id,
+      name: player.name,
+      score: ko.observable(player.score),
+      position: ko.observable(player.position), // e.g. "world/3,3"
+      elapsed: ko.observable(player.elapsed),
+      inventoryItems: ko.observableArray(player.inventory),
+      visits: ko.observableArray(player.visits),
     };
     ko.applyBindings(viewModel);
   });
