@@ -29,15 +29,15 @@
     <tbody>
       <tr>
         <th>Score</th>
-        <td data-bind="score"></td>
+        <td data-bind="text:score"></td>
       </tr>
       <tr>
         <th>Position</th>
-        <td data-bind="position"></td>
+        <td data-bind="text:position"></td>
       </tr>
       <tr>
         <th>Date</th>
-        <td data-bind="date"></td>
+        <td data-bind="text:date"></td>
       </tr>
     </tbody>
   </table>
@@ -61,7 +61,18 @@
 <script src="./config.js"></script>
 <script>
   require(['knockout'], function(ko){
-    
+    // get player id
+    // load player data
+    var viewModel = {
+      playerid: config.playerid || 'guest',
+      name: "Guest",
+      score: ko.observable(0),
+      position: ko.observable([0,0]),
+      date: ko.observable(new Date()),
+      inventoryItems: ko.observableArray([]),
+      visits: ko.observableArray([]),
+    };
+    ko.applyBindings(viewModel);
   });
 </script>
 </body>
