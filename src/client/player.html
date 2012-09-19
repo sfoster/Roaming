@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Roaming: Player Viewer</title>
+  <meta name="viewport" content="initial-scale=1">
+  <link rel="stylesheet" href="./css/core.css" type="text/css">
+  <link rel="stylesheet" href="./css/listing.css" type="text/css">
+  <style>
+    h1 {
+      margin: 0;
+      padding: 12px;
+      font-size: 1.8em;
+      color: #eee;
+    }
+    #main {
+      overflow: auto;
+    }
+    .item .field-id {
+      
+    }
+  </style>
+</head>
+<body>
+<section id="hud" class="panel">
+  <h1>Player Details: <span data-bind="text: name">name</span></h1>
+  <table class="listing" cellspacing="0">
+    <tbody>
+      <tr>
+        <th>Score</th>
+        <td data-bind="score"></td>
+      </tr>
+      <tr>
+        <th>Position</th>
+        <td data-bind="position"></td>
+      </tr>
+      <tr>
+        <th>Date</th>
+        <td data-bind="date"></td>
+      </tr>
+    </tbody>
+  </table>
+</section>  
+<section id="main" class="panel">
+  <h2>Inventory</h2>
+  <ul data-bind="foreach: inventoryItems">
+    <li data-bind="text: name"></li>
+  </ul>
+  <h2>Visits</h2>
+  <ul data-bind="foreach: visits">
+    <li data-bind="attr: { 'data-itemid': $index }">
+      <span data-bind="text: id">id</span>
+      <span data-bind="text: timestamp">timestamp</span>
+    </li>
+  </ul>
+  
+</section>  
+
+<script src="./vendor/require.js"></script>
+<script src="./config.js"></script>
+<script>
+  require(['knockout'], function(ko){
+    
+  });
+</script>
+</body>
+</html>
