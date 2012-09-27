@@ -1,5 +1,9 @@
-define(['lib/event', 'lib/util', 'resources/weapons', 'resources/items'], function(Evented, util, weapons, items){
+define(['compose', 'lib/event', 'lib/util', 'resources/weapons', 'resources/items'], function(Compose, Evented, util, weapons, items){
   
+  var Player = Compose(Compose, {
+    inventory: []
+    history: {}
+  })
   var player = {}; // new Object()
   player.name = "You";
   

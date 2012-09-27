@@ -64,6 +64,7 @@
   require(['knockout', 'lib/util', 'plugins/resource!player/'+(config.playerid || 'guest')], function(ko, util, player){
     // get player id
     // load player data
+    window.player = player;
     var viewModel = {
       playerid: player.id,
       name: player.name,
