@@ -22,6 +22,7 @@ define(['dollar', 'lib/util', 'lib/json/ref', 'models/Location'], function($, ut
   var locationPlugin = {
     
     load: function (resourceId, req, onLoad, requireConfig) {
+      var baseUrl = Location.prototype.baseUrl;
       var match = (/([^\/]+)\/(\d+,\d+)(.*)$/).exec(resourceId);
       console.assert(match && match.length === 4, "location plugin given bad coords param:" + resourceId);
       
@@ -37,7 +38,7 @@ define(['dollar', 'lib/util', 'lib/json/ref', 'models/Location'], function($, ut
       if(locn) {
         onLoad(locn);
       } else {
-        get('/location/' + resourceId, function(resp){
+        get(baseUrl + '/' + resourceId, function(resp){x
           resp = json.resolveJson(resp);
           var tileData;
           if(resp.status && resp.status === "ok" && resp.d) {
