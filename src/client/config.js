@@ -1,6 +1,6 @@
 // loader config
 require.config({
-  baseUrl: "/",
+  baseUrl: "./",
   paths: {
     // path mappings
     dollar: 'vendor/zepto',
@@ -9,7 +9,6 @@ require.config({
     image: 'plugins/vendor/image',
     order: 'plugins/vendor/order',
     promise: 'vendor/store/lib/Promise',
-    util: 'lib/util',
     lang: 'vendor/lodash',
     compose: 'vendor/compose',
     knockout: 'vendor/knockout'
