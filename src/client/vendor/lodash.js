@@ -78,7 +78,7 @@
   );
 
   /** Used to match internally used tokens in template text */
-  var reToken = /__token__(\d+)/g;
+  var reToken = /__token(\d+)__/g;
 
   /** Used to match HTML characters */
   var reUnescapedHtml = /[&<>"']/g;
@@ -96,7 +96,8 @@
   var templateCounter = 0;
 
   /** Used to replace template delimiters */
-  var token = '__token__';
+  var tokenHead = '__token',
+      tokenFoot = '__';
 
   /** Used to store tokenized template text snippets */
   var tokenized = [];
@@ -111,9 +112,13 @@
 
   /* Native method shortcuts for methods with the same name as other `lodash` methods */
   var nativeBind = reNative.test(nativeBind = slice.bind) && nativeBind,
+      nativeFloor = Math.floor,
       nativeIsArray = reNative.test(nativeIsArray = Array.isArray) && nativeIsArray,
       nativeIsFinite = window.isFinite,
-      nativeKeys = reNative.test(nativeKeys = Object.keys) && nativeKeys;
+      nativeKeys = reNative.test(nativeKeys = Object.keys) && nativeKeys,
+      nativeMax = Math.max,
+      nativeMin = Math.min,
+      nativeRandom = Math.random;
 
   /** `Object#toString` result shortcuts */
   var argsClass = '[object Arguments]',
@@ -516,25 +521,6 @@
       '(hasOwnProperty.call(result, prop) ? result[prop]++ : result[prop] = 1)'
   };
 
-  /** Reusable iterator options for `drop` and `pick` */
-  var dropIteratorOptions = {
-    'useHas': false,
-    'args': 'object, callback, thisArg',
-    'init': '{}',
-    'top':
-      'var isFunc = typeof callback == \'function\';\n' +
-      'if (!isFunc) {\n' +
-      '  var props = concat.apply(ArrayProto, arguments)\n' +
-      '} else if (thisArg) {\n' +
-      '  callback = iteratorBind(callback, thisArg)\n' +
-      '}',
-    'inLoop':
-      'if (isFunc\n' +
-      '  ? !callback(value, index, object)\n' +
-      '  : indexOf(props, index) < 0\n' +
-      ') result[index] = value'
-  };
-
   /** Reusable iterator options for `every` and `some` */
   var everyIteratorOptions = {
     'init': 'true',
@@ -584,6 +570,25 @@
       'array':  'result[index] = callback(value, index, collection)',
       'object': 'result' + (isKeysFast ? '[ownIndex] = ' : '.push') + '(callback(value, index, collection))'
     }
+  };
+
+  /** Reusable iterator options for `omit` and `pick` */
+  var omitIteratorOptions = {
+    'useHas': false,
+    'args': 'object, callback, thisArg',
+    'init': '{}',
+    'top':
+      'var isFunc = typeof callback == \'function\';\n' +
+      'if (!isFunc) {\n' +
+      '  var props = concat.apply(ArrayProto, arguments)\n' +
+      '} else if (thisArg) {\n' +
+      '  callback = iteratorBind(callback, thisArg)\n' +
+      '}',
+    'inLoop':
+      'if (isFunc\n' +
+      '  ? !callback(value, index, object)\n' +
+      '  : indexOf(props, index) < 0\n' +
+      ') result[index] = value'
   };
 
   /*--------------------------------------------------------------------------*/
@@ -836,7 +841,7 @@
     }
     var index = tokenized.length;
     tokenized[index] = "' +\n__e(" + value + ") +\n'";
-    return token + index;
+    return tokenHead + index + tokenFoot;
   }
 
   /**
@@ -854,7 +859,7 @@
     if (evaluateValue) {
       var index = tokenized.length;
       tokenized[index] = "';\n" + evaluateValue + ";\n__p += '";
-      return token + index;
+      return tokenHead + index + tokenFoot;
     }
     return escapeValue
       ? tokenizeEscape(null, escapeValue)
@@ -875,7 +880,7 @@
     }
     var index = tokenized.length;
     tokenized[index] = "' +\n((__t = (" + value + ")) == null ? '' : __t) +\n'";
-    return token + index;
+    return tokenHead + index + tokenFoot;
   }
 
   /**
@@ -961,6 +966,49 @@
   }
 
   /**
+   * A fallback implementation of `isPlainObject`.
+   *
+   * @private
+   * @param {Mixed} value The value to check.
+   * @param {Boolean} [skipArgsCheck=false] Internally used to skip checks for
+   *  `arguments` objects.
+   * @returns {Boolean} Returns `true` if the `value` is a plain `Object` object,
+   *  else `false`.
+   */
+  function isPlainFallback(value, skipArgsCheck) {
+    // avoid non-objects and false positives for `arguments` objects
+    var result = false;
+    if (!(value && typeof value == 'object') || (!skipArgsCheck && isArguments(value))) {
+      return result;
+    }
+    // IE < 9 presents DOM nodes as `Object` objects except they have `toString`
+    // methods that are `typeof` "string" and still can coerce nodes to strings.
+    // Also check that the constructor is `Object` (i.e. `Object instanceof Object`)
+    var ctor = value.constructor;
+    if ((!noNodeClass || !(typeof value.toString != 'function' && typeof (value + '') == 'string')) &&
+        (!isFunction(ctor) || ctor instanceof ctor)) {
+      // IE < 9 iterates inherited properties before own properties. If the first
+      // iterated property is an object's own property then there are no inherited
+      // enumerable properties.
+      if (iteratesOwnLast) {
+        forIn(value, function(objValue, objKey) {
+          result = !hasOwnProperty.call(value, objKey);
+          return false;
+        });
+        return result === false;
+      }
+      // In most environments an object's own properties are iterated before
+      // its inherited properties. If the last iterated property is an object's
+      // own property then there are no inherited enumerable properties.
+      forIn(value, function(objValue, objKey) {
+        result = objKey;
+      });
+      return result === false || hasOwnProperty.call(value, result);
+    }
+    return result;
+  }
+
+  /**
    * Checks if a given `value` is an object created by the `Object` constructor
    * assuming objects created by the `Object` constructor have no inherited
    * enumerable properties and that there are no `Object.prototype` extensions.
@@ -972,46 +1020,17 @@
    * @returns {Boolean} Returns `true` if the `value` is a plain `Object` object,
    *  else `false`.
    */
-  function isPlainObject(value, skipArgsCheck) {
-    return value
-      ? value == ObjectProto || (value.__proto__ == ObjectProto && (skipArgsCheck || !isArguments(value)))
-      : false;
-  }
-  // fallback for IE
-  if (!isPlainObject(objectTypes)) {
-    isPlainObject = function(value, skipArgsCheck) {
-      // avoid non-objects and false positives for `arguments` objects
-      var result = false;
-      if (!(value && typeof value == 'object') || (!skipArgsCheck && isArguments(value))) {
-        return result;
-      }
-      // IE < 9 presents DOM nodes as `Object` objects except they have `toString`
-      // methods that are `typeof` "string" and still can coerce nodes to strings.
-      // Also check that the constructor is `Object` (i.e. `Object instanceof Object`)
-      var ctor = value.constructor;
-      if ((!noNodeClass || !(typeof value.toString != 'function' && typeof (value + '') == 'string')) &&
-          (!isFunction(ctor) || ctor instanceof ctor)) {
-        // IE < 9 iterates inherited properties before own properties. If the first
-        // iterated property is an object's own property then there are no inherited
-        // enumerable properties.
-        if (iteratesOwnLast) {
-          forIn(value, function(objValue, objKey) {
-            result = !hasOwnProperty.call(value, objKey);
-            return false;
-          });
-          return result === false;
-        }
-        // In most environments an object's own properties are iterated before
-        // its inherited properties. If the last iterated property is an object's
-        // own property then there are no inherited enumerable properties.
-        forIn(value, function(objValue, objKey) {
-          result = objKey;
-        });
-        return result === false || hasOwnProperty.call(value, result);
-      }
-      return result;
-    };
-  }
+  var isPlainObject = objectTypes.__proto__ != ObjectProto ? isPlainFallback : function(value, skipArgsCheck) {
+    if (!value) {
+      return false;
+    }
+    var valueOf = value.valueOf,
+        objProto = typeof valueOf == 'function' && valueOf.__proto__.__proto__;
+
+    return objProto
+      ? value == objProto || (value.__proto__ == objProto && (skipArgsCheck || !isArguments(value)))
+      : isPlainFallback(value);
+  };
 
   /**
    * A shim implementation of `Object.keys` that produces an array of the given
@@ -1173,34 +1192,6 @@
   });
 
   /**
-   * Creates a shallow clone of `object` excluding the specified properties.
-   * Property names may be specified as individual arguments or as arrays of
-   * property names. If `callback` is passed, it will be executed for each property
-   * in the `object`, dropping the properties `callback` returns truthy for. The
-   * `callback` is bound to `thisArg` and invoked with 3 arguments; (value, key, object).
-   *
-   * @static
-   * @memberOf _
-   * @alias omit
-   * @category Objects
-   * @param {Object} object The source object.
-   * @param {Function|String} callback|[prop1, prop2, ...] The properties to drop
-   *  or the function called per iteration.
-   * @param {Mixed} [thisArg] The `this` binding for the callback.
-   * @returns {Object} Returns an object without the dropped properties.
-   * @example
-   *
-   * _.drop({ 'name': 'moe', 'age': 40, 'userid': 'moe1' }, 'userid');
-   * // => { 'name': 'moe', 'age': 40 }
-   *
-   * _.drop({ 'name': 'moe', '_hint': 'knucklehead', '_seed': '96c4eb' }, function(value, key) {
-   *   return key.charAt(0) == '_';
-   * });
-   * // => { 'name': 'moe' }
-   */
-  var drop = createIterator(dropIteratorOptions);
-
-  /**
    * Assigns enumerable properties of the source object(s) to the `destination`
    * object. Subsequent sources will overwrite propery assignments of previous
    * sources.
@@ -1313,6 +1304,26 @@
   function has(object, property) {
     return object ? hasOwnProperty.call(object, property) : false;
   }
+
+  /**
+   * Invert the keys and values of an object. The values must be serializable.
+   *
+   * @static
+   * @memberOf _
+   * @alias methods
+   * @category Objects
+   * @param {Object} object The object to inspect.
+   * @returns {Array} Returns a new array of property names that have function values.
+   * @example
+   *
+   *  var obj = {first: 'Moe', second: 'Larry', third: 'Curly'}
+   * // => ['all', 'any', 'bind', 'bindAll', 'clone', 'compact', 'compose', ...]
+   */
+  var invert = createIterator({
+    'args': 'object',
+    'init': '{}',
+    'inLoop': 'result[value] = index'
+  });
 
   /**
    * Checks if `value` is a boolean (`true` or `false`) value.
@@ -1835,6 +1846,53 @@
   });
 
   /**
+   * Creates a shallow clone of `object` excluding the specified properties.
+   * Property names may be specified as individual arguments or as arrays of
+   * property names. If `callback` is passed, it will be executed for each property
+   * in the `object`, omitting the properties `callback` returns truthy for. The
+   * `callback` is bound to `thisArg` and invoked with 3 arguments; (value, key, object).
+   *
+   * @static
+   * @memberOf _
+   * @category Objects
+   * @param {Object} object The source object.
+   * @param {Function|String} callback|[prop1, prop2, ...] The properties to omit
+   *  or the function called per iteration.
+   * @param {Mixed} [thisArg] The `this` binding for the callback.
+   * @returns {Object} Returns an object without the omitted properties.
+   * @example
+   *
+   * _.omit({ 'name': 'moe', 'age': 40, 'userid': 'moe1' }, 'userid');
+   * // => { 'name': 'moe', 'age': 40 }
+   *
+   * _.omit({ 'name': 'moe', '_hint': 'knucklehead', '_seed': '96c4eb' }, function(value, key) {
+   *   return key.charAt(0) == '_';
+   * });
+   * // => { 'name': 'moe' }
+   */
+  var omit = createIterator(omitIteratorOptions);
+
+  /**
+   * Creates a two dimensional array of the given object's key-value pairs,
+   * i.e. `[[key1, value1], [key2, value2]]`.
+   *
+   * @static
+   * @memberOf _
+   * @category Objects
+   * @param {Object} object The object to inspect.
+   * @returns {Array} Returns new array of key-value pairs.
+   * @example
+   *
+   * _.pairs({ 'moe': 30, 'larry': 40, 'curly': 50 });
+   * // => [['moe', 30], ['larry', 40], ['curly', 50]] (order is not guaranteed)
+   */
+  var pairs = createIterator({
+    'args': 'object',
+    'init':'[]',
+    'inLoop': 'result'  + (isKeysFast ? '[ownIndex] = ' : '.push') + '([index, value])'
+  });
+
+  /**
    * Creates a shallow clone of `object` composed of the specified properties.
    * Property names may be specified as individual arguments or as arrays of
    * property names. If `callback` is passed, it will be executed for each property
@@ -1859,7 +1917,7 @@
    * });
    * // => { 'name': 'moe' }
    */
-  var pick = createIterator(dropIteratorOptions, {
+  var pick = createIterator(omitIteratorOptions, {
     'top':
       'if (typeof callback != \'function\') {\n' +
       '  var prop,\n' +
@@ -1875,45 +1933,6 @@
       'if (callback(value, index, object)) result[index] = value',
     'bottom': '}'
   });
-
-  /**
-   * Gets the size of `value` by returning `value.length` if `value` is an
-   * array, string, or `arguments` object. If `value` is an object, size is
-   * determined by returning the number of own enumerable properties it has.
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Array|Object|String} value The value to inspect.
-   * @returns {Number} Returns `value.length` or number of own enumerable properties.
-   * @example
-   *
-   * _.size([1, 2]);
-   * // => 2
-   *
-   * _.size({ 'one': 1, 'two': 2, 'three': 3 });
-   * // => 3
-   *
-   * _.size('curly');
-   * // => 5
-   */
-  function size(value) {
-    if (!value) {
-      return 0;
-    }
-    var className = toString.call(value),
-        length = value.length;
-
-    // return `value.length` for `arguments` objects, arrays, strings, and DOM
-    // query collections of libraries like jQuery and MooTools
-    // http://code.google.com/p/fbug/source/browse/branches/firebug1.9/content/firebug/chrome/reps.js?r=12614#653
-    // http://trac.webkit.org/browser/trunk/Source/WebCore/inspector/InjectedScriptSource.js?rev=125186#L609
-    if (arrayLikeClasses[className] || (noArgsClass && isArguments(value)) ||
-        (className == objectClass && length > -1 && length === length >>> 0 && isFunction(value.splice))) {
-      return length;
-    }
-    return keys(value).length;
-  }
 
   /**
    * Creates an array composed of the own enumerable property values of `object`.
@@ -2322,6 +2341,34 @@
   });
 
   /**
+   * Gets the size of the `collection` by returning `collection.length` for arrays
+   * and array-like objects or the number of own enumerable properties for objects.
+   *
+   * @static
+   * @memberOf _
+   * @category Collections
+   * @param {Array|Object|String} collection The collection to inspect.
+   * @returns {Number} Returns `collection.length` or number of own enumerable properties.
+   * @example
+   *
+   * _.size([1, 2]);
+   * // => 2
+   *
+   * _.size({ 'one': 1, 'two': 2, 'three': 3 });
+   * // => 3
+   *
+   * _.size('curly');
+   * // => 5
+   */
+  function size(collection) {
+    if (!collection) {
+      return 0;
+    }
+    var length = collection.length;
+    return length > -1 && length === length >>> 0 ? length : keys(collection).length;
+  }
+
+  /**
    * Checks if the `callback` returns a truthy value for **any** element of a
    * `collection`. The function returns as soon as it finds passing value, and
    * does not iterate over the entire `collection`. The `callback` is bound to
@@ -2620,7 +2667,7 @@
 
     if (fromIndex) {
       if (typeof fromIndex == 'number') {
-        index = (fromIndex < 0 ? Math.max(0, length + fromIndex) : fromIndex) - 1;
+        index = (fromIndex < 0 ? nativeMax(0, length + fromIndex) : fromIndex) - 1;
       } else {
         index = sortedIndex(array, value);
         return array[index] === value ? index : -1;
@@ -2748,7 +2795,7 @@
     }
     var index = array.length;
     if (fromIndex && typeof fromIndex == 'number') {
-      index = (fromIndex < 0 ? Math.max(0, index + fromIndex) : Math.min(fromIndex, index - 1)) + 1;
+      index = (fromIndex < 0 ? nativeMax(0, index + fromIndex) : nativeMin(fromIndex, index - 1)) + 1;
     }
     while (index--) {
       if (array[index] === value) {
@@ -2865,6 +2912,41 @@
   }
 
   /**
+   * Creates an object composed from arrays of `keys` and `values`. Pass either
+   * a single two dimensional array, i.e. `[[key1, value1], [key2, value2]]`, or
+   * two arrays, one of `keys` and one of corresponding `values`.
+   *
+   * @static
+   * @memberOf _
+   * @category Arrays
+   * @param {Array} keys The array of keys.
+   * @param {Array} [values=[]] The array of values.
+   * @returns {Object} Returns an object composed of the given keys and
+   *  corresponding values.
+   * @example
+   *
+   * _.object(['moe', 'larry', 'curly'], [30, 40, 50]);
+   * // => { 'moe': 30, 'larry': 40, 'curly': 50 }
+   */
+  function object(keys, values) {
+    if (!keys) {
+      return {};
+    }
+    var index = -1,
+        length = keys.length,
+        result = {};
+
+    while (++index < length) {
+      if (values) {
+        result[keys[index]] = values[index];
+      } else {
+        result[keys[index][0]] = keys[index][1];
+      }
+    }
+    return result;
+  }
+
+  /**
    * Creates an array of numbers (positive and/or negative) progressing from
    * `start` up to but not including `stop`. This method is a port of Python's
    * `range()` function. See http://docs.python.org/library/functions.html#range.
@@ -2904,7 +2986,7 @@
     // use `Array(length)` so V8 will avoid the slower "dictionary" mode
     // http://www.youtube.com/watch?v=XAqIpGU8ZZk#t=16m27s
     var index = -1,
-        length = Math.max(0, Math.ceil((end - start) / step)),
+        length = nativeMax(0, Math.ceil((end - start) / step)),
         result = Array(length);
 
     while (++index < length) {
@@ -2920,7 +3002,7 @@
    *
    * @static
    * @memberOf _
-   * @alias tail
+   * @alias drop, tail
    * @category Arrays
    * @param {Array} array The array to query.
    * @param {Number} [n] The number of elements to return.
@@ -2963,7 +3045,7 @@
         result = Array(length);
 
     while (++index < length) {
-      rand = Math.floor(Math.random() * (index + 1));
+      rand = nativeFloor(nativeRandom() * (index + 1));
       result[index] = result[rand];
       result[rand] = array[index];
     }
@@ -3182,36 +3264,6 @@
 
     while (++index < length) {
       result[index] = pluck(arguments, index);
-    }
-    return result;
-  }
-
-  /**
-   * Creates an object composed from an array of `keys` and an array of `values`.
-   *
-   * @static
-   * @memberOf _
-   * @category Arrays
-   * @param {Array} keys The array of keys.
-   * @param {Array} [values=[]] The array of values.
-   * @returns {Object} Returns an object composed of the given keys and
-   *  corresponding values.
-   * @example
-   *
-   * _.zipObject(['moe', 'larry', 'curly'], [30, 40, 50]);
-   * // => { 'moe': 30, 'larry': 40, 'curly': 50 }
-   */
-  function zipObject(keys, values) {
-    if (!keys) {
-      return {};
-    }
-    var index = -1,
-        length = keys.length,
-        result = {};
-
-    values || (values = []);
-    while (++index < length) {
-      result[keys[index]] = values[index];
     }
     return result;
   }
@@ -3777,6 +3829,40 @@
   }
 
   /**
+   * Produces a random number between `min` and `max` (inclusive). If only one
+   * argument is passed, a number between `0` and the given number will be returned.
+   * If no arguments are passed `_.random` will act as `Math.random`.
+   *
+   * @static
+   * @memberOf _
+   * @category Utilities
+   * @param {Number} min The minimum possible value.
+   * @param {Number} max The maximum possible value.
+   * @returns {Number} Returns the random number.
+   * @example
+   *
+   * _.random(0, 5);
+   * // => a number between 1 and 5
+   *
+   * _.random(5);
+   * // => also a number between 1 and 5
+   *
+   * _.random();
+   * // => an integer between 0 and less than 1
+   */
+  function random(min, max) {
+    if (min == null && max == null) {
+      return nativeRandom();
+    }
+    min = +min || 0;
+    if (max == null) {
+      max = min;
+      min = 0;
+    }
+    return min + nativeFloor(nativeRandom() * ((+max || 0) - min + 1));
+  }
+
+  /**
    * Resolves the value of `property` on `object`. If `property` is a function
    * it will be invoked and its result returned, else the property value is
    * returned. If `object` is falsey, then `null` is returned.
@@ -4012,11 +4098,11 @@
    * @param {Mixed} [thisArg] The `this` binding for the callback.
    * @example
    *
-   * _.times(3, function() { genie.grantWish(); });
-   * // => calls `genie.grantWish()` 3 times
+   * _.times(3, function(n) { genie.grantWish(n); });
+   * // => calls `genie.grantWish(n)` three times, passing `n` of `0`, `1`, and `2` respectively
    *
-   * _.times(3, function() { this.grantWish(); }, genie);
-   * // => also calls `genie.grantWish()` 3 times
+   * _.times(3, function(n) { this.grantWish(n); }, genie);
+   * // => also calls `genie.grantWish(n)` three times
    */
   function times(n, callback, thisArg) {
     var index = -1;
@@ -4185,7 +4271,6 @@
   lodash.defer = defer;
   lodash.delay = delay;
   lodash.difference = difference;
-  lodash.drop = drop;
   lodash.escape = escape;
   lodash.every = every;
   lodash.extend = extend;
@@ -4203,6 +4288,7 @@
   lodash.indexOf = indexOf;
   lodash.initial = initial;
   lodash.intersection = intersection;
+  lodash.invert = invert;
   lodash.invoke = invoke;
   lodash.isArguments = isArguments;
   lodash.isArray = isArray;
@@ -4230,10 +4316,14 @@
   lodash.min = min;
   lodash.mixin = mixin;
   lodash.noConflict = noConflict;
+  lodash.object = object;
+  lodash.omit = omit;
   lodash.once = once;
+  lodash.pairs = pairs;
   lodash.partial = partial;
   lodash.pick = pick;
   lodash.pluck = pluck;
+  lodash.random = random;
   lodash.range = range;
   lodash.reduce = reduce;
   lodash.reduceRight = reduceRight;
@@ -4259,13 +4349,13 @@
   lodash.without = without;
   lodash.wrap = wrap;
   lodash.zip = zip;
-  lodash.zipObject = zipObject;
 
   // assign aliases
   lodash.all = every;
   lodash.any = some;
   lodash.collect = map;
   lodash.detect = find;
+  lodash.drop = rest;
   lodash.each = forEach;
   lodash.foldl = reduce;
   lodash.foldr = reduceRight;
@@ -4273,7 +4363,6 @@
   lodash.include = contains;
   lodash.inject = reduce;
   lodash.methods = functions;
-  lodash.omit = drop;
   lodash.select = filter;
   lodash.tail = rest;
   lodash.take = first;
