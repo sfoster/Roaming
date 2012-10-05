@@ -1,32 +1,7 @@
-define(['compose', 'lib/event', 'lib/util', 'resources/weapons', 'resources/items'], function(Compose, Evented, util, weapons, items){
+define([
+  'compose', 'lib/event', 'lib/util', 'models/Inventory', 'resources/weapons'
+], function(Compose, Evented, util, Inventory, weapons){
   
-  var Inventory = Compose(Array, Evented, {
-    add: function(item, options){
-      this.push(item);
-      this.emit("onafteradd", {
-        target: item,
-        player: player,
-        cancel: function(){ proceed = false; }
-      });
-    },
-    remove: function(item, options){
-      for(var i=0; i<this.length; i++){
-        if(this[i] === item){
-          break;
-        }
-      }
-      if(i < this.length) {
-        this.splice(idx, 1);
-        this.emit("onafterremove", {
-          target: item,
-          player: player,
-          cancel: function(){ proceed = false; }
-        });
-      }
-      return this;
-    }
-  });
-
   var Player = Compose(Compose, {
     name: "You", // by default
     inventory: null,
@@ -61,8 +36,8 @@ define(['compose', 'lib/event', 'lib/util', 'resources/weapons', 'resources/item
   }, function(){
     // constructor
     // create the player's inventory
-    var inventoryContents = this.inventory;
-    this.inventory = new Inventory();
+
+    this.inventory = new Inventory(this.inventory || []);
     if(inventoryContents) {
       inventoryContents.forEach(function(item){
         this.add(item);
@@ -76,27 +51,13 @@ define(['compose', 'lib/event', 'lib/util', 'resources/weapons', 'resources/item
 
   // TODO: needs to live elsewhere, 
   // probably in main/startup as the inventory args to the Player constructor
-  var initialInventory = [
+  Player.initialInventory = [
     "boots",
     "fishingSpear",
     "knife",
     "whetstone",
     "cloak"
-  ].map(function(item, idx, arr){
-    if('string' == typeof item){
-      if(item in items){
-        item = items[item];
-      } else if(item in weapons){
-        item = weapons[item];
-      } else {
-        item = items[id] = { id: item, name: item, description: item };
-      }
-    }
-    return item;
-  });
+  ];
 
-
-  console.log("player: ", player);
-  
   return Player;
 });
