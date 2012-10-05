@@ -5,7 +5,7 @@ define([
   'lib/UrlRouter',
   'promise', 
   'lib/markdown',
-  'resources/world', 
+  'plugins/region!world', 
   'models/player',
   'resources/encounters',
   'resources/items', 'resources/weapons', 'resources/armor', 'resources/traps'
@@ -16,37 +16,44 @@ define([
     UrlRouter, 
     Promise, 
     markdown,
-    world, 
+    region, 
     player, 
     encounters,
     items, weapons, armor, traps
 ){
   var when = Promise.when;
+  function load(deps, callback){
+    var defd = Promise.defer();
+    requirejs(deps, function(){
+      return defd.resolve.apply(defd, arguments);
+    });
+    return defd.promise;
+  }
   
   // setup the global as an event sink and emitter
   util.mixin(this, Evented);
   
   console.log("Player: ", player);
   
-  world.on('enter', function(){
-    ui.status("You enter the world");
+  region.on('enter', function(){
+    ui.status("You enter the region");
   });
-  world.on('exit', function(){
-    ui.status("You leave this world");
+  region.on('exit', function(){
+    ui.status("You leave this region");
   });
   
   // draw and fill the layout
   ui.init( player );
-  map.init();
   
   // login or init player
   // set up main game stack
-  // get world data for the starting position
+  // get region data for the starting position
   // enter the region and tile
   
   var game ={
     player: player
   };
+  
   var locationsByCoords = {};
   var stack = window.stack = (function(){
     var _stack = [];
@@ -82,7 +89,7 @@ define([
             
           var id = [x,y].join(',');
           console.log("route match for location: ", x, y, id);
-          require(['plugins/location!'+id], function(location){
+          load(['plugins/location!'+id]).then(function(location){
             var encounterId = location.encounter;
             if('string' == typeof encounterId) {
               if(!(encounterId in encounters)){
@@ -94,16 +101,15 @@ define([
             if(!location.enter) {
               throw "Error loading location: " + id;
             }
-            // walk up the stack to the world
+            // walk up the stack to the region
             if(!stack.length){
-              stack.push(world);
+              stack.push(region);
             } 
             if(stack.length > 1){
               stack.pop();
             }
             stack.push(location);
           });
-          
       }
     ]    
   ];
@@ -139,44 +145,15 @@ define([
     return names[keyMask];
   }
   
-  function loadLocation(id) {
-    var locationModel = locationsByCoords[id];
-    var locationPromise = new Promise();
-    if(locationModel) {
-      setTimeout(function(){
-        locationPromise.resolve(locationModel);
-      }, 10);
-    } else {
-      require(['json!/location/'+id+'.json'], function(location){
-        if(!location.coords){
-          console.error("No location at: ", id);
-          location = {
-            coords: id.split(',')
-          };
-        } else {
-          location.id = location.coords.join(',');
-        }
-        locationPromise.resolve(location);
-      });
-    }
-    return locationPromise;
-  }
-  
   function loadLocations() {
-    var locations = [];
-    var allLocationsPromise = new Promise();
-    var ids = Array.prototype.slice.call(arguments, 0);
-
-    ids.forEach(function(id){
-      loadLocation(id).then(function(location){
-        locations.push(location);
-        if(locations.length >= ids.length){
-          // all loaded
-          allLocationsPromise.resolve(locations);
-        }
-      });
+    var ids = Array.prototype.slice.call(arguments, 0).map(function(id){
+      return  'plugins/location!'+id;
     });
-    return allLocationsPromise;
+    var defd = Promise.defer();
+    require(ids, function(){
+      defd.resolve.apply(defd, Array.prototype.slice.call(arguments));
+    });
+    return defd.promise;
   }
   
   $('#nearbyMap').click(function(evt){
@@ -185,7 +162,7 @@ define([
         y = Math.floor(evt.clientY / tileSize);
 
     // add the offsets for the current location
-    var location = world.tileAt(nearbyMap.startX +x, nearbyMap.startY+y);
+    var location = region.tileAt(nearbyMap.startX +x, nearbyMap.startY+y);
     var hash = '#'+[location.x, location.y].join(',');
     window.location.hash = hash;
     console.log("map clicked at: ", evt, location, hash);
@@ -238,7 +215,7 @@ define([
     var tile = evt.target, 
         directionsTemplate = template('{{coords}}: To the <a href="#{{coords}}" class="option">{{direction}}</a> you see {{terrain}}');
         
-    var edges = world.getEdges(tile.x, tile.y);
+    var edges = region.getEdges(tile.x, tile.y);
     var edgesById = {};
     var locationsById = {};
     var ids = edges.map(function(tile){
