@@ -1,8 +1,11 @@
 define([
-  'dollar', 'lib/util', 'resources/template',
+  'dollar', 
+  'knockout', 
+  'lib/util', 
+  'resources/template',
   'lib/event',
   'resources/map'
-], function($, util, template, Evented, map){
+], function($, ko, util, template, Evented, map){
 
   var ui = {};
   

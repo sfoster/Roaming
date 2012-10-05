@@ -1,4 +1,4 @@
-define(['compose', 'vendor/store/JsonRest'], function(Compose, JsonRest){
+define(['compose', 'store/JsonRest'], function(Compose, JsonRest){
 
   function dataToViewModel(data){
     // util.defaults(data, proto);
