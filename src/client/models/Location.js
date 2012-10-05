@@ -25,6 +25,7 @@ define([
   }
   
   util.mixin(Location.prototype, Evented, {
+    baseUrl: '',
     encounterType: "none",
     get: function(name){
       return this[name];
@@ -89,7 +90,7 @@ define([
         type: 'PUT',
         dataType: 'json',
         contentType: 'application/json',
-        url: '/location/'+id+'.json',
+        url: this.baseUrl +'/'+id+'.json',
         data: JSON.stringify(formData),
         success: function(resp){
           console.log("save response: ", resp);
