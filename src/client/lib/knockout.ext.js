@@ -1,6 +1,7 @@
 define([
   'lib/util',
-  'knockout'
+  'knockout',
+  'store/lib/knockout.composeWith'
 ], function(util, ko) {
   var mixin = util.mixin;
   
@@ -39,6 +40,7 @@ define([
   };
   ko.jsonExpressionRewriting.bindingRewriteValidators['forin'] = false; // Can't rewrite control flow bindings
   // ko.virtualElements.allowedBindings['foreach'] = true;
+  
   
   return ko;
 });
