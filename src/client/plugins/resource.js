@@ -2,7 +2,7 @@ define(['dollar', 'lib/util', 'lib/json/ref'], function($, util, json){
 
   var resourceClassMap = {
     'location': 'models/Location',
-    // 'player': 'models/Player',
+    'player': 'models/Player',
     'region': 'models/Region'
   };
   
@@ -26,11 +26,12 @@ define(['dollar', 'lib/util', 'lib/json/ref'], function($, util, json){
     load: function (resourceId, req, onLoad, requireConfig) {
       var resourceType = resourceId.substring(0, resourceId.indexOf('/') );
       console.log("resource plugin load: ", resourceId, resourceType);
-      get('/' + resourceId, function(resp){
-        resp = json.resolveJson(resp);
+      var resourceUrl = config.baseUrl.replace(/\/$/, '') +'/' + resourceId;
+      get(resourceId, function(resp){
         var resourceData;
         if(resp.status && resp.status === "ok" && resp.d) {
-          resourceData = resp.d;
+          resourceData = json.resolveJson(resp.d);
+          // console.log("resolved resourceData: ", resourceData);
           var ctorModule = resourceType && resourceClassMap[resourceType];
           if(ctorModule) {
             require([ctorModule], function(Clazz){
@@ -42,7 +43,7 @@ define(['dollar', 'lib/util', 'lib/json/ref'], function($, util, json){
           }
         }
         else {
-          console.error("Problem loading /"+resourceId + ", response was: ", resp);
+          console.error("Problem loading: "+resourceUrl + ", response was: ", resp);
         }
       });
     }

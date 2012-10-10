@@ -6,7 +6,7 @@ define([
   'promise', 
   'lib/markdown',
   'plugins/region!world', 
-  'models/player',
+  'models/Player',
   'resources/encounters',
   'resources/items', 'resources/weapons', 'resources/armor', 'resources/traps'
 ], function(
@@ -17,7 +17,7 @@ define([
     Promise, 
     markdown,
     region, 
-    player, 
+    Player, 
     encounters,
     items, weapons, armor, traps
 ){
@@ -33,6 +33,10 @@ define([
   // setup the global as an event sink and emitter
   util.mixin(this, Evented);
   
+  var player = new Player({
+    inventory: Player.initialInventory 
+  });
+
   console.log("Player: ", player);
   
   region.on('enter', function(){

@@ -17,7 +17,7 @@ define([
     console.log("init map");
     map.init().then(function(val){
 
-      require(['json!/location/world.json'], function(mapData){
+      require(['json!../location/world.json'], function(mapData){
         var canvasNode = map.renderMap( mapData.tiles, { tileSize: 6 });
         $(canvasNode).css({
           margin: '0 auto',

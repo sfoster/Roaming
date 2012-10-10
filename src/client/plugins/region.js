@@ -26,7 +26,7 @@ define(['dollar', 'lib/json/ref', 'models/Region'], function($, json, Region){
           params = parts[1], 
           region = null;
       id = parts[0];
-      var resourceUrl = Region.prototype.baseUrl +'/' + id + '.json';
+      var resourceUrl = Region.prototype.baseUrl.replace(/\/$/, '') +'/' + id + '/index.json';
       
       // only re-create the region instance if necessary
       // This maybe dupes functionality in the plugin system
