@@ -24,6 +24,8 @@ define(['dollar', 'lib/util', 'lib/json/ref', 'models/Location'], function($, ut
     load: function (resourceId, req, onLoad, requireConfig) {
       var baseUrl = Location.prototype.baseUrl;
       var match = (/([^\/]+)\/(\d+,\d+)(.*)$/).exec(resourceId);
+
+      console.log("location plugin load: ", resourceId, typeof resourceId);
       console.assert(match && match.length === 4, "location plugin given bad coords param:" + resourceId);
       
       var region = match[1], 
@@ -34,15 +36,17 @@ define(['dollar', 'lib/util', 'lib/json/ref', 'models/Location'], function($, ut
       if(!params || params.indexOf('refresh') == -1){
         locn = window.locations[resourceId];
       }
-      console.log("location plugin load: ", locn);
       if(locn) {
         onLoad(locn);
       } else {
-        get(baseUrl + '/' + resourceId, function(resp){x
+        get(baseUrl + '/' + resourceId + '.json', function(resp){
           resp = json.resolveJson(resp);
           var tileData;
-          if(resp.status && resp.status === "ok" && resp.d) {
-            tileData = util.mixin(resp.d, {
+          if(resp.status && resp.status !== "ok") {
+            console.error("Problem loading /location/"+resourceId + ", response was: ", resp);
+          }
+          else {
+            tileData = util.mixin(resp.d || resp, {
               id: coords,
               resourceId: resourceId,
               regionId: region
@@ -52,9 +56,6 @@ define(['dollar', 'lib/util', 'lib/json/ref', 'models/Location'], function($, ut
               var tile = new Clazz(tileData); 
               onLoad(tile);
             });
-          }
-          else {
-            console.error("Problem loading /location/"+resourceId + ", response was: ", resp);
           }
         });
       }
