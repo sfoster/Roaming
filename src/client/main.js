@@ -5,7 +5,6 @@ define([
   'lib/UrlRouter',
   'promise', 
   'lib/markdown',
-  'plugins/region!world', 
   'models/Player',
   'resources/encounters',
   'resources/items', 'resources/weapons', 'resources/armor', 'resources/traps'
@@ -16,7 +15,6 @@ define([
     UrlRouter, 
     Promise, 
     markdown,
-    region, 
     Player, 
     encounters,
     items, weapons, armor, traps
@@ -38,13 +36,6 @@ define([
   });
 
   console.log("Player: ", player);
-  
-  region.on('enter', function(){
-    ui.status("You enter the region");
-  });
-  region.on('exit', function(){
-    ui.status("You leave this region");
-  });
   
   // draw and fill the layout
   // ui.init( player );
@@ -88,24 +79,39 @@ define([
     [
       "#:region/:x,:y", 
       function(req){
-        var region = req.region,
+        var regionId = req.region,
             x = Number(req.x), 
             y = Number(req.y);
             
-          var id = region + '/' + [x,y].join(',');
-          console.log("route match for location: ", x, y, id);
-          load(['plugins/location!'+id]).then(function(location){
-            var encounterId = location.encounter;
+          console.log("route match for location: ", regionId, x, y);
+          var locationId = regionId + '/' + [x,y].join(',');
+
+          require([
+            'plugins/region!'+regionId, 
+            'plugins/location!'+locationId], function(
+              region, tile
+          ){
+            var encounterId = tile.encounter;
+            console.log("Loaded region: ", region);
+            console.log("Loaded tile: ", tile);
             if('string' == typeof encounterId) {
               if(!(encounterId in encounters)){
                 throw "Encounter " + encounterId + " not defined";
               }
               // resolve encounter ids to their contents
-              location.encounter = encounters[encounterId];
+              tile.encounter = encounters[encounterId];
             }
-            if(!location.enter) {
-              throw "Error loading location: " + id;
-            }
+
+            region.on('enter', function(){
+              ui.status("You enter the region");
+            });
+            region.on('exit', function(){
+              ui.status("You leave this region");
+            });
+            
+            // if(!tile.enter) {
+            //   throw "Error loading location: " + id;
+            // }
             // walk up the stack to the region
             if(!stack.length){
               stack.push(region);
@@ -113,8 +119,8 @@ define([
             if(stack.length > 1){
               stack.pop();
             }
-            stack.push(location);
-          });
+            stack.push(tile);
+          }); 
       }
     ]    
   ];

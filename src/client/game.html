@@ -6,18 +6,35 @@
 </head>
 <body>
 
-  <script type="text/javascript" src="./config.js"></script>
-  <script src="../vendor/require.js"></script>
-  <script>
-    require({
-      baseUrl: '..',
-      // configure our AMD loader
-      paths: config.paths,
-      packages: config.packages
-    }, ['knockout'], function(){
-      
-    });
-  </script>
-  
+  <section id="hud" class="panel">
+    <div id="nearby"></div>
+    <div id="playerInfo"></div>
+  </section>  
+  <section id="drawer" class="panel">
+      <ul class="panelist">
+          <li class="panel world-map">[minimap here]</li>
+          <li class="panel inventory">
+            <ul data-bind="foreach: player.inventory">
+              <li>Inventory Item</li>
+            </ul>
+          </li>
+          <li class="panel weapon">
+            [equipped item details here]
+          </li>
+      </ul>
+  </section>
+  <section id="main" class="panel">
+    scene: 
+      terrain
+      encounters
+      description
+      items
+      npcs
+  </section>  
+  <section id="status">
+  </section>
+
+  <script src="vendor/require.js" data-main="plugins/bootstrap!main"></script>
+  <script src="config.js"></script>
 </body>
 </html>
