@@ -47,7 +47,7 @@ define([
   });
   
   // draw and fill the layout
-  ui.init( player );
+  // ui.init( player );
   
   // login or init player
   // set up main game stack
@@ -86,12 +86,13 @@ define([
 
   var routes = [
     [
-      "#:x,:y", 
+      "#:region/:x,:y", 
       function(req){
-        var x = Number(req.x), 
+        var region = req.region,
+            x = Number(req.x), 
             y = Number(req.y);
             
-          var id = [x,y].join(',');
+          var id = region + '/' + [x,y].join(',');
           console.log("route match for location: ", x, y, id);
           load(['plugins/location!'+id]).then(function(location){
             var encounterId = location.encounter;
@@ -124,7 +125,7 @@ define([
     router.match(window.location.hash); // returns the data object if successfull, undefined if not.
   };
   
-  router.match(window.location.hash || '#3,2');
+  router.match(window.location.hash || '#world/3,2');
   
   function getCardinalDirection(origin, target){
     var x = target.x - origin.x, 
