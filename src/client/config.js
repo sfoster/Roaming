@@ -8,13 +8,13 @@ require.config({
     json: 'plugins/vendor/json',
     image: 'plugins/vendor/image',
     order: 'plugins/vendor/order',
-    promise: 'vendor/store/lib/Promise',
     lang: 'vendor/lodash',
     compose: 'vendor/compose',
     knockout: 'vendor/knockout'
   },
   packages: [
-    { name: 'store',   location: './vendor/store',    main: 'main' }
+    { name: 'store',   location: './vendor/store',    main: 'main' },
+    { name: 'promise',   location: './vendor/promised-io',    main: 'promise' }
   ],
   waitSeconds: 15
 });
