@@ -24,8 +24,8 @@
       width: 900px;
       height: 500px;
       top: 18%;
-      left: 0;
-      margin-left: 210px;
+      left: 50%;
+      margin-left: -450px;
       border: 1px solid #ccc;
       background-color: #333;
       z-index: 1;
@@ -123,7 +123,7 @@
   <div id="playerRow" class="row">
     <div class="col">
       <div class="media combatActor">
-        <div class="img"><img src="../resources/graphics/HeroIcon.png" class="icon" width="64" height="64" alt="HeroIcon"></div>
+        <div class="img"><img src="./resources/graphics/HeroIcon.png" class="icon" width="64" height="64" alt="HeroIcon"></div>
         <div class="bd">
           <h1>You</h1>
           <dl class="stats">
@@ -149,7 +149,7 @@
 
       <div class="media combatActor">
         <div class="img">
-          <img src="../resources/graphics/Troll.png" width="64" height="64" alt="Troll">
+          <img src="./resources/graphics/Troll.png" width="64" height="64" alt="Troll">
         </div>
         <div class="bd">
           <h1>Troll</h1>
@@ -165,7 +165,7 @@
 
       <div class="media combatActor">
         <div class="img">
-          <img src="../resources/graphics/TrollHulk.png" width="64" height="64" alt="TrollHulk">
+          <img src="./resources/graphics/TrollHulk.png" width="64" height="64" alt="TrollHulk">
         </div>
         <div class="bd">
           <h1>Troll Hulk</h1>
@@ -181,7 +181,7 @@
 
       <div class="media combatActor">
         <div class="img">
-          <img src="../resources/graphics/TrollShaman.png" width="64" height="64" alt="TrollShaman">
+          <img src="./resources/graphics/TrollShaman.png" width="64" height="64" alt="TrollShaman">
         </div>
         <div class="bd">
           <h1>Troll Shaman</h1>
@@ -197,7 +197,7 @@
 
       <div class="media combatActor">
         <div class="img">
-          <img src="../resources/graphics/JuvenileTroll.png" width="64" height="64" alt="JuvenileTroll">
+          <img src="./resources/graphics/JuvenileTroll.png" width="64" height="64" alt="JuvenileTroll">
         </div>
         <div class="bd">
           <h1>Juvenile Troll</h1>
@@ -215,22 +215,14 @@
   </div>
 </div>
 
-<script type="text/javascript">
-  var config = {
-    packages: {
-      // package mappings
-      dollar: 'vendor/zepto',
-      util: 'lib/util'
-    }
-  };
-</script>
-<script src="../vendor/require.js"></script>
+<script src="./vendor/require.js"></script>
+<script type="text/javascript" src="./config.js"></script>
 <script>
-  require({
-    baseUrl: '..',
-    // configure our AMD loader
-    paths: config.packages
-  }, ['dollar', 'resources/npc', 'models/player', 'models/npc'], function($, npc, player, Npc){
+  require(['dollar', 'resources/npc', 'models/Player', 'models/npc'], function($, npc, Player, Npc){
+    
+    var player = new Player({
+     inventory: Player.initialInventory 
+    });
     
     var goblin = Npc.create('goblin');
     var goblinChamp = Npc.create('goblinChamp');
