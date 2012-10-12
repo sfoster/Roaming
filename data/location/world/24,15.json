@@ -1,12 +1,7 @@
 {
-  "img": {},
-  "description": "The yawning abyss swallows you up. You fall for a night a day.",
-  "afar": "the edge of the world. No man may pass here.",
-  "coords": [
-    24,
-    15
-  ],
-  "here": [],
-  "id": "24,15",
-  "type": "abyss"
+  "x": "24",
+  "y": "15",
+  "type": "abyss",
+  "description": "",
+  "id": "24,15"
 }

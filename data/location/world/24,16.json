@@ -1,14 +1,7 @@
 {
-  "img": {},
-  "description": "The yawning abyss swallows you up. You fall and drown in the dark river below ",
-  "afar": "The edge of the world. No man may pass here.",
-  "width": 1,
-  "height": 1,
+  "x": "24",
+  "y": "16",
   "type": "abyss",
-  "coords": [
-    24,
-    16
-  ],
-  "here": [],
+  "description": "",
   "id": "24,16"
 }

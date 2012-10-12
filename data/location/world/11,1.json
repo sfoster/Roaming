@@ -1,12 +1,7 @@
 {
-  "img": {},
-  "description": "You are climbing a circle of mountians",
-  "afar": "Mountains",
-  "coords": [
-    11,
-    1
-  ],
-  "here": [],
-  "id": "11,1",
-  "type": "mountains"
+  "x": "11",
+  "y": "1",
+  "type": "abyss",
+  "description": "",
+  "id": "11,1"
 }

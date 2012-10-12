@@ -52,23 +52,35 @@ function handleFile(name) {
 			onEmptyFile(name);
 			return;
 		}
-		var data;
+		var data, 
+			dirty = false;
 		try {
 			data = JSON.parse(str);
 		} catch(e) {
 			console.log("Couldn't parse json: ", str);
 			throw e.message;
 		}
-		if(('x' in data) && ('y' in data))
-			return;
+		if(('x' in data) && ('y' in data)) {
+			if(!('id' in data)){
+				data.id = data.x + ',' + data.y;
+				dirty = true;
+			}
+			if(data.coords) {
+				delete data.coords;
+				dirty = true;
+			}
+		}
 		if(data.coords) {
 			// needs fixing
 			var coords = data.coords || data.id.split(',');
 			data.x = coords[0];
 			data.y = coords[1];
 			delete data.coords;
+			dirty = true;
 		}
-
+		if(!dirty)
+			return;
+		
 		fs.writeFile(name, JSON.stringify(data, null, 2), function(err){
 			if(err) throw "Error writing back file: " + err;
 		});

@@ -1,12 +1,7 @@
 {
-  "img": {},
-  "description": "You are submerged in deep water",
-  "afar": " A large oasis surrounded by plains and sand",
-  "coords": [
-    11,
-    20
-  ],
-  "here": [],
-  "id": "11,20",
-  "type": "water"
+  "x": "11",
+  "y": "20",
+  "type": "abyss",
+  "description": "",
+  "id": "11,20"
 }

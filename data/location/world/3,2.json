@@ -2,10 +2,8 @@
   "img": {},
   "description": "You see flat grassland all around you.",
   "afar": "it looks like grass and more grass",
-  "coords": [
-    3,
-    2
-  ],
+  "x": 3,
+  "y": 2,
   "here": [
     {
       "id": "rocFeather",

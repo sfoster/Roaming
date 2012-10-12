@@ -1,15 +1,7 @@
 {
-  "img": {},
-  "description": "You see flat grassland and small shrubs all around you.",
-  "afar": "it looks like grass and more grass",
-  "coords": [
-    10,
-    2
-  ],
-  "here": [
-    {"$ref": "$.items.apple"},
-    {"$ref": "$.items.edibleMushrooms"}
-  ],
-  "id": "10,2",
-  "type": "plains"
+  "x": "10",
+  "y": "2",
+  "type": "abyss",
+  "description": "",
+  "id": "10,2"
 }

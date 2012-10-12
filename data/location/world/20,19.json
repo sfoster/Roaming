@@ -1,12 +1,7 @@
 {
-  "img": {},
-  "description": "Sand ",
-  "afar": "Sand ",
-  "coords": [
-    20,
-    19
-  ],
-  "here": [],
-  "id": "20,19",
-  "type": "sand"
+  "x": "20",
+  "y": "19",
+  "type": "abyss",
+  "description": "",
+  "id": "20,19"
 }
