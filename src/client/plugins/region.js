@@ -39,17 +39,16 @@ define(['dollar', 'lib/json/ref', 'models/Region'], function($, json, Region){
       } else {
         // we're currently storing regions at location/name.json
         get(resourceUrl, function(resp){
-          resp = json.resolveJson(resp);
-          if(resp.status == 'ok'){
-            region = new Region({ 
-              id: id, 
-              resourceUrl: resourceUrl,
-              tiles: resp.d
-            });
-            onLoad(region);
-          } else {
-            throw "Error loading resourceUrl, status: " + status;
+          if(resp.status && resp.status !== 'ok'){
+            throw "Error loading resourceUrl " + resourceUrl +", status: " + status;
           }
+          resp = json.resolveJson(resp.d || resp);
+          region = new Region({ 
+            id: id, 
+            resourceUrl: resourceUrl,
+            tiles: resp.d
+          });
+          onLoad(region);
         });
       }
     }
