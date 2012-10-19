@@ -1,0 +1,27 @@
+{
+  "encounter": {
+    "npc": [
+      {
+        "type": "troll",
+        "count": "5"
+      },
+      {
+        "type": "trollElder",
+        "count": "1"
+      }
+    ]
+  },
+  "img": {},
+  "description": "You see a coarse meadow criss-crossed by muddy trails.",
+  "afar": "it looks like grass and more grass",
+  "coords": [
+    3,
+    3
+  ],
+  "here": [],
+  "encounterType": "npc",
+  "id": "3,3",
+  "type": "plains",
+  "x": 3,
+  "y": 3
+}

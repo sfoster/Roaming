@@ -48,6 +48,8 @@ define([
   var game ={
     player: player
   };
+  var region; 
+  var tile;
   
   var locationsByCoords = {};
   var stack = window.stack = (function(){
@@ -74,7 +76,49 @@ define([
     };
   })();
   
+  function enterAt(regionId, x, y) {
+    var locationId = regionId + '/' + [x,y].join(',');
 
+    require([
+      'plugins/resource!region/'+regionId+'/index', 
+      'plugins/location!'+locationId
+    ], function(
+        _region, _tile
+    ){
+      region = _region; 
+      tile = _tile;
+      var encounterId = tile.encounter;
+      console.log("Loaded region: ", region);
+      console.log("Loaded tile: ", tile);
+      if('string' == typeof encounterId) {
+        if(!(encounterId in encounters)){
+          throw "Encounter " + encounterId + " not defined";
+        }
+        // resolve encounter ids to their contents
+        tile.encounter = encounters[encounterId];
+      }
+
+      region.on('enter', function(){
+        ui.status("You enter the region");
+      });
+      region.on('exit', function(){
+        ui.status("You leave this region");
+      });
+      
+      // if(!tile.enter) {
+      //   throw "Error loading location: " + id;
+      // }
+      // walk up the stack to the region
+      if(!stack.length){
+        stack.push(region);
+      } 
+      if(stack.length > 1){
+        stack.pop();
+      }
+      stack.push(tile);
+    }); 
+  }
+  
   var routes = [
     [
       "#:region/:x,:y", 
@@ -84,43 +128,7 @@ define([
             y = Number(req.y);
             
           console.log("route match for location: ", regionId, x, y);
-          var locationId = regionId + '/' + [x,y].join(',');
-
-          require([
-            'plugins/region!'+regionId, 
-            'plugins/location!'+locationId], function(
-              region, tile
-          ){
-            var encounterId = tile.encounter;
-            console.log("Loaded region: ", region);
-            console.log("Loaded tile: ", tile);
-            if('string' == typeof encounterId) {
-              if(!(encounterId in encounters)){
-                throw "Encounter " + encounterId + " not defined";
-              }
-              // resolve encounter ids to their contents
-              tile.encounter = encounters[encounterId];
-            }
-
-            region.on('enter', function(){
-              ui.status("You enter the region");
-            });
-            region.on('exit', function(){
-              ui.status("You leave this region");
-            });
-            
-            // if(!tile.enter) {
-            //   throw "Error loading location: " + id;
-            // }
-            // walk up the stack to the region
-            if(!stack.length){
-              stack.push(region);
-            } 
-            if(stack.length > 1){
-              stack.pop();
-            }
-            stack.push(tile);
-          }); 
+          enterAt(regionId, x, y);
       }
     ]    
   ];

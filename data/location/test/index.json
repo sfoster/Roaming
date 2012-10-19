@@ -1,98 +1,101 @@
-[
-  {
-    "$ref": "/location/0,0.json",
-    "type": "abyss",
-    "x": 0,
-    "y": 0
-  },
-  {
-    "$ref": "/location/1,0.json",
-    "type": "abyss",
-    "x": 1,
-    "y": 0
-  },
-  {
-    "$ref": "/location/2,0.json",
-    "type": "abyss",
-    "x": 2,
-    "y": 0
-  },
-  {
-    "$ref": "/location/3,0.json",
-    "type": "abyss",
-    "x": 3,
-    "y": 0
-  },
-  {
-    "$ref": "/location/0,1.json",
-    "type": "abyss",
-    "x": 0,
-    "y": 1
-  },
-  {
-    "$ref": "/location/1,1.json",
-    "type": "mountains",
-    "x": 1,
-    "y": 1
-  },
-  {
-    "$ref": "/location/2,1.json",
-    "type": "mountains",
-    "x": 2,
-    "y": 1
-  },
-  {
-    "$ref": "/location/3,1.json",
-    "type": "abyss",
-    "x": 3,
-    "y": 1
-  },
-  {
-    "$ref": "/location/0,2.json",
-    "type": "abyss",
-    "x": 0,
-    "y": 2
-  },
-  {
-    "$ref": "/location/1,2.json",
-    "type": "mountains",
-    "x": 1,
-    "y": 2
-  },
-  {
-    "$ref": "/location/2,2.json",
-    "type": "plains",
-    "x": 2,
-    "y": 2
-  },
-  {
-    "$ref": "/location/3,2.json",
-    "type": "plains",
-    "x": 3,
-    "y": 2
-  },
-  {
-    "$ref": "/location/0,3.json",
-    "type": "abyss",
-    "x": 0,
-    "y": 3
-  },
-  {
-    "$ref": "/location/1,3.json",
-    "type": "abyss",
-    "x": 1,
-    "y": 3
-  },
-  {
-    "$ref": "/location/2,3.json",
-    "type": "abyss",
-    "x": 2,
-    "y": 3
-  },
-  {
-    "$ref": "/location/3,3.json",
-    "type": "abyss",
-    "x": 3,
-    "y": 3
-  }
-]
+{
+	"id": "test",
+	"tiles": [
+	  {
+	    "$ref": "/location/0,0.json",
+	    "type": "abyss",
+	    "x": 0,
+	    "y": 0
+	  },
+	  {
+	    "$ref": "/location/1,0.json",
+	    "type": "abyss",
+	    "x": 1,
+	    "y": 0
+	  },
+	  {
+	    "$ref": "/location/2,0.json",
+	    "type": "abyss",
+	    "x": 2,
+	    "y": 0
+	  },
+	  {
+	    "$ref": "/location/3,0.json",
+	    "type": "abyss",
+	    "x": 3,
+	    "y": 0
+	  },
+	  {
+	    "$ref": "/location/0,1.json",
+	    "type": "abyss",
+	    "x": 0,
+	    "y": 1
+	  },
+	  {
+	    "$ref": "/location/1,1.json",
+	    "type": "mountains",
+	    "x": 1,
+	    "y": 1
+	  },
+	  {
+	    "$ref": "/location/2,1.json",
+	    "type": "mountains",
+	    "x": 2,
+	    "y": 1
+	  },
+	  {
+	    "$ref": "/location/3,1.json",
+	    "type": "abyss",
+	    "x": 3,
+	    "y": 1
+	  },
+	  {
+	    "$ref": "/location/0,2.json",
+	    "type": "abyss",
+	    "x": 0,
+	    "y": 2
+	  },
+	  {
+	    "$ref": "/location/1,2.json",
+	    "type": "mountains",
+	    "x": 1,
+	    "y": 2
+	  },
+	  {
+	    "$ref": "/location/2,2.json",
+	    "type": "plains",
+	    "x": 2,
+	    "y": 2
+	  },
+	  {
+	    "$ref": "/location/3,2.json",
+	    "type": "plains",
+	    "x": 3,
+	    "y": 2
+	  },
+	  {
+	    "$ref": "/location/0,3.json",
+	    "type": "abyss",
+	    "x": 0,
+	    "y": 3
+	  },
+	  {
+	    "$ref": "/location/1,3.json",
+	    "type": "abyss",
+	    "x": 1,
+	    "y": 3
+	  },
+	  {
+	    "$ref": "/location/2,3.json",
+	    "type": "abyss",
+	    "x": 2,
+	    "y": 3
+	  },
+	  {
+	    "$ref": "/location/3,3.json",
+	    "type": "abyss",
+	    "x": 3,
+	    "y": 3
+	  }
+	]
+}

@@ -25,25 +25,30 @@ define(['dollar', 'lib/util', 'lib/json/ref'], function($, util, json){
   var resourcePlugin = {
     load: function (resourceId, req, onLoad, requireConfig) {
       var resourceType = resourceId.substring(0, resourceId.indexOf('/') );
-      console.log("resource plugin load: ", resourceId, resourceType);
-      var resourceUrl = config.baseUrl.replace(/\/$/, '') +'/' + resourceId;
-      get(resourceId, function(resp){
+      var resourceUrl; 
+      switch(resourceType) {
+        default: 
+          resourceUrl = req.toUrl(resourceId + '.json');
+      }
+      get(resourceUrl, function(resp){
         var resourceData;
-        if(resp.status && resp.status === "ok" && resp.d) {
-          resourceData = json.resolveJson(resp.d);
-          // console.log("resolved resourceData: ", resourceData);
-          var ctorModule = resourceType && resourceClassMap[resourceType];
-          if(ctorModule) {
-            require([ctorModule], function(Clazz){
-              var instance = new Clazz(resourceData); 
-              onLoad(instance);
-            });
-          } else {
-            onLoad(resourceData);
-          }
-        }
-        else {
+        if(resp.status && resp.status !== "ok") {
           console.error("Problem loading: "+resourceUrl + ", response was: ", resp);
+          throw new Error("Resource "+resourceId+"failed to load: " + resp.status);
+        }
+        resourceData = json.resolveJson(resp.status ? resp.d : resp);
+        resourceData._resourceUrl = resourceUrl; 
+        resourceData._resourceId = resourceId; 
+        
+        // console.log("resolved resourceData: ", resourceData);
+        var ctorModule = resourceType && resourceClassMap[resourceType];
+        if(ctorModule) {
+          require([ctorModule], function(Clazz){
+            var instance = new Clazz(resourceData); 
+            onLoad(instance);
+          });
+        } else {
+          onLoad(resourceData);
         }
       });
     }

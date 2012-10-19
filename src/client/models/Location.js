@@ -18,14 +18,14 @@ define([
     console.log("create location with data: ", options);
     console.assert('x' in this, "Missing x property");
     console.assert('y' in this, "Missing y property");
-    console.assert(this.resourceId, "Missing resourceId property");
+    console.assert(this._resourceId, "Missing _resourceId property");
+    console.assert(this._resourceUrl, "Missing _resourceUrl property");
     if(!this.encounter){
       this.encounter = {};
     }
   }
   
   util.mixin(Location.prototype, Evented, {
-    baseUrl: '',
     encounterType: "none",
     get: function(name){
       return this[name];
@@ -90,7 +90,7 @@ define([
         type: 'PUT',
         dataType: 'json',
         contentType: 'application/json',
-        url: this.baseUrl +'/'+id+'.json',
+        url: this._resourceUrl,
         data: JSON.stringify(formData),
         success: function(resp){
           console.log("save response: ", resp);

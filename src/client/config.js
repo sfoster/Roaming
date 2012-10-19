@@ -10,7 +10,11 @@ require.config({
     order: 'plugins/vendor/order',
     lang: 'vendor/lodash',
     compose: 'vendor/compose',
-    knockout: 'vendor/knockout'
+    knockout: 'vendor/knockout',
+    // data resources
+    player: '../../data/player',
+    location: '../../data/location',
+    region: '../../data/location'
   },
   packages: [
     { name: 'store',   location: './vendor/store',    main: 'main' },
@@ -20,7 +24,9 @@ require.config({
 });
 
 // environment config
-var config = {};
+var config = {
+  dataUrl: ''
+};
 
 (function(){
   // pull config from querystring
