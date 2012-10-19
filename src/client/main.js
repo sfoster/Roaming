@@ -46,10 +46,10 @@ define([
   // enter the region and tile
   
   var game ={
-    player: player
+    player: player,
+    region: null, 
+    tile: null
   };
-  var region; 
-  var tile;
   
   var locationsByCoords = {};
   var stack = window.stack = (function(){
@@ -83,10 +83,11 @@ define([
       'plugins/resource!region/'+regionId+'/index', 
       'plugins/location!'+locationId
     ], function(
-        _region, _tile
+        region, tile
     ){
-      region = _region; 
-      tile = _tile;
+      game.region = region; 
+      game.tile = tile;
+
       var encounterId = tile.encounter;
       console.log("Loaded region: ", region);
       console.log("Loaded tile: ", tile);
@@ -234,7 +235,7 @@ define([
     var tile = evt.target, 
         directionsTemplate = template('{{coords}}: To the <a href="#{{coords}}" class="option">{{direction}}</a> you see {{terrain}}');
         
-    var edges = region.getEdges(tile.x, tile.y);
+    var edges = game.region.getEdges(tile.x, tile.y);
     var edgesById = {};
     var locationsById = {};
     var ids = edges.map(function(tile){

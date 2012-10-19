@@ -115,6 +115,20 @@ define([
         loadPromise.resolve(tile);
       });
       return loadPromise;
+    },
+    getEdges: function(x,y){
+      var nearby = this.tiles.filter(function(tile){
+        if(tile.x==x && tile.y==y) return false;
+        if(
+          Math.abs(tile.x - x) <= 1
+        ){
+          if(Math.abs(tile.y - y) <= 1){
+            return true;
+          }
+        }
+        return false;
+      });
+      return nearby;
     }
   });
 
