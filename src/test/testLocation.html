@@ -1,38 +1,60 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Test</title>
+  <title>Test</title>
 
-	<script type="text/javascript" src="../vendor/require.js"></script>
+  <script src="../client/vendor/require.js"></script>
+  <script src="../client/config.js"></script>
 
-	<script type="text/javascript">
-		require.config(
-			{
-			  baseUrl: '../',
-				paths: {
-          dollar: 'vendor/zepto',
-          text: 'plugins/vendor/text',
-          json: 'plugins/vendor/json',
-          image: 'plugins/vendor/image',
-          order: 'plugins/vendor/order',
-          util: 'lib/util',
-          compose: 'vendor/compose',
-          knockout: 'vendor/knockout',
-					'plugins' : 'plugins'
-				}
-			}
-		);
-		require([
-			'./lib/util',
-			'plugins/location!test/3,3'
-		],
-			function(util, tile) {
-				//run tests
-				console.log("ok? ", util, tile);
-			});
-	</script>
+  <script type="text/javascript">
+    require({
+      baseUrl: "../client"
+    }, [
+      'knockout', 
+      'lib/util', 
+      'plugins/resource!location/test/3,3'
+    ],function(ko, util, tile) {
+      //run tests
+      var template = '' +
+        '<pre>Id: {{id}}\n'+
+        'Region: {{regionId}}\n'+
+        'Type: {{type}}\n'+
+        'Description: {{description}}\n';
+
+      console.log("ok? ", util, tile);
+      ko.applyBindings(tile);
+      // document.body.innerHTML = template.replace(/\{\{([^\}]+)\}\}/g, function(m, name){
+      //   return tile[name];
+      // })
+    });
+  </script>
 </head>
 
 <body>
+
+  <section id="main" class="panel">
+    <h2>Location: <span data-bind="text: id"></span></h2>
+    <dl>
+      <dt>Region:</dt>
+      <dd data-bind="text: regionId"></dd>
+      <dt>Type:</dt>
+      <dd data-bind="text: type"></dd>
+      <dt>Description:</dt>
+      <dd data-bind="text: description"></dd>
+    </dl>
+    <h2>Here</h2>
+    
+    <ul data-bind="foreach: here">
+      <li>Item</li>
+    </ul>
+    <h2>Encounter</h2>
+    <div data-bind="if: encounter && encounterType =='npc'">
+      NPC Encounter data
+      <ul data-bind="foreach: encounter.npc">
+        <li data-bind="text: type"></li>
+      </ul>
+    </div>
+  </section>  
+
 </body>
 </html>
