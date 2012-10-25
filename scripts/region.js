@@ -12,15 +12,30 @@ function createStubs(region) {
       tile.setDirectory(dir);
       
   var indexFile = path.join(dir, 'index.json');
+  var jobs = [];
+  jobs.start = jobs.next = function(){
+    var fn = this.shift();
+    if(fn) {
+      fn();
+    }
+  };
+  
   if(fs.existsSync(indexFile)) {
     fs.readFile(indexFile, function(err, contents){
       if(err) throw err;
       var tiles = JSON.parse(contents).tiles;
+      
       tiles.forEach(function(stub){
-        delete stub['$ref'];
-        console.log("create tile: ", stub);
-        tile.createTile(stub);
+        jobs.push(function(){
+          delete stub['$ref'];
+          console.log("create tile: ", stub);
+          tile.createTile(stub, function(){
+            jobs.next();
+          });
+        });
       });
+      
+      jobs.start();
       // console.log("tiles: ", tiles);
     });
   } else {

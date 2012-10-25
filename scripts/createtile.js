@@ -79,26 +79,36 @@ exports.createTile = function createTile(params, callback) {
   var resourcePath = dir + '/' + id + '.json';
 
   var fileData;
+  var updateFile = function(data) {
+    var fileData = mixin(data || {}, params);
+    fs.writeFile(resourcePath, JSON.stringify(fileData, null, 2), function(err){
+      if(err) {
+        console.log("Error writing to " + resourcePath, err);
+        if(callback) callback(err);
+      } else {
+        console.log(resourcePath + " created/updated");
+        if(callback) callback(null, fileData);
+      }
+    });
+    
+  }
   if(fs.existsSync(resourcePath)) {
     try {
-      fileData = JSON.parse(fs.readFileSync(resourcePath));
+      fs.readFile(resourcePath, function(err, contents){
+        if(err) {
+          console.log("readfile error: ", err);
+          throw "read fail for " + resourcePath;
+        }
+        var fileData = JSON.parse(contents);
+        updateFile(fileData);
+      })
     } catch(e) {
       console.log("Bad data in " + resourcePath);
       fileData = {};      
     }
+  } else {
+    updateFile(fileData);
   }
-  console.log("preparing fileData:", fileData);
-  fileData = mixin(fileData || {}, params);
-  fs.writeFile(resourcePath, JSON.stringify(fileData, null, 2), function(err){
-    if(err) {
-      console.log("Error writing to " + resourcePath, err);
-      if(callback) callback(err);
-    } else {
-      console.log(resourcePath + " created/updated");
-      if(callback) callback(null, fileData);
-    }
-  });
-
 };
 
 if(require.main === module){
