@@ -30,19 +30,86 @@
       'lib/util', 
       'plugins/resource!region/'+regionId+'/index'
     ],function(ko, util, region) {
+      function pluck(ar, p) {
+        return ar.map(function(item){
+          return item[p];
+        });
+      }
       
+      var TILE_SIZE = 50, 
+          REGION_WIDTH = TILE_SIZE * pluck(region.tiles, 'x').reduce(function(a, b){
+            return Math.max(a, b);
+          }), 
+          REGION_HEIGHT = TILE_SIZE * pluck(region.tiles, 'y').reduce(function(a, b){
+            return Math.max(a, b);
+          }); 
+      
+      var canvasNode = document.getElementById('mapCanvas');
+      canvasNode.width = REGION_WIDTH;
+      canvasNode.height = REGION_HEIGHT;
+      canvasNode.style.width = REGION_WIDTH+'px';
+      canvasNode.style.height = REGION_HEIGHT+'px';
+      
+      console.log("REGION_WIDTH", REGION_WIDTH);
+      console.log("REGION_HEIGHT", REGION_HEIGHT);
+      
+      var loadingLabel = [
+             { assign: 'fillStyle', value: 'rgba(51,51,51,0.5)' },
+             { call: 'fillRect', value: [0, 0, 50, 12] },
+             { assign: 'fillStyle', value: "#ffc" },
+             { assign: 'textBaseline', value: 'top' },
+             { assign: 'font', value: 'normal 8px sans-serif' },
+             { call: 'fillText', value: [ "loading", 1, 3 ] }
+           ];
+           
       var viewModel = {
         id: regionId,
-        tiles: ko.observableArray([])
+        tiles:  ko.observableArray([]),
+        layers: ko.observableArray([
+          loadingLabel
+        ])
       };
       
       console.log("region: ", region);
       var ids = region.tiles.map(function(stub){
         return stub.x+','+stub.y;
       });
+
+      var colors = {
+        'abyss': 'rgba(51,51,51,1)',
+        'mountains': 'rgba(153,153,153,1)',
+        'plains': 'rgba(153,255,153,1)',
+        'default': 'rgba(51,51,155,1)'
+      };
       
       region.loadTiles(ids).then(function(tiles){
+        console.log("loadTiles callback");
         viewModel.tiles.splice.apply(viewModel.tiles, [0, tiles.length].concat(tiles));
+
+        var terrainMap = [
+          { call: 'clearRect', value: [0, 0,  REGION_WIDTH, REGION_HEIGHT]},
+          { assign: 'textBaseline', value: 'top' },
+          { assign: 'font', value: 'normal 9px sans-serif' },
+          { assign: 'strokeStyle', value: '#000' },
+          { assign: 'lineWidth', value: 1 }
+        ];
+        tiles.forEach(function(tile){
+          var scale = TILE_SIZE, x = scale*tile.x, y = scale*tile.y;
+          terrainMap.push(
+            { assign: 'fillStyle', value: colors[tile.type] || colors[tile['default']] },
+            { call: 'fillRect', value: [x, y, scale, scale] },
+            { call: 'strokeRect', value: [x, y, scale, scale] },
+            { assign: 'fillStyle', value: "#000" },
+            { call: 'fillRect', value: [x, y, scale, 12] },
+            { assign: 'fillStyle', value: "#fff" },
+            { call: 'fillText', value: [ tile.id + ': ' + tile.type, 3+x, 3+y ] }
+          );
+        });
+        var arLayers = viewModel.layers(),
+            len = arLayers.length;
+            
+        console.log("current layers: ", arLayers);
+        viewModel.layers([ terrainMap ]);
       });
 
       ko.applyBindings(viewModel);
@@ -51,7 +118,9 @@
 </head>
 
 <body>
-
+  <section id="map">
+    <canvas id="mapCanvas" width="400" height="400" data-bind="layers2d: layers" style="width:400px; height: 400px"></canvas>
+  </section>
   <section id="main" class="panel">
     <h2>Region: <span data-bind="text: id"></span></h2>
     <ul data-bind="foreach: tiles">
