@@ -78,10 +78,10 @@ define([
   
   function enterAt(regionId, x, y) {
     var locationId = regionId + '/' + [x,y].join(',');
-
+    console.log("enterAt, regionId: %s, locationId: %s", regionId, locationId);
     require([
       'plugins/resource!region/'+regionId+'/index', 
-      'plugins/location!'+locationId
+      'plugins/resource!location/'+locationId
     ], function(
         region, tile
     ){
@@ -167,7 +167,7 @@ define([
   
   function loadLocations() {
     var ids = Array.prototype.slice.call(arguments, 0).map(function(id){
-      return  'plugins/location!'+id;
+      return  'plugins/resource!location/'+id;
     });
     var defd = Promise.defer();
     require(ids, function(){

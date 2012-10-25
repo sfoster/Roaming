@@ -68,6 +68,7 @@ define([
       }
     },
     save: function(){
+      throw "Not implemented";
       var formData = sanitizedClone(this.tiles, []);
       var keepers = {'$ref': 1, 'x': 1, 'y': 1, 'type': 1};
       // de-reference
@@ -111,7 +112,7 @@ define([
       var url = stub.$ref, 
           coords = stub.x+','+stub.y;
       var loadPromise = new Promise();
-      require(['plugins/location!'+coords], function(tile){
+      require(['plugins/resource!location/' + this.id + '/'+coords], function(tile){
         loadPromise.resolve(tile);
       });
       return loadPromise;

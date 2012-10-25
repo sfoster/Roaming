@@ -6,7 +6,7 @@ define(['dollar', 'lib/util', 'lib/json/ref'], function($, util, json){
     'region': 'models/Region'
   };
   
-  function get(url, callback){
+  function get(url, callback, errback){
     console.log("get url: ", url);
     $.ajax({
       url: url,
@@ -14,18 +14,21 @@ define(['dollar', 'lib/util', 'lib/json/ref'], function($, util, json){
       success: callback,
       error: function(err){
         console.error("Error loading " + url, err);
+        if(errback) errback.apply(null, arguments);
       }
     });
   }
 
-  // usage: require(['plugins/location!region/0,0'], function(tile, region){ ... })
+  // usage: require(['plugins/resource!region/0,0'], function(tile, region){ ... })
   var global = window, 
       config = global.config || (global.config = {});
   
   var resourcePlugin = {
     load: function (resourceId, req, onLoad, requireConfig) {
-      var resourceType = resourceId.substring(0, resourceId.indexOf('/') );
+      var resourceParts = resourceId.split('/');
+      var resourceType = resourceParts.shift();
       var resourceUrl; 
+      console.log("resource load, load resourceId: ", resourceId);
       switch(resourceType) {
         default: 
           resourceUrl = req.toUrl(resourceId + '.json');
@@ -39,9 +42,22 @@ define(['dollar', 'lib/util', 'lib/json/ref'], function($, util, json){
         resourceData = json.resolveJson(resp.status ? resp.d : resp);
         resourceData._resourceUrl = resourceUrl; 
         resourceData._resourceId = resourceId; 
-        
+
         // console.log("resolved resourceData: ", resourceData);
-        var ctorModule = resourceType && resourceClassMap[resourceType];
+        var ctorModule;
+        switch(resourceType) {
+          case 'location': 
+            var regiond
+            resourceData.regionId = resourceParts[0];
+            resourceData.coords = resourceParts[1];
+            ctorModule = resourceData.terrainType ||resourceClassMap[resourceType];
+            break;
+            
+          default: 
+            ctorModule = resourceType && resourceClassMap[resourceType];
+            break;
+        }
+
         if(ctorModule) {
           require([ctorModule], function(Clazz){
             var instance = new Clazz(resourceData); 
@@ -50,6 +66,10 @@ define(['dollar', 'lib/util', 'lib/json/ref'], function($, util, json){
         } else {
           onLoad(resourceData);
         }
+      }, function(){
+        console.warn("Failed to load: " + resourceUrl);
+        console.log("errback given args: ", arguments);
+        onLoad({});
       });
     }
   };

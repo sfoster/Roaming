@@ -1,6 +1,6 @@
 define(['models/Location', 'models/Region'], function(Location, Region){
 
-  // usage: require(['plugins/location!region/0,0'], function(tile, region){ ... })
+  // usage: require(['plugins/resource!location/region/0,0'], function(tile, region){ ... })
   var global = window, 
       config = global.config || (global.config = {});
   
