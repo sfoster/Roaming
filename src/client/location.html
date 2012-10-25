@@ -3,8 +3,8 @@
 <head>
   <title>Test</title>
 
-  <script src="../client/vendor/require.js"></script>
-  <script src="../client/config.js"></script>
+  <script src="./vendor/require.js"></script>
+  <script src="./config.js"></script>
 
   <script type="text/javascript">
     (function(){
@@ -25,9 +25,7 @@
     })();
 
     var locn = config.location || 'test/3,3';
-    require({
-      baseUrl: "../client"
-    }, [
+    require([
       'knockout', 
       'lib/util', 
       'plugins/resource!location/'+locn
@@ -39,13 +37,8 @@
         'Type: {{type}}\n'+
         'Description: {{description}}\n';
 
-      console.log("ok? ", util, tile);
       ko.applyBindings(tile);
-      
-      console.log("config: ", config);
-      // document.body.innerHTML = template.replace(/\{\{([^\}]+)\}\}/g, function(m, name){
-      //   return tile[name];
-      // })
+
     });
   </script>
 </head>
