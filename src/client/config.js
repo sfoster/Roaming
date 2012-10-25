@@ -10,7 +10,6 @@ require.config({
     order: 'plugins/vendor/order',
     lang: 'vendor/lodash',
     compose: 'vendor/compose',
-    knockout: 'vendor/knockout',
     // data resources
     player: '../../data/player',
     location: '../../data/location',
@@ -18,7 +17,8 @@ require.config({
   },
   packages: [
     { name: 'store',   location: './vendor/store',    main: 'main' },
-    { name: 'promise',   location: './vendor/promised-io',    main: 'promise' }
+    { name: 'promise',   location: './vendor/promised-io',    main: 'promise' },
+    { name: 'knockout',   location: './vendor/knockout',    main: 'main' }
   ],
   waitSeconds: 15
 });
