@@ -1,7 +1,7 @@
 {
-  "x": "11",
-  "y": "20",
-  "type": "abyss",
+  "x": 11,
+  "y": 20,
+  "type": "water",
   "description": "",
   "id": "11,20"
 }
