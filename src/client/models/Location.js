@@ -23,6 +23,9 @@ define([
     if(!this.encounter){
       this.encounter = {};
     }
+    if(!this.here){
+      this.here = [];
+    }
   }
   
   util.mixin(Location.prototype, Evented, {
