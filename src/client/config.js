@@ -13,6 +13,7 @@ require.config({
     knockout: 'vendor/knockout',
     // data resources
     player: '../../data/player',
+    location: '../../data/location',
     region: '../../data/location'
   },
   packages: [
