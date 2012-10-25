@@ -107,11 +107,26 @@ define([
       });
       return savePromise;
     },
+    loadTiles: function(ids){
+      // 
+      var regionId = this.id;
+      var slice = Array.prototype.slice;
+      ids = ids.map(function(coords){
+        return 'plugins/resource!location/' + regionId + '/'+coords;
+      });
+      
+      var loadPromise = Promise.defer();
+      require(ids, function(){
+        var tiles = slice.call(arguments);
+        loadPromise.resolve(tiles);
+      });
+      return loadPromise;
+    },
     loadTile: function(stub){
       // 
       var url = stub.$ref, 
           coords = stub.x+','+stub.y;
-      var loadPromise = new Promise();
+      var loadPromise = Promise.defer();
       require(['plugins/resource!location/' + this.id + '/'+coords], function(tile){
         loadPromise.resolve(tile);
       });

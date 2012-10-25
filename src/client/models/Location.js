@@ -15,7 +15,7 @@ define([
     for(var i in options){
       this[i] = options[i];
     }
-    console.log("create location with data: ", options);
+    // console.log("create location with data: ", options);
     console.assert('x' in this, "Missing x property");
     console.assert('y' in this, "Missing y property");
     console.assert(this._resourceId, "Missing _resourceId property");
@@ -30,6 +30,7 @@ define([
   
   util.mixin(Location.prototype, Evented, {
     encounterType: "none",
+    description: "",
     get: function(name){
       return this[name];
     }, 
