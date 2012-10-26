@@ -1,4 +1,4 @@
-define(['lib/util', 'lib/event'], function(util, Evented){
+define(['compose', 'lib/util', 'lib/event'], function(Compose, util, Evented){
   var emit = Evented.emit.bind(this), // it matter what 'this' when we emit and listenr for events. Here, 'this' is the global context
       create = util.create;
       
@@ -6,7 +6,11 @@ define(['lib/util', 'lib/event'], function(util, Evented){
     seen: false
   };
   
-  var exports = {
+  var Item = Compose(Compose, {
+
+  });
+
+  util.mixin(Item, {
     create: function(data){
       if("string" == typeof data){
         data = JSON.parse(data);
@@ -15,6 +19,7 @@ define(['lib/util', 'lib/event'], function(util, Evented){
       return item;
     },
     describe: function(item, context){
+      context = context || {};
       var player = context.player;
       // is this the first/initial sight of this item?
       // do we own this item?
@@ -43,16 +48,18 @@ define(['lib/util', 'lib/event'], function(util, Evented){
             proceed = false;
           }
         });
+        if(proceed) {
         // fire a onaftertake event, which maybe adds the thing to your inventory, increments weight, confirms the action
-        emit("onbeforetake", {
+        emit("onaftertake", {
           target: item,
           cancel: function(){
             proceed = false;
           }
         });
+        }
       }
-      return !item.fixed;
+      return proceed && !item.fixed;
     }
   };
-  return exports;
+  return Item;
 });

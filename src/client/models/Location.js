@@ -12,6 +12,7 @@ define([
     if(!options) return;
     this._onexits = [];
     this.encounter = {};
+    this.here = [];
     for(var i in options){
       this[i] = options[i];
     }
@@ -20,12 +21,6 @@ define([
     console.assert('y' in this, "Missing y property");
     console.assert(this._resourceId, "Missing _resourceId property");
     console.assert(this._resourceUrl, "Missing _resourceUrl property");
-    if(!this.encounter){
-      this.encounter = {};
-    }
-    if(!this.here){
-      this.here = [];
-    }
   }
   
   util.mixin(Location.prototype, Evented, {
