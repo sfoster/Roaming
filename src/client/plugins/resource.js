@@ -1,4 +1,4 @@
-define(['dollar', 'lib/util', 'lib/json/ref'], function($, util, json){
+define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, util, json){
 
   var resourceClassMap = {
     'location': 'models/Location',
@@ -6,17 +6,49 @@ define(['dollar', 'lib/util', 'lib/json/ref'], function($, util, json){
     'region': 'models/Region'
   };
   
-  function get(url, callback, errback){
-    console.log("get url: ", url);
+
+  function fetch(url){
+    var defd = Promise.defer();
     $.ajax({
       url: url,
       dataType: 'json',
-      success: callback,
+      success: function(resp){
+        defd.resolve.apply(defd, arguments);
+      },
       error: function(err){
         console.error("Error loading " + url, err);
-        if(errback) errback.apply(null, arguments);
+        defd.reject.apply(defd, arguments);
       }
     });
+    return defd.promise;
+  }
+  function registerType(typestr, resourcePath) {
+    resourceClassMap[typestr] = resourcePath;
+  }
+  function thaw(value) {
+    var defd = Promise.defer();
+    var ctorModule;
+    if(value.type) {
+      ctorModule = resourceClassMap[value.type];
+      if(!ctorModule) {
+        throw new Error("No mapping for type: " + value.type);
+      }
+      require([ctorModule], function(Clazz){
+        var instance = new Clazz(value.params || {}); 
+        defd.resolve(instance);
+      });
+      return defd.promise; 
+    }
+    if(value.resource) {
+      require([value.resource], function(res){
+       defd.resolve(res);
+      });
+      return defd.promise; 
+    }
+    setTimeout(function(){
+      defd.resolve(value);
+    }, 0);
+    return defd.promise; 
   }
 
   // usage: require(['plugins/resource!region/0,0'], function(tile, region){ ... })
@@ -24,16 +56,18 @@ define(['dollar', 'lib/util', 'lib/json/ref'], function($, util, json){
       config = global.config || (global.config = {});
   
   var resourcePlugin = {
+    thaw: thaw,
+    registerType: registerType,
     load: function (resourceId, req, onLoad, requireConfig) {
       var resourceParts = resourceId.split('/');
       var resourceType = resourceParts.shift();
-      var resourceUrl; 
-      console.log("resource load, load resourceId: ", resourceId);
-      switch(resourceType) {
-        default: 
-          resourceUrl = req.toUrl(resourceId + '.json');
-      }
-      get(resourceUrl, function(resp){
+      var resourceUrl = req.toUrl(resourceId + '.json');
+
+      // promise to represent the loaded and expanded resource
+      // which might entail nested resource loading
+      var promisedGet = fetch(resourceUrl);
+      promisedGet.then(function(resp){
+        var queue = [];
         var resourceData;
         if(resp.status && resp.status !== "ok") {
           console.error("Problem loading: "+resourceUrl + ", response was: ", resp);
@@ -44,28 +78,40 @@ define(['dollar', 'lib/util', 'lib/json/ref'], function($, util, json){
         resourceData._resourceId = resourceId; 
 
         // console.log("resolved resourceData: ", resourceData);
-        var ctorModule;
-        switch(resourceType) {
+        var dataType = resourceType;
+
+        switch(dataType) {
           case 'location': 
-            var regiond
             resourceData.regionId = resourceParts[0];
             resourceData.coords = resourceParts[1];
-            ctorModule = resourceData.terrainType ||resourceClassMap[resourceType];
+            if(resourceData.here) {
+              resourceData.here.forEach(function(thing, idx, coln){
+                var promisedValue = thaw(itemData).then(function(itemInstance){
+                  coln[idx] = itemInstance;
+                });
+                queue.push(promisedValue);
+              });
+            }
+            if(resourceData.encounter) {
+              var promisedEncounter = thaw(resourceData.encounter).then(function(encounterInstance){
+                resourceData.encounter =  encounterInstance;
+              });
+              queue.push(promisedEncounter);
+            }
             break;
             
           default: 
-            ctorModule = resourceType && resourceClassMap[resourceType];
             break;
         }
 
-        if(ctorModule) {
-          require([ctorModule], function(Clazz){
-            var instance = new Clazz(resourceData); 
-            onLoad(instance);
-          });
-        } else {
-          onLoad(resourceData);
-        }
+        var promisedResource = thaw({ type: dataType, params: resourceData });
+        queue.push(promisedResource);
+        
+        Promise.all(queue).then(function(){
+          console.log("promisedResource is ready: ", promisedResource);
+          onLoad(promisedResource);
+        });
+
       }, function(){
         console.warn("Failed to load: " + resourceUrl);
         console.log("errback given args: ", arguments);
