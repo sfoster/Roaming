@@ -60,6 +60,21 @@
 <script src="./vendor/require.js"></script>
 <script src="./config.js"></script>
 <script>
+  (function(){
+    // pull config from querystring
+    var expectedKeys = { playerid: true };
+    var queryStr = location.search.substring(1);
+    var pairs, nameValue, params = {};
+    if(queryStr){
+      pairs = queryStr.split('&');
+      for(var i=0; i<pairs.length; i++) {
+        nameValue = pairs[i].split('=');
+        if(nameValue[0] && (nameValue[0] in expectedKeys)){
+          config[ nameValue[0] ] = nameValue[1];
+        }
+      }
+    }
+  })();
 
   require(['knockout', 'lib/util', 'plugins/resource!player/'+(config.playerid || 'guest')], function(ko, util, player){
     // get player id
