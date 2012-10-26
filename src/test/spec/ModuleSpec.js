@@ -1,4 +1,4 @@
-define(["../SampleModule", "lib/event"], function(SampleModule, Evented) {
+define(["test/SampleModule", "lib/event"], function(SampleModule, Evented) {
 
   describe("Sample Module", function() {
     it('should have a name', function() {
