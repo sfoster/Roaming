@@ -17,17 +17,28 @@ define(['lib/util', 'lib/event', 'resources/npc'], function(util, Evented, npc){
     update: function(location, player, world){ }
   });
   
+  function getNpcTypesForTerrain(terrain, constraints) {
+      var npcs = util.values(npc).filter(function(npc){
+        return (
+          npc.terrain && npc.terrain.indexOf(terrain) > -1
+        );
+      });
+      if(constraints) {
+        npcs = npcs.filter(constraints);
+      }
+      return npcs;
+  }
+
   NPCEncounter = Encounter.extend({
+    // Spawn a number of npcs
     enter: function(location, player, world){
       // get the terrain type from the location
       var terrain = location.type;
       // console.log("NPCEncounter entering terrain: " +  terrain);
       // get the subset of NPCs that exist in this terrain
-      var npcs = util.values(npc).filter(function(npc){
-        return (
-          npc.hp < 100 &&
-          npc.terrain && npc.terrain.indexOf(terrain) > -1
-        );
+      // which are close to the players level (hp/health is proxy for level)
+      var npcs = getNpcTypesForTerrain(location.type, function(npc){
+        return npc.hp < (player.stats.health * 1.5);
       });
       // console.log("available NPCs", npcs);
       // a random number of npcs
