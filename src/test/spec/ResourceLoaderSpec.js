@@ -19,6 +19,7 @@ define(['plugins/resource'], function(resourcePlugin){
   		var ret = resourcePlugin.thaw({});
   		expect(typeof ret.then).toBe('function');
   	});
+
   	it("Should let me register a new type", function(){
   		var err;
   		try {
@@ -28,26 +29,89 @@ define(['plugins/resource'], function(resourcePlugin){
   		}
   		expect(err).toBeFalsy();
   	});
+
   	it("Should pass data to the indicated factory", function(){
-		resourcePlugin.registerType('testthing2', 'test/lib/TestThing');
-		var resolvedThing; 
-		
-		resourcePlugin.thaw({ type: 'testthing2', params: {someprop: true} }).then(function(value){
-			resolvedThing = value;
-		});
-		
-		waitsFor(function(){
-			return !!resolvedThing;
-		});
-		runs(function(){
-	  		expect(resolvedThing.declaredClass).toBe('TestThing');
-	  		expect(resolvedThing.someprop).toBeTruthy();
-		});
+			resourcePlugin.registerType('testthing2', 'test/lib/TestThing');
+			var resolvedThing; 
+			
+			resourcePlugin.thaw({ type: 'testthing2', params: {someprop: true} }).then(function(value){
+				resolvedThing = value;
+			});
+			
+			waitsFor(function(){
+				return !!resolvedThing;
+			});
+			runs(function(){
+		  		expect(resolvedThing.declaredClass).toBe('TestThing');
+		  		expect(resolvedThing.someprop).toBeTruthy();
+			});
   	});
-  	it("Should thaw module propery references", function(){
-		resourcePlugin.thaw({ type: 'testthing2', params: {someprop: true} }).then(function(value){
-			resolvedThing = value;
-		});
-  	})
+
+  	it("Should thaw module property references", function(){
+			var resolvedThing; 
+
+			resourcePlugin.thaw({ 
+				resource: 'test/lib/somebundle#foo', params: {someprop: true} 
+			}).then(function(value){
+				resolvedThing = value;
+			}, function(){
+				resolvedThing = false;
+			});
+			
+			waitsFor(function(){
+				return undefined !== resolvedThing;
+			});
+
+			runs(function(){
+		  		expect(resolvedThing.name).toBe('Foo');
+	  	});
+	  });
+  });
+
+  describe("Location resources", function() {
+  	it("Should thaw propertiesWithReferences", function(){
+			resourcePlugin.registerType('testthing2', 'test/lib/TestThing');
+			resourcePlugin.registerType('complexthing', 'test/lib/TestComplexThing');
+	  	var resourceData = {
+			  subthings: [ 
+			  	{ type: 'testthing2', params: { name: 'someobject1' } },
+			  	{ type: 'testthing2', params: { name: 'someobject2' } }
+			  ],
+			  bundle: { resource: 'test/lib/somebundle#bar' },
+			};
+			console.log("complex resourceData is ", resourceData);
+			var resolvedThing; 
+
+			resourcePlugin.thaw({ type: 'complexthing', params: resourceData }).then(function(thing){
+				resolvedThing = thing;
+			}, function(){
+				resolvedThing = false;
+			});
+			
+			waitsFor(function(){
+				return undefined !== resolvedThing;
+			});
+
+			runs(function(){
+				console.log("resolvedThing is ", resolvedThing);
+	  		expect(resolvedThing).toBeTruthy();
+
+	  		var subThing1 = resolvedThing.subthings[0];
+	  		expect(subThing1).toBeTruthy();
+	  		expect(subThing1.declaredClass).toBe('TestThing');
+	  		expect(subThing1.name).toBe('someobject1');
+
+	  		var subThing2 = resolvedThing.subthings[1];
+	  		expect(subThing2).toBeTruthy();
+	  		expect(subThing2.declaredClass).toBe('TestThing');
+	  		expect(subThing2.name).toBe('someobject2');
+
+	  		var bundle = resolvedThing.bundle;
+	  		expect(bundle).toBeTruthy();
+	  		expect(bundle.name).toBe('Bar');
+
+	  	});
+  	});
+
   });
 });

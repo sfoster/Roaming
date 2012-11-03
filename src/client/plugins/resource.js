@@ -27,21 +27,56 @@ define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, u
   }
   function thaw(value) {
     var defd = Promise.defer();
-    var ctorModule;
+    var Clazz;
+    var ctorId;
+    var resourceData = value.params;
+    // thawing out resource data can involve multiple asyn steps
+    // which are tracked in this queue array
+    var promiseQueue = [];
+
     if(value.type) {
-      ctorModule = resourceClassMap[value.type];
-      if(!ctorModule) {
+      // Prepare instance of the indicated type from the given params
+      ctorId = resourceClassMap[value.type];
+      if(!ctorId) {
         throw new Error("No mapping for type: " + value.type);
       }
-      require([ctorModule], function(Clazz){
-        var instance = new Clazz(value.params || {}); 
-        defd.resolve(instance);
+      require([ctorId], function(_Clazz){
+        Clazz = _Clazz;
+        // thaw out any properties that are flagged as containing references
+        var propertiesWithReferences = Clazz.prototype.propertiesWithReferences || [];
+        propertiesWithReferences.filter(function(pname){
+          return (pname in resourceData); 
+        }).forEach(function(pname){
+          var pvalues = (resourceData[pname] instanceof Array) ? resourceData[pname] : [resourceData[pname]];
+          pvalues.forEach(function(refData, idx, coln){
+            var promisedValue = thaw(refData).then(function(pData){
+              coln[idx] = pData;
+            });
+            promiseQueue.push(promisedValue);
+          });
+        });
+        Promise.all(promiseQueue).then(function(){
+          var instance = new Clazz(resourceData); 
+          console.log("thawed resource is ready: ", instance);
+          defd.resolve(instance);
+        }, function(){
+          defd.reject("Failed to fully thaw value");
+        });
+
       });
       return defd.promise; 
     }
     if(value.resource) {
-      require([value.resource], function(res){
-       defd.resolve(res);
+      // Resolve reource id to the data it represents
+      // We support a resource#anchor syntax to indicate a property on the resource's export
+      var resourceId = value.resource, 
+          property = null;
+      if(resourceId.indexOf('#') > -1) {
+        property = resourceId.substring(1+resourceId.indexOf('#'));
+        resourceId = resourceId.substring(0, resourceId.indexOf('#'));
+      }
+      require([resourceId], function(res){
+       defd.resolve( property ? res[property] : res );
       });
       return defd.promise; 
     }
@@ -67,7 +102,6 @@ define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, u
       // which might entail nested resource loading
       var promisedGet = fetch(resourceUrl);
       promisedGet.then(function(resp){
-        var queue = [];
         var resourceData;
         if(resp.status && resp.status !== "ok") {
           console.error("Problem loading: "+resourceUrl + ", response was: ", resp);
@@ -79,37 +113,13 @@ define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, u
 
         // console.log("resolved resourceData: ", resourceData);
         var dataType = resourceType;
+        console.log("promisedGet callback, dataType: %s, resourceData: %o", dataType, resourceData);
 
-        switch(dataType) {
-          case 'location': 
-            resourceData.regionId = resourceParts[0];
-            resourceData.coords = resourceParts[1];
-            if(resourceData.here) {
-              resourceData.here.forEach(function(thing, idx, coln){
-                var promisedValue = thaw(itemData).then(function(itemInstance){
-                  coln[idx] = itemInstance;
-                });
-                queue.push(promisedValue);
-              });
-            }
-            if(resourceData.encounter) {
-              var promisedEncounter = thaw(resourceData.encounter).then(function(encounterInstance){
-                resourceData.encounter =  encounterInstance;
-              });
-              queue.push(promisedEncounter);
-            }
-            break;
-            
-          default: 
-            break;
-        }
-
-        var promisedResource = thaw({ type: dataType, params: resourceData });
-        queue.push(promisedResource);
-        
-        Promise.all(queue).then(function(){
-          console.log("promisedResource is ready: ", promisedResource);
-          onLoad(promisedResource);
+        thaw({ type: dataType, params: resourceData }).then(function(resource){
+          console.log("resource is ready: ", resource);
+          onLoad(resource);
+        }, function(){
+          onLoad({});
         });
 
       }, function(){

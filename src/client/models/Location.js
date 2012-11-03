@@ -13,17 +13,17 @@ define([
     this._onexits = [];
     this.encounter = {};
     this.here = [];
+    console.log("Location ctor, with options: ", options);
     for(var i in options){
       this[i] = options[i];
     }
     // console.log("create location with data: ", options);
     console.assert('x' in this, "Missing x property");
     console.assert('y' in this, "Missing y property");
-    console.assert(this._resourceId, "Missing _resourceId property");
-    console.assert(this._resourceUrl, "Missing _resourceUrl property");
   }
   
   util.mixin(Location.prototype, Evented, {
+    propertiesWithReferences: ['here', 'encounter'],
     encounterType: "none",
     description: "",
     get: function(name){
