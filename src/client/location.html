@@ -31,12 +31,13 @@
       'plugins/resource!location/'+locn
     ],function(ko, util, tile) {
       //run tests
+      tile.regionId = 'test';
       var template = '' +
         '<pre>Id: {{id}}\n'+
         'Region: {{regionId}}\n'+
         'Type: {{type}}\n'+
         'Description: {{description}}\n';
-
+      console.log("Loaded location tile: ", tile);
       ko.applyBindings(tile);
 
     });
@@ -50,15 +51,15 @@
     <dl>
       <dt>Region:</dt>
       <dd data-bind="text: regionId"></dd>
-      <dt>Type:</dt>
-      <dd data-bind="text: type"></dd>
+      <dt>Terrain:</dt>
+      <dd data-bind="text: terrain"></dd>
       <dt>Description:</dt>
       <dd data-bind="text: description"></dd>
     </dl>
     <h2>Here</h2>
     
     <ul data-bind="foreach: here">
-      <li>Item</li>
+      <li><span data-bind="text: name"></span> (<span data-bind="text: type"></span>)</li>
     </ul>
     <h2>Encounter</h2>
     <div data-bind="if: encounter && encounterType =='npc'">

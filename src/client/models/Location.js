@@ -26,6 +26,7 @@ define([
     propertiesWithReferences: ['here', 'encounter'],
     encounterType: "none",
     description: "",
+    regionId: "",
     get: function(name){
       return this[name];
     }, 
