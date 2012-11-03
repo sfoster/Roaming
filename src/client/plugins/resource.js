@@ -44,17 +44,27 @@ define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, u
         Clazz = _Clazz;
         // thaw out any properties that are flagged as containing references
         var propertiesWithReferences = Clazz.prototype.propertiesWithReferences || [];
+
         propertiesWithReferences.filter(function(pname){
           return (pname in resourceData); 
         }).forEach(function(pname){
-          var pvalues = (resourceData[pname] instanceof Array) ? resourceData[pname] : [resourceData[pname]];
-          pvalues.forEach(function(refData, idx, coln){
-            var promisedValue = thaw(refData).then(function(pData){
-              coln[idx] = pData;
+          if(resourceData[pname] instanceof Array) {
+            resourceData[pname].forEach(function(refData, idx, coln){
+              var promisedValue = thaw(refData).then(function(pData){
+                console.log("refd property %s resolved: %o", pname, pData);
+                coln[idx] = pData;
+              });
+              promiseQueue.push(promisedValue);
+            });
+          } else {
+            var promisedValue = thaw(resourceData[pname]).then(function(pData){
+                console.log("refd property %s resolved: %o", pname, pData);
+                resourceData[pname] = pData;
             });
             promiseQueue.push(promisedValue);
-          });
+          }
         });
+
         Promise.all(promiseQueue).then(function(){
           var instance = new Clazz(resourceData); 
           console.log("thawed resource is ready: ", instance);
@@ -75,7 +85,9 @@ define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, u
         property = resourceId.substring(1+resourceId.indexOf('#'));
         resourceId = resourceId.substring(0, resourceId.indexOf('#'));
       }
+      console.log("Loading resource property value: ", resourceId);
       require([resourceId], function(res){
+      console.log("Loaded resource property value: ", resourceId, res);
        defd.resolve( property ? res[property] : res );
       });
       return defd.promise; 

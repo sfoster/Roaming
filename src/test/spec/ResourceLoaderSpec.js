@@ -68,7 +68,7 @@ define(['plugins/resource'], function(resourcePlugin){
 	  });
   });
 
-  describe("Location resources", function() {
+  describe("Nested resources", function() {
   	it("Should thaw propertiesWithReferences", function(){
 			resourcePlugin.registerType('testthing2', 'test/lib/TestThing');
 			resourcePlugin.registerType('complexthing', 'test/lib/TestComplexThing');
@@ -112,6 +112,7 @@ define(['plugins/resource'], function(resourcePlugin){
 
 	  	});
   	});
+
 
   });
 });
