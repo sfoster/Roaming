@@ -4,9 +4,28 @@ var fs = require('fs');
 var path = require('path');
 
 var indir = path.join(__dirname, '..', 'data', 'location', 'world');
+var filesToProcess = [];
+var pool = "12345678".split('').map(function(num){
+	var job = function(name){
+		handleFile(name, function(){
+			pool.push(job);
+			nextInPool();
+		});
+	};
+	return job;
+});
+var nextInPool = function(){
+	if(!filesToProcess.length)
+		return;
+	if(pool.length) {
+		pool.shift()(filesToProcess.shift());
+	} else {
+		setTimeout(nextInPool, 25);
+	}
+}
+
 fs.readdir( indir, function(err, names){
-	names
-	.map(function(name) { 
+	filesToProcess = names.map(function(name) { 
 		return path.join(indir, name); 
 	})
 	.filter(function(name) { 
@@ -14,10 +33,9 @@ fs.readdir( indir, function(err, names){
 			name.indexOf('index.json') === -1 && 
 			(/\.json$/).test(name)
 		);
-	})
-	.forEach(function(name){
-		handleFile(name);
 	});
+	// start the workers
+	nextInPool();
 });
 
 function onEmptyFile(name) {
@@ -38,18 +56,20 @@ function onEmptyFile(name) {
 
 	console.log("Populating empty file: ", x, y);
 }
-function handleFile(name) {
+function handleFile(name, callback) {
 	console.log("Visiting file: ", name);
 	fs.readFile(name, function(err, buf){
 		console.log("Visiting file: ", name);
 		if(err) {
 			console.log("Error reading in file: " + name , err);
+			callback();
 			return;
 		}
 		var str = buf.toString();
 		if(! str.match(/\S+/)) {
 			console.log("Empty string from file: " + name, str);
 			onEmptyFile(name);
+			callback();
 			return;
 		}
 		var data, 
@@ -70,6 +90,16 @@ function handleFile(name) {
 				dirty = true;
 			}
 		}
+		if(data.type) {
+			data.terrain = data.type;
+			delete data.type;
+			dirty = true;
+		}
+		if(data.terrainType) {
+			data.terrain = data.terrainType;
+			delete data.terrainType;
+			dirty = true;
+		}
 		if(data.coords) {
 			// needs fixing
 			var coords = data.coords || data.id.split(',');
@@ -78,11 +108,15 @@ function handleFile(name) {
 			delete data.coords;
 			dirty = true;
 		}
-		if(!dirty)
+		if(!dirty){
+			callback();
 			return;
+
+		}
 		
 		fs.writeFile(name, JSON.stringify(data, null, 2), function(err){
 			if(err) throw "Error writing back file: " + err;
+			callback();
 		});
 	});
 
