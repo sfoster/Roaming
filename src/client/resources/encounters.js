@@ -30,32 +30,39 @@ define(['lib/util', 'lib/event', 'resources/npc'], function(util, Evented, npc){
   }
 
   NPCEncounter = Encounter.extend({
+    group: null,
     // Spawn a number of npcs
     enter: function(location, player, world){
-      // get the terrain type from the location
-      var terrain = location.type;
-      // console.log("NPCEncounter entering terrain: " +  terrain);
-      // get the subset of NPCs that exist in this terrain
-      // which are close to the players level (hp/health is proxy for level)
-      var npcs = getNpcTypesForTerrain(location.type, function(npc){
-        return npc.hp < (player.stats.health * 1.5);
-      });
-      // console.log("available NPCs", npcs);
-      // a random number of npcs
+      // console.log("added creatures: ", hereCreatures);
+      if(!this.group) {
+        this.group = this.generateGroup(location, player, world);
+      }
+      if(this.group.length){
+        location.here = location.here.concat(hereCreatures);
+        Evented.emit('encounterstart', { target: this });
+      }
+    },
+    generateGroup: function(tile, player){
       var howMany = range(1, 2), 
           hereCreatures = [];
       // add them to the location
+
+      var hereCreatures = [];
+      // console.log("NPCEncounter entering terrain: " +  tile.terrain);
+      // get the subset of NPCs that exist in this terrain
+      // which are close to the players level (hp/health is proxy for level)
+      var npcs = getNpcTypesForTerrain(tile.terrain, function(npc){
+        return npc.hp < (player.stats.health * 1.5);
+      });
 
       for(var i=0, idx; i<howMany; i++){
         idx = range(0,npcs.length-1);
         // console.log("creature index: ", idx, npcs[idx]);
         hereCreatures.push( npcs[idx] );
       }
-      // console.log("added creatures: ", hereCreatures);
-      if(howMany){
-        location.here = location.here.concat(hereCreatures);
-        Evented.emit('encounterstart', { target: this });
-      }
+      // console.log("available NPCs", npcs);
+      // a random number of npcs
+      return hereCreatures;
     },
     exit: function(){
       Evented.emit('encounterend', { target: this });

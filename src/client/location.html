@@ -11,9 +11,8 @@
       // pull config from querystring
       var expectedKeys = { location: true };
 
-      var queryStr = location.search.substring(1);
-      var pairs, nameValue, params = {};
-      if(queryStr){
+      function populate(queryStr, config) {
+        var pairs, nameValue;
         pairs = queryStr.split('&');
         for(var i=0; i<pairs.length; i++) {
           nameValue = pairs[i].split('=');
@@ -21,6 +20,10 @@
             config[ nameValue[0] ] = nameValue[1];
           }
         }
+      }
+      var queryStr = location.search.substring(1);
+      if(queryStr){
+        populate(queryStr, config)
       }
     })();
 
@@ -32,13 +35,26 @@
     ],function(ko, util, tile) {
       //run tests
       tile.regionId = 'test';
-      var template = '' +
-        '<pre>Id: {{id}}\n'+
-        'Region: {{regionId}}\n'+
-        'Type: {{type}}\n'+
-        'Description: {{description}}\n';
       console.log("Loaded location tile: ", tile);
-      ko.applyBindings(tile);
+
+      function makeObservable(obj) {
+        var vm = {};
+        Object.keys(obj).forEach(function(name) {
+          vm[name] = (obj[name] instanceof Array) ? ko.observableArray(obj[name]) : obj[name];
+        });
+        return vm;
+      }
+
+      var viewModel = window.viewModel =  {
+        editMode: ko.observable( location.hash.indexOf('edit')>-1 ), 
+        tile: makeObservable(tile)
+      };
+      console.log("Prepared viewMode: ", viewModel);
+      ko.applyBindings(viewModel);
+
+      window.onhashchange = function(evt){
+        viewModel.editMode( location.hash.indexOf('edit')>-1 );
+      };
 
     });
   </script>
@@ -46,29 +62,55 @@
 
 <body>
 
-  <section id="main" class="panel">
-    <h2>Location: <span data-bind="text: id"></span></h2>
-    <dl>
-      <dt>Region:</dt>
-      <dd data-bind="text: regionId"></dd>
-      <dt>Terrain:</dt>
-      <dd data-bind="text: terrain"></dd>
-      <dt>Description:</dt>
-      <dd data-bind="text: description"></dd>
-    </dl>
-    <h2>Here</h2>
-    
-    <ul data-bind="foreach: here">
-      <li><span data-bind="text: name"></span> (<span data-bind="text: type"></span>)</li>
-    </ul>
-    <h2>Encounter</h2>
-    <div data-bind="if: encounter && encounterType =='npc'">
-      NPC Encounter data
-      <ul data-bind="foreach: encounter.npc">
-        <li data-bind="text: type"></li>
+  <div class="panel" data-bind="visible: !editMode()">
+    Preview Panel
+    <section id="main" data-bind="with: tile">
+      <h2>Location: <span data-bind="text: id"></span></h2>
+      <dl>
+        <dt>Region:</dt>
+        <dd data-bind="text: regionId"></dd>
+        <dt>Terrain:</dt>
+        <dd data-bind="text: terrain"></dd>
+        <dt>Description:</dt>
+        <dd data-bind="text: description"></dd>
+      </dl>
+      <h2>Here</h2>
+      
+      <ul data-bind="foreach: here">
+        <li><span data-bind="text: name"></span> (<span data-bind="text: type"></span>)</li>
       </ul>
-    </div>
-  </section>  
+
+      <h2>Encounters</h2>
+      <ul data-bind="foreach: encounters">
+        <li><span data-bind="text: name"></span> (<span data-bind="text: type"></span>)</li>
+      </ul>
+
+    </section>  
+  </div>
+
+  <div class="panel" data-bind="visible: editMode">
+    Edit Panel
+    <section id="editor" data-bind="with: tile">
+      <h2>Location: <span data-bind="text: id"></span></h2>
+      <dl>
+        <dt>Region:</dt>
+        <dd data-bind="text: regionId"></dd>
+        <dt>Terrain:</dt>
+        <dd><input type="text" data-bind="value: terrain"></dd>
+        <dt>Description:</dt>
+        <dd><textarea data-bind="value: description"></textarea></dd>
+      </dl>
+      <h2>Here</h2>
+      
+      <ul data-bind="foreach: here">
+        <li><span data-bind="text: name"></span> (<span data-bind="text: type"></span>)</li>
+      </ul>
+      <h2>Encounters</h2>
+      <ul data-bind="foreach: encounters">
+        <li><span data-bind="text: name"></span> (<span data-bind="text: type"></span>)</li>
+      </ul>
+    </section>  
+  </div>
 
 </body>
 </html>

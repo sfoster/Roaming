@@ -11,7 +11,7 @@ define([
   function Location(options){
     if(!options) return;
     this._onexits = [];
-    this.encounter = {};
+    this.encounters = [];
     this.here = [];
     console.log("Location ctor, with options: ", options);
     for(var i in options){
@@ -23,8 +23,7 @@ define([
   }
   
   util.mixin(Location.prototype, Evented, {
-    propertiesWithReferences: ['here', 'encounter'],
-    encounterType: "none",
+    propertiesWithReferences: ['here', 'encounters'],
     description: "",
     regionId: "",
     get: function(name){
@@ -51,10 +50,12 @@ define([
             visits = locationHistory.visits || (locationHistory.visits = []);
 
         visits.push(+new Date());
-        
-        if(this.encounter && this.encounter.enter){
-          this.encounter.enter(this, player, game);
-        }
+
+        // enter each encounter, return false means stop
+        var self = this;
+        this.encounters.reduce(function(proceedToNext, encounter){
+          return (false !== encounter.enter(self, player, game));
+        }, true);
 
         emit("onafterlocationenter", {
           target: this,
