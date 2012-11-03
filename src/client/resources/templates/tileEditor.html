@@ -18,10 +18,10 @@
   <input type="hidden" name="coords" value="{{:id}}" data-link="visible{:name}">
   <div class="field-description row">
     <h3 class="caption col col-1of8"><label for="">Terrain</label></h3>
-    <div class="col col-7of8"><select id="selTerrainType" data-link="type" data-comment="'type' is the property on the location object which we bind to">
+    <div class="col col-7of8"><select id="selTerrainType" data-link="terrain" data-comment="'terrain' is the property on the location object which we bind to">
       {{for ~asArray(~terrainTypes) ~matchContext=#view.data}}
       <option 
-        data-link="selected{:~matches(name, 'type', ~matchContext)}"
+        data-link="selected{:~matches(name, 'terrain', ~matchContext)}"
         value="{{:name}}"
       >{{>name}}</option>
       {{/for}}

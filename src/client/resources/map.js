@@ -44,12 +44,12 @@ define(['dollar', 'lib/util', 'promise', 'resources/terrain'], function($, util,
       console.log("renderMap at ", tileSize);
       for(var i=0; i<mapData.length; i++){
         tile = mapData[i];
-        terrain = terrainTypes[tile.type];
+        terrain = terrainTypes[tile.terrain];
         
         if(terrain){
           img = terrain.img;
           if(img){
-            // console.log("render image for type: ", tile.type, " with url: ", terrainTypes[tile.type].url);
+            // console.log("render image for terrain: ", tile.terrain, " with url: ", terrainTypes[tile.terrain].url);
             ctx.drawImage(
                 img,                    // image
                 0,                      // source-x
@@ -63,7 +63,7 @@ define(['dollar', 'lib/util', 'promise', 'resources/terrain'], function($, util,
             );
             // console.log("drawImage: ", img, tileSize*tile.x, tileSize*tile.y, tileSize, tileSize);
           } else {
-            console.log("no img property in: ", terrainTypes[tile.type]);
+            console.log("no img property in: ", terrainTypes[tile.terrain]);
           }
           if(showCoords) {
             ctx.fillStyle = 'rgba(51,51,51,0.5)';

@@ -96,13 +96,13 @@
         tiles.forEach(function(tile){
           var scale = TILE_SIZE, x = scale*tile.x, y = scale*tile.y;
           terrainMap.push(
-            { assign: 'fillStyle', value: colors[tile.type] || colors[tile['default']] },
+            { assign: 'fillStyle', value: colors[tile.terrain] || colors[tile['default']] },
             { call: 'fillRect', value: [x, y, scale, scale] },
             { call: 'strokeRect', value: [x, y, scale, scale] },
             { assign: 'fillStyle', value: "#000" },
             { call: 'fillRect', value: [x, y, scale, 12] },
             { assign: 'fillStyle', value: "#fff" },
-            { call: 'fillText', value: [ tile.id + ': ' + tile.type, 3+x, 3+y ] }
+            { call: 'fillText', value: [ tile.id + ': ' + tile.terrain, 3+x, 3+y ] }
           );
         });
         var arLayers = viewModel.layers(),
@@ -129,15 +129,15 @@
         <dl>
           <dt>Region:</dt>
           <dd data-bind="text: regionId"></dd>
-          <dt>Type:</dt>
-          <dd data-bind="text: type"></dd>
+          <dt>Terrain:</dt>
+          <dd data-bind="text: terrain"></dd>
           <dt>Description:</dt>
           <dd data-bind="text: description"></dd>
         </dl>
         <h2>Here</h2>
 
         <ul data-bind="foreach: here">
-          <li>Item</li>
+          <li><span data-bind="text: name"></span> (<span data-bind="text: type"></span>)</li>
         </ul>
         <h2>Encounter</h2>
         <div data-bind="if: encounter && encounterType =='npc'">
