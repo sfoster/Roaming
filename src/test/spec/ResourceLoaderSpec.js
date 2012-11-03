@@ -31,20 +31,36 @@ define(['plugins/resource'], function(resourcePlugin){
   	});
 
   	it("Should pass data to the indicated factory", function(){
-			resourcePlugin.registerType('testthing2', 'test/lib/TestThing');
-			var resolvedThing; 
-			
-			resourcePlugin.thaw({ type: 'testthing2', params: {someprop: true} }).then(function(value){
-				resolvedThing = value;
-			});
-			
-			waitsFor(function(){
-				return !!resolvedThing;
-			});
-			runs(function(){
-		  		expect(resolvedThing.declaredClass).toBe('TestThing');
-		  		expect(resolvedThing.someprop).toBeTruthy();
-			});
+		resourcePlugin.registerType('testthing2', 'test/lib/TestThing');
+		var resolvedThing; 
+		
+		resourcePlugin.thaw({ type: 'testthing2', params: {someprop: true} }).then(function(value){
+			resolvedThing = value;
+		});
+		
+		waitsFor(function(){
+			return !!resolvedThing;
+		});
+		runs(function(){
+	  		expect(resolvedThing.declaredClass).toBe('TestThing');
+	  		expect(resolvedThing.someprop).toBeTruthy();
+		});
+  	});
+
+  	it("Should use the factory exported by a type module indicated in the type anchor", function(){
+		resourcePlugin.registerType('testthing2', 'test/lib/TestThing');
+		var resolvedThing; 
+		
+		resourcePlugin.thaw({ type: 'testthing2#OtherThing', params: {} }).then(function(value){
+			resolvedThing = value;
+		});
+		
+		waitsFor(function(){
+			return !!resolvedThing;
+		});
+		runs(function(){
+	  		expect(resolvedThing.declaredClass).toBe('OtherThing');
+		});
   	});
 
   	it("Should thaw module property references", function(){

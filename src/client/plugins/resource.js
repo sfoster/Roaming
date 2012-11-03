@@ -33,15 +33,19 @@ define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, u
     // thawing out resource data can involve multiple asyn steps
     // which are tracked in this queue array
     var promiseQueue = [];
+    var typeResource = value.type, 
+        typeProperty = null;
 
-    if(value.type) {
+    if(typeResource) {
       // Prepare instance of the indicated type from the given params
-      ctorId = resourceClassMap[value.type];
-      if(!ctorId) {
-        throw new Error("No mapping for type: " + value.type);
+      if(typeResource.indexOf('#') > -1) {
+        typeProperty = typeResource.substring(1+typeResource.indexOf('#'));
+        typeResource = typeResource.substring(0, typeResource.indexOf('#'));
       }
-      require([ctorId], function(_Clazz){
-        Clazz = _Clazz;
+
+      require([resourceClassMap[typeResource] || typeResource], function(_Clazz){
+
+        Clazz = typeProperty ? _Clazz[typeProperty] : _Clazz;
         // thaw out any properties that are flagged as containing references
         var propertiesWithReferences = Clazz.prototype.propertiesWithReferences || [];
 

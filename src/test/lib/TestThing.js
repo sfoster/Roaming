@@ -7,5 +7,9 @@ define(function(){
 		}
 	}
 	TestThing.prototype.declaredClass = 'TestThing';
+
+	TestThing.OtherThing = function(){};
+	TestThing.OtherThing.prototype.declaredClass= 'OtherThing';
+	
 	return TestThing;
 })
