@@ -1,7 +1,7 @@
 {
   "x": 17,
   "y": 6,
-  "type": "water",
   "description": "",
-  "id": "17,6"
+  "id": "17,6",
+  "terrain": "water"
 }

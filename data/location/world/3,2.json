@@ -13,5 +13,5 @@
   ],
   "encounterType": "beginning",
   "id": "3,2",
-  "type": "plains"
+  "terrain": "plains"
 }

@@ -17,7 +17,7 @@
   "here": [],
   "encounterType": "npc",
   "id": "3,3",
-  "type": "plains",
   "x": 3,
-  "y": 3
+  "y": 3,
+  "terrain": "plains"
 }

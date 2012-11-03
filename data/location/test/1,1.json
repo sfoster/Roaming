@@ -1,14 +1,10 @@
 {
   "id": "1,1",
-  "coords": [
-    "1",
-    "1"
-  ],
   "description": "The first tile",
   "afar": "Looks nice from here",
   "here": [],
   "encounter": {},
-  "type": "mountains",
   "x": 1,
-  "y": 1
+  "y": 1,
+  "terrain": "mountains"
 }

@@ -1,6 +1,6 @@
 {
-  "type": "mountains",
   "x": 4,
   "y": 3,
-  "id": "4,3"
+  "id": "4,3",
+  "terrain": "mountains"
 }
