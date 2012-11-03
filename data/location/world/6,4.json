@@ -1,8 +1,4 @@
 {
-  "encounter": {
-    "npc": [],
-    "none": []
-  },
   "img": {},
   "description": "This is the barren peak of the mountain\nThe Roc is here. ",
   "afar": " A flat platau",
@@ -10,6 +6,17 @@
   "id": "6,4",
   "x": 6,
   "y": 4,
-  "encounterType": "none",
-  "terrain": "barren"
+  "terrain": "barren",
+  "encounters": [
+    {
+      "type": "NpcEncounter", 
+      "params": {
+        "group": [
+          {
+            "resource": "resources/npc#theRoc"
+          }
+        ]
+      }
+    }
+  ]
 }

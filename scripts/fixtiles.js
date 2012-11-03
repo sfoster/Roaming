@@ -108,10 +108,21 @@ function handleFile(name, callback) {
 			delete data.coords;
 			dirty = true;
 		}
+		if(data.encounter) {
+			if(!data.encounters) {
+				data.encounters = [];
+			}
+			data.encounters.push(data.encounter);
+			delete data.encounter;
+			dirty = true;
+		}
+		if(data.encounterType) {
+			delete data.encounterType;
+			dirty = true;
+		}
 		if(!dirty){
 			callback();
 			return;
-
 		}
 		
 		fs.writeFile(name, JSON.stringify(data, null, 2), function(err){

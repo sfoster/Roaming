@@ -1,23 +1,24 @@
 {
-  "encounter": {
-    "npc": [
-      {
-        "type": "troll",
-        "count": "5"
-      },
-      {
-        "type": "trollElder",
-        "count": "1"
-      }
-    ]
-  },
   "img": {},
   "description": "You see a coarse meadow criss-crossed by muddy trails.",
   "afar": "it looks like grass and more grass",
   "here": [],
-  "encounterType": "npc",
   "id": "3,3",
   "x": 3,
   "y": 3,
-  "terrain": "plains"
+  "terrain": "plains",
+  "encounters": [
+    {
+      "npc": [
+        {
+          "type": "troll",
+          "count": "5"
+        },
+        {
+          "type": "trollElder",
+          "count": "1"
+        }
+      ]
+    }
+  ]
 }
