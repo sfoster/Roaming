@@ -6,6 +6,7 @@ define(['lib/util', 'lib/event', 'resources/npc'], function(util, Evented, npc){
   };
   
   var Encounter = function(args){
+    console.log("Encounter ctor:", args);
     mixin(this, args || {});
   };
   
@@ -31,6 +32,7 @@ define(['lib/util', 'lib/event', 'resources/npc'], function(util, Evented, npc){
 
   NPCEncounter = Encounter.extend({
     group: null,
+    type: 'npc-encounter',
     // Spawn a number of npcs
     enter: function(location, player, world){
       // console.log("added creatures: ", hereCreatures);
@@ -71,6 +73,7 @@ define(['lib/util', 'lib/event', 'resources/npc'], function(util, Evented, npc){
   
   var encounters = {};
   encounters.npc = new NPCEncounter({
+    name: 'NPC Encounter',
     description: 'Oh oh, you run smack into trouble.'
   });
   
