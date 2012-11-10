@@ -1,22 +1,24 @@
 {
-  "img": {},
   "description": "This is the barren peak of the mountain\nThe Roc is here. ",
-  "afar": " A flat platau",
-  "here": [],
+  "afar": "A flat plateau",
+  "here": [
+    {
+      "resource": "resources/items#edibleMushroom"
+    }
+  ],
   "id": "6,4",
   "x": 6,
   "y": 4,
   "terrain": "barren",
   "encounters": [
     {
-      "type": "NpcEncounter", 
-      "params": {
-        "group": [
-          {
-            "resource": "resources/npc#theRoc"
-          }
-        ]
-      }
+      "resource": "resources/encounters#npc"
+    }
+  ],
+  "npcs": [
+    {
+      "type": "resources/npc#theRoc",
+      "count": 1
     }
   ]
 }
