@@ -17,6 +17,9 @@ define([
     for(var i in options){
       this[i] = options[i];
     }
+    if(this._resourceId) {
+      this.regionId = this._resourceId.replace(/^\/?location\/([^\/]+)\/(\d+,\d+)/, '$1');
+    }
     // console.log("create location with data: ", options);
     console.assert('x' in this, "Missing x property");
     console.assert('y' in this, "Missing y property");
