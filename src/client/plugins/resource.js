@@ -71,7 +71,7 @@ define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, u
 
         Promise.all(promiseQueue).then(function(){
           var instance = new Clazz(resourceData); 
-          console.log("thawed resource is ready: ", instance);
+          // console.log("thawed resource is ready: ", instance);
           defd.resolve(instance);
         }, function(){
           defd.reject("Failed to fully thaw value");
@@ -129,10 +129,10 @@ define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, u
 
         // console.log("resolved resourceData: ", resourceData);
         var dataType = resourceType;
-        console.log("promisedGet callback, dataType: %s, resourceData: %o", dataType, resourceData);
+        // console.log("promisedGet callback, dataType: %s, resourceData: %o", dataType, resourceData);
 
         thaw({ type: dataType, params: resourceData }).then(function(resource){
-          console.log("resource is ready: ", resource);
+          // console.log("resource is ready: ", resource);
           onLoad(resource);
         }, function(){
           onLoad({});

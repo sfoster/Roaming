@@ -13,7 +13,7 @@ define([
     this._onexits = [];
     this.encounters = [];
     this.here = [];
-    console.log("Location ctor, with options: ", options);
+    // console.log("Location ctor, with options: ", options);
     for(var i in options){
       this[i] = options[i];
     }

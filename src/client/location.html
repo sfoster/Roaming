@@ -44,18 +44,68 @@
         });
         return vm;
       }
+      function resolveObservable(obj) {
+        var value = ko.isObservable( obj ) ? obj() : obj;
+        var type = util.getType(value);
+        console.log("resolveObservable: ", type, obj);
+        switch(type) {
+          case 'object': 
+            var cleanObj = {};
+            Object.keys(value).forEach(function(key){
+              if('_' !== key.charAt(0)) {
+                cleanObj[key] = resolveObservable(value[key]);
+              }
+            });
+            return cleanObj;
+          case 'array': 
+            return util.map(value, function(val, key, obj){
+              return resolveObservable(val);
+            });
+          case 'function': 
+            return '[function]';
+          case 'date':
+            return value.toString();
+          case 'null':
+          default: 
+            return value;
+        }
+      }
 
       var viewModel = window.viewModel =  {
         editMode: ko.observable( location.hash.indexOf('edit')>-1 ), 
-        tile: makeObservable(tile)
+        tile: makeObservable(tile),
+        items: ko.observableArray([]),
+        npcs: ko.observableArray([]),
+        onItemsSelectionChange: function(vm, evt) {
+          console.log("viewModel: ", vm, evt, arguments);
+        }, 
+        save: function(){
+          var tile = resolveObservable(viewModel.tile);
+          alert( JSON.stringify( tile, null, 2) );
+        }
       };
       console.log("Prepared viewMode: ", viewModel);
       ko.applyBindings(viewModel);
 
       window.onhashchange = function(evt){
         viewModel.editMode( location.hash.indexOf('edit')>-1 );
-      };
+        if(viewModel.editMode()) {
 
+          if(!viewModel.items().length){
+            require(['resources/items'], function(items){
+              var names = Object.keys(items);
+              viewModel.items.splice.apply(viewModel.items, [0, items.length].concat(names) );
+            });
+          }
+          if(!viewModel.npcs().length){
+            require(['resources/npc'], function(npcs){
+              var names = Object.keys(npcs);
+              viewModel.npcs.splice.apply(viewModel.npcs, [0, npcs.length].concat(names) );
+            });
+          }
+        }
+      };
+      window.onhashchange();
     });
   </script>
 </head>
@@ -89,14 +139,14 @@
   </div>
 
   <div class="panel" data-bind="visible: editMode">
-    Edit Panel
+    Edit Panel <button data-bind="click: save">Save</button>
     <section id="editor" data-bind="with: tile">
       <h2>Location: <span data-bind="text: id"></span></h2>
       <dl>
         <dt>Region:</dt>
         <dd data-bind="text: regionId"></dd>
         <dt>Terrain:</dt>
-        <dd><input type="text" data-bind="value: terrain"></dd>
+        <dd><select type="text" data-bind="value: terrain"></dd>
         <dt>Description:</dt>
         <dd><textarea data-bind="value: description"></textarea></dd>
       </dl>
@@ -107,10 +157,24 @@
       </ul>
       <h2>Encounters</h2>
       <ul data-bind="foreach: encounters">
-        <li><span data-bind="text: name"></span> (<span data-bind="text: type"></span>)</li>
+        <li>
+          <span data-bind="text: name"></span> (<span data-bind="text: type"></span>)
+          <div data-bind="if: group && group.length">
+            NPC Encounter data
+            <ul data-bind="foreach: group">
+              <li data-bind="text: type"></li>
+            </ul>
+          </div>
+        </li>
       </ul>
     </section>  
   </div>
+  <div class="overlay">
+    <p><label>Pick Item</label>
+        <select data-bind="options: items()"></select></p>
 
+    <p><label>Pick NPC</label>
+        <select data-bind="options: npcs()"></select></p>
+  </div>
 </body>
 </html>
