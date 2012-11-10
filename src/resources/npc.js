@@ -82,7 +82,7 @@ define([], function(){
     terrain: ["marsh", "mountains", "plains", "forest", "desert"]
   };
 
-  npc.juvinileTroll = {
+   npc.juvinileTroll = {
     name: 'Juvenile Troll',
     strength: 10,
     hp: 50,
@@ -297,7 +297,7 @@ define([], function(){
     strength: 40,
     hp: 100,
     mp: 0,
-    weapon: 'weaponclass:medium range',
+    weapon: 'weaponclass:medium range, weaponclass:shortrange',
     evasion: 1, 
     terrain: ["mountains", "barren"]
   };
@@ -306,7 +306,7 @@ define([], function(){
     strength: 8,
     hp: 25,
     mp: 0,
-    weapon: 'weaponclass:shortrange, weaponclass:medium range, weaponclass:long range',
+    weapon: 'weaponclass:shortrange, weaponclass:mediumrange, weaponclass:longrange',
     evasion: 7,
     terrain: ["plains", "forest", "marsh", "sand", "barren"]
   };
