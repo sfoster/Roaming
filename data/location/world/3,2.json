@@ -1,16 +1,7 @@
 {
-  "img": {},
-  "description": "You see flat grassland all around you.",
-  "afar": "it looks like grass and more grass",
   "x": 3,
   "y": 2,
-  "here": [
-    {
-      "id": "rocFeather",
-      "description": "At your *feet* is an unusually [large feather](item:misc/rocFeather). It could only have come from one kind of bird. If the roc was here, you are in the right place.",
-      "fixed": false
-    }
-  ],
+  "description": "",
   "id": "3,2",
-  "terrain": "plains"
+  "terrain": "mountains"
 }

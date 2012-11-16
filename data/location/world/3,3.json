@@ -1,24 +1,24 @@
 {
-  "img": {},
-  "description": "You see a coarse meadow criss-crossed by muddy trails.",
-  "afar": "it looks like grass and more grass",
-  "here": [],
-  "id": "3,3",
-  "x": 3,
-  "y": 3,
-  "terrain": "plains",
+  "description": "This is the barren peak of the mountain\nThe Roc is here. ",
+  "afar": "A flat plateau",
+  "here": [
+    {
+      "resource": "resources/items#edibleMushroom"
+    }
+  ],
+  "id": "6,4",
+  "x": 6,
+  "y": 4,
+  "terrain": "barren",
   "encounters": [
     {
-      "npc": [
-        {
-          "type": "troll",
-          "count": "5"
-        },
-        {
-          "type": "trollElder",
-          "count": "1"
-        }
-      ]
+      "resource": "resources/encounters#npc"
+    }
+  ],
+  "npcs": [
+    {
+      "type": "resources/npc#theRoc",
+      "count": 1
     }
   ]
 }
