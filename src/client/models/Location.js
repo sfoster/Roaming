@@ -13,7 +13,6 @@ define([
     this._onexits = [];
     this.encounters = [];
     this.here = [];
-    // console.log("Location ctor, with options: ", options);
     for(var i in options){
       this[i] = options[i];
     }
@@ -21,8 +20,11 @@ define([
       this.regionId = this._resourceId.replace(/^\/?location\/([^\/]+)\/(\d+,\d+)/, '$1');
     }
     // console.log("create location with data: ", options);
+    console.assert('description' in this, "Missing description property");
     console.assert('x' in this, "Missing x property");
-    console.assert('y' in this, "Missing y property");
+    console.assert('x' in this, "Missing x property");
+    console.assert('id' in this, "Missing id property in " + options.x+','+options.y);
+    return this;
   }
   
   util.mixin(Location.prototype, Evented, {

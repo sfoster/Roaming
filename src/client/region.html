@@ -36,7 +36,7 @@
         });
       }
       
-      var TILE_SIZE = 50, 
+      var TILE_SIZE = 20, 
           REGION_WIDTH = TILE_SIZE * pluck(region.tiles, 'x').reduce(function(a, b){
             return Math.max(a, b);
           }), 
@@ -53,6 +53,23 @@
       console.log("REGION_WIDTH", REGION_WIDTH);
       console.log("REGION_HEIGHT", REGION_HEIGHT);
       
+      function drawAxes() {
+        var layer = [
+          { assign: 'fillStyle', value: 'rgba(51,51,51,0.5)' },
+          // top top x axis
+          { call: 'fillRect', value: [0, 0, REGION_WIDTH, 12] },
+          { call: 'fillRect', value: [0, 0, 12, REGION_HEIGHT] },
+          { assign: 'fillStyle', value: "#fff" },
+          { assign: 'font', value: 'normal 8px sans-serif' },
+        ];
+        for(var i=0; i<=REGION_WIDTH/TILE_SIZE; i++) {
+          layer.push({ call: 'fillText', value: [ i, i*TILE_SIZE, 0, TILE_SIZE ] });
+        }
+        for(var i=1; i<=REGION_HEIGHT/TILE_SIZE; i++) {
+          layer.push({ call: 'fillText', value: [ i, 0, i*TILE_SIZE, TILE_SIZE ] });
+        }
+        return layer;
+      }
       var loadingLabel = [
              { assign: 'fillStyle', value: 'rgba(51,51,51,0.5)' },
              { call: 'fillRect', value: [0, 0, 50, 12] },
@@ -63,14 +80,13 @@
            ];
            
       var viewModel = {
-        id: regionId,
+        id: region.id,
         tiles:  ko.observableArray([]),
         layers: ko.observableArray([
           loadingLabel
         ])
       };
       
-      console.log("region: ", region);
       var ids = region.tiles.map(function(stub){
         return stub.x+','+stub.y;
       });
@@ -79,11 +95,18 @@
         'abyss': 'rgba(51,51,51,1)',
         'mountains': 'rgba(153,153,153,1)',
         'plains': 'rgba(153,255,153,1)',
+        'forest': 'rgba(0,153,0,1)',
+        'water': 'rgba(51,51,204,1)',
+        'barren': 'rgba(204,204,180,1)',
+        'marsh': 'rgba(51,204,51,1)',
         'default': 'rgba(51,51,155,1)'
       };
       
       region.loadTiles(ids).then(function(tiles){
-        console.log("loadTiles callback");
+        // sanity check that all tiles look good
+        var missingIds = tiles.filter(function(tile){ return !tile.id; });
+        console.assert(0 === missingIds.length, "Tiles without ids: ", missingIds);
+        
         viewModel.tiles.splice.apply(viewModel.tiles, [0, tiles.length].concat(tiles));
 
         var terrainMap = [
@@ -95,21 +118,20 @@
         ];
         tiles.forEach(function(tile){
           var scale = TILE_SIZE, x = scale*tile.x, y = scale*tile.y;
+          console.assert(tile.terrain && tile.terrain in colors, tile.terrain + " is a valid color");
           terrainMap.push(
             { assign: 'fillStyle', value: colors[tile.terrain] || colors[tile['default']] },
             { call: 'fillRect', value: [x, y, scale, scale] },
-            { call: 'strokeRect', value: [x, y, scale, scale] },
-            { assign: 'fillStyle', value: "#000" },
-            { call: 'fillRect', value: [x, y, scale, 12] },
-            { assign: 'fillStyle', value: "#fff" },
-            { call: 'fillText', value: [ tile.id + ': ' + tile.terrain, 3+x, 3+y ] }
+            { call: 'strokeRect', value: [x, y, scale, scale] }
+            // { assign: 'fillStyle', value: "#fff" },
+            // { call: 'fillText', value: [ tile.id + ': ' + tile.terrain, 3+x, 3+y ] }
           );
         });
         var arLayers = viewModel.layers(),
             len = arLayers.length;
             
         console.log("current layers: ", arLayers);
-        viewModel.layers([ terrainMap ]);
+        viewModel.layers([ terrainMap, drawAxes() ]);
       });
 
       ko.applyBindings(viewModel);
@@ -134,18 +156,16 @@
           <dt>Description:</dt>
           <dd data-bind="text: description"></dd>
         </dl>
-        <h2>Here</h2>
 
+        <h2>Here</h2>
         <ul data-bind="foreach: here">
           <li><span data-bind="text: name"></span> (<span data-bind="text: type"></span>)</li>
         </ul>
-        <h2>Encounter</h2>
-        <div data-bind="if: encounter && encounterType =='npc'">
-          NPC Encounter data
-          <ul data-bind="foreach: encounter.npc">
-            <li data-bind="text: type"></li>
-          </ul>
-        </div>
+        <h2>Encounters</h2>
+        <ul data-bind="foreach: encounters">
+          <li><span data-bind="text: name"></span> (<span data-bind="text: type"></span>)</li>
+        </ul>
+
       </li>
     </ul>
   </section>  
