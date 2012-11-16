@@ -226,6 +226,10 @@
         <li><span data-bind="text: name"></span> (<span data-bind="text: type"></span>)</li>
       </ul>
 
+      <h2>NPCs</h2>
+      <ul data-bind="foreach: npcs">
+        <li><span data-bind="text: type"></span> (<span data-bind="text: count"></span>)</li>
+      </ul>
     </section>  
   </div>
 
@@ -260,6 +264,10 @@
             </ul>
           </div>
         </li>
+      </ul>
+      <h2>NPCs</h2>
+      <ul data-bind="foreach: npcs">
+        <li><span data-bind="text: type"></span> (<span data-bind="text: count"></span>)</li>
       </ul>
     </section>  
     <footer>
