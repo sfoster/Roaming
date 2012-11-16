@@ -55,9 +55,6 @@ define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, u
           if(resourceData[pname] instanceof Array) {
             resourceData[pname].forEach(function(refData, idx, coln){
               var promisedValue = thaw(refData).then(function(pData){
-                if(!pData.type) {
-                  throw new Error("Missing type property in %s, %o", pname, pData);
-                }
                 console.log("refd property %s resolved: %o", pname, pData);
                 coln[idx] = pData;
               });

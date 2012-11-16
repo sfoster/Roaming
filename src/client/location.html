@@ -1,8 +1,78 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html>
 <head>
   <title>Test</title>
+  <style>
+    body {
+      font-family: tahoma, sans-serif;
+    }
+    h1, h2, h3 {
+      margin: 0 0.5em 0 0.5em;
+    }
+    header, footer, section {
+      background-color: #eee;
+      position: relative;
+      padding: 4px 10px;
+      margin: 2px;
+    }
+    header > button {
+      display: inline-block;
+      vertical-align: text-bottom;
+      font-size: 1.3em;
+      margin-bottom: 0.2em;
+    }
+    header > h1 {
+      display: inline-block;
+      vertical-align: text-bottom;
+    }
+    .mode {
+      position: absolute;
+      top: 0; right: 0;
+      background-color: #ff9;
+      width: 5em;
+      border: 1px solid #c66;
+      border-bottom-left-radius: 6px;
+      padding: 2px 6px;
+    }
+    dt { 
+      display: block; 
+      float: left; 
+      width: 12em; 
+      font-weight: bold; 
+      clear: both;
+    }
 
+    dl:after, dd:after { 
+      content: ".";    
+      display: block;    
+      height: 0;    
+      overflow: hidden;
+      clear: both;
+    }
+    dd { 
+      display: block; 
+      float: left; 
+      margin: 0 0 0.5em 0; 
+      width: calc(100% - 13em - 12px);
+      background-color: #eee;
+    }
+    dt, dd {
+      padding: 3px 6px;
+    }
+    textarea {
+      width: 100%;
+    }
+
+    .overlay {
+      position: fixed; 
+      top: 40px; bottom: 40px; left: 40px; right: 40px;
+      padding: 20px;
+      background: #666;
+      color: #fff;
+      border: 1px solid #000;
+      border-radius: 6px;
+    }
+  </style>
   <script src="./vendor/require.js"></script>
   <script src="./config.js"></script>
 
@@ -34,14 +104,14 @@
       'plugins/resource!location/'+locn
     ],function(ko, util, tile) {
       //run tests
-      tile.regionId = 'test';
       console.log("Loaded location tile: ", tile);
+      console.log("location.html, description is undefined: ", undefined === tile.description);
 
       function makeObservable(obj) {
         var vm = {};
-        Object.keys(obj).forEach(function(name) {
+        for(var name in obj) {
           vm[name] = (obj[name] instanceof Array) ? ko.observableArray(obj[name]) : obj[name];
-        });
+        }
         return vm;
       }
       function resolveObservable(obj) {
@@ -51,11 +121,11 @@
         switch(type) {
           case 'object': 
             var cleanObj = {};
-            Object.keys(value).forEach(function(key){
+            for(var key in value) {
               if('_' !== key.charAt(0)) {
                 cleanObj[key] = resolveObservable(value[key]);
               }
-            });
+            }
             return cleanObj;
           case 'array': 
             return util.map(value, function(val, key, obj){
@@ -74,10 +144,12 @@
       var viewModel = window.viewModel =  {
         editMode: ko.observable( location.hash.indexOf('edit')>-1 ), 
         tile: makeObservable(tile),
-        items: ko.observableArray([]),
-        npcs: ko.observableArray([]),
-        onItemsSelectionChange: function(vm, evt) {
+        types: ko.observableArray([]),
+        pickerType: ko.observable(''),
+        pickerValue: ko.observable(''),
+        onPickerChange: function(vm, evt) {
           console.log("viewModel: ", vm, evt, arguments);
+          viewModel.pickerType('');
         }, 
         save: function(){
           var tile = resolveObservable(viewModel.tile);
@@ -87,22 +159,42 @@
       console.log("Prepared viewMode: ", viewModel);
       ko.applyBindings(viewModel);
 
+
+      function showPicker(type, callback) {
+        var resourceId = '';
+        switch(type) {
+          case 'item': 
+            resourceId = 'resources/items'; 
+            break;
+          case 'npc': 
+            resourceId = 'resources/npc'; 
+            break;
+          case 'terrain': 
+            resourceId = 'resources/terrain'; 
+            break;
+        }
+        if(resourceId) {
+            require([resourceId], function(types){
+              var names = Object.keys(types);
+              viewModel.types.splice.apply(viewModel.types, [0, types.length].concat(names) );
+            });
+        }
+      }
       window.onhashchange = function(evt){
         viewModel.editMode( location.hash.indexOf('edit')>-1 );
+        
+        viewModel.pickerType.subscribe(function(type){
+          if(type) {
+            var subscription = viewModel.pickerValue.subscribe(function(newValue){
+              console.log("pickerValue changed: ", newValue);
+            });
+          }
+          showPicker(type, function(val){
+            console.log("new value: ", val);
+          });
+        });
         if(viewModel.editMode()) {
 
-          if(!viewModel.items().length){
-            require(['resources/items'], function(items){
-              var names = Object.keys(items);
-              viewModel.items.splice.apply(viewModel.items, [0, items.length].concat(names) );
-            });
-          }
-          if(!viewModel.npcs().length){
-            require(['resources/npc'], function(npcs){
-              var names = Object.keys(npcs);
-              viewModel.npcs.splice.apply(viewModel.npcs, [0, npcs.length].concat(names) );
-            });
-          }
         }
       };
       window.onhashchange();
@@ -115,7 +207,7 @@
   <div class="panel" data-bind="visible: !editMode()">
     Preview Panel
     <section id="main" data-bind="with: tile">
-      <h2>Location: <span data-bind="text: id"></span></h2>
+      <h1>Location: <span data-bind="text: id"></span></h1>
       <dl>
         <dt>Region:</dt>
         <dd data-bind="text: regionId"></dd>
@@ -138,15 +230,18 @@
     </section>  
   </div>
 
-  <div class="panel" data-bind="visible: editMode">
-    Edit Panel <button data-bind="click: save">Save</button>
-    <section id="editor" data-bind="with: tile">
-      <h2>Location: <span data-bind="text: id"></span></h2>
+  <div class="panel" data-bind="visible: editMode, with: tile">
+    <header>
+      <h1>Location: <span data-bind="text: id"></span></h1> 
+      <div class="mode">Edit</div>
+      <button data-bind="click: $parent.save">Save</button>
+    </header>
+    <section id="editor">
       <dl>
         <dt>Region:</dt>
         <dd data-bind="text: regionId"></dd>
         <dt>Terrain:</dt>
-        <dd><select type="text" data-bind="value: terrain"></dd>
+        <dd><select type="text" data-bind="options: $parent.terrainTypes, value: terrain"></select></dd>
         <dt>Description:</dt>
         <dd><textarea data-bind="value: description"></textarea></dd>
       </dl>
@@ -168,13 +263,15 @@
         </li>
       </ul>
     </section>  
+    <footer>
+    <header>
+     <button data-bind="click: $parent.save">Save</button>
+    </header>
+    </footer>
   </div>
-  <div class="overlay">
-    <p><label>Pick Item</label>
-        <select data-bind="options: items()"></select></p>
-
-    <p><label>Pick NPC</label>
-        <select data-bind="options: npcs()"></select></p>
+  <div class="overlay" data-bind="visible: pickerType().length">
+    <p><label>Pick One</label>
+        <select data-bind="options: types(), value: pickerValue"></select></p>
   </div>
 </body>
 </html>

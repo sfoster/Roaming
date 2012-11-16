@@ -84,7 +84,16 @@
         tiles:  ko.observableArray([]),
         layers: ko.observableArray([
           loadingLabel
-        ])
+        ]),
+        onMapClick: function(vm, evt){
+          console.log("Click: ", evt);
+          var x = evt.pageX - evt.target.offsetLeft, 
+              y = evt.pageY - evt.target.offsetTop;
+          var tile_x = Math.floor(x / TILE_SIZE),  
+              tile_y = Math.floor(y / TILE_SIZE);
+          console.log("tile size: %s, x: %s, y: %s, tile x: %s, tile y: %s", TILE_SIZE, x, y, tile_x, tile_y);
+          location.href = 'location.html?location='+region.id+'/'+tile_x+','+tile_y;
+        }
       };
       
       var ids = region.tiles.map(function(stub){
@@ -141,7 +150,7 @@
 
 <body>
   <section id="map">
-    <canvas id="mapCanvas" width="400" height="400" data-bind="layers2d: layers" style="width:400px; height: 400px"></canvas>
+    <canvas id="mapCanvas" width="400" height="400" data-bind="click: onMapClick, layers2d: layers" style="width:400px; height: 400px"></canvas>
   </section>
   <section id="main" class="panel">
     <h2>Region: <span data-bind="text: id"></span></h2>
