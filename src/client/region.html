@@ -37,13 +37,14 @@
       }
       
       var TILE_SIZE = 20, 
-          REGION_WIDTH = TILE_SIZE * pluck(region.tiles, 'x').reduce(function(a, b){
+          REGION_WIDTH = TILE_SIZE * (1+pluck(region.tiles, 'x').reduce(function(a, b){
             return Math.max(a, b);
-          }), 
-          REGION_HEIGHT = TILE_SIZE * pluck(region.tiles, 'y').reduce(function(a, b){
+          })), 
+          REGION_HEIGHT = TILE_SIZE * (1+pluck(region.tiles, 'y').reduce(function(a, b){
             return Math.max(a, b);
-          }); 
-      
+          })); 
+      console.log("REGION_WIDTH: %s, REGION_HEIGHT: %s", REGION_WIDTH, REGION_HEIGHT);
+
       var canvasNode = document.getElementById('mapCanvas');
       canvasNode.width = REGION_WIDTH;
       canvasNode.height = REGION_HEIGHT;
@@ -139,7 +140,6 @@
         var arLayers = viewModel.layers(),
             len = arLayers.length;
             
-        console.log("current layers: ", arLayers);
         viewModel.layers([ terrainMap, drawAxes() ]);
       });
 
