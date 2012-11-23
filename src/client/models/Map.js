@@ -17,17 +17,6 @@ define(['dollar', 'lib/util', 'promise', 'resources/terrain'], function($, util,
     startY: 0, 
     showCoords: false,
     
-    init: function(){
-      if(!this.initialized){
-        var canvas = this.canvasNode || ( this.canvasNode = document.createElement("canvas") );
-        // canvas.style.cssText = "display:block;margin:4px auto";
-        if(! canvas.id){
-          canvas.id = this.id +"_canvas";
-        }
-        this.initialized = true;
-      }
-      return this;
-    },
     render: function(mapData, options) {
       options = options || {};
       // loop over the array of locations
@@ -44,6 +33,7 @@ define(['dollar', 'lib/util', 'promise', 'resources/terrain'], function($, util,
       console.log("renderMap at ", tileSize);
       for(var i=0; i<mapData.length; i++){
         tile = mapData[i];
+        console.log("looking up terrain type: " + tile.terrain);
         terrain = terrainTypes[tile.terrain];
         
         if(terrain){
