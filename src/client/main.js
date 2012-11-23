@@ -28,10 +28,12 @@ define([
     return defd.promise;
   }
   
-  // setup the global as an event sink and emitter
-  util.mixin(this, Evented);
+  // setup the game object as an event sink and emitter
+  var game = util.mixin( {
+    ui: ui
+  }, Evented );
   
-  var player = new Player({
+  var player = game.player = new Player({
     inventory: Player.initialInventory 
   });
 
@@ -45,14 +47,8 @@ define([
   // get region data for the starting position
   // enter the region and tile
   
-  var game ={
-    player: player,
-    region: null, 
-    tile: null
-  };
   
-  var locationsByCoords = {};
-  var stack = window.stack = (function(){
+  var stack = game.stack = (function(){
     var _stack = [];
     return {
       length: 0,
@@ -80,7 +76,7 @@ define([
     var locationId = regionId + '/' + [x,y].join(',');
     console.log("enterAt, regionId: %s, locationId: %s", regionId, locationId);
     require([
-      'plugins/resource!region/'+regionId+'/index', 
+      'plugins/resource!region/'+regionId+'/index',
       'plugins/resource!location/'+locationId
     ], function(
         region, tile
@@ -120,7 +116,7 @@ define([
     }); 
   }
   
-  var routes = [
+  var routes = game.routes = [
     [
       "#:region/:x,:y", 
       function(req){
@@ -133,7 +129,7 @@ define([
       }
     ]    
   ];
-  var router = new UrlRouter(routes);
+  var router = game.router = new UrlRouter(routes);
   router.compile();
   
   window.onhashchange = function() {
@@ -163,17 +159,6 @@ define([
     if(x < 0) keyMask |=8;
     
     return names[keyMask];
-  }
-  
-  function loadLocations() {
-    var ids = Array.prototype.slice.call(arguments, 0).map(function(id){
-      return  'plugins/resource!location/'+id;
-    });
-    var defd = Promise.defer();
-    require(ids, function(){
-      defd.resolve.apply(defd, Array.prototype.slice.call(arguments));
-    });
-    return defd.promise;
   }
   
   $('#nearbyMap').click(function(evt){
@@ -219,7 +204,7 @@ define([
     return item;
   }
   
-  ui.on('onitemclick', function(evt){
+  game.ui.on('onitemclick', function(evt){
     var id = evt.id, 
         item = resolveItem(id, { name: evt.text }); 
     console.log("taking item: ", item);
@@ -227,9 +212,10 @@ define([
     player.inventory.add(item);
   });
   
-  Evented.on("onafterlocationenter", function(evt){
+  game.on("onafterlocationenter", function(evt){
     console.log("onafterlocationenter: ", evt);
     
+    var ui = game.ui;
     ui.flush("main");
     
     var tile = evt.target, 
@@ -244,7 +230,7 @@ define([
       return id;
     });
 
-    var history = player.history[tile.id], 
+    var history = game.player.history[tile.id], 
         visits = history && history.visits;
         
     console.log("history for location: ", history);
@@ -293,7 +279,8 @@ define([
     //   });
     // }
     
-    loadLocations.apply(this, ids).then(function(locations){
+    game.region.loadTiles(ids).then(function(tiles){
+      var locations = tiles;
       // populate the by-id lookup for the location objects
       locations.forEach(function(){
         locationsById[location.id] = location;

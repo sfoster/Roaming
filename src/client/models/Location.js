@@ -37,7 +37,7 @@ define([
     enter: function(player, game){
       var proceed = true;
       this._onexits = [];
-      emit("onbeforelocationenter", {
+      this.emit("onbeforeenter", {
         target: this,
         player: player,
         cancel: function(){ proceed = false; }
@@ -62,7 +62,7 @@ define([
           return (false !== encounter.enter(self, player, game));
         }, true);
 
-        emit("onafterlocationenter", {
+        this.emit("onafterenter", {
           target: this,
           player: player,
           cancel: function(){ proceed = false; }
@@ -74,7 +74,7 @@ define([
     },
     exit: function(player, game){
       console.log("Location exit stub");
-      emit("onlocationexit", {
+      this.emit("onexit", {
         target: this,
         player: player,
         cancel: function(){ proceed = false; }

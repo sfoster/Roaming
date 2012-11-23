@@ -37,7 +37,7 @@ define([
     enter: function(player, game){
       var proceed = true;
       this._onexits = [];
-      emit("onbeforeregionenter", {
+      this.emit("onbeforeenter", {
         target: this,
         player: player,
         cancel: function(){ proceed = false; }
@@ -45,7 +45,7 @@ define([
       if(proceed){
         console.log("region enter: ", this, player, game, player.history);
 
-        emit("onafterregionenter", {
+        this.emit("onafterenter", {
           target: this,
           player: player,
           cancel: function(){ proceed = false; }
@@ -57,7 +57,7 @@ define([
     },
     exit: function(player, game){
       console.log("Region exit stub");
-      emit("onregionexit", {
+      this.emit("onexit", {
         target: this,
         player: player,
         cancel: function(){ proceed = false; }
