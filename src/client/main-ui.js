@@ -1,64 +1,33 @@
 define([
   'dollar', 
   'knockout', 
+  'lib/koHelpers',
   'lib/util', 
   'resources/template',
   'lib/event',
-  'resources/map'
-], function($, ko, util, template, Evented, map){
+  'models/Map'
+], function($, ko, koHelpers, util, template, Evented, Map){
 
-  var ui = {};
-  
-  ui.initHud = function(player, world){
-    $('<canvas id="nearbyMap" width="150" height="150"></canvas>').appendTo($("#nearby"));
-  };
-  
-  ui.initMap = function(player, world){
-    console.log("init map");
-    map.init().then(function(val){
-
-      require(['json!../location/world.json'], function(mapData){
-        var canvasNode = map.renderMap( mapData.tiles, { tileSize: 6 });
-        $(canvasNode).css({
-          margin: '0 auto',
-          display: 'block'
-        });
-        // console.log("map rows: ", mapRows);
-        $('.world-map').append( canvasNode );
-      });
-    });
-    console.log("/init map");
+  // viewModel 
+  var ui = { };
+  var viewModel = ui.viewModel = {
+    messages: ko.observableArray([]),
+    status: ko.observableArray(['loading'])
   };
   
   ui.initSidebar = function(player, world){
-    // display the player's inventory
-    var $inventoryNode = $("<ul></ul>");
-    $('.inventory')
-      // .html("<p>Maybe an Inventory list here?</p>")
-      .append($inventoryNode);
-    
-    player.inventory.forEach(function(item){
-      $inventoryNode.append("<li>"+ item.name +"</li>");
-    });
-    
-    player.inventory.on('onafteradd', function(evt){
-      $inventoryNode.empty();
-      for(var i=0; i<player.inventory.length; i++){
-        $inventoryNode.append("<li>"+ player.inventory[i].name +"</li>");
-      }
-    });
-    player.inventory.on('onafterdrop', function(evt){
-      $inventoryNode.empty();
-      for(var i=0; i<player.inventory.length; i++){
-        $inventoryNode.append("<li>"+ player.inventory[i].name +"</li>");
-      }
-    });
-
-    // display the player's current weapon
-    $('.weapon').html( "<p>" + player.currentWeapon.name + "</p>");
-    
-    // display the 10,000ft view map
-    $('.world-map').html("<p></p>");
+    // player.inventory.on('onafteradd', function(evt){
+    //   $inventoryNode.empty();
+    //   for(var i=0; i<player.inventory.length; i++){
+    //     $inventoryNode.append("<li>"+ player.inventory[i].name +"</li>");
+    //   }
+    // });
+    // player.inventory.on('onafterdrop', function(evt){
+    //   $inventoryNode.empty();
+    //   for(var i=0; i<player.inventory.length; i++){
+    //     $inventoryNode.append("<li>"+ player.inventory[i].name +"</li>");
+    //   }
+    // });
   };
 
   ui.initMain = function(player, world){
@@ -77,15 +46,20 @@ define([
 
   util.mixin(ui, Evented);
   
-  ui.init = function(player, world){
-    this.initMap(player, world);
-    this.initHud(player, world);
-    this.initSidebar(player, world);
-    this.initMain(player, world);
-    
-    self.on("onitemclick", function(evt){
-      console.log("onitemclick event: ", evt);
+  ui.init = function(player, region){
+    var minimap =this.minimap = new Map({ 
+      id: 'minimap',
+      canvasNode: document.getElementById('minimap'),
+      tileSize: 6 
     });
+    viewModel.player = koHelpers.makeObservable(player); 
+    viewModel.region = koHelpers.makeObservable(region);
+    // minimap.render( region.tiles, { });
+    // this.initHud(player, world);
+    // this.initSidebar(player, world);
+    // this.initMain(player, world);
+
+    ko.applyBindings( viewModel );
   };
 
   ui.flush = function(id){
@@ -93,13 +67,12 @@ define([
   };
   
   ui.main = function(cont){
-    return $("#main").append(cont);
+     viewModel.messages.push(cont);
   };
 
   ui.status = function(cont){
     cont = cont.split('\n');
-    cont.push('\n');
-    return $("#status").append( cont.join('<br>') );
+    viewModel.status.push(cont.join('<br>'));
   };
   
   return ui;

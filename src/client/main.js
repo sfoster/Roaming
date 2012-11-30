@@ -1,5 +1,6 @@
 define([
   'dollar', 'lib/util', 'lib/event', 'resources/template', 
+  'knockout', 'lib/koHelpers',
   'main-ui',
   'resources/map',
   'lib/UrlRouter',
@@ -10,6 +11,7 @@ define([
   'resources/items', 'resources/weapons', 'resources/armor', 'resources/traps'
 ], function(
     $, util, Evented, template, 
+    ko, koHelpers,
     ui,
     map,
     UrlRouter, 
@@ -29,18 +31,17 @@ define([
   }
   
   // setup the game object as an event sink and emitter
-  var game = util.mixin( {
+  var game = window.game = util.mixin( {
     ui: ui
   }, Evented );
   
-  var player = game.player = new Player({
+  var player = new Player({
     inventory: Player.initialInventory 
   });
 
+  player = game.player = koHelpers.makeObservable(player); 
+
   console.log("Player: ", player);
-  
-  // draw and fill the layout
-  // ui.init( player );
   
   // login or init player
   // set up main game stack
@@ -94,6 +95,11 @@ define([
         // resolve encounter ids to their contents
         tile.encounter = encounters[encounterId];
       }
+
+      // draw and fill the layout
+      ui.init( player, region );
+
+      game.emit("onafterlocationenter", { target: tile });
 
       region.on('enter', function(){
         ui.status("You enter the region");
@@ -209,7 +215,7 @@ define([
         item = resolveItem(id, { name: evt.text }); 
     console.log("taking item: ", item);
     // just add it directly. We might want a context menu or something eventually with a list of avail. actions
-    player.inventory.add(item);
+    player.inventory.push(item);
   });
   
   game.on("onafterlocationenter", function(evt){
@@ -236,7 +242,7 @@ define([
     console.log("history for location: ", history);
     ui.main("<p>"+ tile.description +" at: " + tile.coords + "</p>");
 
-    if(visits.length > 1){
+    if(visits && visits.length > 1){
       ui.main("<p>It looks familiar, you think you've been here before.</p>");
     }
 
@@ -255,16 +261,16 @@ define([
       
       ui.main("<p class='here'>"+hereText+"</p>");
 
-      var handle = player.inventory.on('onafteradd', function(evt){
-        for(var i=0, hereItems = tile.here; i<hereItems.length; i++){
-          if(evt.target.id == hereItems[i].id) break;
-        }
-        if(i < hereItems.length) {
-          console.log("removing took item: ", hereItems[i]);
-          hereItems.splice(i, 1);
-        }
-        ui.status("You take the "+evt.target.name);
-      });
+      // var handle = player.inventory.subscribe(function(vm, evt){
+      //   for(var i=0, hereItems = tile.here; i<hereItems.length; i++){
+      //     if(evt.target.id == hereItems[i].id) break;
+      //   }
+      //   if(i < hereItems.length) {
+      //     console.log("removing took item: ", hereItems[i]);
+      //     hereItems.splice(i, 1);
+      //   }
+      //   ui.status("You take the "+evt.target.name);
+      // });
       tile.onExit(function(){
         console.log("unhooking onaferadd handler for tile: ", tile.id);
         handle.remove();
@@ -293,21 +299,21 @@ define([
       });
       
       // update the nearby map with tiles around the current location
-      nearbyMap = { 
-        canvasNode: $('#nearbyMap')[0],
-        showCoords: true,
-        tileSize: 50,
-        startX: tile.x-1, 
-        startY: tile.y-1
-      };
+      // nearbyMap = { 
+      //   canvasNode: $('#nearbyMap')[0],
+      //   showCoords: true,
+      //   tileSize: 50,
+      //   startX: tile.x-1, 
+      //   startY: tile.y-1
+      // };
 
-      var canvasNode = map.renderMap( locationTiles, nearbyMap);
+      // var canvasNode = map.renderMap( locationTiles, nearbyMap);
       
-      $('#nearby').css({
-        margin: '0',
-        padding: '5px',
-        display: 'block'
-      });
+      // $('#nearby').css({
+      //   margin: '0',
+      //   padding: '5px',
+      //   display: 'block'
+      // });
 
     });
   });

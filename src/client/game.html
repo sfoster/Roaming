@@ -4,6 +4,43 @@
   <meta charset="utf-8">
   <title>Roaming</title>
 </head>
+<style>
+  html, body {
+    margin: 0; padding: 0;
+  }
+  #hud {
+    position: relative;
+    display: block;
+    min-height: 100px;
+  }
+  #main {
+    background-color: rgba(0,0,0, 0.6);
+    position: absolute;
+    top: 100px; right: 200px;
+    left: 20px;
+    bottom: 60px;
+  }
+  #drawer {
+    position: absolute;
+    top: 100px; right: 0;
+    width: 200px;
+    bottom: 60px;
+  }
+  .panelist {
+    margin: 0; 
+    padding: 0;
+  }
+  .panel {
+    background-color: rgba(0,255,51, 0.6);
+    display: block;
+    padding: 0;
+    margin: 0;
+  }
+  li.panel {
+    list-style-type:  none;
+  }
+
+</style>
 <body>
 
   <section id="hud" class="panel">
@@ -12,10 +49,14 @@
   </section>  
   <section id="drawer" class="panel">
       <ul class="panelist">
-          <li class="panel world-map">[minimap here]</li>
+          <li class="panel world-map">
+            <h2>Mini Map</h2>
+            <canvas id="minimap" width="120" height="120"></canvas>
+          </li>
           <li class="panel inventory">
+            <h2>Inventory</h2>
             <ul data-bind="foreach: player.inventory">
-              <li>Inventory Item</li>
+              <li data-bind="text: name"></li>
             </ul>
           </li>
           <li class="panel weapon">
@@ -24,6 +65,14 @@
       </ul>
   </section>
   <section id="main" class="panel">
+    <h2>Status</h2>
+    <ul data-bind="foreach: status">
+      <li data-bind="text: $data"></li>
+    </ul>
+    <h2>Messages</h2>
+    <ul data-bind="foreach: messages">
+      <li data-bind="text: $data"></li>
+    </ul>
     scene: 
       terrain
       encounters
