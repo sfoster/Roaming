@@ -1,9 +1,9 @@
 // koHelpers.js
-define(['ko'], function(ko){
+define(['knockout'], function(ko){
   function makeObservable(obj) {
     var vm = {};
     for(var name in obj) {
-      vm[name] = (obj[name] instanceof Array) ? ko.observableArray(obj[name]) : obj[name];
+      vm[name] = (obj[name] instanceof Array) ? ko.observableArray(obj[name]) : ko.observable(obj[name]);
     }
     return vm;
   }
@@ -24,11 +24,6 @@ define(['ko'], function(ko){
         return util.map(value, function(val, key, obj){
           return resolveObservable(val);
         });
-      case 'function': 
-        return '[function]';
-      case 'date':
-        return value.toString();
-      case 'null':
       default: 
         return value;
     }
