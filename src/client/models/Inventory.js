@@ -39,7 +39,7 @@ define([
         if(item in itemResources){
           item = itemResources[item];
         } else if(item in weaponResources){
-          item = weapons[item];
+          item = weaponResources[item];
         } else {
           item = items[id] = { id: item, name: item, description: item };
         }

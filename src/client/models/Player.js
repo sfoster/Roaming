@@ -36,7 +36,7 @@ define([
   }, function(){
     // constructor
     // create the player's inventory
-    this.inventory = new Inventory(this.inventory || []);
+    this.inventory = Inventory.resolve(this.inventory || []);
 
     // "de-reference" the weapon
     if(this.currentWeapon && typeof this.currentWeapon === "string") {
