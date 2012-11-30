@@ -44,7 +44,7 @@
 </section>  
 <section id="main" class="panel">
   <h2>Inventory</h2>
-  <ul data-bind="foreach: inventoryItems">
+  <ul data-bind="foreach: inventory">
     <li data-bind="text: name"></li>
   </ul>
   <h2>Visits</h2>
@@ -76,20 +76,18 @@
     }
   })();
 
-  require(['knockout', 'lib/util', 'plugins/resource!player/'+(config.playerid || 'guest')], function(ko, util, player){
+  require([
+    'knockout', 
+    'lib/koHelpers', 
+    'plugins/resource!player/'+(config.playerid || 'guest')
+  ], function(ko, koHelpers, player){
     // get player id
     // load player data
-    window.player = player;
-    var viewModel = {
-      playerid: player.id,
-      name: player.name,
-      score: ko.observable(player.score),
-      position: ko.observable(player.position), // e.g. "world/3,3"
-      elapsed: ko.observable(player.elapsed),
-      inventoryItems: ko.observableArray(player.inventory),
-      visits: ko.observableArray(player.visits),
-    };
-    ko.applyBindings(viewModel);
+    if(!player.score){
+      player.score = 0;
+    }
+    player = window.player = koHelpers.makeObservable(player);
+    ko.applyBindings(player);
   });
 </script>
 </body>
