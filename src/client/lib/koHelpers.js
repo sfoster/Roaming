@@ -1,5 +1,5 @@
 // koHelpers.js
-define(['knockout'], function(ko){
+define(['knockout', 'lib/util'], function(ko, util){
   function makeObservable(obj) {
     var vm = {};
     for(var name in obj) {
