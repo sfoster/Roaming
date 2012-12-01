@@ -23,7 +23,7 @@
   </style>
 </head>
 <body>
-<section id="hud" class="panel">
+  <script type="text/html" id="player-template">
   <h1>Player Details: <span data-bind="text: name">name</span></h1>
   <table class="listing" cellspacing="0">
     <tbody>
@@ -41,6 +41,8 @@
       </tr>
     </tbody>
   </table>
+  </script>
+<section id="hud" class="panel" data-bind="template: 'player-template'">
 </section>  
 <section id="main" class="panel">
   <h2>Inventory</h2>

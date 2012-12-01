@@ -172,10 +172,7 @@
 </head>
 
 <body>
-
-  <div class="panel" data-bind="visible: !editMode()">
-    Preview Panel
-    <section id="main" data-bind="with: tile">
+  <script type="text/html" id="location-template">
       <h1>Location: <span data-bind="text: id"></span></h1>
       <dl>
         <dt>Region:</dt>
@@ -200,6 +197,10 @@
       <ul data-bind="foreach: npcs">
         <li><span data-bind="text: type"></span> (<span data-bind="text: count"></span>)</li>
       </ul>
+  </script>
+  <div class="panel" data-bind="visible: !editMode()">
+    Preview Panel
+    <section id="main" data-bind="template: { name: 'location-template', data: tile }">
     </section>  
   </div>
 
