@@ -6,7 +6,7 @@ define([
   'lib/UrlRouter',
   'promise', 
   'lib/markdown',
-  'models/Player',
+  'plugins/resource!player/'+(config.playerid || 'guest'), 
   'resources/encounters',
   'resources/items', 'resources/weapons', 'resources/armor', 'resources/traps'
 ], function(
@@ -17,38 +17,19 @@ define([
     UrlRouter, 
     Promise, 
     markdown,
-    Player, 
+    player, 
     encounters,
     items, weapons, armor, traps
 ){
+  var START_LOCATION = 'world/3,2';
   var when = Promise.when;
-  function load(deps, callback){
-    var defd = Promise.defer();
-    requirejs(deps, function(){
-      return defd.resolve.apply(defd, arguments);
-    });
-    return defd.promise;
-  }
-  
+
   // setup the game object as an event sink and emitter
-  var game = window.game = util.mixin( {
+  var game = window.game = util.mixin({
     ui: ui
   }, Evented );
   
-  var player = new Player({
-    inventory: Player.initialInventory 
-  });
-
-  player = game.player = koHelpers.makeObservable(player); 
-
-  console.log("Player: ", player);
-  
-  // login or init player
-  // set up main game stack
-  // get region data for the starting position
-  // enter the region and tile
-  
-  
+  // the scene is modelled as a stack of states
   var stack = game.stack = (function(){
     var _stack = [];
     return {
@@ -73,15 +54,29 @@ define([
     };
   })();
   
+
+  if(!player.score){
+    player.score = 0;
+  }
+  game._player = player; 
+  player = game.player = koHelpers.makeObservable(player);
+  
+  // login or init player
+  // set up main game stack
+  // get region data for the starting position
+  // enter the region and tile
+  
+  
   function enterAt(regionId, x, y) {
+
+    // load the region and current tile to set the scene
     var locationId = regionId + '/' + [x,y].join(',');
     console.log("enterAt, regionId: %s, locationId: %s", regionId, locationId);
+    
     require([
       'plugins/resource!region/'+regionId+'/index',
       'plugins/resource!location/'+locationId
-    ], function(
-        region, tile
-    ){
+    ], function(region, tile){
       game.region = region; 
       game.tile = tile;
 
@@ -99,7 +94,7 @@ define([
       // draw and fill the layout
       ui.init( player, region );
 
-      game.emit("onafterlocationenter", { target: tile });
+      // game.emit("onafterlocationenter", { target: tile });
 
       region.on('enter', function(){
         ui.status("You enter the region");
@@ -142,8 +137,11 @@ define([
     router.match(window.location.hash); // returns the data object if successfull, undefined if not.
   };
   
-  router.match(window.location.hash || '#world/3,2');
+  router.match(window.location.hash || '#'+START_LOCATION);
   
+  ////////////////////////////////
+  // find a home for: 
+  // 
   function getCardinalDirection(origin, target){
     var x = target.x - origin.x, 
         y = target.y - origin.y;
@@ -277,14 +275,6 @@ define([
       });
     }
 
-    // if(tile.encounter){
-    //   var encounterText = visits.length <= 1 ? tile.encounter.firstVisit : tile.encounter.reVisit;
-    //   encounterText.forEach(function(mdText){
-    //     var html = markdown(mdText);
-    //     ui.main("<p class='encounter'>"+html+"</p>");
-    //   });
-    // }
-    
     game.region.loadTiles(ids).then(function(tiles){
       var locations = tiles;
       // populate the by-id lookup for the location objects

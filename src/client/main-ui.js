@@ -5,15 +5,27 @@ define([
   'lib/util', 
   'resources/template',
   'lib/event',
-  'models/Map'
-], function($, ko, koHelpers, util, template, Evented, Map){
+  'models/Map',
+  'text!resources/templates/player.html'
+], function($, ko, koHelpers, util, template, Evented, Map, playerTemplate){
 
+  function importTemplate(id, tmpl){
+    // setup templates
+    var tmplNode = document.createElement('script'); 
+    tmplNode.setAttribute('type', 'text/html');
+    tmplNode.id = id;
+    var tmplText = document.createTextNode( tmpl );
+    tmplNode.appendChild(tmplText);
+    return document.body.appendChild( tmplNode );
+  }
   // viewModel 
   var ui = { };
   var viewModel = ui.viewModel = {
     messages: ko.observableArray([]),
     status: ko.observableArray(['loading'])
   };
+  
+  importTemplate('player-template', playerTemplate, document.getElementById('playerInfo'));
   
   ui.initSidebar = function(player, world){
     // player.inventory.on('onafteradd', function(evt){
@@ -47,19 +59,31 @@ define([
   util.mixin(ui, Evented);
   
   ui.init = function(player, region){
+    viewModel.player = koHelpers.makeObservable(player);
+    
     var minimap =this.minimap = new Map({ 
       id: 'minimap',
       canvasNode: document.getElementById('minimap'),
       tileSize: 6 
     });
-    viewModel.player = koHelpers.makeObservable(player); 
-    viewModel.region = koHelpers.makeObservable(region);
     // minimap.render( region.tiles, { });
     // this.initHud(player, world);
     // this.initSidebar(player, world);
     // this.initMain(player, world);
+    console.log("UI.init with region: ", region);
+    var locationStubs = region.tiles.slice(0, 6); // koHelpers.resolveObservable( );
+
+    var ids = locationStubs.map(function(tile){ 
+      return tile.id; 
+    });
+    console.log("Load tiles: ", ids);
 
     ko.applyBindings( viewModel );
+
+    // region.loadTiles( ids ).then(function( tiles ){
+    //   minimap.render( tiles );
+    //   ko.applyBindings( viewModel );
+    // });
   };
 
   ui.flush = function(id){
