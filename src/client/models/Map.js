@@ -25,7 +25,7 @@ define(['dollar', 'lib/util', 'promise', 'resources/terrain'], function($, util,
           terrain = null,
           tileSize = options.tileSize ||this.tileSize,
           canvasNode = options.canvasNode || this.canvasNode,
-          ctx = canvasNode.getContext("2d"), 
+          ctx = options.context2d || canvasNode.getContext("2d"), 
           startX = options.startX || this.startX, 
           startY = options.startY || this.startY, 
           showCoords = ('showCoords' in options) ? options.showCoords : this.showCoords;  
