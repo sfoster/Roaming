@@ -23,25 +23,6 @@
   </style>
 </head>
 <body>
-  <script type="text/html" id="player-template">
-  <h1>Player Details: <span data-bind="text: name">name</span></h1>
-  <table class="listing" cellspacing="0">
-    <tbody>
-      <tr>
-        <th>Score</th>
-        <td data-bind="text:score"></td>
-      </tr>
-      <tr>
-        <th>Position</th>
-        <td data-bind="text:position"></td>
-      </tr>
-      <tr>
-        <th>Time Elapsed</th>
-        <td data-bind="text:elapsed"></td>
-      </tr>
-    </tbody>
-  </table>
-  </script>
 <section id="hud" class="panel" data-bind="template: 'player-template'">
 </section>  
 <section id="main" class="panel">
@@ -81,13 +62,22 @@
   require([
     'knockout', 
     'lib/koHelpers', 
-    'plugins/resource!player/'+(config.playerid || 'guest')
-  ], function(ko, koHelpers, player){
+    'plugins/resource!player/'+(config.playerid || 'guest'), 
+    'text!resources/templates/player.html'
+  ], function(ko, koHelpers, player, playerTemplate){
     // get player id
     // load player data
     if(!player.score){
       player.score = 0;
     }
+    // setup templates
+    var tmplNode = document.createElement('script'); 
+    tmplNode.setAttribute('type', 'text/html');
+    tmplNode.id = 'player-template';
+    var tmplText = document.createTextNode( playerTemplate );
+    tmplNode.appendChild(tmplText);
+    document.body.appendChild( tmplNode );
+
     player = window.player = koHelpers.makeObservable(player);
     ko.applyBindings(player);
   });
