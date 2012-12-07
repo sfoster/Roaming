@@ -1,6 +1,9 @@
 // koHelpers.js
 define(['knockout', 'lib/util'], function(ko, util){
   function makeObservable(obj) {
+    if('function' == typeof obj){
+      return obj;
+    }
     var vm = {};
     for(var name in obj) {
       vm[name] = (obj[name] instanceof Array) ? ko.observableArray(obj[name]) : ko.observable(obj[name]);
