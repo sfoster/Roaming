@@ -59,7 +59,7 @@ define([
   util.mixin(ui, Evented);
   
   ui.init = function(player, region){
-    viewModel.player = koHelpers.makeObservable(player);
+    viewModel.player = player;
     
     var minimap =this.minimap = new Map({ 
       id: 'minimap',

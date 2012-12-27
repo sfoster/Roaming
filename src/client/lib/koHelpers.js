@@ -10,7 +10,7 @@ define(['knockout', 'lib/util'], function(ko, util){
     var observable = {};
     depth = depth || 0;
     if('array' == type) {
-      if(depth) {
+      if(depth >= 0) {
         value = value.map(function(item, i){
           return makeObservable(item, depth-1);
         });
@@ -19,7 +19,7 @@ define(['knockout', 'lib/util'], function(ko, util){
     } else if(/^object/.test(type)) {
       // ko provides no equivalent to observableArray for objects - to watch property changes
       // so, optinally walk the tree but return the object itself as-is
-      if(depth) {
+      if(depth >= 0) {
         Object.keys(value).forEach(function(key){
           value[key] = makeObservable(value[key], depth-1);
         })
