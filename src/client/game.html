@@ -8,6 +8,11 @@
   html, body {
     margin: 0; padding: 0;
   }
+  h1, h2, h3, th, dt { 
+    margin: 0 0 8px 0;
+    font-family: monospace;
+    text-align: left;
+  }
   #hud {
     position: relative;
     display: block;
@@ -45,7 +50,9 @@
 
   <section id="hud" class="panel">
     <div id="nearby"></div>
-    <div id="playerInfo" data-bind="template: 'player-template'"></div>
+    <div id="playerInfo" data-bind="with: player">
+      <div data-bind="template: 'player-template'"></div>
+    </div>
   </section>  
   <section id="drawer" class="panel">
       <ul class="panelist">

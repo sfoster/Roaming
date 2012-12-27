@@ -9,7 +9,7 @@ define([
   'text!resources/templates/player.html'
 ], function($, ko, koHelpers, util, template, Evented, Map, playerTemplate){
 
-  function importTemplate(id, tmpl){
+  function importTemplate(id, tmpl, bindProperty){
     // setup templates
     var tmplNode = document.createElement('script'); 
     tmplNode.setAttribute('type', 'text/html');
@@ -25,7 +25,7 @@ define([
     status: ko.observableArray(['loading'])
   };
   
-  importTemplate('player-template', playerTemplate, document.getElementById('playerInfo'));
+  importTemplate('player-template', playerTemplate, 'player');
   
   ui.initSidebar = function(player, world){
     // player.inventory.on('onafteradd', function(evt){
@@ -77,7 +77,8 @@ define([
       return tile.id; 
     });
     console.log("Load tiles: ", ids);
-
+    
+    console.log("viewModel.player: ", viewModel.player);
     ko.applyBindings( viewModel );
 
     // region.loadTiles( ids ).then(function( tiles ){
