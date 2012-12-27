@@ -92,12 +92,12 @@ define([
       }
 
       // draw and fill the layout
-      ui.init( player, region );
+      ui.init( player, region, game );
 
       // game.emit("onafterlocationenter", { target: tile });
 
-      region.on('enter', function(){
-        ui.status("You enter the region");
+      region.on('enter', function(evt){
+        ui.status("You enter the region: ", evt);
       });
       region.on('exit', function(){
         ui.status("You leave this region");
@@ -137,7 +137,8 @@ define([
     router.match(window.location.hash); // returns the data object if successfull, undefined if not.
   };
   
-  router.match(window.location.hash || '#'+START_LOCATION);
+  var currentLocation = player.position() || START_LOCATION; 
+  router.match(window.location.hash || '#'+currentLocation);
   
   ////////////////////////////////
   // find a home for: 
