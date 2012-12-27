@@ -28,13 +28,13 @@ define([
   importTemplate('player-template', playerTemplate, 'player');
   
   ui.initSidebar = function(player, world){
-    // player.inventory.on('onafteradd', function(evt){
+    // player.inventory.on('afteradd', function(evt){
     //   $inventoryNode.empty();
     //   for(var i=0; i<player.inventory.length; i++){
     //     $inventoryNode.append("<li>"+ player.inventory[i].name +"</li>");
     //   }
     // });
-    // player.inventory.on('onafterdrop', function(evt){
+    // player.inventory.on('afterdrop', function(evt){
     //   $inventoryNode.empty();
     //   for(var i=0; i<player.inventory.length; i++){
     //     $inventoryNode.append("<li>"+ player.inventory[i].name +"</li>");
@@ -48,7 +48,7 @@ define([
       evt.preventDefault();
       var parts = evt.target.href.split(':');
 
-      self.emit("onitemclick", {
+      self.emit("itemclick", {
        id:  parts[1],
        text: evt.target.text,
        href: evt.target.href
@@ -58,7 +58,7 @@ define([
 
   util.mixin(ui, Evented);
   
-  ui.init = function(player, region){
+  ui.init = function(player, region, game){
     viewModel.player = player;
     
     var minimap =this.minimap = new Map({ 
@@ -66,25 +66,43 @@ define([
       canvasNode: document.getElementById('minimap'),
       tileSize: 6 
     });
+
+
     // minimap.render( region.tiles, { });
     // this.initHud(player, world);
     // this.initSidebar(player, world);
     // this.initMain(player, world);
     console.log("UI.init with region: ", region);
-    var locationStubs = region.tiles.slice(0, 6); // koHelpers.resolveObservable( );
 
-    var ids = locationStubs.map(function(tile){ 
-      return tile.id; 
-    });
-    console.log("Load tiles: ", ids);
+    // var ids = region.tileIds().slice(0, 6); // koHelpers.resolveObservable( );
+    // console.log("Load tiles: ", ids);
     
     console.log("viewModel.player: ", viewModel.player);
     ko.applyBindings( viewModel );
 
-    // region.loadTiles( ids ).then(function( tiles ){
-    //   minimap.render( tiles );
-    //   ko.applyBindings( viewModel );
-    // });
+    game.on('locationenter', function(evt){
+      var centerTile = evt.target, 
+          cx = centerTile.x, 
+          cy = centerTile.y;
+
+      console.log("UI: location enter: ", cx, cy);
+
+      var visibleTileIds = (function(tile){
+        var ids = [];
+        for(var yo=-1; yo<=1; yo++){
+          for(var xo=-1; xo<=1; xo++){
+              ids.push((cx+xo)+','+(cy+yo));
+          }
+        }
+        return ids;
+      })(centerTile);
+
+      console.log("UI: visibleTileIds: ", visibleTileIds);
+      region.loadTiles( visibleTileIds ).then(function( tiles ){
+        minimap.render( tiles );
+      });
+
+    });
   };
 
   ui.flush = function(id){
