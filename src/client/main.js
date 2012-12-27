@@ -94,7 +94,7 @@ define([
       // draw and fill the layout
       ui.init( player, region, game );
 
-      // game.emit("onafterlocationenter", { target: tile });
+      // game.emit("afterlocationenter", { target: tile });
 
       region.on('enter', function(evt){
         ui.status("You enter the region: ", evt);
@@ -209,7 +209,7 @@ define([
     return item;
   }
   
-  game.ui.on('onitemclick', function(evt){
+  game.ui.on('itemclick', function(evt){
     var id = evt.id, 
         item = resolveItem(id, { name: evt.text }); 
     console.log("taking item: ", item);
@@ -217,8 +217,8 @@ define([
     player.inventory.push(item);
   });
   
-  game.on("onafterlocationenter", function(evt){
-    console.log("onafterlocationenter: ", evt);
+  game.on("afterlocationenter", function(evt){
+    console.log("afterlocationenter: ", evt);
     
     var ui = game.ui;
     ui.flush("main");

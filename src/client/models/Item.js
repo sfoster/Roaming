@@ -42,7 +42,7 @@ define(['compose', 'lib/util', 'lib/event'], function(Compose, util, Evented){
       } else {
         var proceed = true; 
         // maybe fire a onbeforetake event, which can block the action if evt.cancel() is called
-        emit("onbeforetake", {
+        emit("beforetake", {
           target: item,
           cancel: function(){
             proceed = false;
@@ -50,7 +50,7 @@ define(['compose', 'lib/util', 'lib/event'], function(Compose, util, Evented){
         });
         if(proceed) {
         // fire a onaftertake event, which maybe adds the thing to your inventory, increments weight, confirms the action
-        emit("onaftertake", {
+        emit("aftertake", {
           target: item,
           cancel: function(){
             proceed = false;

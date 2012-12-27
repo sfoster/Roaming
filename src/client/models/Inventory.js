@@ -5,7 +5,7 @@ define([
   var Inventory = Compose(Array, Evented, {
     add: function(item, options){
       this.push(item);
-      this.emit("onafteradd", {
+      this.emit("afteradd", {
         target: item,
         player: player,
         cancel: function(){ proceed = false; }
@@ -19,7 +19,7 @@ define([
       }
       if(i < this.length) {
         this.splice(idx, 1);
-        this.emit("onafterremove", {
+        this.emit("afterremove", {
           target: item,
           player: player,
           cancel: function(){ proceed = false; }

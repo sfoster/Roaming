@@ -4,7 +4,7 @@ define(['lib/event'], function(Evented){
   exports.take = function(thing, player){
     if(!thing.fixed) {
       var proceed = true;
-      emit("onbeforetake", {
+      emit("beforetake", {
         target: thing,
         player: player,
         cancel: function(){ proceed = false; }
@@ -12,7 +12,7 @@ define(['lib/event'], function(Evented){
       if(proceed){
         player.inventory.add(thing);
       }
-      emit("onaftertake", {
+      emit("aftertake", {
         target: thing,
         player: player
       });

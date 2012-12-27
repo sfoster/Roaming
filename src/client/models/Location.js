@@ -37,7 +37,7 @@ define([
     enter: function(player, game){
       var proceed = true;
       this._onexits = [];
-      this.emit("onbeforeenter", {
+      game.emit("beforelocationenter", {
         target: this,
         player: player,
         cancel: function(){ proceed = false; }
@@ -54,15 +54,22 @@ define([
         var locationHistory = player.history[this.id] || (player.history[this.id] = {}), 
             visits = locationHistory.visits || (locationHistory.visits = []);
 
+        game.emit("locationenter", {
+          target: this,
+          player: player,
+          cancel: function(){ proceed = false; }
+        });
+
         visits.push(+new Date());
 
         // enter each encounter, return false means stop
         var self = this;
         this.encounters.reduce(function(proceedToNext, encounter){
+          console.log("encounter: ", encounter);
           return (false !== encounter.enter(self, player, game));
         }, true);
 
-        this.emit("onafterenter", {
+        game.emit("afterlocationenter", {
           target: this,
           player: player,
           cancel: function(){ proceed = false; }
@@ -74,7 +81,7 @@ define([
     },
     exit: function(player, game){
       console.log("Location exit stub");
-      this.emit("onexit", {
+      this.emit("exit", {
         target: this,
         player: player,
         cancel: function(){ proceed = false; }

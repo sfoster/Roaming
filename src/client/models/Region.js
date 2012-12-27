@@ -37,7 +37,7 @@ define([
     enter: function(player, game){
       var proceed = true;
       this._onexits = [];
-      this.emit("onbeforeenter", {
+      this.emit("beforeenter", {
         target: this,
         player: player,
         cancel: function(){ proceed = false; }
@@ -45,7 +45,7 @@ define([
       if(proceed){
         console.log("region enter: ", this, player, game, player.history);
 
-        this.emit("onafterenter", {
+        this.emit("afterenter", {
           target: this,
           player: player,
           cancel: function(){ proceed = false; }
@@ -57,7 +57,7 @@ define([
     },
     exit: function(player, game){
       console.log("Region exit stub");
-      this.emit("onexit", {
+      this.emit("exit", {
         target: this,
         player: player,
         cancel: function(){ proceed = false; }
@@ -106,6 +106,11 @@ define([
         }
       });
       return savePromise;
+    },
+    tileIds: function(){
+      return this.tiles.map(function(tile){
+        return tile.id || (tile.x+','+tile.y); 
+      })
     },
     loadTiles: function(ids){
       // 
