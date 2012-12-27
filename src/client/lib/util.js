@@ -45,7 +45,7 @@ define(function(){
       if(thing instanceof Error || (('message' in thing) && (('lineno' in thing) || ('lineNumber' in thing)))){
         return 'error';
       }
-      return isPlainObject(thing) ? 'object' : 'unknown';
+      return isPlainObject(thing) ? 'object' : 'objectish';
     } else {
       return t;
     }
