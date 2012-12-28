@@ -40,7 +40,7 @@ define(['lib/util', 'lib/event', 'resources/npc'], function(util, Evented, npc){
         this.group = this.generateGroup(location, player, world);
       }
       if(this.group.length){
-        location.here = location.here.concat(hereCreatures);
+        location.here = location.here.concat(this.group);
         Evented.emit('encounterstart', { target: this });
       }
     },
