@@ -19,10 +19,14 @@ define([
     return document.body.appendChild( tmplNode );
   }
   // viewModel 
-  var ui = { };
+  var ui = {
+    _inited: false
+  };
+
   var viewModel = ui.viewModel = {
     messages: ko.observableArray([]),
-    status: ko.observableArray(['loading'])
+    status: ko.observableArray(['loading']),
+    onTileClick: onTileClick
   };
   
   importTemplate('player-template', playerTemplate, 'player');
@@ -42,29 +46,24 @@ define([
     // });
   };
 
-  ui.initMain = function(player, world){
-    var self = this;
-    $('#main').delegate("a[href^='item:']", "click", function(evt){
-      evt.preventDefault();
-      var parts = evt.target.href.split(':');
-
-      self.emit("itemclick", {
-       id:  parts[1],
-       text: evt.target.text,
-       href: evt.target.href
-      });
-    });
-  };
-
   util.mixin(ui, Evented);
+
+  var MINIMAP_TILE_SIZE = 12;
   
   ui.init = function(player, region, game){
+    if(this._inited && (
+      this.game === game
+    )){
+      return;
+    }
+
+    this.game = game;
     viewModel.player = player;
-    
+
     var minimap =this.minimap = new Map({ 
       id: 'minimap',
       canvasNode: document.getElementById('minimap'),
-      tileSize: 6 
+      tileSize: MINIMAP_TILE_SIZE 
     });
 
 
@@ -77,7 +76,7 @@ define([
     // var ids = region.tileIds().slice(0, 6); // koHelpers.resolveObservable( );
     // console.log("Load tiles: ", ids);
     
-    console.log("viewModel.player: ", viewModel.player);
+    // console.log("viewModel.player: ", viewModel.player);
     ko.applyBindings( viewModel );
 
     game.on('locationenter', function(evt){
@@ -86,27 +85,24 @@ define([
           cy = centerTile.y;
 
       console.log("UI: location enter: ", cx, cy);
+      /////////////////////////////////////
+      // Update the mini map for this tile
 
-      var visibleTileIds = (function(tile){
-        var ids = [];
-        for(var yo=-1; yo<=1; yo++){
-          for(var xo=-1; xo<=1; xo++){
-              ids.push((cx+xo)+','+(cy+yo));
-          }
-        }
-        return ids;
-      })(centerTile);
-
-      console.log("UI: visibleTileIds: ", visibleTileIds);
-      region.loadTiles( visibleTileIds ).then(function( tiles ){
+      var nearest9 = [centerTile].concat( region.getEdges(cx, cy) );
+      region.loadTiles(nearest9).then(function( tiles ){
+        minimap.startX = centerTile.x-1;
+        minimap.startY = centerTile.y-1;
         minimap.render( tiles );
       });
 
+      /////////////////////////////////////
+
     });
+    this._inited = true;
   };
 
   ui.flush = function(id){
-    $("#"+id).empty();
+    // $("#"+id).empty();
   };
   
   ui.main = function(cont){
@@ -117,7 +113,46 @@ define([
     cont = cont.split('\n');
     viewModel.status.push(cont.join('<br>'));
   };
+
+  function tileAt(x, y){
+    // resolve pixel coordinates to a region tile
+
+  }
+
+  function findPos(obj) {
+    var curleft = curtop = 0;
+    do {
+      curleft += obj.offsetLeft;
+      curtop += obj.offsetTop;
+    } while (obj = obj.offsetParent);
+    return { x: curleft, y: curtop };
+  }
   
+  function onTileClick(vm, evt){
+    var map = ui.minimap;
+    var mapOffsets = findPos(evt.target);
+    var tileSize = map.tileSize;
+
+    var pixelX = evt.clientX - mapOffsets.x,
+        pixelY = evt.clientY - mapOffsets.y;
+
+    // resolve click coordinates to a value from the map's 0,0
+    // and get a region coordinate
+    var x = Math.floor(pixelX / tileSize) + map.startX, 
+        y = Math.floor(pixelY / tileSize) + map.startY;
+
+    console.log("click x: %s, y: %s, node offset x: %s, y: %s: ", evt.clientX, evt.clientY, mapOffsets.x, mapOffsets.y);
+    console.log("pixelX: %s, pixelY: %s", pixelX, pixelY, x, y);
+
+    if(game.canMoveTo(x,y)) {
+      // how to handle moving between regions? 
+      var hash = '#'+game.locationToString(x,y);
+      window.location.hash = hash;
+    } else {
+      console.log("Unable to move to: %s,%s", x, y);
+    }
+  }
+
   return ui;
 
 });

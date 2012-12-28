@@ -166,18 +166,6 @@ define([
     return names[keyMask];
   }
   
-  $('#nearbyMap').click(function(evt){
-    var tileSize = nearbyMap.tileSize;
-    var x = Math.floor(evt.clientX / tileSize), 
-        y = Math.floor(evt.clientY / tileSize);
-
-    // add the offsets for the current location
-    var location = region.tileAt(nearbyMap.startX +x, nearbyMap.startY+y);
-    var hash = '#'+[location.x, location.y].join(',');
-    window.location.hash = hash;
-    console.log("map clicked at: ", evt, location, hash);
-  });
-  
   function resolveItem(id, defaults){
     var cat = 'items', 
         delimIdx = id.indexOf('/'), 
@@ -216,97 +204,68 @@ define([
     // just add it directly. We might want a context menu or something eventually with a list of avail. actions
     player.inventory.push(item);
   });
+
+  game.canMoveTo = function(x,y,_region) {
+    var region = _region || game.region;
+    var tile = region.getTileAtCoord(x,y);
+    var terrain = tile ? tile.type : '';
+
+    // determine if there's any impediment to the player moving off 
+    // the current tile and onto the proposed tile
+    // (more logic may follow)
+    if(terrain && !(/abyss|void/).test(terrain)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // convenience to build fragment ids for a given point/x,y coordinate
+  game.locationToString = function(x,y,_region) {
+    if('object' == typeof x) {
+      y = x.y; 
+      x = x.x;
+    }
+    var region = _region || game.region;
+    return region.id+'/'+x+','+y;
+  };
   
-  game.on("afterlocationenter", function(evt){
-    console.log("afterlocationenter: ", evt);
-    
-    var ui = game.ui;
-    ui.flush("main");
-    
-    var tile = evt.target, 
-        directionsTemplate = template('{{coords}}: To the <a href="#{{coords}}" class="option">{{direction}}</a> you see {{terrain}}');
-        
-    var edges = game.region.getEdges(tile.x, tile.y);
-    var edgesById = {};
-    var locationsById = {};
-    var ids = edges.map(function(tile){
-      var id = tile.x +',' + tile.y;
-      edgesById[id] = tile;
-      return id;
-    });
-
-    var history = game.player.history[tile.id], 
+  game.on("locationenter", function(evt){
+    var id = game.locationToString(evt.target);
+    var history = game.player.history[id], 
         visits = history && history.visits;
-        
-    console.log("history for location: ", history);
-    ui.main("<p>"+ tile.description +" at: " + tile.coords + "</p>");
 
-    if(visits && visits.length > 1){
-      ui.main("<p>It looks familiar, you think you've been here before.</p>");
-    }
-
-    if(tile.here){
-      console.log(tile.id, "tile.here: ", tile.here);
+    console.log("Have visits to %s ? ", id, visits);
+    // TODO: register the visit to this tile in the player's history        
+    // if(tile.here){
+    //   console.log(tile.id, "tile.here: ", tile.here);
       
-      var hereText = tile.here.map(function(obj){
-        if('string' == typeof obj) {
-          obj = resolveItem(obj, { name: '??'} );
-        }
-        var mdText = obj.description;
-        if(!mdText) mdText = "You see: ["+obj.name+"](item:"+obj.category+"/"+obj.id+")";
-        var html = markdown(mdText);
-        return html;
-      }).join('<br>');
+    //   var hereText = tile.here.map(function(obj){
+    //     if('string' == typeof obj) {
+    //       obj = resolveItem(obj, { name: '??'} );
+    //     }
+    //     var mdText = obj.description;
+    //     if(!mdText) mdText = "You see: ["+obj.name+"](item:"+obj.category+"/"+obj.id+")";
+    //     var html = markdown(mdText);
+    //     return html;
+    //   }).join('<br>');
       
-      ui.main("<p class='here'>"+hereText+"</p>");
+    //   ui.main("<p class='here'>"+hereText+"</p>");
 
-      // var handle = player.inventory.subscribe(function(vm, evt){
-      //   for(var i=0, hereItems = tile.here; i<hereItems.length; i++){
-      //     if(evt.target.id == hereItems[i].id) break;
-      //   }
-      //   if(i < hereItems.length) {
-      //     console.log("removing took item: ", hereItems[i]);
-      //     hereItems.splice(i, 1);
-      //   }
-      //   ui.status("You take the "+evt.target.name);
-      // });
-      tile.onExit(function(){
-        console.log("unhooking onaferadd handler for tile: ", tile.id);
-        handle.remove();
-      });
-    }
-
-    game.region.loadTiles(ids).then(function(tiles){
-      var locations = tiles;
-      // populate the by-id lookup for the location objects
-      locations.forEach(function(){
-        locationsById[location.id] = location;
-      });
-      
-      var locationTiles = util.map(edges, function(edgeTile){
-        var location = locationsById[edgeTile.id] || {};
-        var tile = util.mixin( Object.create(edgeTile), location);
-        return tile;
-      });
-      
-      // update the nearby map with tiles around the current location
-      // nearbyMap = { 
-      //   canvasNode: $('#nearbyMap')[0],
-      //   showCoords: true,
-      //   tileSize: 50,
-      //   startX: tile.x-1, 
-      //   startY: tile.y-1
-      // };
-
-      // var canvasNode = map.renderMap( locationTiles, nearbyMap);
-      
-      // $('#nearby').css({
-      //   margin: '0',
-      //   padding: '5px',
-      //   display: 'block'
-      // });
-
-    });
+    //   // var handle = player.inventory.subscribe(function(vm, evt){
+    //   //   for(var i=0, hereItems = tile.here; i<hereItems.length; i++){
+    //   //     if(evt.target.id == hereItems[i].id) break;
+    //   //   }
+    //   //   if(i < hereItems.length) {
+    //   //     console.log("removing took item: ", hereItems[i]);
+    //   //     hereItems.splice(i, 1);
+    //   //   }
+    //   //   ui.status("You take the "+evt.target.name);
+    //   // });
+    //   tile.onExit(function(){
+    //     console.log("unhooking onaferadd handler for tile: ", tile.id);
+    //     handle.remove();
+    //   });
   });
   
 });
