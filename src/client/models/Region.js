@@ -27,13 +27,30 @@ define([
     }, 
     byCoords: function(){
       var tiles = this.tiles, 
-          tilesByCoords = {};
+          tilesByCoords = this._tilesByCoords;
+
+      if(tilesByCoords) {
+        return tilesByCoords;
+      }
+      
+      tilesByCoords = this._tilesByCoords = {};
+
       tiles.forEach(function(tile){
-        var tileId = [tile.x, tile.y].join(',');
+        var tileId = tile.x+','+tile.y;
         tilesByCoords[tileId] = tile;
       });
       return tilesByCoords;
     },
+
+    getTileAtCoord: function(coord){
+      if(arguments.length == 2){
+        coord = arguments[0]+','+arguments[1];
+      } else if('string' !== typeof coord) {
+        coord = coord.x+','+coord.y;
+      }
+      return this.byCoords()[coord];
+    },
+
     enter: function(player, game){
       var proceed = true;
       this._onexits = [];
@@ -116,7 +133,8 @@ define([
       // 
       var regionId = this.id;
       var slice = Array.prototype.slice;
-      ids = ids.map(function(coords){
+      ids = ids.map(function(idOrTile){
+        var coords = ('string' == typeof idOrTile) ? idOrTile : idOrTile.x+','+idOrTile.y;
         return 'plugins/resource!location/' + regionId + '/'+coords;
       });
       
@@ -149,6 +167,17 @@ define([
         }
         return false;
       });
+      // alternative algorithm
+      // var visibleTileIds = (function(tile){
+      //   var ids = [];
+      //   for(var yo=-1; yo<=1; yo++){
+      //     for(var xo=-1; xo<=1; xo++){
+      //         ids.push((cx+xo)+','+(cy+yo));
+      //     }
+      //   }
+      //   return ids;
+      // })(centerTile);
+
       return nearby;
     }
   });
