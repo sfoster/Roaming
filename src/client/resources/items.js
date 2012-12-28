@@ -32,9 +32,15 @@ define([], function() {
     name: 'Boots',
     type: 'clothing'
   };
+
   items.cloak = {
     name: 'Thin Cloak',
     type: 'clothing'
+  };
+
+  items.hagStone = {
+    name: 'Hag Stone',
+    type: 'special'
   };
 
   return items;

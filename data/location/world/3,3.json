@@ -1,24 +1,19 @@
 {
-  "description": "This is the barren peak of the mountain\nThe Roc is here. ",
+  "description": "You are on a windswept plain.",
   "afar": "A flat plateau",
   "here": [
     {
-      "resource": "resources/items#edibleMushroom"
+      "resource": "resources/items#hagStone"
     }
   ],
-  "id": "6,4",
-  "x": 6,
-  "y": 4,
+  "id": "3,3",
+  "x": 3,
+  "y": 3,
   "terrain": "barren",
   "encounters": [
     {
       "resource": "resources/encounters#npc"
     }
   ],
-  "npcs": [
-    {
-      "type": "resources/npc#theRoc",
-      "count": 1
-    }
-  ]
+  "npcs": []
 }
