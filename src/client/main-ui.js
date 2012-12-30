@@ -53,7 +53,7 @@ define([
 
   util.mixin(ui, Evented);
 
-  var MINIMAP_TILE_SIZE = 12;
+  var MINIMAP_TILE_SIZE = 36;
   
   ui.init = function(player, tile, region, game){
     if(this._inited && (
