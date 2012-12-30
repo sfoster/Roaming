@@ -4,6 +4,9 @@
   "score": 0,
   "position": "world/3,3",
   "elapsed": 0,
-  "inventory": [],
+  "inventory": [
+      { "resource": "resources/items#cloak" },
+      { "resource": "resources/items#apple" }
+  ],
   "visits": []
 }

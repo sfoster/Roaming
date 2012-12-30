@@ -3,6 +3,9 @@ define([
 ], function(Compose, Evented, util, Inventory, weapons){
   
   var Player = Compose(Compose, {
+
+    propertiesWithReferences: ['inventory'],
+
     name: "You", // by default
     inventory: null,
     level: 0,
