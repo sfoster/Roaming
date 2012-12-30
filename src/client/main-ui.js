@@ -26,6 +26,7 @@ define([
 
   var viewModel = ui.viewModel = {
     messages: ko.observableArray([]),
+    backdrop: ko.observable('#000'),
     status: ko.observableArray(['loading']),
     onMessagesClick: onMessagesClick,
     onInventoryClick: onInventoryClick,
@@ -35,22 +36,6 @@ define([
   
   importTemplate('player-template', playerTemplate, 'player');
   importTemplate('location-template', tileTemplate, 'location');
-
-  
-  ui.initSidebar = function(player, world){
-    // player.inventory.on('afteradd', function(evt){
-    //   $inventoryNode.empty();
-    //   for(var i=0; i<player.inventory.length; i++){
-    //     $inventoryNode.append("<li>"+ player.inventory[i].name +"</li>");
-    //   }
-    // });
-    // player.inventory.on('afterdrop', function(evt){
-    //   $inventoryNode.empty();
-    //   for(var i=0; i<player.inventory.length; i++){
-    //     $inventoryNode.append("<li>"+ player.inventory[i].name +"</li>");
-    //   }
-    // });
-  };
 
   util.mixin(ui, Evented);
 
@@ -95,7 +80,6 @@ define([
       var cx = centerTile.x, 
           cy = centerTile.y;
 
-      console.log("UI: location enter: ", cx, cy);
       /////////////////////////////////////
       // Update the mini map for this tile
 
@@ -109,6 +93,19 @@ define([
       /////////////////////////////////////
       viewModel.tile(centerTile);
 
+      // update the backgrop
+      var bgCssValue = centerTile.backdrop.replace(/^.*image!/, '');
+      bgCssValue = 'no-repeat url('+bgCssValue+')';
+      viewModel.backdrop( bgCssValue );
+
+      ui.main( centerTile.description || ("You enter an area of " + centerTile.terrain) );
+      if(centerTile.here.length) {
+        ui.main( "There " + pluralize('is', centerTile.here.length) + " " + (centerTile.here.map(function(thing){
+          return "a "+ thing.name;
+        }).join(', ')) + " here." );
+      }
+
+      console.log("UI: location enter: ", cx, cy, bgCssValue);
     });
     this._inited = true;
   };
@@ -145,6 +142,17 @@ define([
       curtop += obj.offsetTop;
     } while (obj = obj.offsetParent);
     return { x: curleft, y: curtop };
+  }
+
+  function pluralize(word, howMany) {
+    if(undefined !== howMany && howMany <= 1) {
+      return word;
+    }
+    switch(word.toLowerCase()) {
+      case "is": return "are";
+      case "was": return "were";
+    }
+    return word;
   }
   
   function onTileClick(vm, evt){

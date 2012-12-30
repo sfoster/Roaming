@@ -3,8 +3,9 @@ define([
   'lib/util', 
   'lib/event',
   'promise',
-  'lib/clone'
-], function($, util, Evented, Promise, sanitizedClone){
+  'lib/clone',
+  'resources/terrain'
+], function($, util, Evented, Promise, sanitizedClone, terrain){
   var emit = Evented.emit.bind(this), // it matter what 'this' when we emit and listenr for events. Here, 'this' is the global context
       create = util.create;
   
@@ -26,6 +27,11 @@ define([
     console.assert('x' in this, "Missing x property");
     console.assert('y' in this, "Missing y property");
     console.assert('id' in this, "Missing id property in " + options.x+','+options.y);
+
+    if(!this.backdrop) {
+      // use the default for the terrain type
+      this.backdrop = terrain[this.terrain].backdrop;
+    }
     return this;
   }
   
@@ -33,12 +39,15 @@ define([
     propertiesWithReferences: ['here', 'encounters'],
     description: "",
     regionId: "",
+    backdrop: "",
     get: function(name){
       return this[name];
     }, 
     enter: function(player, game){
       var proceed = true;
       this._onexits = [];
+      // load the backgrop
+      
       game.emit("beforelocationenter", {
         target: this,
         player: player,
