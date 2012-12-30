@@ -27,6 +27,7 @@ define([
   var viewModel = ui.viewModel = {
     messages: ko.observableArray([]),
     status: ko.observableArray(['loading']),
+    onStatusClick: onStatusClick,
     onTileClick: onTileClick,
     tile: null
   };
@@ -162,6 +163,10 @@ define([
     }
   }
 
+  function onStatusClick(vm, evt){
+    $('#status').toggleClass('collapsed');
+  }
+  
   return ui;
 
 });

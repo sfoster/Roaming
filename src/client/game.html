@@ -3,91 +3,24 @@
 <head>
   <meta charset="utf-8">
   <title>Roaming</title>
+  <link rel="stylesheet" type="text/css" href="./css/main.css">
 </head>
-<style>
-  html, body {
-    margin: 0; padding: 0;
-  }
-  h1, h2, h3, th, dt { 
-    margin: 0 0 8px 0;
-    font-family: monospace;
-    text-align: left;
-  }
-  #hud {
-    position: relative;
-    display: block;
-    min-height: 100px;
-  }
-  #main {
-    background-color: rgba(0,0,0, 0.6);
-    position: absolute;
-    top: 100px; right: 200px;
-    left: 20px;
-    bottom: 60px;
-  }
-  #drawer {
-    position: absolute;
-    top: 100px; right: 0;
-    width: 200px;
-    bottom: 60px;
-  }
-  .panelist {
-    margin: 0; 
-    padding: 0;
-  }
-  .panel {
-    background-color: rgba(0,255,51, 0.6);
-    display: block;
-    padding: 0;
-    margin: 0;
-  }
-  li.panel {
-    list-style-type:  none;
-  }
-
-    dt { 
-      display: block; 
-      float: left; 
-      width: 12em; 
-      font-weight: bold; 
-      clear: both;
-    }
-
-    dl:after, dd:after { 
-      content: ".";    
-      display: block;    
-      height: 0;    
-      overflow: hidden;
-      clear: both;
-    }
-    dd { 
-      display: block; 
-      float: left; 
-      margin: 0 0 0.5em 0; 
-      width: calc(100% - 13em - 12px);
-      background-color: #eee;
-    }
-    dt, dd {
-      padding: 3px 6px;
-    }
-
-</style>
 <body>
 
-  <section id="hud" class="panel">
+  <section id="hud" class="area">
     <div id="nearby"></div>
     <div id="playerInfo" data-bind="with: player">
       <div data-bind="template: 'player-template'"></div>
     </div>
   </section>  
-  <section id="drawer" class="panel">
+  <section id="drawer" class="area">
       <ul class="panelist">
-          <li class="panel world-map">
-            <h2>Mini Map</h2>
+          <li class="panel world-map toggleable">
+            <h2 class="heading">Mini Map</h2>
             <canvas id="minimap" width="120" height="120" data-bind="click: onTileClick"></canvas>
           </li>
-          <li class="panel inventory">
-            <h2>Inventory</h2>
+          <li class="panel inventory toggleable">
+            <h2 class="heading">Inventory</h2>
             <ul data-bind="foreach: player.inventory">
               <li data-bind="text: name"></li>
             </ul>
@@ -97,27 +30,23 @@
           </li>
       </ul>
   </section>
-  <section id="main" class="panel">
-    <h2>Status</h2>
-    <ul data-bind="foreach: status">
-      <li data-bind="text: $data"></li>
-    </ul>
-    <h2>Messages</h2>
-    <ul data-bind="foreach: messages">
-      <li data-bind="text: $data"></li>
-    </ul>
-    <section class="location" data-bind="template: { name: 'location-template', data: tile }">
+  <section id="main" class="area">
+    <section class="panel toggleable">
+      <h2 class="heading">Messages</h2>
+      <ul data-bind="foreach: messages">
+        <li data-bind="text: $data"></li>
+      </ul>
+    </section>
+    <section class="location panel" data-bind="template: { name: 'location-template', data: tile }">
     </section>  
+    <section id="status" data-bind="click: onStatusClick" class="panel toggleable collapsed">
+      <h2 class="heading">Status</h2>
+      <ul data-bind="foreach: status" class="toggleable">
+        <li data-bind="text: $data"></li>
+      </ul>
+    </section>
 
-    scene: 
-      terrain
-      encounters
-      description
-      items
-      npcs
   </section>  
-  <section id="status">
-  </section>
 
   <script src="vendor/require.js" data-main="plugins/bootstrap!main"></script>
   <script src="config.js"></script>
