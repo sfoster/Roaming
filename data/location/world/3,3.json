@@ -1,27 +1,19 @@
 {
-  "encounter": {
-    "npc": [
-      {
-        "type": "troll",
-        "count": "5"
-      },
-      {
-        "type": "trollElder",
-        "count": "1"
-      }
-    ]
-  },
-  "img": {},
-  "description": "You see a coarse meadow criss-crossed by muddy trails.",
-  "afar": "it looks like grass and more grass",
-  "coords": [
-    3,
-    3
+  "description": "You are on a windswept plain.",
+  "afar": "A flat plateau",
+  "here": [
+    {
+      "resource": "resources/items#hagStone"
+    }
   ],
-  "here": [],
-  "encounterType": "npc",
   "id": "3,3",
-  "type": "plains",
   "x": 3,
-  "y": 3
+  "y": 3,
+  "terrain": "barren",
+  "encounters": [
+    {
+      "resource": "resources/encounters#npc"
+    }
+  ],
+  "npcs": []
 }

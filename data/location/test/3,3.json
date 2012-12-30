@@ -1,0 +1,28 @@
+{
+  "description": "You see a coarse meadow criss-crossed by muddy trails.",
+  "afar": "it looks like grass and more grass",    
+  "here": [
+    {
+      "resource": "resources/items#edibleMushroom"
+    }
+  ],
+  "id": "3,3",
+  "x": 3,
+  "y": 3,
+  "terrain": "plains",
+  "encounters": [
+    {
+      "resource": "resources/encounters#npc"
+    }
+  ],
+  "npcs": [
+    {
+      "type": "resources/npc#troll",
+      "count": "5"
+    },
+    {
+      "type": "resources/npc#trollElder",
+      "count": "1"
+    }
+  ]
+}

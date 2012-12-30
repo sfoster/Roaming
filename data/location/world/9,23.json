@@ -1,12 +1,7 @@
 {
-  "img": {},
-  "description": "Sand surrounding plains ",
-  "afar": "Sand ",
-  "coords": [
-    9,
-    23
-  ],
-  "here": [],
+  "x": 9,
+  "y": 23,
+  "description": "",
   "id": "9,23",
-  "type": "sand"
+  "terrain": "mountains"
 }

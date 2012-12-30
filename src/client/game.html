@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Roaming</title>
+  <link rel="stylesheet" type="text/css" href="./css/main.css">
+</head>
+<body>
+
+  <section id="hud" class="area">
+    <div id="nearby"></div>
+    <div id="playerInfo" data-bind="with: player">
+      <div data-bind="template: 'player-template'"></div>
+    </div>
+  </section>  
+  <section id="drawer" class="area">
+      <ul class="panelist">
+          <li class="panel world-map toggleable">
+            <h2 class="heading">Mini Map</h2>
+            <canvas id="minimap" width="120" height="120" data-bind="click: onTileClick"></canvas>
+          </li>
+          <li id="inventory" class="panel items toggleable" data-bind="click: onInventoryClick">
+            <h2 class="heading">Inventory</h2>
+            <ul class="compact" data-bind="foreach: player.inventory">
+              <li class="item" data-bind="text: name, css: { equipped: ( $data.isEquipped ) }"></li>
+            </ul>
+          </li>
+      </ul>
+  </section>
+  <section id="main" class="area">
+    <section id="messages" class="panel toggleable" data-bind="click: onMessagesClick">
+      <h2 class="heading">Messages</h2>
+      <ul class="compact" data-bind="foreach: messages">
+        <li class="message" data-bind="html: $data"></li>
+      </ul>
+    </section>
+    <section class="location panel" data-bind="template: { name: 'location-template', data: tile }">
+    </section>  
+
+  </section>  
+
+  <script src="vendor/require.js" data-main="plugins/bootstrap!main"></script>
+  <script src="config.js"></script>
+</body>
+</html>

@@ -1,12 +1,7 @@
 {
-  "img": {},
-  "description": "You are knee deep in a swampy marsh",
-  "afar": "Marsh, with a pool of water in the middle",
-  "coords": [
-    18,
-    7
-  ],
-  "here": [],
+  "x": 18,
+  "y": 7,
+  "description": "",
   "id": "18,7",
-  "type": "marsh"
+  "terrain": "marsh"
 }

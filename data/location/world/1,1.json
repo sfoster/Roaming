@@ -1,12 +1,7 @@
 {
-  "img": {},
-  "description": "You are surrounded by rugged mountains. The going is tough, but there are passes that should allow you to move through this area.",
-  "afar": "Snow-capped mountains",
-  "coords": [
-    1,
-    1
-  ],
-  "here": [],
+  "x": 1,
+  "y": 1,
+  "description": "",
   "id": "1,1",
-  "type": "mountains"
+  "terrain": "mountains"
 }

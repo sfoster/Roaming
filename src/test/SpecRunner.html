@@ -7,31 +7,19 @@
 	<script type="text/javascript" src="./lib/jasmine-1.1.0.rc1/jasmine.js"></script>
 	<script type="text/javascript" src="./lib/jasmine-1.1.0.rc1/jasmine-html.js"></script>
 
-	<script type="text/javascript" src="../vendor/require.js"></script>
+	<script src="../client/vendor/require.js"></script>
+	<script src="../client/config.js"></script>
 
 	<script type="text/javascript">
-		require.config(
-			{
-				paths: {
-					// path mappings
-					'jquery' : 	'../vendor/jquery',
-					dollar: 		'../vendor/zepto',
-					text: 			'../plugins/vendor/text',
-					json: 			'../plugins/vendor/json',
-					image: 			'../plugins/vendor/image',
-					order: 			'../plugins/vendor/order',
-					promise: 		'../vendor/store/lib/Promise',
-					util: 			'../lib/util',
-					compose:		'../vendor/compose',
-					knockout: 	'../vendor/knockout',
-					'lib' : 		'../lib',
-					'test': 		'.'
-				}
+		require({			
+			baseUrl: '../client',
+			paths: {
+				'test': '../test'
 			}
-		);
-		require([
+		}, [
 			//include all specs to be run
-			'./spec/ModuleSpec'
+			'test/spec/ModuleSpec',
+			'test/spec/ResourceLoaderSpec'
 		],
 			function() {
 				//run tests

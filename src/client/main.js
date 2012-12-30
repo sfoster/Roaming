@@ -1,54 +1,36 @@
 define([
   'dollar', 'lib/util', 'lib/event', 'resources/template', 
+  'knockout', 'lib/koHelpers',
   'main-ui',
-  'resources/map',
   'lib/UrlRouter',
   'promise', 
   'lib/markdown',
-  'resources/world', 
-  'models/player',
+  'plugins/resource!player/'+(config.playerid || 'guest'), 
   'resources/encounters',
-  'resources/items', 'resources/weapons', 'resources/armor', 'resources/traps'
+  'resources/items', 'resources/weapons', 'resources/armor', 'resources/traps',
+  'models/Region', 'models/Location'
 ], function(
     $, util, Evented, template, 
+    ko, koHelpers,
     ui,
-    map,
     UrlRouter, 
     Promise, 
     markdown,
-    world, 
     player, 
     encounters,
-    items, weapons, armor, traps
+    items, weapons, armor, traps,
+    Region, Location
 ){
+  var START_LOCATION = 'world/3,2';
   var when = Promise.when;
+
+  // setup the game object as an event sink and emitter
+  var game = window.game = util.mixin({
+    ui: ui
+  }, Evented );
   
-  // setup the global as an event sink and emitter
-  util.mixin(this, Evented);
-  
-  console.log("Player: ", player);
-  
-  world.on('enter', function(){
-    ui.status("You enter the world");
-  });
-  world.on('exit', function(){
-    ui.status("You leave this world");
-  });
-  
-  // draw and fill the layout
-  ui.init( player );
-  map.init();
-  
-  // login or init player
-  // set up main game stack
-  // get world data for the starting position
-  // enter the region and tile
-  
-  var game ={
-    player: player
-  };
-  var locationsByCoords = {};
-  var stack = window.stack = (function(){
+  // the scene is modelled as a stack of states
+  var stack = game.stack = (function(){
     var _stack = [];
     return {
       length: 0,
@@ -73,49 +55,126 @@ define([
   })();
   
 
-  var routes = [
+  if(!player.score){
+    player.score = 0;
+  }
+  game._player = player; 
+  player = game.player = koHelpers.makeObservable(player);
+  
+  // login or init player
+  // set up main game stack
+  // get region data for the starting position
+  // enter the region and tile
+  
+  
+  function enterAt(regionId, x, y) {
+
+    // load the region and current tile to set the scene
+    var locationId = regionId + '/' + [x,y].join(',');
+    console.log("enterAt, regionId: %s, locationId: %s", regionId, locationId);
+    
+    require([
+      'plugins/resource!region/'+regionId+'/index',
+      'plugins/resource!location/'+locationId
+    ], function(region, tile){
+      game.region = region; 
+      game.tile = tile;
+
+      console.log("Loaded region: ", region);
+      console.log("Loaded tile: ", tile);
+
+      // draw and fill the layout
+      ui.init( player, tile, region, game );
+
+      function getIndexOfInstanceInStack(matcher) {
+        // get the position of the first instance of the given ctor
+        var stackIdx=stack.length, 
+            state = null,
+            tile = null;
+        while((state = stack.get(--stackIdx))){
+          if(matcher(state)) {
+            return stackIdx;
+          }
+        }
+        return -1;
+      }
+
+      var regionStackIdx = getIndexOfInstanceInStack(function(thing){
+        return (thing instanceof Region); 
+      });
+      var currentRegion = (regionStackIdx > -1) ? stack.get(regionStackIdx) : null;
+
+      if(currentRegion) {
+        if(currentRegion !== region){
+          // region change
+          while(regionStackIdx < stack.length-1){
+            stack.pop();
+          }
+          stack.replace(region);
+        }
+      } else {
+        // add the region to the stack (and enter it)
+        stack.push(region);
+      }
+
+      var tileStackIdx = getIndexOfInstanceInStack(function(thing){
+        return (thing instanceof Location); 
+      });
+      var currentTile = (tileStackIdx > -1) ? stack.get(tileStackIdx) : null;
+
+      if(currentTile) {
+        if(currentTile !== tile) {
+          // tile change
+          while(tileStackIdx < stack.length-1){
+            stack.pop();
+          }
+          stack.replace(tile);
+        }
+      } else {
+        stack.push(tile);
+      }
+
+
+      var encounterId = tile.encounter;
+      if('string' == typeof encounterId) {
+        if(!(encounterId in encounters)){
+          throw "Encounter " + encounterId + " not defined";
+        }
+        // resolve encounter ids to their contents
+        tile.encounter = encounters[encounterId];
+      }
+
+      // game.emit("afterlocationenter", { target: tile });
+
+    }); 
+  }
+  
+  var routes = game.routes = [
     [
-      "#:x,:y", 
+      "#:region/:x,:y", 
       function(req){
-        var x = Number(req.x), 
+        var regionId = req.region,
+            x = Number(req.x), 
             y = Number(req.y);
             
-          var id = [x,y].join(',');
-          console.log("route match for location: ", x, y, id);
-          require(['plugins/location!'+id], function(location){
-            var encounterId = location.encounter;
-            if('string' == typeof encounterId) {
-              if(!(encounterId in encounters)){
-                throw "Encounter " + encounterId + " not defined";
-              }
-              // resolve encounter ids to their contents
-              location.encounter = encounters[encounterId];
-            }
-            if(!location.enter) {
-              throw "Error loading location: " + id;
-            }
-            // walk up the stack to the world
-            if(!stack.length){
-              stack.push(world);
-            } 
-            if(stack.length > 1){
-              stack.pop();
-            }
-            stack.push(location);
-          });
-          
+          console.log("route match for location: ", regionId, x, y);
+          enterAt(regionId, x, y);
       }
     ]    
   ];
-  var router = new UrlRouter(routes);
+  var router = game.router = new UrlRouter(routes);
   router.compile();
   
   window.onhashchange = function() {
     router.match(window.location.hash); // returns the data object if successfull, undefined if not.
   };
   
-  router.match(window.location.hash || '#3,2');
+  var currentLocation = player.position() || START_LOCATION; 
+  router.match(window.location.hash || '#'+currentLocation);
   
+  ////////////////////////////////
+  // find a home for: 
+  // 
   function getCardinalDirection(origin, target){
     var x = target.x - origin.x, 
         y = target.y - origin.y;
@@ -138,58 +197,6 @@ define([
     
     return names[keyMask];
   }
-  
-  function loadLocation(id) {
-    var locationModel = locationsByCoords[id];
-    var locationPromise = new Promise();
-    if(locationModel) {
-      setTimeout(function(){
-        locationPromise.resolve(locationModel);
-      }, 10);
-    } else {
-      require(['json!/location/'+id+'.json'], function(location){
-        if(!location.coords){
-          console.error("No location at: ", id);
-          location = {
-            coords: id.split(',')
-          };
-        } else {
-          location.id = location.coords.join(',');
-        }
-        locationPromise.resolve(location);
-      });
-    }
-    return locationPromise;
-  }
-  
-  function loadLocations() {
-    var locations = [];
-    var allLocationsPromise = new Promise();
-    var ids = Array.prototype.slice.call(arguments, 0);
-
-    ids.forEach(function(id){
-      loadLocation(id).then(function(location){
-        locations.push(location);
-        if(locations.length >= ids.length){
-          // all loaded
-          allLocationsPromise.resolve(locations);
-        }
-      });
-    });
-    return allLocationsPromise;
-  }
-  
-  $('#nearbyMap').click(function(evt){
-    var tileSize = nearbyMap.tileSize;
-    var x = Math.floor(evt.clientX / tileSize), 
-        y = Math.floor(evt.clientY / tileSize);
-
-    // add the offsets for the current location
-    var location = world.tileAt(nearbyMap.startX +x, nearbyMap.startY+y);
-    var hash = '#'+[location.x, location.y].join(',');
-    window.location.hash = hash;
-    console.log("map clicked at: ", evt, location, hash);
-  });
   
   function resolveItem(id, defaults){
     var cat = 'items', 
@@ -222,110 +229,75 @@ define([
     return item;
   }
   
-  ui.on('onitemclick', function(evt){
+  game.ui.on('itemclick', function(evt){
     var id = evt.id, 
         item = resolveItem(id, { name: evt.text }); 
     console.log("taking item: ", item);
     // just add it directly. We might want a context menu or something eventually with a list of avail. actions
-    player.inventory.add(item);
+    player.inventory.push(item);
   });
+
+  game.canMoveTo = function(x,y,_region) {
+    var region = _region || game.region;
+    var tile = region.getTileAtCoord(x,y);
+    var terrain = tile ? tile.type : '';
+
+    // determine if there's any impediment to the player moving off 
+    // the current tile and onto the proposed tile
+    // (more logic may follow)
+    if(terrain && !(/abyss|void/).test(terrain)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // convenience to build fragment ids for a given point/x,y coordinate
+  game.locationToString = function(x,y,_region) {
+    if('object' == typeof x) {
+      y = x.y; 
+      x = x.x;
+    }
+    var region = _region || game.region;
+    return region.id+'/'+x+','+y;
+  };
   
-  Evented.on("onafterlocationenter", function(evt){
-    console.log("onafterlocationenter: ", evt);
-    
-    ui.flush("main");
-    
-    var tile = evt.target, 
-        directionsTemplate = template('{{coords}}: To the <a href="#{{coords}}" class="option">{{direction}}</a> you see {{terrain}}');
-        
-    var edges = world.getEdges(tile.x, tile.y);
-    var edgesById = {};
-    var locationsById = {};
-    var ids = edges.map(function(tile){
-      var id = tile.x +',' + tile.y;
-      edgesById[id] = tile;
-      return id;
-    });
-
-    var history = player.history[tile.id], 
+  game.on("locationenter", function(evt){
+    var id = game.locationToString(evt.target);
+    var history = game.player.history[id], 
         visits = history && history.visits;
-        
-    console.log("history for location: ", history);
-    ui.main("<p>"+ tile.description +" at: " + tile.coords + "</p>");
 
-    if(visits.length > 1){
-      ui.main("<p>It looks familiar, you think you've been here before.</p>");
-    }
-
-    if(tile.here){
-      console.log(tile.id, "tile.here: ", tile.here);
+    console.log("Have visits to %s ? ", id, visits);
+    // TODO: register the visit to this tile in the player's history        
+    // if(tile.here){
+    //   console.log(tile.id, "tile.here: ", tile.here);
       
-      var hereText = tile.here.map(function(obj){
-        if('string' == typeof obj) {
-          obj = resolveItem(obj, { name: '??'} );
-        }
-        var mdText = obj.description;
-        if(!mdText) mdText = "You see: ["+obj.name+"](item:"+obj.category+"/"+obj.id+")";
-        var html = markdown(mdText);
-        return html;
-      }).join('<br>');
-      
-      ui.main("<p class='here'>"+hereText+"</p>");
-
-      var handle = player.inventory.on('onafteradd', function(evt){
-        for(var i=0, hereItems = tile.here; i<hereItems.length; i++){
-          if(evt.target.id == hereItems[i].id) break;
-        }
-        if(i < hereItems.length) {
-          console.log("removing took item: ", hereItems[i]);
-          hereItems.splice(i, 1);
-        }
-        ui.status("You take the "+evt.target.name);
-      });
-      tile.onExit(function(){
-        console.log("unhooking onaferadd handler for tile: ", tile.id);
-        handle.remove();
-      });
-    }
-
-    // if(tile.encounter){
-    //   var encounterText = visits.length <= 1 ? tile.encounter.firstVisit : tile.encounter.reVisit;
-    //   encounterText.forEach(function(mdText){
+    //   var hereText = tile.here.map(function(obj){
+    //     if('string' == typeof obj) {
+    //       obj = resolveItem(obj, { name: '??'} );
+    //     }
+    //     var mdText = obj.description;
+    //     if(!mdText) mdText = "You see: ["+obj.name+"](item:"+obj.category+"/"+obj.id+")";
     //     var html = markdown(mdText);
-    //     ui.main("<p class='encounter'>"+html+"</p>");
+    //     return html;
+    //   }).join('<br>');
+      
+    //   ui.main("<p class='here'>"+hereText+"</p>");
+
+    //   // var handle = player.inventory.subscribe(function(vm, evt){
+    //   //   for(var i=0, hereItems = tile.here; i<hereItems.length; i++){
+    //   //     if(evt.target.id == hereItems[i].id) break;
+    //   //   }
+    //   //   if(i < hereItems.length) {
+    //   //     console.log("removing took item: ", hereItems[i]);
+    //   //     hereItems.splice(i, 1);
+    //   //   }
+    //   //   ui.status("You take the "+evt.target.name);
+    //   // });
+    //   tile.onExit(function(){
+    //     console.log("unhooking onaferadd handler for tile: ", tile.id);
+    //     handle.remove();
     //   });
-    // }
-    
-    loadLocations.apply(this, ids).then(function(locations){
-      // populate the by-id lookup for the location objects
-      locations.forEach(function(){
-        locationsById[location.id] = location;
-      });
-      
-      var locationTiles = util.map(edges, function(edgeTile){
-        var location = locationsById[edgeTile.id] || {};
-        var tile = util.mixin( Object.create(edgeTile), location);
-        return tile;
-      });
-      
-      // update the nearby map with tiles around the current location
-      nearbyMap = { 
-        canvasNode: $('#nearbyMap')[0],
-        showCoords: true,
-        tileSize: 50,
-        startX: tile.x-1, 
-        startY: tile.y-1
-      };
-
-      var canvasNode = map.renderMap( locationTiles, nearbyMap);
-      
-      $('#nearby').css({
-        margin: '0',
-        padding: '5px',
-        display: 'block'
-      });
-
-    });
   });
   
 });

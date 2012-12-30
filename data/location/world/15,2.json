@@ -1,12 +1,7 @@
 {
-  "img": {},
-  "description": "This is a small, barren platau",
-  "afar": "A small platau",
-  "coords": [
-    15,
-    2
-  ],
-  "here": [],
+  "x": 15,
+  "y": 2,
+  "description": "",
   "id": "15,2",
-  "type": "barren"
+  "terrain": "barren"
 }

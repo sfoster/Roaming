@@ -1,12 +1,7 @@
 {
-  "img": {},
-  "description": "You are climbing a steep mountain",
-  "afar": "A steep, snowy mountain",
-  "coords": [
-    5,
-    4
-  ],
-  "here": [],
+  "x": 5,
+  "y": 4,
+  "description": "",
   "id": "5,4",
-  "type": "mountains"
+  "terrain": "mountains"
 }

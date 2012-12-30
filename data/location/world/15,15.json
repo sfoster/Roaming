@@ -1,12 +1,7 @@
 {
-  "img": {},
-  "description": "A sand dune",
-  "afar": "A sand dune",
-  "coords": [
-    15,
-    15
-  ],
-  "here": [],
+  "x": 15,
+  "y": 15,
+  "description": "",
   "id": "15,15",
-  "type": "sand"
+  "terrain": "plains"
 }

@@ -1,0 +1,255 @@
+  <!DOCTYPE html>
+<html>
+<head>
+  <title>Test</title>
+  <style>
+    body {
+      font-family: tahoma, sans-serif;
+    }
+    h1, h2, h3 {
+      margin: 0 0.5em 0 0.5em;
+    }
+    header, footer, section {
+      background-color: #eee;
+      position: relative;
+      padding: 4px 10px;
+      margin: 2px;
+    }
+    header > button {
+      display: inline-block;
+      vertical-align: text-bottom;
+      font-size: 1.3em;
+      margin-bottom: 0.2em;
+    }
+    header > h1 {
+      display: inline-block;
+      vertical-align: text-bottom;
+    }
+    .mode {
+      position: absolute;
+      top: 0; right: 0;
+      background-color: #ff9;
+      width: 5em;
+      border: 1px solid #c66;
+      border-bottom-left-radius: 6px;
+      padding: 2px 6px;
+    }
+    dt { 
+      display: block; 
+      float: left; 
+      width: 12em; 
+      font-weight: bold; 
+      clear: both;
+    }
+
+    dl:after, dd:after { 
+      content: ".";    
+      display: block;    
+      height: 0;    
+      overflow: hidden;
+      clear: both;
+    }
+    dd { 
+      display: block; 
+      float: left; 
+      margin: 0 0 0.5em 0; 
+      width: calc(100% - 13em - 12px);
+      background-color: #eee;
+    }
+    dt, dd {
+      padding: 3px 6px;
+    }
+    textarea {
+      width: 100%;
+    }
+
+    .overlay {
+      position: fixed; 
+      top: 40px; bottom: 40px; left: 40px; right: 40px;
+      padding: 20px;
+      background: #666;
+      color: #fff;
+      border: 1px solid #000;
+      border-radius: 6px;
+    }
+  </style>
+  <script src="./vendor/require.js"></script>
+  <script src="./config.js"></script>
+
+  <script type="text/javascript">
+    (function(){
+      // pull config from querystring
+      var expectedKeys = { location: true };
+
+      function populate(queryStr, config) {
+        var pairs, nameValue;
+        pairs = queryStr.split('&');
+        for(var i=0; i<pairs.length; i++) {
+          nameValue = pairs[i].split('=');
+          if(nameValue[0] && (nameValue[0] in expectedKeys)){
+            config[ nameValue[0] ] = nameValue[1];
+          }
+        }
+      }
+      var queryStr = location.search.substring(1);
+      if(queryStr){
+        populate(queryStr, config)
+      }
+    })();
+
+    var locn = config.location || 'test/3,3';
+    require([
+      'knockout', 
+      'lib/koHelpers',
+      'lib/util', 
+      'plugins/resource!location/'+locn
+    ],function(ko, koHelpers, util, tile) {
+      //run tests
+      console.log("Loaded location tile: ", tile);
+
+      var makeObservable = koHelpers.makeObservable, 
+          resolveObservable = koHelpers.resolveObservable;
+
+      var viewModel = window.viewModel =  {
+        editMode: ko.observable( location.hash.indexOf('edit')>-1 ), 
+        tile: makeObservable(tile),
+        types: ko.observableArray([]),
+        pickerType: ko.observable(''),
+        pickerValue: ko.observable(''),
+        onPickerChange: function(vm, evt) {
+          console.log("viewModel: ", vm, evt, arguments);
+          viewModel.pickerType('');
+        }, 
+        save: function(){
+          var tile = resolveObservable(viewModel.tile);
+          alert( JSON.stringify( tile, null, 2) );
+        }
+      };
+      console.log("Prepared viewMode: ", viewModel);
+      ko.applyBindings(viewModel);
+
+
+      function showPicker(type, callback) {
+        var resourceId = '';
+        switch(type) {
+          case 'item': 
+            resourceId = 'resources/items'; 
+            break;
+          case 'npc': 
+            resourceId = 'resources/npc'; 
+            break;
+          case 'terrain': 
+            resourceId = 'resources/terrain'; 
+            break;
+        }
+        if(resourceId) {
+            require([resourceId], function(types){
+              var names = Object.keys(types);
+              viewModel.types.splice.apply(viewModel.types, [0, types.length].concat(names) );
+            });
+        }
+      }
+      window.onhashchange = function(evt){
+        viewModel.editMode( location.hash.indexOf('edit')>-1 );
+        
+        viewModel.pickerType.subscribe(function(type){
+          if(type) {
+            var subscription = viewModel.pickerValue.subscribe(function(newValue){
+              console.log("pickerValue changed: ", newValue);
+            });
+          }
+          showPicker(type, function(val){
+            console.log("new value: ", val);
+          });
+        });
+        if(viewModel.editMode()) {
+
+        }
+      };
+      window.onhashchange();
+    });
+  </script>
+</head>
+
+<body>
+  <script type="text/html" id="location-template">
+      <h1>Location: <span data-bind="text: id"></span></h1>
+      <dl>
+        <dt>Region:</dt>
+        <dd data-bind="text: regionId"></dd>
+        <dt>Terrain:</dt>
+        <dd data-bind="text: terrain"></dd>
+        <dt>Description:</dt>
+        <dd data-bind="text: description"></dd>
+      </dl>
+      <h2>Here</h2>
+      
+      <ul data-bind="foreach: here">
+        <li><span data-bind="text: name"></span> (<span data-bind="text: type"></span>)</li>
+      </ul>
+
+      <h2>Encounters</h2>
+      <ul data-bind="foreach: encounters">
+        <li><span data-bind="text: name"></span> (<span data-bind="text: type"></span>)</li>
+      </ul>
+
+      <h2>NPCs</h2>
+      <ul data-bind="foreach: npcs">
+        <li><span data-bind="text: type"></span> (<span data-bind="text: count"></span>)</li>
+      </ul>
+  </script>
+  <div class="panel" data-bind="visible: !editMode()">
+    Preview Panel
+    <section id="main" data-bind="template: { name: 'location-template', data: tile }">
+    </section>  
+  </div>
+
+  <div class="panel" data-bind="visible: editMode, with: tile">
+    <header>
+      <h1>Location: <span data-bind="text: id"></span></h1> 
+      <div class="mode">Edit</div>
+      <button data-bind="click: $parent.save">Save</button>
+    </header>
+    <section id="editor">
+      <dl>
+        <dt>Region:</dt>
+        <dd data-bind="text: regionId"></dd>
+        <dt>Terrain:</dt>
+        <dd><select type="text" data-bind="options: $parent.terrainTypes, value: terrain"></select></dd>
+        <dt>Description:</dt>
+        <dd><textarea data-bind="value: description"></textarea></dd>
+      </dl>
+      <h2>Here</h2>
+      
+      <ul data-bind="foreach: here">
+        <li><span data-bind="text: name"></span> (<span data-bind="text: type"></span>)</li>
+      </ul>
+      <h2>Encounters</h2>
+      <ul data-bind="foreach: encounters">
+        <li>
+          <span data-bind="text: name"></span> (<span data-bind="text: type"></span>)
+          <div data-bind="if: group && group.length">
+            NPC Encounter data
+            <ul data-bind="foreach: group">
+              <li data-bind="text: type"></li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+      <h2>NPCs</h2>
+      <ul data-bind="foreach: npcs">
+        <li><span data-bind="text: type"></span> (<span data-bind="text: count"></span>)</li>
+      </ul>
+    </section>  
+    <footer>
+    <header>
+     <button data-bind="click: $parent.save">Save</button>
+    </header>
+    </footer>
+  </div>
+  <div class="overlay" data-bind="visible: pickerType().length">
+    <p><label>Pick One</label>
+        <select data-bind="options: types(), value: pickerValue"></select></p>
+  </div>
+</body>
+</html>

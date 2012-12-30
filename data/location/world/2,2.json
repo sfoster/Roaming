@@ -1,8 +1,7 @@
 {
-	"width": 1,
-	"height": 1,
-  "type": "plains",
-	"coords": [2,2],
-	"afar": "it looks like grass and more grass.",
-	"description": "You see flat grassland all around you."
+  "x": 2,
+  "y": 2,
+  "description": "",
+  "id": "2,2",
+  "terrain": "plains"
 }

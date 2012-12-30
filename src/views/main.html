@@ -4,7 +4,7 @@
 </section>  
 <section id="drawer" class="panel">
     <ul class="panelist">
-        <li class="panel world-map"></li>
+        <li class="panel world-map"><canvas id="minimap" width="200" height="200" data-bind="layers2d: test"></canvas></li>
         <li class="panel inventory"></li>
         <li class="panel weapon"></li>
     </ul>
@@ -15,24 +15,5 @@
 <section id="status">
 </section>
 
-<script type="text/javascript">
-  var config = {
-    packages: {
-      // package mappings
-      dollar: 'vendor/zepto',
-      util: 'lib/util',
-      compose: 'vendor/compose',
-      text: 'plugins/vendor/text',
-      json: 'plugins/vendor/json',
-      image: 'plugins/vendor/image'
-    }
-  };
-</script>
-<script src="vendor/require.js"></script>
-<script>
-  require({
-    baseUrl: '..',
-    // configure our AMD loader
-    paths: config.packages
-  }, ['main']);
-</script>
+<script src="vendor/require.js" data-main="main"></script>
+<script src="config.js"></script>

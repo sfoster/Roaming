@@ -1,12 +1,7 @@
 {
-  "img": {},
-  "description": "You are submerged in deep water",
-  "afar": "A deep pool of water",
-  "coords": [
-    17,
-    6
-  ],
-  "here": [],
+  "x": 17,
+  "y": 6,
+  "description": "",
   "id": "17,6",
-  "type": "water"
+  "terrain": "water"
 }

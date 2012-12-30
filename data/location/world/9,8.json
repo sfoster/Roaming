@@ -1,12 +1,7 @@
 {
-  "img": {},
-  "description": "You are in a desert",
-  "afar": "A hot, dry desert",
-  "coords": [
-    9,
-    8
-  ],
-  "here": [],
+  "x": 9,
+  "y": 8,
+  "description": "",
   "id": "9,8",
-  "type": "desert"
+  "terrain": "forest"
 }

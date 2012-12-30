@@ -1,12 +1,7 @@
 {
-  "img": {},
-  "description": "You are climbing a ring of mountains",
-  "afar": "Mountains",
-  "coords": [
-    11,
-    5
-  ],
-  "here": [],
+  "x": 11,
+  "y": 5,
+  "description": "",
   "id": "11,5",
-  "type": "mountains"
+  "terrain": "mountains"
 }

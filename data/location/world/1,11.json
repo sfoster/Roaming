@@ -1,12 +1,7 @@
 {
-  "img": {},
-  "description": "You are in a endless desert",
-  "afar": "A hot, dry desert",
-  "coords": [
-    1,
-    11
-  ],
-  "here": [],
+  "x": 1,
+  "y": 11,
+  "description": "",
   "id": "1,11",
-  "type": "desert"
+  "terrain": "mountains"
 }

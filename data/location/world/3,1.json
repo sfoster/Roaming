@@ -1,12 +1,7 @@
 {
-  "img": {},
-  "description": "You are in the mountains",
-  "afar": "Rugged mountains",
-  "coords": [
-    3,
-    1
-  ],
-  "here": [],
+  "x": 3,
+  "y": 1,
+  "description": "",
   "id": "3,1",
-  "type": "mountains"
+  "terrain": "mountains"
 }
