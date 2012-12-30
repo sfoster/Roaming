@@ -5,7 +5,16 @@
   "position": "world/7,8",
   "elapsed": 0,
   "inventory": [
-  	{ "resource": "resources/weapons#fishingSpear" }
+  	{ "resource": "resources/weapons#fishingSpear" },
+  	{ "resource": "resources/items#boots" },
+  	{ "resource": "resources/items#cloak" },
+  	{ "resource": "resources/items#edibleMushroom" },
+  	{ "resource": "resources/items#lantern" }
   ],
+  "equipped": {
+  	"boots": 1,
+  	"cloak": 1
+	},
+  "currentWeapon": "fishingSpear",
   "visits": []
 }

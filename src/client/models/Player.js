@@ -11,6 +11,7 @@ define([
     level: 0,
     currentWeapon: 'fishingSpear', // by default
     history: {},
+    equipped: {},
     stats: {
       health: 50,
       level: 1,
@@ -39,9 +40,18 @@ define([
   }, function(){
     // constructor
     // create the player's inventory
-    this.inventory = Inventory.resolve(this.inventory || []);
+    var inventory = this.inventory = Inventory.resolve(this.inventory || []);
+    var equipped = this.equipped;
+    var weaponId = this.currentWeapon.id || this.currentWeapon;
 
-    // "de-reference" the weapon
+    inventory.forEach(function(item){
+      if(weaponId && weaponId == item.id) {
+        this.currentWeapon = item;
+        equipped[item.id] = true;
+      }
+      item.isEquipped = !!equipped[item.id];
+    }, this);
+
     if(this.currentWeapon && typeof this.currentWeapon === "string") {
       this.currentWeapon = weapons[this.currentWeapon];
     }

@@ -28,6 +28,7 @@ define([
     messages: ko.observableArray([]),
     status: ko.observableArray(['loading']),
     onMessagesClick: onMessagesClick,
+    onInventoryClick: onInventoryClick,
     onTileClick: onTileClick,
     tile: null
   };
@@ -173,6 +174,11 @@ define([
   function onMessagesClick(vm, evt){
     $('#messages').toggleClass('collapsed');
   }
+
+  function onInventoryClick(vm, evt){
+    $('#inventory').toggleClass('collapsed');
+  }
+
 
   return ui;
 

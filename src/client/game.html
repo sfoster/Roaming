@@ -19,14 +19,11 @@
             <h2 class="heading">Mini Map</h2>
             <canvas id="minimap" width="120" height="120" data-bind="click: onTileClick"></canvas>
           </li>
-          <li class="panel inventory toggleable">
+          <li id="inventory" class="panel items toggleable" data-bind="click: onInventoryClick">
             <h2 class="heading">Inventory</h2>
-            <ul data-bind="foreach: player.inventory">
-              <li data-bind="text: name"></li>
+            <ul class="compact" data-bind="foreach: player.inventory">
+              <li class="item" data-bind="text: name, css: { equipped: ( $data.isEquipped ) }"></li>
             </ul>
-          </li>
-          <li class="panel weapon">
-            [equipped item details here]
           </li>
       </ul>
   </section>

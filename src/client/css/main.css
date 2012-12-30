@@ -98,8 +98,8 @@ dt, dd {
 	display: block;
 }
 .toggleable.collapsed > .heading:after {
-	transform:rotate(90deg);
-	-webkit-transform:rotate(90deg);
+	transform:rotate(0);
+	-webkit-transform:rotate(0);
 }
 
 .toggleable > .heading:after {
@@ -121,6 +121,8 @@ dt, dd {
 	-moz-box-shadow:    0 0 4px 2px rgba(0, 0, 0, 0.57);
 	box-shadow:         0 0 4px 2px rgba(0, 0, 0, 0.57);
 
+	transform:rotate(90deg);
+	-webkit-transform:rotate(90deg);
 }
 ul.compact {
 	margin: 0 0 0.5em 0;
@@ -141,5 +143,9 @@ ul.compact > li > p {
 }
 .message > .status {
 	color: #888;
+	font-style: italic;
+}
+
+.item.equipped {
 	font-style: italic;
 }
