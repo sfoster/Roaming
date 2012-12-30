@@ -10,6 +10,7 @@ define([
   
   function Region(options){
     if(!options) return;
+    this.__events = {}; // make our own event listener collection
     this._onexits = [];
     if(!('id' in options)){
       throw new Error("Missing required property 'id' in Region constructor");

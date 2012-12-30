@@ -10,9 +10,11 @@ define([
   
   function Location(options){
     if(!options) return;
+    this.__events = {}; // make our own event listener collection
     this._onexits = [];
     this.encounters = [];
     this.here = [];
+    this.npcs = [];
     for(var i in options){
       this[i] = options[i];
     }
@@ -22,7 +24,7 @@ define([
     // console.log("create location with data: ", options);
     console.assert('description' in this, "Missing description property");
     console.assert('x' in this, "Missing x property");
-    console.assert('x' in this, "Missing x property");
+    console.assert('y' in this, "Missing y property");
     console.assert('id' in this, "Missing id property in " + options.x+','+options.y);
     return this;
   }
