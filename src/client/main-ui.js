@@ -6,8 +6,9 @@ define([
   'resources/template',
   'lib/event',
   'models/Map',
-  'text!resources/templates/player.html'
-], function($, ko, koHelpers, util, template, Evented, Map, playerTemplate){
+  'text!resources/templates/player.html',
+  'text!resources/templates/tile.html'
+], function($, ko, koHelpers, util, template, Evented, Map, playerTemplate, tileTemplate){
 
   function importTemplate(id, tmpl, bindProperty){
     // setup templates
@@ -26,10 +27,13 @@ define([
   var viewModel = ui.viewModel = {
     messages: ko.observableArray([]),
     status: ko.observableArray(['loading']),
-    onTileClick: onTileClick
+    onTileClick: onTileClick,
+    tile: null
   };
   
   importTemplate('player-template', playerTemplate, 'player');
+  importTemplate('location-template', tileTemplate, 'location');
+
   
   ui.initSidebar = function(player, world){
     // player.inventory.on('afteradd', function(evt){
@@ -50,7 +54,7 @@ define([
 
   var MINIMAP_TILE_SIZE = 12;
   
-  ui.init = function(player, region, game){
+  ui.init = function(player, tile, region, game){
     if(this._inited && (
       this.game === game
     )){
@@ -59,6 +63,7 @@ define([
 
     this.game = game;
     viewModel.player = player;
+    viewModel.tile = ko.observable( tile );
 
     var minimap =this.minimap = new Map({ 
       id: 'minimap',
@@ -80,8 +85,12 @@ define([
     ko.applyBindings( viewModel );
 
     game.on('locationenter', function(evt){
-      var centerTile = evt.target, 
-          cx = centerTile.x, 
+      var centerTile = evt.target; 
+      if(viewModel.tile.id === centerTile.id) {
+        return;
+      }
+
+      var cx = centerTile.x, 
           cy = centerTile.y;
 
       console.log("UI: location enter: ", cx, cy);
@@ -96,6 +105,7 @@ define([
       });
 
       /////////////////////////////////////
+      viewModel.tile(centerTile);
 
     });
     this._inited = true;
@@ -130,19 +140,18 @@ define([
   
   function onTileClick(vm, evt){
     var map = ui.minimap;
-    var mapOffsets = findPos(evt.target);
-    var tileSize = map.tileSize;
+    var pixelX = evt.pageX - $(evt.target).offset().left;
+    var pixelY = evt.pageY - $(evt.target).offset().top;
 
-    var pixelX = evt.clientX - mapOffsets.x,
-        pixelY = evt.clientY - mapOffsets.y;
+    var tileSize = map.tileSize;
 
     // resolve click coordinates to a value from the map's 0,0
     // and get a region coordinate
     var x = Math.floor(pixelX / tileSize) + map.startX, 
         y = Math.floor(pixelY / tileSize) + map.startY;
 
-    console.log("click x: %s, y: %s, node offset x: %s, y: %s: ", evt.clientX, evt.clientY, mapOffsets.x, mapOffsets.y);
-    console.log("pixelX: %s, pixelY: %s", pixelX, pixelY, x, y);
+    // console.log("click x: %s, y: %s, node offset x: %s, y: %s: ", evt.clientX, evt.clientY, mapOffsets.x, mapOffsets.y);
+    // console.log("pixelX: %s, pixelY: %s", pixelX, pixelY, x, y);
 
     if(game.canMoveTo(x,y)) {
       // how to handle moving between regions? 
