@@ -28,16 +28,16 @@
       </ul>
   </section>
   <section id="main" class="area">
-    <section id="messages" class="panel toggleable" data-bind="click: onMessagesClick">
-      <h2 class="heading">Messages</h2>
-      <ul class="compact" data-bind="foreach: messages">
-        <li class="message" data-bind="html: $data"></li>
-      </ul>
-    </section>
-    <section class="location panel" data-bind="template: { name: 'location-template', data: tile }, style: { 'background': backdrop }">
+    <section class="location panel" data-bind="template: { name: 'location-template', data: tile }">
     </section>  
 
   </section>  
+  <section id="messages" class="panel toggleable" data-bind="click: onMessagesClick">
+    <h2 class="heading">Messages</h2>
+    <ul class="compact" data-bind="foreach: messages">
+      <li class="message" data-bind="html: $data"></li>
+    </ul>
+  </section>
 
   <script src="vendor/require.js" data-main="plugins/bootstrap!main"></script>
   <script src="config.js"></script>

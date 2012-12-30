@@ -26,7 +26,7 @@ define([
 
   var viewModel = ui.viewModel = {
     messages: ko.observableArray([]),
-    backdrop: ko.observable('#000'),
+    backdrop: ko.observable('resources/graphics/terrain/clearbg.jpg'),
     status: ko.observableArray(['loading']),
     onMessagesClick: onMessagesClick,
     onInventoryClick: onInventoryClick,
@@ -91,12 +91,10 @@ define([
       });
 
       /////////////////////////////////////
+
+      centerTile.backdrop = centerTile.backdrop.replace(/^.*image!/, '')
       viewModel.tile(centerTile);
 
-      // update the backgrop
-      var bgCssValue = centerTile.backdrop.replace(/^.*image!/, '');
-      bgCssValue = 'no-repeat url('+bgCssValue+')';
-      viewModel.backdrop( bgCssValue );
 
       ui.main( centerTile.description || ("You enter an area of " + centerTile.terrain) );
       if(centerTile.here.length) {
@@ -105,7 +103,7 @@ define([
         }).join(', ')) + " here." );
       }
 
-      console.log("UI: location enter: ", cx, cy, bgCssValue);
+      console.log("UI: location enter: ", cx, cy, centerTile.backdrop);
     });
     this._inited = true;
   };

@@ -104,6 +104,16 @@ dt, dd {
 	max-width: 784px;
 	height: 600px;
 	margin: 0 auto;
+	position: relative;
+	overflow: hidden;
+}
+
+img.backdrop {
+	position: absolute;
+	top: 0; left: 0;
+	z-index: 0;
+	display: block;
+	opacity: 0.35;
 }
 
 .toggleable.collapsed > * {

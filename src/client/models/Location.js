@@ -30,7 +30,7 @@ define([
 
     if(!this.backdrop) {
       // use the default for the terrain type
-      this.backdrop = terrain[this.terrain].backdrop;
+      this.backdrop = terrain[this.terrain].backdrop.replace(/^.*image!/, '');
     }
     return this;
   }
@@ -46,7 +46,7 @@ define([
     enter: function(player, game){
       var proceed = true;
       this._onexits = [];
-      // load the backgrop
+      // load the backdrop
       
       game.emit("beforelocationenter", {
         target: this,
