@@ -8,7 +8,8 @@ define([
   'lib/markdown',
   'plugins/resource!player/'+(config.playerid || 'guest'), 
   'resources/encounters',
-  'resources/items', 'resources/weapons', 'resources/armor', 'resources/traps'
+  'resources/items', 'resources/weapons', 'resources/armor', 'resources/traps',
+  'models/Region', 'models/Location'
 ], function(
     $, util, Evented, template, 
     ko, koHelpers,
@@ -19,7 +20,8 @@ define([
     markdown,
     player, 
     encounters,
-    items, weapons, armor, traps
+    items, weapons, armor, traps,
+    Region, Location
 ){
   var START_LOCATION = 'world/3,2';
   var when = Promise.when;
@@ -80,9 +82,62 @@ define([
       game.region = region; 
       game.tile = tile;
 
-      var encounterId = tile.encounter;
       console.log("Loaded region: ", region);
       console.log("Loaded tile: ", tile);
+
+      // draw and fill the layout
+      ui.init( player, tile, region, game );
+
+      function getIndexOfInstanceInStack(matcher) {
+        // get the position of the first instance of the given ctor
+        var stackIdx=stack.length, 
+            state = null,
+            tile = null;
+        while((state = stack.get(--stackIdx))){
+          if(matcher(state)) {
+            return stackIdx;
+          }
+        }
+        return -1;
+      }
+
+      var regionStackIdx = getIndexOfInstanceInStack(function(thing){
+        return (thing instanceof Region); 
+      });
+      var currentRegion = (regionStackIdx > -1) ? stack.get(regionStackIdx) : null;
+
+      if(currentRegion) {
+        if(currentRegion !== region){
+          // region change
+          while(regionStackIdx < stack.length-1){
+            stack.pop();
+          }
+          stack.replace(region);
+        }
+      } else {
+        // add the region to the stack (and enter it)
+        stack.push(region);
+      }
+
+      var tileStackIdx = getIndexOfInstanceInStack(function(thing){
+        return (thing instanceof Location); 
+      });
+      var currentTile = (tileStackIdx > -1) ? stack.get(tileStackIdx) : null;
+
+      if(currentTile) {
+        if(currentTile !== tile) {
+          // tile change
+          while(tileStackIdx < stack.length-1){
+            stack.pop();
+          }
+          stack.replace(tile);
+        }
+      } else {
+        stack.push(tile);
+      }
+
+
+      var encounterId = tile.encounter;
       if('string' == typeof encounterId) {
         if(!(encounterId in encounters)){
           throw "Encounter " + encounterId + " not defined";
@@ -91,29 +146,8 @@ define([
         tile.encounter = encounters[encounterId];
       }
 
-      // draw and fill the layout
-      ui.init( player, region, game );
-
       // game.emit("afterlocationenter", { target: tile });
 
-      region.on('enter', function(evt){
-        ui.status("You enter the region: ", evt);
-      });
-      region.on('exit', function(){
-        ui.status("You leave this region");
-      });
-      
-      // if(!tile.enter) {
-      //   throw "Error loading location: " + id;
-      // }
-      // walk up the stack to the region
-      if(!stack.length){
-        stack.push(region);
-      } 
-      if(stack.length > 1){
-        stack.pop();
-      }
-      stack.push(tile);
     }); 
   }
   
