@@ -90,10 +90,16 @@ define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, u
         property = resourceId.substring(1+resourceId.indexOf('#'));
         resourceId = resourceId.substring(0, resourceId.indexOf('#'));
       }
-      console.log("Loading resource property value: ", resourceId);
+      // console.log("Loading resource property value: ", resourceId);
       require([resourceId], function(res){
-      console.log("Loaded resource property value: ", resourceId, res);
-       defd.resolve( property ? res[property] : res );
+        // console.log("Loaded resource property value: ", resourceId, res);
+        if(property) {
+          res = res[property];
+        }
+        if(!('id' in res)) {
+          res.id = property;
+        }
+        defd.resolve( res );
       });
       return defd.promise; 
     }
