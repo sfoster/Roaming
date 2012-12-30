@@ -92,14 +92,35 @@ the game loads the starting location
   (we can pass a coord and it resolves this )
 
 
-Rat infestation in house: 3 Huge Rats, 2 Giant Rats, 2 Mutant Rats.
+NPC groups (beta/demo):
+
+Rat infestation in house: 3 Huge Rats, 2 Giant Rats, 2 Mutant Rats: 15,15
 Goblins in plains:
-1. 3 Goblins, 1 Goblin Shaman
-2. 4 Goblins, 1 Goblin Shaman
-3. 5 Goblins, 1 Goblin Shaman, 1 Goblin Chieftain
+1. 3 Goblins, 1 Goblin Shaman: 8,22
+2. 4 Goblins, 1 Goblin Shaman: 3,19
+3. 5 Goblins, 1 Goblin Shaman, 1 Goblin Chieftain: 5,17
 Trolls in pass:
-1. 2 Juvenile Trolls, 2 Trolls
-2. 4 Trolls, 1 Troll Elder, 1 Troll Hulk.
+1. 2 Juvenile Trolls, 2 Trolls: 4,5
+2. 4 Trolls, 1 Troll Elder, 1 Troll Hulk: 4,2
 
 
-  
+Items (beta/demo):
+
+11,21:
+Description: You find a sizeable, strong-looking stick which you decide could be used for fighting
+and might even store a small amount of Magical power.
+Effect: You find a Stick
+21,17:
+Description: You find a sizeable, strong-looking stick which you decide could be used for fighting
+and might even store a small amount of Magical power.
+Effect: You find a Stick
+4,11:
+Description: You find a small Dagger lying on the ground along with the body of a young boy and
+several Goblins.
+Effect: You find a Dagger
+18,8:
+Description: You find a slightly rusted but servicable Sword washed up on the shores of a small
+river.
+Effect: You find a Sword
+ 
+
