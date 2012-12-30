@@ -27,7 +27,7 @@ define([
   var viewModel = ui.viewModel = {
     messages: ko.observableArray([]),
     status: ko.observableArray(['loading']),
-    onStatusClick: onStatusClick,
+    onMessagesClick: onMessagesClick,
     onTileClick: onTileClick,
     tile: null
   };
@@ -118,11 +118,18 @@ define([
   
   ui.main = function(cont){
      viewModel.messages.push(cont);
+     setTimeout(function(){
+        var msgs = $('#messages > ul > li.message');
+        if(msgs.length) {
+          msgs[msgs.length-1].scrollIntoView();
+        }
+     }, 0);
   };
 
   ui.status = function(cont){
+    cont = cont || "";
     cont = cont.split('\n');
-    viewModel.status.push(cont.join('<br>'));
+    ui.main('<p class="status">'+cont.join('<br>')+'</p>');
   };
 
   function tileAt(x, y){
@@ -163,10 +170,10 @@ define([
     }
   }
 
-  function onStatusClick(vm, evt){
-    $('#status').toggleClass('collapsed');
+  function onMessagesClick(vm, evt){
+    $('#messages').toggleClass('collapsed');
   }
-  
+
   return ui;
 
 });

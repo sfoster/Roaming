@@ -1,0 +1,145 @@
+/* 
+	main.css
+*/
+
+html, body {
+	margin: 0; padding: 0;
+	background-color: #654321;
+	color: #dedede;
+}
+
+h1, h2, h3, th, dt { 
+	margin: 0 0 8px 0;
+	font-family: monospace;
+	text-align: left;
+}
+
+#hud {
+	position: relative;
+	display: block;
+	min-height: 100px;
+}
+
+#main {
+	/*background-color: rgba(0,0,0, 0.6);*/
+	position: absolute;
+	top: 100px; right: 200px;
+	left: 20px;
+	bottom: 60px;
+}
+#drawer {
+	position: absolute;
+	top: 100px; right: 0;
+	width: 200px;
+	bottom: 60px;
+}
+
+#messages > ul {
+	max-height: 5em;
+	overflow: auto;
+}
+
+
+.panelist {
+	margin: 0; 
+	padding: 0;
+}
+
+.area {
+	position: relative;
+}
+
+.panel {
+	display: block;
+	padding: 8px;
+	margin: 10px;
+
+	/*background-color: rgba(0,255,51, 0.6);*/
+	-webkit-box-shadow: 0px -4px 30px rgba(0, 0, 0, 0.97);
+	-moz-box-shadow:    0px -4px 30px rgba(0, 0, 0, 0.97);
+	box-shadow:         0px -4px 30px rgba(0, 0, 0, 0.97);
+}
+
+li.panel {
+	list-style-type:  none;
+}
+
+dt { 
+  display: block; 
+  float: left; 
+  width: 12em; 
+  font-weight: bold; 
+  clear: both;
+}
+
+dl:after, dd:after { 
+  content: ".";    
+  display: block;    
+  height: 0;    
+  overflow: hidden;
+  clear: both;
+}
+dd { 
+  display: block; 
+  float: left; 
+  margin: 0 0 0.5em 0; 
+  width: calc(100% - 13em - 12px);
+  background-color: #eee;
+}
+dt, dd {
+  padding: 3px 6px;
+}
+
+.toggleable.collapsed > * {
+	display: none;
+}
+
+.toggleable.collapsed > .heading {
+	display: block;
+}
+.toggleable.collapsed > .heading:after {
+	transform:rotate(90deg);
+	-webkit-transform:rotate(90deg);
+}
+
+.toggleable > .heading:after {
+	display: block;
+	background-color: #000;
+	color: #fff;
+	content: "►";
+	text-align: center;
+	font-size: 0.5em;
+	width: 1.3em;
+	float: right;
+	height: 1.3em;
+	padding: 1px;
+	margin: 2px;
+	border: 2px solid #000;
+	border-radius: 12px;
+
+	-webkit-box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.57);
+	-moz-box-shadow:    0 0 4px 2px rgba(0, 0, 0, 0.57);
+	box-shadow:         0 0 4px 2px rgba(0, 0, 0, 0.57);
+
+}
+ul.compact {
+	margin: 0 0 0.5em 0;
+	padding: 0;
+}
+ul.compact > li {
+	list-style-type: none;
+	margin: 0 0 2px 0;
+}
+ul.compact > li > p {
+	margin: 0;
+}
+
+.message {
+	-webkit-box-shadow: 0 0 2px rgba(0, 0, 0, 0.57);
+	-moz-box-shadow:    0 0 2px rgba(0, 0, 0, 0.57);
+	box-shadow:         0 0 2px rgba(0, 0, 0, 0.57);
+}
+.message > .status {
+	color: #888;
+	font-style: italic;
+}

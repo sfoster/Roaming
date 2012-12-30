@@ -31,20 +31,14 @@
       </ul>
   </section>
   <section id="main" class="area">
-    <section class="panel toggleable">
+    <section id="messages" class="panel toggleable" data-bind="click: onMessagesClick">
       <h2 class="heading">Messages</h2>
-      <ul data-bind="foreach: messages">
-        <li data-bind="text: $data"></li>
+      <ul class="compact" data-bind="foreach: messages">
+        <li class="message" data-bind="html: $data"></li>
       </ul>
     </section>
     <section class="location panel" data-bind="template: { name: 'location-template', data: tile }">
     </section>  
-    <section id="status" data-bind="click: onStatusClick" class="panel toggleable collapsed">
-      <h2 class="heading">Status</h2>
-      <ul data-bind="foreach: status" class="toggleable">
-        <li data-bind="text: $data"></li>
-      </ul>
-    </section>
 
   </section>  
 
