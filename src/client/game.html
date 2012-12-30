@@ -45,6 +45,32 @@
     list-style-type:  none;
   }
 
+    dt { 
+      display: block; 
+      float: left; 
+      width: 12em; 
+      font-weight: bold; 
+      clear: both;
+    }
+
+    dl:after, dd:after { 
+      content: ".";    
+      display: block;    
+      height: 0;    
+      overflow: hidden;
+      clear: both;
+    }
+    dd { 
+      display: block; 
+      float: left; 
+      margin: 0 0 0.5em 0; 
+      width: calc(100% - 13em - 12px);
+      background-color: #eee;
+    }
+    dt, dd {
+      padding: 3px 6px;
+    }
+
 </style>
 <body>
 
@@ -80,6 +106,9 @@
     <ul data-bind="foreach: messages">
       <li data-bind="text: $data"></li>
     </ul>
+    <section class="location" data-bind="template: { name: 'location-template', data: tile }">
+    </section>  
+
     scene: 
       terrain
       encounters
