@@ -4,13 +4,24 @@
   <meta charset="utf-8">
   <title>Roaming</title>
   <link rel="stylesheet" type="text/css" href="./css/main.css">
+  <link rel="stylesheet" type="text/css" href="./css/grid.css">
 </head>
 <body>
 
   <section id="hud" class="area">
-    <div id="nearby"></div>
-    <div id="playerInfo" data-bind="with: player">
-      <div data-bind="template: 'player-template'"></div>
+    <div id="playerInfo" class="row">
+      <img class="player-icon" src="./resources/graphics/HeroIcon.png">
+      <div class="col col-1of2">
+        <h2 class="player-label">
+          <span data-bind="text: player.name"></span>
+        </h2>
+      </div>
+      <div class="col col-1of8">
+        Day <span data-bind="text: player.elapsed"></span>
+      </div>
+      <div class="col col-1of8">
+        @<span data-bind="text: tile().regionId"></span>/<span data-bind="text: tile().id"></span>
+      </div>
     </div>
   </section>  
   <section id="drawer" class="area">
@@ -24,6 +35,26 @@
             <ul class="compact" data-bind="foreach: player.inventory">
               <li class="item" data-bind="text: name, css: { equipped: ( $data.isEquipped ) }"></li>
             </ul>
+          </li>
+          <li id="stats" class="panel items toggleable">
+            <h2 class="heading">Stats</h2>
+              <table class="listing" cellspacing="0" style="width:100%" data-bind="with: player">
+                <tbody>
+                  <tr>
+                    <th>Level</th>
+                    <td class="num" data-bind="text:stats.level"></td>
+                  </tr>
+                  <tr>
+                    <th>Health</th>
+                    <td class="num" data-bind="text:stats.health"></td>
+                  </tr>
+                  <tr>
+                    <th>Energy</th>
+                    <td class="num" data-bind="text:stats.energy"></td>
+                  </tr>
+                </tbody>
+              </table>
+
           </li>
       </ul>
   </section>
