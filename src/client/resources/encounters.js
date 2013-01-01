@@ -1,4 +1,4 @@
-define(['lib/util', 'lib/event', 'resources/npc'], function(util, Evented, npc){
+define(['lib/util', 'lib/event', 'lib/clone', 'resources/npc'], function(util, Evented, sanitizedClone, npc){
   var mixin = util.mixin; 
   var range = function(lbound, ubound){
     var num = Math.round(lbound + Math.random() * (ubound-lbound));
@@ -15,7 +15,16 @@ define(['lib/util', 'lib/event', 'resources/npc'], function(util, Evented, npc){
   mixin(Encounter.prototype, {
     enter: function(location, player, world){ },
     exit: function(location, player, world){ },
-    update: function(location, player, world){ }
+    update: function(location, player, world){ },
+    export: function(){
+      var cleanData = sanitizedClone(this, {}, { 
+        type: true,
+        regionId: true
+      });
+
+      return cleanData;
+    }
+
   });
   
   function getNpcTypesForTerrain(terrain, constraints) {
