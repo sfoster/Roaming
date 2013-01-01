@@ -71,8 +71,17 @@ define([
     // console.log("viewModel.player: ", viewModel.player);
     ko.applyBindings( viewModel );
 
-    game.on('locationenter', function(evt){
+    game.on('locationenter', ui.onLocationEnter.bind(ui));
+    game.on('encounterstart', ui.onEncounterStart.bind(ui));
+    
+    this._inited = true;
+  };
+
+  ui.onLocationEnter = function(evt){
       var centerTile = evt.target; 
+      var region = ui.game.region;
+      var minimap =this.minimap;
+      
       if(viewModel.tile.id === centerTile.id) {
         return;
       }
@@ -103,8 +112,11 @@ define([
       }
 
       console.log("UI: location enter: ", cx, cy, centerTile.backdrop);
-    });
-    this._inited = true;
+  };
+
+  ui.onEncounterStart = function(evt){
+    var encounter = evt.target; 
+    ui.main(encounter.description);
   };
 
   ui.flush = function(id){

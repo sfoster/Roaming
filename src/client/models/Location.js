@@ -79,7 +79,7 @@ define([
         var self = this;
         this.encounters.reduce(function(proceedToNext, encounter){
           console.log("encounter: ", encounter);
-          return (false !== encounter.enter(self, player, game));
+          return (false !== encounter.enter(player, game));
         }, true);
 
         game.emit("afterlocationenter", {
