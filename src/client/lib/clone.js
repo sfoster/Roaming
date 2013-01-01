@@ -11,7 +11,12 @@ define(['lib/util'], function(util){
       case 'object' :
       case 'unknown' :
         clone = clone || {};
+        // Object.keys omits prototype properties
         Object.keys(obj).forEach(function(name){
+          if(name.charAt(0) === '_') {
+            // omit _ prefixed props
+            return; 
+          }
           if(name in excludes || exclude(name, obj[name]) ) {
             return;
           }
