@@ -104,32 +104,24 @@ define([
         fn(player, game);
       }
     },
-    save: function(){
-      var id = this.id; 
+    export: function(){
+      var id = this.id;
+      var cleanData = {};
+      // export out any child objects 
+      this.propertiesWithReferences.forEach(function(prop){
+        cleanData[prop] = ('function' == this[prop].export) ? 
+            this[prop].export() : this[prop];
+      }, this);
       // exclude id, coords, type from location file data
       // as this is 
-      var formData = sanitizedClone(this, {}, { id: true, coords: true, type: true });
-      console.log("formData: ", formData);
-
-      var savePromise = new Promise();
-      $.ajax({
-        type: 'PUT',
-        dataType: 'json',
-        contentType: 'application/json',
-        url: this._resourceUrl,
-        data: JSON.stringify(formData),
-        success: function(resp){
-          console.log("save response: ", resp);
-          alert("location saved: "+ resp.status);
-          savePromise.resolve(resp.status);
-        }, 
-        error: function(xhr){ 
-          console.warn("error saving location: ", xhr.status);
-          alert("Unable to save location right now"); 
-          savePromise.reject(xhr.status);
-        }
+      cleanData = sanitizedClone(cleanData, {}, { 
+        propertiesWithReferences: true, 
+        coords: true, 
+        type: true,
+        regionId: true
       });
-      return savePromise;
+
+      return cleanData;
     }
   });
 
