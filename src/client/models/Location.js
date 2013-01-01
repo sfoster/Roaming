@@ -32,7 +32,9 @@ define([
       // use the default for the terrain type
       this.backdrop = terrain[this.terrain].backdrop.replace(/^.*image!/, '');
     }
-    return this;
+    if(!this.description){
+      this.description = "You enter an area of " + this.terrain
+    }
   }
   
   util.mixin(Location.prototype, Evented, {

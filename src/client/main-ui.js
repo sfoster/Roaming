@@ -96,7 +96,6 @@ define([
       viewModel.tile(centerTile);
 
 
-      ui.main( centerTile.description || ("You enter an area of " + centerTile.terrain) );
       if(centerTile.here.length) {
         ui.main( "There " + pluralize('is', centerTile.here.length) + " " + (centerTile.here.map(function(thing){
           return "a "+ thing.name;

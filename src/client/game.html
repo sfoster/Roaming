@@ -19,9 +19,6 @@
       <div class="col col-1of8">
         Day <span data-bind="text: player.elapsed"></span>
       </div>
-      <div class="col col-1of8">
-        @<span data-bind="text: tile().regionId"></span>/<span data-bind="text: tile().id"></span>
-      </div>
     </div>
   </section>  
   <section id="drawer" class="area">
@@ -59,7 +56,17 @@
       </ul>
   </section>
   <section id="main" class="area">
-    <section class="location panel" data-bind="template: { name: 'location-template', data: tile }">
+    <section class="location panel" data-bind="with: tile ">
+      <img class="backdrop" data-bind="attr: { src: backdrop }" width="800" height="600">
+      <p data-bind="text: description"></p>
+
+      <div data-bind="visible: !!here.length">
+        <h2>Here</h2>
+        <ul data-bind="foreach: here">
+          <li><span data-bind="text: name"></span> (<span data-bind="text: id"></span>)</li>
+        </ul>
+      </div>
+
     </section>  
 
   </section>  
