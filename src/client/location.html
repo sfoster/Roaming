@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
   <title>Test</title>
@@ -72,6 +72,11 @@
       border: 1px solid #000;
       border-radius: 6px;
     }
+    #typesPickerOverlay {
+      top: 100px;
+      left: 400px;
+      width: 400px;
+    }
   </style>
   <script src="./vendor/require.js"></script>
   <script src="./config.js"></script>
@@ -99,16 +104,33 @@
 
     var locn = config.location || 'test/3,3';
     require([
+      'dollar',
       'knockout', 
       'lib/koHelpers',
       'lib/util', 
       'plugins/resource!location/'+locn
-    ],function(ko, koHelpers, util, tile) {
+    ],function($, ko, koHelpers, util, tile) {
       //run tests
       console.log("Loaded location tile: ", tile);
 
       var makeObservable = koHelpers.makeObservable, 
           resolveObservable = koHelpers.resolveObservable;
+
+      function setValue(targ, key, value) {
+        // set a value where the key might be a dot-path
+        // e.g. setValue(obj, 'foo.bar', "Bar") === obj.foo.bar = "Bar";
+        var parts = key.split('.');
+        while(parts.length > 1) {
+          targ = targ[ parts.shift() ];
+        }
+        key = parts.shift();
+        if('function'==typeof targ[key]) {
+          targ[key](value);
+        } else {
+          targ[key] = value;
+        }
+        return value; 
+      }
 
       var viewModel = window.viewModel =  {
         editMode: ko.observable( location.hash.indexOf('edit')>-1 ), 
@@ -116,10 +138,17 @@
         types: ko.observableArray([]),
         pickerType: ko.observable(''),
         pickerValue: ko.observable(''),
-        onPickerChange: function(vm, evt) {
-          console.log("viewModel: ", vm, evt, arguments);
+        closePicker: function(){
           viewModel.pickerType('');
-        }, 
+        },
+        selectFromCollection: function(vm, evt) {
+          var type = evt.target.getAttribute('data-collection'), 
+              pname = evt.target.getAttribute('data-propname');
+
+          showPicker(type, function(newValue){
+            setValue(viewModel, pname, newValue);
+          });
+        },
         save: function(){
           var tile = resolveObservable(viewModel.tile);
           alert( JSON.stringify( tile, null, 2) );
@@ -130,6 +159,7 @@
 
 
       function showPicker(type, callback) {
+
         var resourceId = '';
         switch(type) {
           case 'item': 
@@ -146,23 +176,24 @@
             require([resourceId], function(types){
               var names = Object.keys(types);
               viewModel.types.splice.apply(viewModel.types, [0, types.length].concat(names) );
+
+              viewModel.pickerValue('');
+              viewModel.pickerType(type);
+
+              var handle = viewModel.pickerValue.subscribe(function(newValue){
+                callback(newValue);
+                viewModel.pickerType('');
+                handle.dispose();
+              });
+
             });
         }
       }
       window.onhashchange = function(evt){
         viewModel.editMode( location.hash.indexOf('edit')>-1 );
-        
-        viewModel.pickerType.subscribe(function(type){
-          if(type) {
-            var subscription = viewModel.pickerValue.subscribe(function(newValue){
-              console.log("pickerValue changed: ", newValue);
-            });
-          }
-          showPicker(type, function(val){
-            console.log("new value: ", val);
-          });
-        });
         if(viewModel.editMode()) {
+          // other setup?
+        } else {
 
         }
       };
@@ -215,7 +246,7 @@
         <dt>Region:</dt>
         <dd data-bind="text: regionId"></dd>
         <dt>Terrain:</dt>
-        <dd><select type="text" data-bind="options: $parent.terrainTypes, value: terrain"></select></dd>
+        <dd><span data-bind="text: terrain"></span> <button data-propname="tile.terrain" data-collection="terrain" data-bind="click: $parent.selectFromCollection">edit</button></dd>
         <dt>Description:</dt>
         <dd><textarea data-bind="value: description"></textarea></dd>
       </dl>
@@ -247,9 +278,11 @@
     </header>
     </footer>
   </div>
-  <div class="overlay" data-bind="visible: pickerType().length">
+  <div id="typesPickerOverlay" class="overlay" data-bind="visible: pickerType().length">
     <p><label>Pick One</label>
-        <select data-bind="options: types(), value: pickerValue"></select></p>
+        <select data-bind="options: types(), value: pickerValue"></select>
+        <button data-bind="click: closePicker">Ok</button>
+    </p>
   </div>
 </body>
 </html>
