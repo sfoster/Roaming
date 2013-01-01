@@ -103,15 +103,18 @@
     })();
 
     var locn = config.location || 'test/3,3';
+    var regionId = locn.split('/').shift();
     require([
       'dollar',
       'knockout', 
       'lib/koHelpers',
       'lib/util', 
+      'plugins/vendor/json!location/'+locn+'.json',
       'plugins/resource!location/'+locn
-    ],function($, ko, koHelpers, util, tile) {
+    ],function($, ko, koHelpers, util, tileData, tile) {
       //run tests
-      console.log("Loaded location tile: ", tile);
+      console.log("Loaded location tileData: ", tileData);
+      console.log("Loaded location instance: ", tile);
 
       var makeObservable = koHelpers.makeObservable, 
           resolveObservable = koHelpers.resolveObservable;
@@ -132,9 +135,32 @@
         return value; 
       }
 
+      function createEditableArray(coln) {
+        // make a parallel array of observed values, where 
+        // .. updating one updates the source
+        var items = coln.map(function(item, idx, coln){
+          return { 
+            json: ko.observable(JSON.stringify(item, null, 2)),
+            value: item
+          }
+        });
+        items.forEach(function(item, idx){
+          item.json.subscribe(function(newValue){
+            console.log("change to ", item, newValue);
+            coln[idx] = JSON.parse(newValue);
+          });
+        });
+        return ko.observableArray(items);
+      }
+
+      tileData.editableHere = createEditableArray(tileData.here || []);
+      tileData.editableEncounters = createEditableArray(tileData.encounters || []);
+      tileData.editableNpcs = createEditableArray(tileData.npcs || []);
+
       var viewModel = window.viewModel =  {
         editMode: ko.observable( location.hash.indexOf('edit')>-1 ), 
-        tile: makeObservable(tile),
+        tile: tile,
+        tileData: makeObservable( tileData ),
         types: ko.observableArray([]),
         pickerType: ko.observable(''),
         pickerValue: ko.observable(''),
@@ -150,8 +176,11 @@
           });
         },
         save: function(){
-          var tile = resolveObservable(viewModel.tile);
-          alert( JSON.stringify( tile, null, 2) );
+          var tileData = resolveObservable(viewModel.tileData);
+          delete tileData.editableHere;
+          delete tileData.editableNpcs;
+          delete tileData.editableEncounters;
+          alert( JSON.stringify( tileData, null, 2) );
         }
       };
       console.log("Prepared viewMode: ", viewModel);
@@ -235,7 +264,7 @@
     </section>  
   </div>
 
-  <div class="panel" data-bind="visible: editMode, with: tile">
+  <div class="panel" data-bind="visible: editMode, with: tileData">
     <header>
       <h1>Location: <span data-bind="text: id"></span></h1> 
       <div class="mode">Edit</div>
@@ -243,33 +272,23 @@
     </header>
     <section id="editor">
       <dl>
-        <dt>Region:</dt>
-        <dd data-bind="text: regionId"></dd>
         <dt>Terrain:</dt>
-        <dd><span data-bind="text: terrain"></span> <button data-propname="tile.terrain" data-collection="terrain" data-bind="click: $parent.selectFromCollection">edit</button></dd>
+        <dd><span data-bind="text: terrain"></span> <button data-propname="tileData.terrain" data-collection="terrain" data-bind="click: $parent.selectFromCollection">edit</button></dd>
         <dt>Description:</dt>
         <dd><textarea data-bind="value: description"></textarea></dd>
       </dl>
+
       <h2>Here</h2>
-      
-      <ul data-bind="foreach: here">
-        <li><span data-bind="text: name"></span> (<span data-bind="text: type"></span>)</li>
+      <ul data-bind="foreach: editableHere">
+        <li><textarea data-bind="value: json" style="height: 4em; width:90%;"></textarea></li>
       </ul>
       <h2>Encounters</h2>
-      <ul data-bind="foreach: encounters">
-        <li>
-          <span data-bind="text: name"></span> (<span data-bind="text: type"></span>)
-          <div data-bind="if: group && group.length">
-            NPC Encounter data
-            <ul data-bind="foreach: group">
-              <li data-bind="text: type"></li>
-            </ul>
-          </div>
-        </li>
+      <ul data-bind="foreach: editableEncounters">
+        <li><textarea data-bind="value: json" style="height: 4em; width:90%;"></textarea></li>
       </ul>
       <h2>NPCs</h2>
-      <ul data-bind="foreach: npcs">
-        <li><span data-bind="text: type"></span> (<span data-bind="text: count"></span>)</li>
+      <ul data-bind="foreach: editableNpcs">
+        <li><textarea data-bind="value: json" style="height: 4em; width:90%;"></textarea></li>
       </ul>
     </section>  
     <footer>
