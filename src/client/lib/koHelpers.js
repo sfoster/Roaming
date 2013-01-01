@@ -31,25 +31,7 @@ define(['knockout', 'lib/util'], function(ko, util){
   }
 
   function resolveObservable(obj) {
-    var value = ko.isObservable( obj ) ? obj() : obj;
-    var type = util.getType(value);
-    console.log("resolveObservable: ", type, obj);
-    switch(type) {
-      case 'object': 
-        var cleanObj = {};
-        for(var key in value) {
-          if('_' !== key.charAt(0)) {
-            cleanObj[key] = resolveObservable(value[key]);
-          }
-        }
-        return cleanObj;
-      case 'array': 
-        return util.map(value, function(val, key, obj){
-          return resolveObservable(val);
-        });
-      default: 
-        return value;
-    }
+    return ko.toJS(obj);
   }
 
   return {
