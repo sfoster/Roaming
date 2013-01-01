@@ -1,5 +1,6 @@
 {
 	"id": "world",
+	"start": "3,3",
 	"tiles": [
 	  {
 	    "$ref": "./0,0.json",
