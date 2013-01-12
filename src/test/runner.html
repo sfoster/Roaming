@@ -26,34 +26,21 @@
   <ul id="results">
     
   </ul>
+  <script src="../client/vendor/require.js"></script>
+  <script src="../client/config.js"></script>
+  <script src="./lib/jasmine-1.1.0.rc1/jasmine.js"></script>
   <script type="text/javascript">
-    var config = {
-      packages: {
-        // package mappings
-        dollar: 'vendor/zepto',
-        util: 'lib/util',
-        compose: 'vendor/compose',
-        text: 'plugins/vendor/text',
-        json: 'plugins/vendor/json',
-        image: 'plugins/vendor/image',
-        order: 'plugins/vendor/order'
+    require.config({
+      baseUrl: "../client",
+      paths: {
+        // more path mappings
+        test: '../test'
       }
-    };
+    });
   </script>
-  <script src="../vendor/require.js"></script>
-  <script>
-    require({
-      baseUrl: '../..',
-      // configure our AMD loader
-      paths: config.packages
-    }, ['./browserRunner.js'], function(runner){
-      runner.config({ 
-        logNode: document.getElementById("results"), 
-        modules: [
-          'test/spec/regions'
-        ]
-      })
-      runner.run();
+  <script type="text/javascript">
+    require(['test/spec/ModuleSpec'], function(){
+      console.log("outcome");
     });
   </script>
 </body>
