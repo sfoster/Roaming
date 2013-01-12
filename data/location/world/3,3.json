@@ -6,10 +6,16 @@
       "resource": "resources/items#hagStone"
     }
   ],
+  "npcs": [
+    {
+      "type": "resources/npc#goblin",
+      "count": 5
+    }
+  ],
   "id": "3,3",
   "x": 3,
   "y": 3,
-  "terrain": "barren",
+  "terrain": "plains",
   "encounters": [
     {
       "type": "models/NPCEncounter",
@@ -17,6 +23,5 @@
         "foo": "bar"
       }
     }
-  ],
-  "npcs": []
+  ]
 }

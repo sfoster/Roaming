@@ -17,7 +17,8 @@
   ],
   "npcs": [
     {
-      "type": "resources/npc#theRoc",
+      "type": "npc",
+      "resource": "resources/npc#theRoc",
       "count": 1
     }
   ]
