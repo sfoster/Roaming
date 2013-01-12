@@ -6,7 +6,7 @@ define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, u
     'region': 'models/Region',
     'npc': 'models/npc'
   };
-  
+
 
   function fetch(url){
     var defd = Promise.defer();
@@ -35,26 +35,38 @@ define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, u
     return defd.promise;
   }
 
+  function when(promiseOrValue, callback, errback) {
+    if('function' == typeof promiseOrValue.then) {
+      return promiseOrValue.then(callback errback);
+    } else {
+      if(undefined === promiseOrValue) {
+        return errback(promiseOrValue)
+      }
+    }
+    return callback(promiseOrValue);
+  }
+
+
   function thaw(value) {
     var defd = Promise.defer();
     var Clazz;
     // thawing out resource data can involve multiple asyn steps
     // which are tracked in this queue array
     var promiseQueue = [];
-    var typeResource = value.type, 
+    var typeResource = value.type,
         typeProperty = null;
 
     var resourceId = value.resource;
     var resourceProperty = null;
 
-    // FIXME: I made a mess here trying to optionally load 
+    // FIXME: I made a mess here trying to optionally load
     //  a class and the resource
     // Need to come up with a better way to stack up maybe-promises as dependencies for some function
 
     when(we have resourceData and a Model) {
       create the instance
     }
-    
+
     // get/resolve resource data (instance properties)
     var promisedData = (resourceId) ? (function(){
         var defd = Promise.defer();
@@ -103,7 +115,7 @@ define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, u
       var propertiesWithReferences = Clazz.prototype.propertiesWithReferences || [];
 
       propertiesWithReferences.filter(function(pname){
-        return (pname in resourceData); 
+        return (pname in resourceData);
       }).forEach(function(pname){
         if(resourceData[pname] instanceof Array) {
           resourceData[pname].forEach(function(refData, idx, coln){
@@ -123,21 +135,21 @@ define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, u
       });
 
       Promise.all(promiseQueue).then(function(){
-        var instance = new Clazz(resourceData); 
+        var instance = new Clazz(resourceData);
         // console.log("thawed resource is ready: ", instance);
         defd.resolve(instance);
       }, function(){
         defd.reject("Failed to fully thaw value");
       });
-      return defd.promise; 
+      return defd.promise;
     }
 
   }
 
   // usage: require(['plugins/resource!region/0,0'], function(tile, region){ ... })
-  var global = window, 
+  var global = window,
       config = global.config || (global.config = {});
-  
+
   var resourcePlugin = {
     thaw: thaw,
     registerType: registerType,
@@ -156,8 +168,8 @@ define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, u
           throw new Error("Resource "+resourceId+"failed to load: " + resp.status);
         }
         resourceData = json.resolveJson(resp.status ? resp.d : resp);
-        resourceData._resourceUrl = resourceUrl; 
-        resourceData._resourceId = resourceId; 
+        resourceData._resourceUrl = resourceUrl;
+        resourceData._resourceId = resourceId;
 
         // console.log("resolved resourceData: ", resourceData);
         var dataType = resourceType;
