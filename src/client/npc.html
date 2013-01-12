@@ -34,59 +34,48 @@
   <table id="npcs" class="listing" cellspacing="0">
     <thead>
       <tr class="item">
-        <th class="field-{{id}}"><code>id</code></th>
-        <th class="field-{{name}}">name</th>
-        <th class="field-{{strength}}">strength</th>
-        <th class="field-{{hp}} digit">hit points</th>
-        <th class="field-{{mp}} digit">magic points</th>
-        <th class="field-{{notes}}">notes</th>
+        <th><code>id</code></th>
+        <th>name</th>
+        <th>strength</th>
+        <th class="digit">health</th>
+        <th class="digit">magic points</th>
+        <th>notes</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody data-bind="foreach: npcs">
+      <tr class="item">
+        <td><code data-bind="text: id">{{id}}</code></td>
+        <td data-bind="text: name">{{name}}</td>
+        <td data-bind="text: stats.strength" class="digit">{{strength}}</td>
+        <td data-bind="text: stats.health" class="digit">{{hp}}</td>
+        <td data-bind="text: stats.mana" class="digit">{{mp}}</td>
+        <td data-bind="text: notes">{{notes}}</td>
+      </tr>
     </tbody>
   </table>
 </section>  
 <section id="detail" class="panel">
 </section>  
 
-<script type="text/x-template" id="item-template">
-<tr class="item">
-  <td class="field-{{id}}"><code>{{id}}</code></td>
-  <td class="field-{{name}}">{{name}}</td>
-  <td class="field-{{strength}} digit">{{strength}}</td>
-  <td class="field-{{hp}} digit">{{hp}}</td>
-  <td class="field-{{mp}} digit">{{mp}}</td>
-  <td class="field-{{notes}}">{{notes}}</td>
-</tr>
-</script>
+<script src="./vendor/require.js"></script>
+<script src="./config.js"></script>
 
 <script type="text/javascript">
-  var config = {
-    packages: {
-      // package mappings
-      dollar: 'vendor/zepto',
-      util: 'lib/util'
-    }
-  };
-</script>
-<script src="../vendor/require.js"></script>
-<script>
-  require({
-    baseUrl: '..',
-    // configure our AMD loader
-    paths: config.packages
-  }, ['dollar', 'resources/npc'], function($, npc){
-    var tmpl= $('#item-template')[0].innerHTML;
-    var itemsHtml = [], 
-        pattern = /\{\{([^}]+)\}\}/g;
-    Object.keys(npc).forEach(function(id){
-      var data  = Object.create(npc[id]);
-      data.id = id;
-      var str = tmpl.replace(pattern, function(m, name){
-        return (name in data) ? data[name] : "";
-      });
-      $(str).appendTo('#npcs tbody');
+  require(['dollar', 'knockout', 'models/npc', 'resources/npc'], function($, ko, Npc, npcs){
+
+    var viewModel = window.viewModel =  {
+      npcs: [],
+    };    
+    Object.keys(npcs).forEach(function(id){
+      var thing  = new Npc(npcs[id]);
+      thing.id = id;
+      if(!thing.notes) {
+        thing.notes = "-";
+      }
+      viewModel.npcs.push(thing);
     });
+    ko.applyBindings(viewModel);
+
   });
 </script>
 </body>

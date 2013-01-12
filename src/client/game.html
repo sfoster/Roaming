@@ -67,6 +67,13 @@
         </ul>
       </div>
 
+      <div data-bind="visible: !!npcs.length">
+        <h2>NPCs</h2>
+        <ul data-bind="foreach: npcs">
+          <li><span data-bind="text: name"></span></li>
+        </ul>
+      </div>
+
     </section>  
 
   </section>  

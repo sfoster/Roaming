@@ -12,7 +12,10 @@
   "terrain": "barren",
   "encounters": [
     {
-      "resource": "resources/encounters#npc"
+      "type": "models/NPCEncounter",
+      "params": {
+        "foo": "bar"
+      }
     }
   ],
   "npcs": []

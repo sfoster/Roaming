@@ -38,7 +38,7 @@ define([
   }
   
   util.mixin(Location.prototype, Evented, {
-    propertiesWithReferences: ['here', 'encounters'],
+    propertiesWithReferences: ['here', 'encounters', 'npcs'],
     description: "",
     regionId: "",
     backdrop: "",

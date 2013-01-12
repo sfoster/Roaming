@@ -1,22 +1,23 @@
 define([
-  'compose', 'lib/event', 'lib/util', 'models/Inventory', 'resources/weapons'
-], function(Compose, Evented, util, Inventory, weapons){
+  'compose', 'lib/event', 'lib/util', 'models/Inventory', 'models/Actor', 'resources/weapons'
+], function(Compose, Evented, util, Inventory, Actor, weapons){
   
-  var Player = Compose(Compose, {
+  var Player = Actor.extend({
 
-    propertiesWithReferences: ['inventory'],
+    propertiesWithReferences: [].concat(Actor.prototype.propertiesWithReferences),
 
+    declaredClass: "Player",
     name: "You", // by default
-    inventory: null,
     level: 0,
     currentWeapon: 'fishingSpear', // by default
     history: {},
-    equipped: {},
+    score: 0,
     stats: {
       health: 50,
       level: 1,
       energy: 50
     },
+    visits: null,
     damage: function(distance){
       var level = this.level;
       var weapon = this.currentWeapon; 
@@ -37,24 +38,8 @@ define([
       }
       return damage;
     }
-  }, function(){
-    // constructor
-    // create the player's inventory
-    var inventory = this.inventory = Inventory.resolve(this.inventory || []);
-    var equipped = this.equipped;
-    var weaponId = this.currentWeapon.id || this.currentWeapon;
-
-    inventory.forEach(function(item){
-      if(weaponId && weaponId == item.id) {
-        this.currentWeapon = item;
-        equipped[item.id] = true;
-      }
-      item.isEquipped = !!equipped[item.id];
-    }, this);
-
-    if(this.currentWeapon && typeof this.currentWeapon === "string") {
-      this.currentWeapon = weapons[this.currentWeapon];
-    }
+  }, function(args){
+    console.log("Player ctor, got args", args);
   });
 
   // TODO: needs to live elsewhere, 

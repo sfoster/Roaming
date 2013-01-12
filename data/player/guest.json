@@ -8,5 +8,8 @@
       { "resource": "resources/items#cloak" },
       { "resource": "resources/items#apple" }
   ],
+  "currentWeapon": {
+    "resource": "resources/weapons#knife"
+  },
   "visits": []
 }

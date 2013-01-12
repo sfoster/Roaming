@@ -28,10 +28,10 @@
 <section id="main" class="panel">
   <h2>Inventory</h2>
   <ul data-bind="foreach: inventory">
-    <li data-bind="text: name"></li>
+    <li class="item" data-bind="text: name, css: { equipped: ( $data.isEquipped ) }"></li>
   </ul>
   <h2>Visits</h2>
-  <ul data-bind="foreach: visits">
+  <ul data-bind="foreach: Object.keys(visits)">
     <li data-bind="attr: { 'data-itemid': $index }">
       <span data-bind="text: id">id</span>
       <span data-bind="text: timestamp">timestamp</span>
@@ -67,9 +67,7 @@
   ], function(ko, koHelpers, player, playerTemplate){
     // get player id
     // load player data
-    if(!player.score){
-      player.score = 0;
-    }
+
     // setup templates
     var tmplNode = document.createElement('script'); 
     tmplNode.setAttribute('type', 'text/html');

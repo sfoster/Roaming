@@ -8,7 +8,8 @@ define([
   'plugins/resource!player/'+(config.playerid || 'guest'), 
   'resources/encounters',
   'resources/items', 'resources/weapons', 'resources/armor', 'resources/traps',
-  'models/Region', 'models/Location'
+  'models/Region', 'models/Location',
+  'models/Combat'
 ], function(
     $, util, Evented, template, 
     ko, koHelpers,
@@ -19,7 +20,8 @@ define([
     player, 
     encounters,
     items, weapons, armor, traps,
-    Region, Location
+    Region, Location,
+    Combat
 ){
   var START_LOCATION = 'world/3,2';
   var when = Promise.when;
@@ -298,6 +300,30 @@ define([
     //     console.log("unhooking onaferadd handler for tile: ", tile.id);
     //     handle.remove();
     //   });
+  });
+
+  function isHostile(npc) {
+    return !npc.friendly;
+  }
+
+  game.on("afterlocationenter", function(evt){
+    var tile = evt.target;
+    var hostiles = tile.npcs.filter(isHostile);
+    if(hostiles.length) {
+      console.log("Combat, with: ", hostiles);
+      var combat = new Combat();
+      // combat.start([player], hostiles).then(
+      //   function(result){
+      //     console.log("combat concluded: ", result);
+      //   }, 
+      //   function(err){
+      //     console.log("combat error: ", err);
+      //   }, 
+      //   function(update){
+      //     console.log("combat progress: ", update);
+      //   }
+      // );
+    }
   });
   
 });

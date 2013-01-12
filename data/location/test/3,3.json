@@ -17,11 +17,11 @@
   ],
   "npcs": [
     {
-      "type": "resources/npc#troll",
+      "resource": "resources/npc#troll",
       "count": 3
     },
     {
-      "type": "resources/npc#trollElder",
+      "resource": "resources/npc#trollElder",
       "count": 2
     }
   ]

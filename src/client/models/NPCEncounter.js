@@ -27,16 +27,33 @@ define([
     // Spawn a number of npcs
     enter: function(player, game){
       // console.log("added creatures: ", hereCreatures);
-      if(!this.group) {
-        this.group = this.generateGroup(game.tile, player);
-      }
-      if(this.group.length){
-      	var here = game.tile.here;
-      	this.group.forEach(function(npc){
-      		here.push(npc);
+      // expand any npc placeholders 
+      var npcs = game.tile.npcs;
+			// for(var i=0; (item=npcs[i]); i++) {
+			// 	if(item.count) {
+			// 		for(var j=0; j<count; j++) {
+			// 			npcs[i++] = 
+			// 		}
+			// 	}
+				
+			// }
+
+			// npcs.forEach(function(item){
+			// 	if(item.count) {
+			// 		for(var i=0; i<count; i++) {
+
+			// 		}
+			// 	}
+			// });      
+      // generate random group
+      var group =  this.generateGroup(game.tile, player);
+      if(group.length){
+      	group.forEach(function(npc){
+      		console.log("Adding npc: ", npc);
+      		npcs.push(Object.create(npc));
       	}); 
-        game.emit('encounterstart', { target: this });
       }
+      game.emit('encounterstart', { target: this });
     },
     generateGroup: function(tile, player){
       var howMany = range(1, 2), 
