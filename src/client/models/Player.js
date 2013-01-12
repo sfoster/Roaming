@@ -12,11 +12,7 @@ define([
     currentWeapon: 'fishingSpear', // by default
     history: {},
     score: 0,
-    stats: {
-      health: 50,
-      level: 1,
-      energy: 50
-    },
+    // stats: built in ctor
     visits: null,
     damage: function(distance){
       var level = this.level;

@@ -5,7 +5,8 @@ define([
   var StatsProto = {
   	health: 5,
     strength: 5,
-    mana: 0
+    mana: 0,
+    level: 1
   };
 
   var Actor = Compose(function(args) {
