@@ -1,0 +1,66 @@
+<html>
+<body>
+	<script src="./vendor/require.js"></script>
+	<script type="text/javascript" src="./config.js"></script>
+	<script>
+	  require(['dollar', 'lib/base64'], function($, base64){
+
+	  	var viewModel = {
+	  		tile: koHelpers.makeObservable()
+	  	};
+
+		function handleFiles(file) {
+			console.log("Got files: ", file);
+			console.dir(file);
+		}
+		window.handleFiles = handleFiles;
+
+		var saveFile = (function(){
+			//Taking care of the browser-specific prefix
+			window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
+			if(!window.requestFileSystem) {
+				return function(){
+					alert("This browser doesn't support writing local files. Try Chrome");
+				};
+			}
+			function onInitFs(){
+				console.log('Opened file system: ' + fs.name);
+			}
+			function errorHandler(err){
+				console.log("file save error", err);
+			}
+			// The first parameter defines the type of storage: persistent or temporary
+			// Next, set the size of space needed (in bytes)
+			// initFs is the success callback
+			// And the last one is the error callback
+			// for denial of access and other errors.
+
+			window.requestFileSystem(window.PERSISTENT, 1024*1024,onInitFs,errorHandler);		
+
+			return function(file){
+				console.log("TODO: save file");
+			}
+		})();
+
+		someData = { some: "data" };
+
+		function toDataURI(obj) {
+			var json = JSON.stringify(obj);
+			var uri = 'data:text/json;base64,' + base64.encode(json);
+			return uri;
+		}
+
+		function setUrl(elm) {
+			console.log("setUrl: ", elm);
+			elm.href=toDataURI(someData);
+		}
+		window.setUrl = setUrl;
+	  });
+	</script>
+	
+	Load the file: 
+	<input type="file" id="input" onchange="handleFiles(this.files[0])">
+	<h2><a href="#" download="filename.json">Save sample data</a></h2>
+
+	</body>
+</html>

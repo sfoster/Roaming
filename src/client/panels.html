@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Roaming</title>
+  <link rel="stylesheet" type="text/css" href="./css/main.css">
+  <script src="./vendor/jquery.js"></script>
+</head>
+<body>
+
+  <section id="hud" class="area">
+    <div id="nearby"></div>
+    <div id="playerInfo" data-bind="with: player">
+      <div data-bind="template: 'player-template'"></div>
+    </div>
+  </section>  
+  <section id="drawer" class="area">
+      <ul class="panelist">
+          <li class="panel world-map toggleable">
+            <h2 class="heading">Mini Map</h2>
+            <canvas id="minimap" width="120" height="120" data-bind="click: onTileClick"></canvas>
+          </li>
+          <li class="panel inventory toggleable">
+            <h2 class="heading">Inventory</h2>
+            <ul data-bind="foreach: player.inventory">
+              <li data-bind="text: name">One</li>
+              <li data-bind="text: name">One</li>
+            </ul>
+          </li>
+          <li class="panel weapon">
+            [equipped item details here]
+          </li>
+      </ul>
+  </section>
+  <section id="main" class="area">
+    <section class="panel toggleable">
+	    <h2 class="heading">Messages</h2>
+	    <ul data-bind="foreach: messages">
+	      <li data-bind="text: $data">Message One</li>
+	      <li data-bind="text: $data">Message 2</li>
+	    </ul>
+    </section>
+    <section class="location" data-bind="template: { name: 'location-template', data: tile }">
+    </section>  
+    <section id="status" data-bind="click: onStatusClick" class="panel toggleable collapsed">
+      <h2 class="heading">Status</h2>
+      <ul data-bind="foreach: status">
+        <li data-bind="text: $data">status one</li>
+        <li data-bind="text: $data">status 2</li>
+      </ul>
+    </section>
+
+  </section>  
+  <script>
+  	$('.toggleable').click(function(evt){
+  		$(this).toggleClass('collapsed');
+  	});
+  </script>
+</body>
+</html>
