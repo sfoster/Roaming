@@ -41,6 +41,13 @@ define([
 
   var MINIMAP_TILE_SIZE = 36;
   
+
+  function pluckNames(coln) {
+    return coln.map(function(thing){
+      return thing.name;
+    });
+  }
+
   ui.init = function(player, tile, region, game){
     if(this._inited && (
       this.game === game
@@ -58,16 +65,6 @@ define([
       tileSize: MINIMAP_TILE_SIZE 
     });
 
-
-    // minimap.render( region.tiles, { });
-    // this.initHud(player, world);
-    // this.initSidebar(player, world);
-    // this.initMain(player, world);
-    console.log("UI.init with region: ", region);
-
-    // var ids = region.tileIds().slice(0, 6); // koHelpers.resolveObservable( );
-    // console.log("Load tiles: ", ids);
-    
     // console.log("viewModel.player: ", viewModel.player);
     ko.applyBindings( viewModel );
 
@@ -81,7 +78,7 @@ define([
       var centerTile = evt.target; 
       var region = ui.game.region;
       var minimap =this.minimap;
-      
+
       if(viewModel.tile.id === centerTile.id) {
         return;
       }
@@ -104,11 +101,8 @@ define([
       centerTile.backdrop = centerTile.backdrop.replace(/^.*image!/, '')
       viewModel.tile(centerTile);
 
-
       if(centerTile.here.length) {
-        ui.main( "There " + pluralize('is', centerTile.here.length) + " " + (centerTile.here.map(function(thing){
-          return "a "+ thing.name;
-        }).join(', ')) + " here." );
+        ui.main("Items at this location: " + pluckNames(centerTile.here).join(", ")); 
       }
 
       console.log("UI: location enter: ", cx, cy, centerTile.backdrop);
@@ -117,7 +111,10 @@ define([
   ui.onEncounterStart = function(evt){
     var encounter = evt.target; 
     ui.main(encounter.description);
-  };
+    if(encounter.group) {
+      ui.main("You are faced with: " + pluckNames(encounter.group).join(", "));
+    }
+  };    
 
   ui.flush = function(id){
     // $("#"+id).empty();
@@ -141,7 +138,6 @@ define([
 
   function tileAt(x, y){
     // resolve pixel coordinates to a region tile
-
   }
 
   function findPos(obj) {
