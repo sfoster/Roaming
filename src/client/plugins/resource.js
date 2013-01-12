@@ -3,7 +3,8 @@ define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, u
   var resourceClassMap = {
     'location': 'models/Location',
     'player': 'models/Player',
-    'region': 'models/Region'
+    'region': 'models/Region',
+    'npc': 'models/npc'
   };
   
 
@@ -25,88 +26,112 @@ define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, u
   function registerType(typestr, resourcePath) {
     resourceClassMap[typestr] = resourcePath;
   }
+
+  function wrapAsPromise(value) {
+    var defd = Promise.defer();
+    setTimeout(function(){
+      defd.resolve(value);
+    }, 0);
+    return defd.promise;
+  }
+
   function thaw(value) {
     var defd = Promise.defer();
     var Clazz;
-    var ctorId;
-    var resourceData = value.params;
     // thawing out resource data can involve multiple asyn steps
     // which are tracked in this queue array
     var promiseQueue = [];
     var typeResource = value.type, 
         typeProperty = null;
 
-    if(typeResource) {
-      // Prepare instance of the indicated type from the given params
+    var resourceId = value.resource;
+    var resourceProperty = null;
+
+    // FIXME: I made a mess here trying to optionally load 
+    //  a class and the resource
+    // Need to come up with a better way to stack up maybe-promises as dependencies for some function
+
+    when(we have resourceData and a Model) {
+      create the instance
+    }
+    
+    // get/resolve resource data (instance properties)
+    var promisedData = (resourceId) ? (function(){
+        var defd = Promise.defer();
+        // Resolve resource id to the data it represents
+        // We support a resource#anchor syntax to indicate a property on the resource's export
+        if(resourceId.indexOf('#') > -1) {
+          resourceProperty = resourceId.substring(1+resourceId.indexOf('#'));
+          resourceId = resourceId.substring(0, resourceId.indexOf('#'));
+        }
+        require([resourceId], function(res){
+          // put the resource data into place
+          if(resourceProperty){
+            resourceData = res[resourceProperty];
+            if(!('id' in res)) {
+              resourceData.id = resourceProperty;
+            }
+          } else {
+            resourceData = res;
+          }
+          defd.resolve(resourceData);
+        });
+        return defd.promise;
+    })() : wrapAsPromise(value.params);
+
+    var promisedClazz = (typeResource) ? (function(){
+      var defd = Promise.defer();
+      // we need to load a model for this type
       if(typeResource.indexOf('#') > -1) {
         typeProperty = typeResource.substring(1+typeResource.indexOf('#'));
         typeResource = typeResource.substring(0, typeResource.indexOf('#'));
       }
-
       require([resourceClassMap[typeResource] || typeResource], function(_Clazz){
+        if(typeProperty) {
+          _Clazz = _Clazz[typeProperty];
+        }
+        defd.resolve(_Clazz);
+      });
+      return defd.promise;
+    })() : wrapAsPromise(Object);
 
-        Clazz = typeProperty ? _Clazz[typeProperty] : _Clazz;
-        // thaw out any properties that are flagged as containing references
-        var propertiesWithReferences = Clazz.prototype.propertiesWithReferences || [];
 
-        propertiesWithReferences.filter(function(pname){
-          return (pname in resourceData); 
-        }).forEach(function(pname){
-          if(resourceData[pname] instanceof Array) {
-            resourceData[pname].forEach(function(refData, idx, coln){
-              var promisedValue = thaw(refData).then(function(pData){
-                // console.log("refd property %s resolved: %o", pname, pData);
-                coln[idx] = pData;
-              });
-              promiseQueue.push(promisedValue);
-            });
-          } else {
-            var promisedValue = thaw(resourceData[pname]).then(function(pData){
-                console.log("refd property %s resolved: %o", pname, pData);
-                resourceData[pname] = pData;
+    promisedClazz.then(function(aClazz) {
+      Clazz = aClazz;
+      // make instance
+      // thaw out any properties that are flagged as containing references
+      var propertiesWithReferences = Clazz.prototype.propertiesWithReferences || [];
+
+      propertiesWithReferences.filter(function(pname){
+        return (pname in resourceData); 
+      }).forEach(function(pname){
+        if(resourceData[pname] instanceof Array) {
+          resourceData[pname].forEach(function(refData, idx, coln){
+            var promisedValue = thaw(refData).then(function(pData){
+              // console.log("refd property %s resolved: %o", pname, pData);
+              coln[idx] = pData;
             });
             promiseQueue.push(promisedValue);
-          }
-        });
+          });
+        } else {
+          var promisedValue = thaw(resourceData[pname]).then(function(pData){
+              console.log("refd property %s resolved: %o", pname, pData);
+              resourceData[pname] = pData;
+          });
+          promiseQueue.push(promisedValue);
+        }
+      });
 
-        Promise.all(promiseQueue).then(function(){
-          var instance = new Clazz(resourceData); 
-
-          // console.log("thawed resource is ready: ", instance);
-          defd.resolve(instance);
-        }, function(){
-          defd.reject("Failed to fully thaw value");
-        });
-
+      Promise.all(promiseQueue).then(function(){
+        var instance = new Clazz(resourceData); 
+        // console.log("thawed resource is ready: ", instance);
+        defd.resolve(instance);
+      }, function(){
+        defd.reject("Failed to fully thaw value");
       });
       return defd.promise; 
     }
-    if(value.resource) {
-      // Resolve reource id to the data it represents
-      // We support a resource#anchor syntax to indicate a property on the resource's export
-      var resourceId = value.resource, 
-          property = null;
-      if(resourceId.indexOf('#') > -1) {
-        property = resourceId.substring(1+resourceId.indexOf('#'));
-        resourceId = resourceId.substring(0, resourceId.indexOf('#'));
-      }
-      // console.log("Loading resource property value: ", resourceId);
-      require([resourceId], function(res){
-        // console.log("Loaded resource property value: ", resourceId, res);
-        if(property) {
-          res = res[property];
-        }
-        if(!('id' in res)) {
-          res.id = property;
-        }
-        defd.resolve( res );
-      });
-      return defd.promise; 
-    }
-    setTimeout(function(){
-      defd.resolve(value);
-    }, 0);
-    return defd.promise; 
+
   }
 
   // usage: require(['plugins/resource!region/0,0'], function(tile, region){ ... })
