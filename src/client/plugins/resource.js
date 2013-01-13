@@ -35,115 +35,117 @@ define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, u
     return defd.promise;
   }
 
-  function when(promiseOrValue, callback, errback) {
-    if('function' == typeof promiseOrValue.then) {
-      return promiseOrValue.then(callback errback);
-    } else {
-      if(undefined === promiseOrValue) {
-        return errback(promiseOrValue)
-      }
+  function resolveTypeToModel(type) {
+    var defd = Promise.defer();
+    var Model;
+    var typeProperty;
+    // we need to load a model for this type
+    if(type.indexOf('#') > -1) {
+      typeProperty = type.substring(1+type.indexOf('#'));
+      type = type.substring(0, type.indexOf('#'));
     }
-    return callback(promiseOrValue);
+    require([resourceClassMap[type] || type], function(res){
+      Model = (typeProperty) ? res[typeProperty] : res;
+      defd.resolve(Model);
+    });
+    return defd.promise;
   }
 
+  function resolveModelData(data) {
+    var resourceId = data.resource;
+    var resourceProperty;
+    var resourceData;
+
+    if(!resourceId) {
+      resourceData = data.params || {};
+      return wrapAsPromise(resourceData);
+    }
+
+    var defd = Promise.defer();
+    if(resourceId.indexOf('#') > -1) {
+      resourceProperty = resourceId.substring(1+resourceId.indexOf('#'));
+      resourceId = resourceId.substring(0, resourceId.indexOf('#'));
+    }
+    require([resourceId], function(res){
+      // put the resource data into place
+      if(resourceProperty){
+        resourceData = res[resourceProperty];
+        if(!('id' in res)) {
+          resourceData.id = resourceProperty;
+        }
+      } else {
+        resourceData = res;
+      }
+      defd.resolve(resourceData);
+    });
+    return defd.promise;
+  }
 
   function thaw(value) {
     var defd = Promise.defer();
+    var type = value.type; // TODO: are there cases where we infer type?
     var Clazz;
-    // thawing out resource data can involve multiple asyn steps
-    // which are tracked in this queue array
-    var promiseQueue = [];
-    var typeResource = value.type,
-        typeProperty = null;
 
-    var resourceId = value.resource;
-    var resourceProperty = null;
-
-    // FIXME: I made a mess here trying to optionally load
-    //  a class and the resource
-    // Need to come up with a better way to stack up maybe-promises as dependencies for some function
-
-    when(we have resourceData and a Model) {
-      create the instance
+    // simplest case - just return data
+    if(!type){
+      return resolveModelData(value);
     }
 
-    // get/resolve resource data (instance properties)
-    var promisedData = (resourceId) ? (function(){
-        var defd = Promise.defer();
-        // Resolve resource id to the data it represents
-        // We support a resource#anchor syntax to indicate a property on the resource's export
-        if(resourceId.indexOf('#') > -1) {
-          resourceProperty = resourceId.substring(1+resourceId.indexOf('#'));
-          resourceId = resourceId.substring(0, resourceId.indexOf('#'));
-        }
-        require([resourceId], function(res){
-          // put the resource data into place
-          if(resourceProperty){
-            resourceData = res[resourceProperty];
-            if(!('id' in res)) {
-              resourceData.id = resourceProperty;
-            }
+    var sequence = [
+      function(){
+        return resolveModelData(value);
+      },
+      function(data){
+        resourceData = data;
+        return resolveTypeToModel(type);
+      },
+      function(Model){
+        Clazz = Model;
+        // thawing out resource data can involve multiple asyn steps
+        // which are tracked in this queue array
+        var promiseQueue = [];
+        // make instance
+        // thaw out any properties that are flagged as containing references
+        var propertiesWithReferences = Clazz.prototype.propertiesWithReferences || [];
+
+        propertiesWithReferences.filter(function(pname){
+          return (pname in resourceData);
+        }).forEach(function(pname){
+          if(resourceData[pname] instanceof Array) {
+            resourceData[pname].forEach(function(refData, idx, coln){
+              var promisedValue = thaw(refData).then(function(pData){
+                // console.log("refd property %s resolved: %o", pname, pData);
+                coln[idx] = pData;
+              });
+              promiseQueue.push(promisedValue);
+            });
           } else {
-            resourceData = res;
-          }
-          defd.resolve(resourceData);
-        });
-        return defd.promise;
-    })() : wrapAsPromise(value.params);
-
-    var promisedClazz = (typeResource) ? (function(){
-      var defd = Promise.defer();
-      // we need to load a model for this type
-      if(typeResource.indexOf('#') > -1) {
-        typeProperty = typeResource.substring(1+typeResource.indexOf('#'));
-        typeResource = typeResource.substring(0, typeResource.indexOf('#'));
-      }
-      require([resourceClassMap[typeResource] || typeResource], function(_Clazz){
-        if(typeProperty) {
-          _Clazz = _Clazz[typeProperty];
-        }
-        defd.resolve(_Clazz);
-      });
-      return defd.promise;
-    })() : wrapAsPromise(Object);
-
-
-    promisedClazz.then(function(aClazz) {
-      Clazz = aClazz;
-      // make instance
-      // thaw out any properties that are flagged as containing references
-      var propertiesWithReferences = Clazz.prototype.propertiesWithReferences || [];
-
-      propertiesWithReferences.filter(function(pname){
-        return (pname in resourceData);
-      }).forEach(function(pname){
-        if(resourceData[pname] instanceof Array) {
-          resourceData[pname].forEach(function(refData, idx, coln){
-            var promisedValue = thaw(refData).then(function(pData){
-              // console.log("refd property %s resolved: %o", pname, pData);
-              coln[idx] = pData;
+            var promisedValue = thaw(resourceData[pname]).then(function(pData){
+                console.log("refd property %s resolved: %o", pname, pData);
+                resourceData[pname] = pData;
             });
             promiseQueue.push(promisedValue);
-          });
+          }
+        });
+        if(promiseQueue.length) {
+          return Promise.all(promiseQueue);
         } else {
-          var promisedValue = thaw(resourceData[pname]).then(function(pData){
-              console.log("refd property %s resolved: %o", pname, pData);
-              resourceData[pname] = pData;
-          });
-          promiseQueue.push(promisedValue);
+          return resourceData;
         }
-      });
-
-      Promise.all(promiseQueue).then(function(){
+      },
+      function(modelData){
         var instance = new Clazz(resourceData);
-        // console.log("thawed resource is ready: ", instance);
-        defd.resolve(instance);
-      }, function(){
-        defd.reject("Failed to fully thaw value");
-      });
-      return defd.promise;
-    }
+        return instance;
+      }
+    ];
 
+    Promise.seq(sequence).then(function(instance){
+      // console.log("thawed resource is ready: ", instance);
+      defd.resolve(instance);
+    }, function(){
+      defd.reject("Failed to fully thaw value");
+    });
+    return defd.promise;
   }
 
   // usage: require(['plugins/resource!region/0,0'], function(tile, region){ ... })
