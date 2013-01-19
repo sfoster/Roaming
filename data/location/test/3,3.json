@@ -18,10 +18,12 @@
   "npcs": [
     {
       "resource": "resources/npc#troll",
+      "type": "npc",
       "count": 3
     },
     {
       "resource": "resources/npc#trollElder",
+      "type": "npc",
       "count": 2
     }
   ]
