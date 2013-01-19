@@ -27,15 +27,15 @@ define([
     // Spawn a number of npcs
     enter: function(player, game){
       // console.log("added creatures: ", hereCreatures);
-      // expand any npc placeholders 
+      // expand any npc placeholders
       var npcs = game.tile.npcs;
 			// for(var i=0; (item=npcs[i]); i++) {
 			// 	if(item.count) {
 			// 		for(var j=0; j<count; j++) {
-			// 			npcs[i++] = 
+			// 			npcs[i++] =
 			// 		}
 			// 	}
-				
+
 			// }
 
 			// npcs.forEach(function(item){
@@ -44,19 +44,19 @@ define([
 
 			// 		}
 			// 	}
-			// });      
+			// });
       // generate random group
       var group =  this.generateGroup(game.tile, player);
       if(group.length){
       	group.forEach(function(npc){
       		console.log("Adding npc: ", npc);
       		npcs.push(Object.create(npc));
-      	}); 
+      	});
       }
       game.emit('encounterstart', { target: this });
     },
     generateGroup: function(tile, player){
-      var howMany = range(1, 2), 
+      var howMany = range(1, 2),
           hereCreatures = [];
       // add them to the location
 
@@ -73,7 +73,7 @@ define([
         // console.log("creature index: ", idx, npcs[idx]);
         hereCreatures.push( npcs[idx] );
       }
-      // console.log("available NPCs", npcs);
+      console.log("available NPCs", npcs);
       // a random number of npcs
       return hereCreatures;
     },

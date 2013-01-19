@@ -37,22 +37,23 @@ define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, u
 
   function resolveTypeToModel(type) {
     var defd = Promise.defer();
-    var Model;
     var typeProperty;
     // we need to load a model for this type
     if(type.indexOf('#') > -1) {
       typeProperty = type.substring(1+type.indexOf('#'));
       type = type.substring(0, type.indexOf('#'));
     }
+    console.log("resolveTypeToModel, type: ", type, resourceClassMap[type])
     require([resourceClassMap[type] || type], function(res){
-      Model = (typeProperty) ? res[typeProperty] : res;
+      var Model = (typeProperty) ? res[typeProperty] : res;
+      console.log("resolveTypeToModel callback, type: %s, Model: %o", type, Model);
       defd.resolve(Model);
     });
     return defd.promise;
   }
 
   function resolveModelData(data) {
-    var resourceId = data.resource;
+    var resourceId = ('resource' in data) ? data.resource : '';
     var resourceProperty;
     var resourceData;
 
@@ -85,6 +86,7 @@ define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, u
     var defd = Promise.defer();
     var type = value.type; // TODO: are there cases where we infer type?
     var Clazz;
+    var resourceData;
 
     // simplest case - just return data
     if(!type){
@@ -100,13 +102,15 @@ define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, u
         return resolveTypeToModel(type);
       },
       function(Model){
-        Clazz = Model;
         // thawing out resource data can involve multiple asyn steps
         // which are tracked in this queue array
         var promiseQueue = [];
         // make instance
         // thaw out any properties that are flagged as containing references
-        var propertiesWithReferences = Clazz.prototype.propertiesWithReferences || [];
+        if(!Model.prototype){
+          throw new Error("Missing/unexpected Model:", Model);
+        }
+        var propertiesWithReferences = Model.prototype.propertiesWithReferences || [];
 
         propertiesWithReferences.filter(function(pname){
           return (pname in resourceData);
@@ -128,13 +132,17 @@ define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, u
           }
         });
         if(promiseQueue.length) {
-          return Promise.all(promiseQueue);
+          return Promise.all(promiseQueue).then(function(){
+            return {data: resourceData, model: Model };
+          });
         } else {
-          return resourceData;
+          return { data: resourceData, model: Model };
         }
       },
-      function(modelData){
-        var instance = new Clazz(resourceData);
+      function(params){
+        var Model = params.model,
+            resourceData = params.data;
+        var instance = new Model(resourceData);
         return instance;
       }
     ];

@@ -8,7 +8,8 @@
   ],
   "npcs": [
     {
-      "type": "resources/npc#goblin",
+      "type": "npc",
+      "resource": "resources/npc#goblin",
       "count": 5
     }
   ],
