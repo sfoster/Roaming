@@ -2,6 +2,16 @@ define(function(){
 
   var hasOwn = Object.prototype.hasOwnProperty;
 
+  function getObject(key, obj) {
+    obj = obj || window;
+    if(key.indexOf('.') > -1) {
+      var firstPart = key.substring(0, key.indexOf('.'));
+      key = key.substring(1+key.indexOf('.'));
+      return firstPart in obj ? getObject(key, obj[firstPart]) : undefined;
+    } else {
+      return obj[key];
+    }
+  }
   function isPlainObject(obj){
     if ( !obj || typeof obj !== "object" || obj.nodeType || isWindow( obj ) ) {
       return false;
@@ -26,12 +36,12 @@ define(function(){
     return key === undefined || hasOwn.call( obj, key );
   }
   function isWindow(obj){
-    return obj && 
-      (typeof obj === "object") && 
+    return obj &&
+      (typeof obj === "object") &&
       ("setInterval" in obj) &&
       ("navigator" in obj);
   }
-  
+
   function getType(thing) {
     var t = typeof thing;
     if('undefined' == t) return 'undefined';
@@ -50,7 +60,7 @@ define(function(){
       return t;
     }
   }
-  
+
   function pluck(ar, pname) {
     return ar.map(function(item){
       return item[pname];
@@ -64,13 +74,13 @@ define(function(){
   function keys(obj){
     return Object.keys(obj);
   }
-   
+
   function mixin(obj){
-    var args = Array.prototype.slice.call(arguments, 1), 
+    var args = Array.prototype.slice.call(arguments, 1),
         empty = {};
     args.forEach(function(source){
       for(var p in source) {
-        if(p in empty) continue; 
+        if(p in empty) continue;
         obj[p] = source[p];
       }
     });
@@ -102,7 +112,7 @@ define(function(){
   }
 
   function map(obj, fn){
-    var result = {}; 
+    var result = {};
     if(obj instanceof Array){
       result = obj.map(fn);
     } else {
@@ -112,7 +122,7 @@ define(function(){
     }
     return result;
   }
-  
+
   // Shared empty constructor function to aid in prototype-chain creation.
   var ctor = function(){};
 
@@ -152,24 +162,28 @@ define(function(){
 
     return child;
   };
-  
+
   var extend = function (protoProps, classProps) {
     var child = inherits(this, protoProps, classProps);
     child.extend = this.extend;
     return child;
   };
-  
+
   var clamp = function(lbound, ubound, value){
     return value < lbound ? lbound : (value > ubound ? ubound : value);
   };
-  
+
   return {
+    hasProperty: function(obj, key) {
+      return !(undefined === getObject(key, obj));
+    },
+    getObject: getObject,
     getType: getType,
     create: create,
     map: map,
     mixin: mixin,
     pluck: pluck,
-    values: values, 
+    values: values,
     keys: keys,
     extend: extend,
     inherits: inherits,
