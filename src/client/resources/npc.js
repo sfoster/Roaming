@@ -1,9 +1,9 @@
 define([], function(){
-  
+
   var npc = {};
-  // available terrain: 
+  // available terrain:
   // ["clear", "barren", "desert", "marsh", "mountains", "plains", "water", "abyss", "sand", "forest", "ice"]
-  
+
   npc.goblin = {
     name: 'Goblin',
     strength: 4,
@@ -148,10 +148,10 @@ define([], function(){
     range: 'short,medium',
     evasion: 7,
     terrain: ["plains", "forest", "barren", "desert"]
-    // Gaint Adder has Hypnotism spell/ability(target loses a turn) 
+    // Gaint Adder has Hypnotism spell/ability(target loses a turn)
   };
- 
-  
+
+
   npc.gaintCobra= {
     name: 'Gaint Cobra',
     strength: 22,
@@ -207,7 +207,7 @@ define([], function(){
     range: 'short',
     evasion: 28,
     terrain: ["marsh", "forest"]
-    
+
   };
   npc.bear = {
     name: 'Bear',
@@ -255,7 +255,7 @@ define([], function(){
     hp: 60,
     mp: 0,
     range: 'short',
-    evasion: 20  
+    evasion: 20
   };
   npc.chimpanzee = {
     name: 'Chimpanzee',
@@ -298,7 +298,7 @@ define([], function(){
     hp: 100,
     mp: 0,
     weapon: 'weaponclass:medium range, weaponclass:shortrange',
-    evasion: 1, 
+    evasion: 1,
     terrain: ["mountains", "barren"]
   };
   npc.humanSoldier = {
@@ -362,7 +362,7 @@ define([], function(){
     hp: 300,
     mp: 0,
     range: 'short',
-    evasion: 0, 
+    evasion: 0,
     terrain: ["mountains", "ice", "barren", "forest"]
   };
   npc.juggernaut = {
@@ -371,7 +371,7 @@ define([], function(){
     hp: 1000,
     mp: 0,
     weapon: 'weapons.maul',
-    evasion: 0, 
+    evasion: 0,
     terrain: ["desert"]
   };
   npc.hdyra = {
@@ -380,7 +380,7 @@ define([], function(){
     hp: 300,
     mp: 50,
     range: 'short, medium',
-    evasion: 15, 
+    evasion: 15,
     terrain: ["desert", "sand", "forest"]
     // Hydra has Venom Spit ability
     // (same as Poison, but medium range)
@@ -391,7 +391,7 @@ define([], function(){
     hp: 200,
     mp: 0,
     range: 'short, medium, long',
-    evasion: 2, 
+    evasion: 2,
     terrain: ["desert", "sand", "barren", "mountains"]
   };
 
@@ -401,7 +401,7 @@ define([], function(){
     hp: 500,
     mp: 50,
     range: 'short, medium, long',
-    evasion: 25, 
+    evasion: 25,
     terrain: ["mountains"]
     // Dragon has Flame Breath abilty
   // (medium+long range attack)
@@ -412,12 +412,12 @@ define([], function(){
     hp: 500,
     mp: 0,
     range: 'short, medium',
-    evasion: 20, 
+    evasion: 20,
     terrain: ["mountains"]
   };
-  
-  
+
+
   // All spells cost 10 mp per cast
-  // dmg=strength x wpn dmg divided by 5(?) 
+  // dmg=strength x wpn dmg divided by 5(?)
   return npc;
 });

@@ -1,9 +1,11 @@
-define(['lib/event', 'lib/util', 'models/Actor', 'resources/npc', 'resources/items'], function(Evented, util, Actor, npc, items){
+define([
+  'compose', 'lib/util', 'models/Actor', 'resources/npc', 'resources/items'
+], function(Compose, util, Actor, npc, items){
 
-  var Monster = Actor.extend({
+  var Npc = Actor.extend({
     propertiesWithReferences: [].concat(Actor.prototype.propertiesWithReferences),
-    declaredClass: "Monster"
+    declaredClass: "Npc"
   });
 
-  return Monster;
+  return Npc;
 });

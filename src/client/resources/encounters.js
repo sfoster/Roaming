@@ -1,18 +1,14 @@
 define([
-  'lib/util', 
-  'lib/event', 
-  'lib/clone', 
+  'lib/util',
+  'lib/event',
+  'lib/clone',
   'models/Encounter',
   'models/NPCEncounter',
   'resources/npc'
 ], function(util, Evented, sanitizedClone, Encounter, NPCEncounter, npc){
-  
+
   var encounters = {};
-  encounters.npc = new NPCEncounter({
-    name: 'NPC Encounter',
-    description: 'Oh oh, you run smack into trouble.'
-  });
-  
+
   encounters.beginning = new Encounter({
     firstVisit: [
       'Your adventure starts here',

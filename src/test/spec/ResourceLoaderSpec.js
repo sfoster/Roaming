@@ -32,12 +32,12 @@ define(['plugins/resource'], function(resourcePlugin){
 
   	it("Should pass data to the indicated factory", function(){
 		resourcePlugin.registerType('testthing2', 'test/lib/TestThing');
-		var resolvedThing; 
-		
+		var resolvedThing;
+
 		resourcePlugin.thaw({ type: 'testthing2', params: {someprop: true} }).then(function(value){
 			resolvedThing = value;
 		});
-		
+
 		waitsFor(function(){
 			return !!resolvedThing;
 		});
@@ -49,12 +49,12 @@ define(['plugins/resource'], function(resourcePlugin){
 
   	it("Should use the factory exported by a type module indicated in the type anchor", function(){
 		resourcePlugin.registerType('testthing2', 'test/lib/TestThing');
-		var resolvedThing; 
-		
+		var resolvedThing;
+
 		resourcePlugin.thaw({ type: 'testthing2#OtherThing', params: {} }).then(function(value){
 			resolvedThing = value;
 		});
-		
+
 		waitsFor(function(){
 			return !!resolvedThing;
 		});
@@ -64,16 +64,16 @@ define(['plugins/resource'], function(resourcePlugin){
   	});
 
   	it("Should thaw module property references", function(){
-			var resolvedThing; 
+			var resolvedThing;
 
-			resourcePlugin.thaw({ 
-				resource: 'test/lib/somebundle#foo', params: {someprop: true} 
+			resourcePlugin.thaw({
+				resource: 'test/lib/somebundle#foo', params: {someprop: true}
 			}).then(function(value){
 				resolvedThing = value;
 			}, function(){
 				resolvedThing = false;
 			});
-			
+
 			waitsFor(function(){
 				return undefined !== resolvedThing;
 			});
@@ -89,21 +89,21 @@ define(['plugins/resource'], function(resourcePlugin){
 			resourcePlugin.registerType('testthing2', 'test/lib/TestThing');
 			resourcePlugin.registerType('complexthing', 'test/lib/TestComplexThing');
 	  	var resourceData = {
-			  subthings: [ 
+			  subthings: [
 			  	{ type: 'testthing2', params: { name: 'someobject1' } },
 			  	{ type: 'testthing2', params: { name: 'someobject2' } }
 			  ],
 			  bundle: { resource: 'test/lib/somebundle#bar' },
 			};
 			console.log("complex resourceData is ", resourceData);
-			var resolvedThing; 
+			var resolvedThing;
 
 			resourcePlugin.thaw({ type: 'complexthing', params: resourceData }).then(function(thing){
 				resolvedThing = thing;
 			}, function(){
 				resolvedThing = false;
 			});
-			
+
 			waitsFor(function(){
 				return undefined !== resolvedThing;
 			});
