@@ -6,13 +6,7 @@
       "resource": "resources/items#hagStone"
     }
   ],
-  "npcs": [
-    {
-      "type": "npc",
-      "resource": "resources/npc#goblin",
-      "count": 5
-    }
-  ],
+  "npcs": [],
   "id": "3,3",
   "x": 3,
   "y": 3,
@@ -21,7 +15,8 @@
     {
       "type": "models/NPCEncounter",
       "params": {
-        "foo": "bar"
+        "difficulty": 1,
+        "grouptype": "goblins"
       }
     }
   ]

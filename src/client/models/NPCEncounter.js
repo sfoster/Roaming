@@ -1,8 +1,9 @@
 define([
 	'lib/util',
 	'models/Encounter',
+  'models/npc',
 	'resources/npc'
-], function(util, Encounter, npc){
+], function(util, Encounter, NpcModel, npc){
 
   var range = function(lbound, ubound){
     var num = Math.round(lbound + Math.random() * (ubound-lbound));
@@ -21,59 +22,90 @@ define([
 		return npcs;
   }
 
+    // predefined NPC groups.
+    // The player's level will be used to find the right count in the min-max range
+   var npcGroups = {
+      'goblins': [
+        { id: 'goblin', min: 1, max: 4 },
+        { id: 'goblinChamp', min: 0, max: 1 },
+        { id: 'goblinShaman', min: 0, max: 1 },
+        { id: 'goblinWarlord', min: 0, max: 1 },
+        { id: 'angryDog', min: 0, max: 4 }
+      ],
+      'rats': [
+        { id: 'hugeRat', min: 0, max: 4 },
+        { id: 'giantRat', min: 1, max: 3 },
+        { id: 'mutantRat', min: 1, max: 2 },
+        { id: 'ratLord', min: 0, max: 1 }
+      ],
+      'trolls': [
+        { id: 'troll', min: 1, max: 4 },
+        { id: 'juvinileTroll', min: 0, max: 3 },
+        { id: 'trollElder', min: 0, max: 1 },
+        { id: 'trollHulk', min: 0, max: 1 }
+      ],
+      'dogs': [
+        { id: 'angryDog', min: 1, max: 5 },
+        { id: 'rabidDog', min: 0, max: 1 }
+      ],
+      terrainGroup: function(terrain) {
+        // return a single randomly picked creature
+        // that's appropriate to the terrain
+        var candidates = [];
+        Object.keys(npc).filter(function(id){
+          // side-effect - assign an id if there's none
+          var thing = npc[id];
+          if(!thing.id) thing.id = id;
+          if(thing.terrain && thing.terrain.indexOf(terrain) > -1) {
+            candidates.push(thing);
+          }
+        });
+        var creature = candidates[Math.round( candidates.length * Math.random() )];
+        return [
+          { id: creature.id, min: 1, max: 1 }
+        ];
+
+      }
+    };
+
   var NPCEncounter = Encounter.extend({
     group: null,
     type: 'npc-encounter',
+    grouptype: '',
+    difficulty: 1,
+    description: 'Oh oh, you run smack into trouble.',
     // Spawn a number of npcs
     enter: function(player, game){
-      // console.log("added creatures: ", hereCreatures);
       // expand any npc placeholders
-      var npcs = game.tile.npcs;
-			// for(var i=0; (item=npcs[i]); i++) {
-			// 	if(item.count) {
-			// 		for(var j=0; j<count; j++) {
-			// 			npcs[i++] =
-			// 		}
-			// 	}
+      var npcs = game.tile.npcs || (game.tile.npcs = []);
+      console.log("NPCEncounter enter, npcs: ", npcs);
 
-			// }
-
-			// npcs.forEach(function(item){
-			// 	if(item.count) {
-			// 		for(var i=0; i<count; i++) {
-
-			// 		}
-			// 	}
-			// });
-      // generate random group
-      var group =  this.generateGroup(game.tile, player);
-      if(group.length){
-      	group.forEach(function(npc){
-      		console.log("Adding npc: ", npc);
-      		npcs.push(Object.create(npc));
-      	});
-      }
+      this.generateGroup(game.tile, player).forEach(function(npc){
+        console.log("Adding npc: ", npc);
+        npcs.push(Object.create(npc));
+      });
       game.emit('encounterstart', { target: this });
+      game.ui && game.ui.message("You are faced with: " + npcs.length + ' ' + util.pluck(npcs, 'name').join(', '));
     },
     generateGroup: function(tile, player){
-      var howMany = range(1, 2),
-          hereCreatures = [];
-      // add them to the location
+      var hereCreatures = [];
+      // assemble a group of NPCs
 
       var hereCreatures = [];
-      // console.log("NPCEncounter entering terrain: " +  tile.terrain);
-      // get the subset of NPCs that exist in this terrain
-      // which are close to the players level (hp/health is proxy for level)
-      var npcs = getNpcTypesForTerrain(tile.terrain, function(npc){
-        return npc.hp < (player.stats.health * 1.5);
-      });
+      var groupDefinition = this.grouptype ?
+                              npcGroups[this.grouptype] : npcGroups.terrainGroup(tile.terrain);
 
-      for(var i=0, idx; i<howMany; i++){
-        idx = range(0,npcs.length-1);
-        // console.log("creature index: ", idx, npcs[idx]);
-        hereCreatures.push( npcs[idx] );
+      var quota = this.difficulty * player.level || 1,
+          creatureDefn = null;
+      for(var howMany, i=0; quota && i<groupDefinition.length; i++) {
+        creatureDefn = groupDefinition[i];
+        // determine how many within the range based on the remaining quota
+        howMany = range(creatureDefn.min, Math.min(quota/2, creatureDefn.max));
+        quota -= howMany;
+        while(howMany--) {
+          hereCreatures.push( new NpcModel(npc[creatureDefn.id]) );
+        }
       }
-      console.log("available NPCs", npcs);
       // a random number of npcs
       return hereCreatures;
     },
