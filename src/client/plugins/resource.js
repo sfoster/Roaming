@@ -1,4 +1,9 @@
-define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, util, json){
+define([
+  'dollar',
+  'promise',
+  'lib/util',
+  'lib/json/ref'
+], function($, Promise, util, json){
 
   var resourceClassMap = {
     'location': 'models/Location',
@@ -36,46 +41,61 @@ define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, u
   }
 
   function resolveTypeToModel(type) {
+    // resolve convenience aliases to their actual resource ids
+    console.log("resolveTypeToModel, type %s", type);
     var defd = Promise.defer();
-    var typeProperty;
-    // we need to load a model for this type
-    if(type.indexOf('#') > -1) {
-      typeProperty = type.substring(1+type.indexOf('#'));
-      type = type.substring(0, type.indexOf('#'));
+    var loaderPrefix = '',
+        suffix = '',
+        resourceId = type,
+        fragmentMatch = resourceId.match(/^([^#]+)(#.+)/);
+
+    if(fragmentMatch) {
+      loaderPrefix = 'plugins/property!';
+      resourceId = fragmentMatch[1];
+      suffix += fragmentMatch[2];
     }
-    console.log("resolveTypeToModel, type: ", type, resourceClassMap[type])
-    require([resourceClassMap[type] || type], function(res){
-      var Model = (typeProperty) ? res[typeProperty] : res;
-      console.log("resolveTypeToModel callback, type: %s, Model: %o", type, Model);
+    if(resourceId in resourceClassMap) {
+      resourceId = resourceClassMap[resourceId];
+      fragmentMatch = resourceId.match(/^([^#]+)(#.+)/);
+      if(fragmentMatch) {
+        loaderPrefix = 'plugins/property!';
+        resourceId = fragmentMatch[1];
+        suffix += fragmentMatch[2];
+      }
+    }
+    // load via the property plugin if the resourceId has a fragment identifier
+    require([loaderPrefix+resourceId+suffix], function(Model){
       defd.resolve(Model);
     });
     return defd.promise;
   }
 
   function resolveModelData(data) {
+    console.log("resolveModelData: ", data);
     var resourceId = ('resource' in data) ? data.resource : '';
-    var resourceProperty;
     var resourceData;
 
     if(!resourceId) {
+      console.log("resolveModelData, params: ", data.params);
       resourceData = data.params || {};
       return wrapAsPromise(resourceData);
     }
 
     var defd = Promise.defer();
-    if(resourceId.indexOf('#') > -1) {
-      resourceProperty = resourceId.substring(1+resourceId.indexOf('#'));
-      resourceId = resourceId.substring(0, resourceId.indexOf('#'));
+    var loaderPrefix = '',
+        suffix = '',
+        fragmentMatch = resourceId.match(/^([^#]+)(#.+)/);
+    if(fragmentMatch) {
+      loaderPrefix = 'plugins/property!';
+      resourceId = fragmentMatch[1];
+      suffix = fragmentMatch[2];
     }
-    require([resourceId], function(res){
+
+    // load via the property plugin if the resourceId has a fragment identifier
+    require([loaderPrefix+resourceId+suffix], function(resourceData){
       // put the resource data into place
-      if(resourceProperty){
-        resourceData = res[resourceProperty];
-        if(!('id' in res)) {
-          resourceData.id = resourceProperty;
-        }
-      } else {
-        resourceData = res;
+      if(suffix && !('id' in resourceData)) {
+        resourceData.id = (suffix.split('#'))[1];
       }
       defd.resolve(resourceData);
     });
@@ -112,25 +132,31 @@ define(['dollar', 'promise', 'lib/util', 'lib/json/ref'], function($, Promise, u
         }
         var propertiesWithReferences = Model.prototype.propertiesWithReferences || [];
 
-        propertiesWithReferences.filter(function(pname){
-          return (pname in resourceData);
-        }).forEach(function(pname){
-          if(resourceData[pname] instanceof Array) {
-            resourceData[pname].forEach(function(refData, idx, coln){
-              var promisedValue = thaw(refData).then(function(pData){
-                // console.log("refd property %s resolved: %o", pname, pData);
-                coln[idx] = pData;
+        propertiesWithReferences
+          .filter(function(pname){
+            // hasProperty supports dot paths like 'foo.bar'
+            return util.hasProperty(resourceData, pname);
+
+          }).forEach(function(pname){
+            console.log("property with reference: " +pname+ " in resourceData: ", resourceData);
+            var value = util.getObject(pname, resourceData);
+            if(value instanceof Array) {
+              value.forEach(function(refData, idx, coln){
+                var promisedValue = thaw(refData).then(function(pData){
+                  // console.log("refd property %s resolved: %o", pname, pData);
+                  coln[idx] = pData;
+                });
+                promiseQueue.push(promisedValue);
+              });
+            } else {
+              var promisedValue = thaw(value).then(function(pData){
+                  console.log("refd property %s resolved: %o", pname, pData);
+                  resourceData[pname] = pData;
               });
               promiseQueue.push(promisedValue);
-            });
-          } else {
-            var promisedValue = thaw(resourceData[pname]).then(function(pData){
-                console.log("refd property %s resolved: %o", pname, pData);
-                resourceData[pname] = pData;
-            });
-            promiseQueue.push(promisedValue);
+            }
           }
-        });
+        );
         if(promiseQueue.length) {
           return Promise.all(promiseQueue).then(function(){
             return {data: resourceData, model: Model };
