@@ -1,8 +1,8 @@
 define([
-  'dollar', 
-  'knockout', 
+  'dollar',
+  'knockout',
   'lib/koHelpers',
-  'lib/util', 
+  'lib/util',
   'resources/template',
   'lib/event',
   'models/Map',
@@ -12,14 +12,14 @@ define([
 
   function importTemplate(id, tmpl, bindProperty){
     // setup templates
-    var tmplNode = document.createElement('script'); 
+    var tmplNode = document.createElement('script');
     tmplNode.setAttribute('type', 'text/html');
     tmplNode.id = id;
     var tmplText = document.createTextNode( tmpl );
     tmplNode.appendChild(tmplText);
     return document.body.appendChild( tmplNode );
   }
-  // viewModel 
+
   var ui = {
     _inited: false
   };
@@ -33,14 +33,14 @@ define([
     onTileClick: onTileClick,
     tile: null
   };
-  
+
   importTemplate('player-template', playerTemplate, 'player');
   importTemplate('location-template', tileTemplate, 'location');
 
   util.mixin(ui, Evented);
 
   var MINIMAP_TILE_SIZE = 36;
-  
+
 
   function pluckNames(coln) {
     return coln.map(function(thing){
@@ -59,10 +59,10 @@ define([
     viewModel.player = player;
     viewModel.tile = ko.observable( tile );
 
-    var minimap =this.minimap = new Map({ 
+    var minimap =this.minimap = new Map({
       id: 'minimap',
       canvasNode: document.getElementById('minimap'),
-      tileSize: MINIMAP_TILE_SIZE 
+      tileSize: MINIMAP_TILE_SIZE
     });
 
     // console.log("viewModel.player: ", viewModel.player);
@@ -70,12 +70,12 @@ define([
 
     game.on('locationenter', ui.onLocationEnter.bind(ui));
     game.on('encounterstart', ui.onEncounterStart.bind(ui));
-    
+
     this._inited = true;
   };
 
   ui.onLocationEnter = function(evt){
-      var centerTile = evt.target; 
+      var centerTile = evt.target;
       var region = ui.game.region;
       var minimap =this.minimap;
 
@@ -83,7 +83,7 @@ define([
         return;
       }
 
-      var cx = centerTile.x, 
+      var cx = centerTile.x,
           cy = centerTile.y;
 
       /////////////////////////////////////
@@ -102,28 +102,27 @@ define([
       viewModel.tile(centerTile);
 
       if(centerTile.here.length) {
-        ui.main("Items at this location: " + pluckNames(centerTile.here).join(", ")); 
+        ui.message("Items at this location: " + pluckNames(centerTile.here).join(", "));
       }
 
       console.log("UI: location enter: ", cx, cy, centerTile.backdrop);
   };
 
   ui.onEncounterStart = function(evt){
-    var encounter = evt.target; 
-    ui.main(encounter.description);
-    if(encounter.group) {
-      ui.main("You are faced with: " + pluckNames(encounter.group).join(", "));
-    }
-  };    
+    var encounter = evt.target;
+    ui.message(encounter.description);
+  };
 
   ui.flush = function(id){
     // $("#"+id).empty();
   };
-  
-  ui.main = function(cont){
-     viewModel.messages.push(cont);
+
+  ui.message = function(cont, opt){
+    opt = opt || {};
+    var dest = opt.dest || 'messages';
+     viewModel[dest].push(cont);
      setTimeout(function(){
-        var msgs = $('#messages > ul > li.message');
+        var msgs = $('#'+dest+' > ul > li.message');
         if(msgs.length) {
           msgs[msgs.length-1].scrollIntoView();
         }
@@ -133,7 +132,7 @@ define([
   ui.status = function(cont){
     cont = cont || "";
     cont = cont.split('\n');
-    ui.main('<p class="status">'+cont.join('<br>')+'</p>');
+    ui.message('<p class="status">'+cont.join('<br>')+'</p>');
   };
 
   function tileAt(x, y){
@@ -159,7 +158,7 @@ define([
     }
     return word;
   }
-  
+
   function onTileClick(vm, evt){
     var map = ui.minimap;
     var pixelX = evt.pageX - $(evt.target).offset().left;
@@ -169,14 +168,14 @@ define([
 
     // resolve click coordinates to a value from the map's 0,0
     // and get a region coordinate
-    var x = Math.floor(pixelX / tileSize) + map.startX, 
+    var x = Math.floor(pixelX / tileSize) + map.startX,
         y = Math.floor(pixelY / tileSize) + map.startY;
 
     // console.log("click x: %s, y: %s, node offset x: %s, y: %s: ", evt.clientX, evt.clientY, mapOffsets.x, mapOffsets.y);
     // console.log("pixelX: %s, pixelY: %s", pixelX, pixelY, x, y);
 
     if(game.canMoveTo(x,y)) {
-      // how to handle moving between regions? 
+      // how to handle moving between regions?
       var hash = '#'+game.locationToString(x,y);
       window.location.hash = hash;
     } else {

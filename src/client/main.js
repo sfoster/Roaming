@@ -1,23 +1,23 @@
 define([
-  'dollar', 'lib/util', 'lib/event', 'resources/template', 
+  'dollar', 'lib/util', 'lib/event', 'resources/template',
   'knockout', 'lib/koHelpers',
   'main-ui',
   'lib/UrlRouter',
-  'promise', 
+  'promise',
   'lib/markdown',
-  'plugins/resource!player/'+(config.playerid || 'guest'), 
+  'plugins/resource!player/'+(config.playerid || 'guest'),
   'resources/encounters',
   'resources/items', 'resources/weapons', 'resources/armor', 'resources/traps',
   'models/Region', 'models/Location',
   'models/Combat'
 ], function(
-    $, util, Evented, template, 
+    $, util, Evented, template,
     ko, koHelpers,
     ui,
-    UrlRouter, 
-    Promise, 
+    UrlRouter,
+    Promise,
     markdown,
-    player, 
+    player,
     encounters,
     items, weapons, armor, traps,
     Region, Location,
@@ -30,7 +30,7 @@ define([
   var game = window.game = util.mixin({
     ui: ui
   }, Evented );
-  
+
   // the scene is modelled as a stack of states
   var stack = game.stack = (function(){
     var _stack = [];
@@ -40,14 +40,14 @@ define([
         _stack.push(state);
         this.length++;
         state.enter(game.player, game);
-      }, 
+      },
       pop: function(){
         var state = _stack.pop();
         this.length--;
         state.exit(game.player, game);
-      }, 
+      },
       replace: function(state) {
-        this.pop(); 
+        this.pop();
         this.push(state);
       },
       get: function(idx){
@@ -55,31 +55,31 @@ define([
       }
     };
   })();
-  
+
 
   if(!player.score){
     player.score = 0;
   }
-  game._player = player; 
+  game._player = player;
   player = game.player = koHelpers.makeObservable(player);
-  
+
   // login or init player
   // set up main game stack
   // get region data for the starting position
   // enter the region and tile
-  
-  
+
+
   function enterAt(regionId, x, y) {
 
     // load the region and current tile to set the scene
     var locationId = regionId + '/' + [x,y].join(',');
     console.log("enterAt, regionId: %s, locationId: %s", regionId, locationId);
-    
+
     require([
       'plugins/resource!region/'+regionId+'/index',
       'plugins/resource!location/'+locationId
     ], function(region, tile){
-      game.region = region; 
+      game.region = region;
       game.tile = tile;
 
       console.log("Loaded region: ", region);
@@ -90,7 +90,7 @@ define([
 
       function getIndexOfInstanceInStack(matcher) {
         // get the position of the first instance of the given ctor
-        var stackIdx=stack.length, 
+        var stackIdx=stack.length,
             state = null,
             tile = null;
         while((state = stack.get(--stackIdx))){
@@ -102,7 +102,7 @@ define([
       }
 
       var regionStackIdx = getIndexOfInstanceInStack(function(thing){
-        return (thing instanceof Region); 
+        return (thing instanceof Region);
       });
       var currentRegion = (regionStackIdx > -1) ? stack.get(regionStackIdx) : null;
 
@@ -120,7 +120,7 @@ define([
       }
 
       var tileStackIdx = getIndexOfInstanceInStack(function(thing){
-        return (thing instanceof Location); 
+        return (thing instanceof Location);
       });
       var currentTile = (tileStackIdx > -1) ? stack.get(tileStackIdx) : null;
 
@@ -148,40 +148,40 @@ define([
 
       // game.emit("afterlocationenter", { target: tile });
 
-    }); 
+    });
   }
-  
+
   var routes = game.routes = [
     [
-      "#:region/:x,:y", 
+      "#:region/:x,:y",
       function(req){
         var regionId = req.region,
-            x = Number(req.x), 
+            x = Number(req.x),
             y = Number(req.y);
-            
+
           console.log("route match for location: ", regionId, x, y);
           enterAt(regionId, x, y);
       }
-    ]    
+    ]
   ];
   var router = game.router = new UrlRouter(routes);
   router.compile();
-  
+
   window.onhashchange = function() {
     router.match(window.location.hash); // returns the data object if successfull, undefined if not.
   };
-  
-  var currentLocation = player.position() || START_LOCATION; 
+
+  var currentLocation = player.position() || START_LOCATION;
   router.match(window.location.hash || '#'+currentLocation);
-  
+
   ////////////////////////////////
-  // find a home for: 
-  // 
+  // find a home for:
+  //
   function getCardinalDirection(origin, target){
-    var x = target.x - origin.x, 
+    var x = target.x - origin.x,
         y = target.y - origin.y;
-  
-    var names={              // 8 4 2 1 
+
+    var names={              // 8 4 2 1
       1:"north",            // 0 0 0 1 north         1
       3:"north-east",       // 0 0 1 1 north-east    3
       2:"east",             // 0 0 1 0 east          2
@@ -196,30 +196,30 @@ define([
     if(y > 0) keyMask |=4;
     if(x > 0) keyMask |=2;
     if(x < 0) keyMask |=8;
-    
+
     return names[keyMask];
   }
-  
+
   function resolveItem(id, defaults){
-    var cat = 'items', 
-        delimIdx = id.indexOf('/'), 
+    var cat = 'items',
+        delimIdx = id.indexOf('/'),
         item;
     if(delimIdx > -1){
-      cat = id.substring(0, delimIdx); 
+      cat = id.substring(0, delimIdx);
       id = id.substring(delimIdx+1);
     }
     switch(cat){
       case 'misc':
       case 'items':
-        item = items[id]; 
+        item = items[id];
         break;
-      case 'armor': 
-        item = armor[id]; 
+      case 'armor':
+        item = armor[id];
         break;
-      case 'weapons': 
-        item = weapons[id]; 
+      case 'weapons':
+        item = weapons[id];
         break;
-      default: 
+      default:
         item = items[id] || weapons[id] || armor[id];
         break;
     }
@@ -230,10 +230,10 @@ define([
     if(!item.category) item.category = cat;
     return item;
   }
-  
+
   game.ui.on('itemclick', function(evt){
-    var id = evt.id, 
-        item = resolveItem(id, { name: evt.text }); 
+    var id = evt.id,
+        item = resolveItem(id, { name: evt.text });
     console.log("taking item: ", item);
     // just add it directly. We might want a context menu or something eventually with a list of avail. actions
     player.inventory.push(item);
@@ -244,7 +244,7 @@ define([
     var tile = region.getTileAtCoord(x,y);
     var terrain = tile ? tile.type : '';
 
-    // determine if there's any impediment to the player moving off 
+    // determine if there's any impediment to the player moving off
     // the current tile and onto the proposed tile
     // (more logic may follow)
     if(terrain && !(/abyss|void/).test(terrain)) {
@@ -257,23 +257,23 @@ define([
   // convenience to build fragment ids for a given point/x,y coordinate
   game.locationToString = function(x,y,_region) {
     if('object' == typeof x) {
-      y = x.y; 
+      y = x.y;
       x = x.x;
     }
     var region = _region || game.region;
     return region.id+'/'+x+','+y;
   };
-  
+
   game.on("locationenter", function(evt){
     var id = game.locationToString(evt.target);
-    var history = game.player.history[id], 
+    var history = game.player.history[id],
         visits = history && history.visits;
 
     console.log("Have visits to %s ? ", id, visits);
-    // TODO: register the visit to this tile in the player's history        
+    // TODO: register the visit to this tile in the player's history
     // if(tile.here){
     //   console.log(tile.id, "tile.here: ", tile.here);
-      
+
     //   var hereText = tile.here.map(function(obj){
     //     if('string' == typeof obj) {
     //       obj = resolveItem(obj, { name: '??'} );
@@ -283,8 +283,8 @@ define([
     //     var html = markdown(mdText);
     //     return html;
     //   }).join('<br>');
-      
-    //   ui.main("<p class='here'>"+hereText+"</p>");
+
+    //   ui.message("<p class='here'>"+hereText+"</p>");
 
     //   // var handle = player.inventory.subscribe(function(vm, evt){
     //   //   for(var i=0, hereItems = tile.here; i<hereItems.length; i++){
@@ -315,15 +315,15 @@ define([
       // combat.start([player], hostiles).then(
       //   function(result){
       //     console.log("combat concluded: ", result);
-      //   }, 
+      //   },
       //   function(err){
       //     console.log("combat error: ", err);
-      //   }, 
+      //   },
       //   function(update){
       //     console.log("combat progress: ", update);
       //   }
       // );
     }
   });
-  
+
 });
