@@ -1,7 +1,7 @@
 define([
   'compose', 'lib/util', 'models/Inventory'
 ], function(Compose, util, Inventory){
-  
+
   var StatsProto = {
   	health: 5,
     strength: 5,
@@ -35,16 +35,16 @@ define([
       }
       // some temporary aliases
       if('hp' in args) {
-        stats.health = args.hp; 
+        stats.health = args.hp;
         delete args.hp;
       }
       if('mp' in args) {
-        stats.mana = args.mp; 
+        stats.mana = args.mp;
         delete args.mp;
       }
     }
 
-    var weaponId = this.currentWeapon ? 
+    var weaponId = this.currentWeapon ?
     		this.currentWeapon.id || this.currentWeapon : null;
 
     inventory.forEach(function(item){
@@ -59,11 +59,11 @@ define([
     //   this.currentWeapon = weapons[this.currentWeapon];
     // }
   }, {
-  	declaredClass: "Actor",
-	currentWeapon: "",
-	propertiesWithReferences: ['inventory', 'currentWeapon'],
+    declaredClass: "Actor",
+    currentWeapon: "",
+    propertiesWithReferences: ['inventory', 'currentWeapon'],
 
   }, Compose);
 
-  return Actor; 
+  return Actor;
  });

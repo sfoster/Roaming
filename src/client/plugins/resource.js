@@ -42,7 +42,6 @@ define([
 
   function resolveTypeToModel(type) {
     // resolve convenience aliases to their actual resource ids
-    console.log("resolveTypeToModel, type %s", type);
     var defd = Promise.defer();
     var loaderPrefix = '',
         suffix = '',
@@ -71,12 +70,10 @@ define([
   }
 
   function resolveModelData(data) {
-    console.log("resolveModelData: ", data);
     var resourceId = ('resource' in data) ? data.resource : '';
     var resourceData;
 
     if(!resourceId) {
-      console.log("resolveModelData, params: ", data.params);
       resourceData = data.params || {};
       return wrapAsPromise(resourceData);
     }
@@ -138,7 +135,6 @@ define([
             return util.hasProperty(resourceData, pname);
 
           }).forEach(function(pname){
-            console.log("property with reference: " +pname+ " in resourceData: ", resourceData);
             var value = util.getObject(pname, resourceData);
             if(value instanceof Array) {
               value.forEach(function(refData, idx, coln){
@@ -150,7 +146,6 @@ define([
               });
             } else {
               var promisedValue = thaw(value).then(function(pData){
-                  console.log("refd property %s resolved: %o", pname, pData);
                   resourceData[pname] = pData;
               });
               promiseQueue.push(promisedValue);
