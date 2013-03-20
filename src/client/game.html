@@ -20,7 +20,7 @@
         Day <span data-bind="text: player.elapsed"></span>
       </div>
     </div>
-  </section>  
+  </section>
   <section id="drawer" class="area">
       <ul class="panelist">
           <li class="panel world-map toggleable">
@@ -77,15 +77,15 @@
           <li><span data-bind="text: name"></span></li>
         </ul>
       </div>
+      <section id="messages" class="panel toggleable" data-bind="click: $parent.onMessagesClick">
+        <h2 class="heading">Messages</h2>
+        <ul class="compact" data-bind="foreach: $parent.messages">
+          <li class="message" data-bind="html: $data"></li>
+        </ul>
+      </section>
 
-    </section>  
+    </section>
 
-  </section>  
-  <section id="messages" class="panel toggleable" data-bind="click: onMessagesClick">
-    <h2 class="heading">Messages</h2>
-    <ul class="compact" data-bind="foreach: messages">
-      <li class="message" data-bind="html: $data"></li>
-    </ul>
   </section>
 
   <script src="vendor/require.js" data-main="plugins/bootstrap!main"></script>

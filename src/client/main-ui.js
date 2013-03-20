@@ -113,20 +113,27 @@ define([
     ui.message(encounter.description);
   };
 
-  ui.flush = function(id){
-    // $("#"+id).empty();
+  ui.flush = function(dest){
+    dest = dest || 'messages';
+    var coln = viewModel[dest];
+    console.log("flushing " + dest, coln);
+    if(coln && coln().length) {
+      coln.splice(0, coln().length);
+    }
+    console.log("flushed " + dest, coln);
   };
 
   ui.message = function(cont, opt){
     opt = opt || {};
     var dest = opt.dest || 'messages';
-     viewModel[dest].push(cont);
-     setTimeout(function(){
-        var msgs = $('#'+dest+' > ul > li.message');
-        if(msgs.length) {
-          msgs[msgs.length-1].scrollIntoView();
-        }
-     }, 0);
+    console.log("ui.message, to dest: " + dest, document.getElementById(dest) );
+    viewModel[dest].push(cont);
+    setTimeout(function(){
+      var msgs = $('#'+dest+' > ul > li.message');
+      if(msgs.length) {
+        msgs[msgs.length-1].scrollIntoView();
+      }
+    }, 0);
   };
 
   ui.status = function(cont){
