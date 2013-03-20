@@ -1,6 +1,6 @@
 define([
-  'dollar', 
-  'lib/util', 
+  'dollar',
+  'lib/util',
   'lib/event',
   'promise',
   'lib/clone',
@@ -8,7 +8,7 @@ define([
 ], function($, util, Evented, Promise, sanitizedClone, terrain){
   var emit = Evented.emit.bind(this), // it matter what 'this' when we emit and listenr for events. Here, 'this' is the global context
       create = util.create;
-  
+
   function Location(options){
     if(!options) return;
     this.__events = {}; // make our own event listener collection
@@ -36,7 +36,7 @@ define([
       this.description = "You enter an area of " + this.terrain
     }
   }
-  
+
   util.mixin(Location.prototype, Evented, {
     propertiesWithReferences: ['here', 'encounters', 'npcs'],
     description: "",
@@ -44,12 +44,12 @@ define([
     backdrop: "",
     get: function(name){
       return this[name];
-    }, 
+    },
     enter: function(player, game){
       var proceed = true;
       this._onexits = [];
       // load the backdrop
-      
+
       game.emit("beforelocationenter", {
         target: this,
         player: player,
@@ -57,14 +57,14 @@ define([
       });
       if(proceed){
         console.log("location enter: ", this, player, game, player.history);
-        // what is in this tile? 
+        // what is in this tile?
         // does anything happen as I enter?
         //  run any encounters
-      
+
         // update the player's history with details of this visit
         // have I been here before?
         //  check player.history for this location id
-        var locationHistory = player.history[this.id] || (player.history[this.id] = {}), 
+        var locationHistory = player.history[this.id] || (player.history[this.id] = {}),
             visits = locationHistory.visits || (locationHistory.visits = []);
 
         game.emit("locationenter", {
@@ -88,18 +88,18 @@ define([
           cancel: function(){ proceed = false; }
         });
       }
-    }, 
+    },
     onExit: function(fn){
-     this._onexits.push(fn); 
+     this._onexits.push(fn);
     },
     exit: function(player, game){
       console.log("Location exit stub");
-      this.emit("exit", {
+      game.emit("locationexit", {
         target: this,
         player: player,
         cancel: function(){ proceed = false; }
       });
-      var fn; 
+      var fn;
       while((fn = this._onexits.shift())){
         fn(player, game);
       }
@@ -107,16 +107,16 @@ define([
     export: function(){
       var id = this.id;
       var cleanData = {};
-      // export out any child objects 
+      // export out any child objects
       this.propertiesWithReferences.forEach(function(prop){
-        cleanData[prop] = ('function' == this[prop].export) ? 
+        cleanData[prop] = ('function' == this[prop].export) ?
             this[prop].export() : this[prop];
       }, this);
       // exclude id, coords, type from location file data
-      // as this is 
-      cleanData = sanitizedClone(cleanData, {}, { 
-        propertiesWithReferences: true, 
-        coords: true, 
+      // as this is
+      cleanData = sanitizedClone(cleanData, {}, {
+        propertiesWithReferences: true,
+        coords: true,
         type: true,
         regionId: true
       });
