@@ -28,7 +28,11 @@ define([
 
   // setup the game object as an event sink and emitter
   var game = window.game = util.mixin({
-    ui: ui
+    ui: ui,
+    now: function(){
+      // game timestamp, second units
+      return Math.floor( Date.now() / 1000 );
+    }
   }, Evented );
 
   // the scene is modelled as a stack of states
@@ -81,9 +85,6 @@ define([
     ], function(region, tile){
       game.region = region;
       game.tile = tile;
-
-      console.log("Loaded region: ", region);
-      console.log("Loaded tile: ", tile);
 
       // draw and fill the layout
       ui.init( player, tile, region, game );
@@ -145,8 +146,6 @@ define([
         // resolve encounter ids to their contents
         tile.encounter = encounters[encounterId];
       }
-
-      // game.emit("afterlocationenter", { target: tile });
 
     });
   }
@@ -264,52 +263,24 @@ define([
     return region.id+'/'+x+','+y;
   };
 
-  game.on("locationenter", function(evt){
-    var id = game.locationToString(evt.target);
-    var history = game.player.history[id],
-        visits = history && history.visits;
-
-    console.log("Have visits to %s ? ", id, visits);
-    // TODO: register the visit to this tile in the player's history
-    // if(tile.here){
-    //   console.log(tile.id, "tile.here: ", tile.here);
-
-    //   var hereText = tile.here.map(function(obj){
-    //     if('string' == typeof obj) {
-    //       obj = resolveItem(obj, { name: '??'} );
-    //     }
-    //     var mdText = obj.description;
-    //     if(!mdText) mdText = "You see: ["+obj.name+"](item:"+obj.category+"/"+obj.id+")";
-    //     var html = markdown(mdText);
-    //     return html;
-    //   }).join('<br>');
-
-    //   ui.message("<p class='here'>"+hereText+"</p>");
-
-    //   // var handle = player.inventory.subscribe(function(vm, evt){
-    //   //   for(var i=0, hereItems = tile.here; i<hereItems.length; i++){
-    //   //     if(evt.target.id == hereItems[i].id) break;
-    //   //   }
-    //   //   if(i < hereItems.length) {
-    //   //     console.log("removing took item: ", hereItems[i]);
-    //   //     hereItems.splice(i, 1);
-    //   //   }
-    //   //   ui.status("You take the "+evt.target.name);
-    //   // });
-    //   tile.onExit(function(){
-    //     console.log("unhooking onaferadd handler for tile: ", tile.id);
-    //     handle.remove();
-    //   });
-  });
-
   function isHostile(npc) {
     return !npc.friendly;
   }
+
+  game.on("beforelocationenter", function(evt){
+    console.log("beforelocationenter, flushing messages");
+    game.ui.flush();
+    game.ui.message("You enter " + evt.target.id);
+    var id = game.locationToString(evt.target);
+    var locationHistory = game.player.history[id] || (game.player.history[id] = {});
+  });
 
   game.on("afterlocationenter", function(evt){
     var tile = evt.target;
     var hostiles = tile.npcs.filter(isHostile);
     if(hostiles.length) {
+      game.ui && game.ui.message("You are faced with: " + util.pluck(hostiles, 'name').join(', '));
+
       console.log("Combat, with: ", hostiles);
       var combat = new Combat();
       // combat.start([player], hostiles).then(
@@ -325,5 +296,13 @@ define([
       // );
     }
   });
+
+  game.on("locationexit", function(evt){
+    var id = game.locationToString(evt.target);
+    var locationHistory = game.player.history[id];
+    locationHistory.lastVisit = game.now();
+    console.log("Updated lastVisit to %s: %o", id, locationHistory);
+  });
+
 
 });

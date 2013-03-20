@@ -11,15 +11,15 @@ define([
   };
 
   function getNpcTypesForTerrain(terrain, constraints) {
-		var npcs = util.values(npc).filter(function(npc){
-			return (
-				npc.terrain && npc.terrain.indexOf(terrain) > -1
-			);
-		});
-		if(constraints) {
-			npcs = npcs.filter(constraints);
-		}
-		return npcs;
+    var npcs = util.values(npc).filter(function(npc){
+      return (
+	npc.terrain && npc.terrain.indexOf(terrain) > -1
+      );
+    });
+    if(constraints) {
+      npcs = npcs.filter(constraints);
+    }
+    return npcs;
   }
 
     // predefined NPC groups.
@@ -77,15 +77,35 @@ define([
     // Spawn a number of npcs
     enter: function(player, game){
       // expand any npc placeholders
-      var npcs = game.tile.npcs || (game.tile.npcs = []);
-      console.log("NPCEncounter enter, npcs: ", npcs);
+      var tile = game.tile,
+          npcs = game.tile.npcs || (game.tile.npcs = []);
 
-      this.generateGroup(game.tile, player).forEach(function(npc){
-        console.log("Adding npc: ", npc);
-        npcs.push(Object.create(npc));
+      var now = game.now();
+      var id = game.locationToString(game.tile),
+          locationHistory = player.history[id],
+          sinceLastVisit = now - (locationHistory.lastVisit || 0);
+      console.log("NPCEncounter sinceLastVisit: ", sinceLastVisit);
+
+      var NPC_ATTENTION_SPAN = 60;
+      var NPC_SPAWN_INTERVAL = 180;
+      // remove bored npcs
+      npcs = game.tile.npcs = npcs.filter(function(npc){
+        var since =  now - (npc.spawned || now);
+        // only keep recent or not-spawned NPCs
+        return since < NPC_ATTENTION_SPAN;
       });
+
+      if(sinceLastVisit > NPC_SPAWN_INTERVAL) {
+        console.log("Player not here recently, generate NPCs");
+        this.generateGroup(game.tile, player).forEach(function(npc){
+          console.log("Adding npc: ", npc);
+          npc.spawned = now;
+          npcs.push(npc);
+        });
+      } else {
+        console.log("Player was just here recently, no more NPCs generated");
+      }
       game.emit('encounterstart', { target: this });
-      game.ui && game.ui.message("You are faced with: " + npcs.length + ' ' + util.pluck(npcs, 'name').join(', '));
     },
     generateGroup: function(tile, player){
       var hereCreatures = [];
