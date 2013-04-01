@@ -220,8 +220,8 @@ define([], function(){
     weight: 4,
     mpbonus: 0
   };
-  weapons.ninja_to = {
-    name: 'Ninja-to',
+  weapons.ninjato = {
+    name: 'Ninjato',
     shortRangeDamage: 15/100,
     longRangeDamage: 0,
     mediumRangeDamage: 0,
@@ -606,6 +606,219 @@ define([], function(){
     weight: 6,
     mpbonus: 3
   };
+  weapons.rustyKnife = {
+    name: 'Rusty Knife',
+    shortRangeDamage: 3/100,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0,
+    weaponclass: "shortrange",
+    weight: 1,
+    mpbonus: 0
+  };
+  weapons.rustyFishingspear = {
+    name: 'Rusty Fishing Spear',
+    shortRangeDamage: 1/100,
+    longRangeDamage:0,
+    mediumRangeDamage: 7/100,
+    weaponclass: "mediumrange",
+    weight: 2,
+    mpbonus: 0
+  };
+  
+  weapons.rustytThrowingknife = {
+    name: 'Rusty Throwing Knife',
+    shortRangeDamage: 2/100,
+    longRangeDamage: 0,
+    mediumRangeDamage: 3/100,
+    ammo: 5,
+    weaponclass: "longrange",
+    weight: 2,
+    mpbonus: 0
+  };
+  weapons.rustyTrident = {
+    name: 'Rusty Trident',
+    shortRangeDamage: 1/100,
+    longRangeDamage: 0,
+    mediumRangeDamage: 20/100,
+    weaponclass: "mediumrange",
+    weight: 8,
+    mpbonus: 0
+  };
+  weapons.rustyJavelin = {
+    name: 'Rusty Javelin',
+    shortRangeDamage: 5/00,
+    longRangeDamage: 12/100,
+    mediumRangeDamage: 7/100,
+    ammo: 3,
+    weaponclass: "longrange",
+    weight: 3,
+    mpbonus: 0
+  };
+  
+  weapons.rustySpear = {
+    name: 'Rusty Spear',
+    shortRangeDamage: 1/100,
+    longRangeDamage: 0,
+    mediumRangeDamage: 12/100,
+    weaponclass: "mediumrange",
+    weight: 4,
+    mpbonus: 0
+  };
+  weapons.rustySword = {
+    name: 'Rusty Sword',
+    shortRangeDamage: 17/100,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0,
+    weaponclass: "shortrange",
+    weight: 4,
+    mpbonus: 0
+  };
+  weapons.rustyShortsword = {
+    name: 'Rusty Shortsword',
+    shortRangeDamage: 12/100,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0,
+    weaponclass: "shortrange",
+    weight: 2,
+    mpbonus: 0
+  };  
+  weapons.rustyLongsword = {
+    name: 'Rusty Longsword',
+    shortRangeDamage: 22/100,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0,
+    weaponclass: "shortrange",
+    weight: 6,
+    mpbonus: 0
+  };
+  weapons.rustyBroadsword = {
+    name: 'Rusty Broadsword',
+    shortRangeDamage: 27/100,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0,
+    weaponclass: "shortrange",
+    weight: 7,
+    mpbonus: 0
+  };
+  weapons.rustyDagger = {
+    name: 'Rusty Dagger',
+    shortRangeDamage: 5/100,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0,
+    weaponclass: "shortrange",
+    weight: 1,
+    mpbonus: 0
+  };
+  weapons.rustyHatchet = {
+    name: 'Rusty Hatchet',
+    shortRangeDamage: 5/100,
+    longRangeDamage: 0,
+    mediumRangeDamage: 1/100,
+    weaponclass: "shortrange",
+    weight: 4,
+    mpbonus: 0
+  };
+  weapons.rustyAxe = {
+    name: 'Rusty Axe',
+    shortRangeDamage: 11/100,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0,
+    weaponclass: "shortrange",
+    weight: 5,
+    mpbonus: 0
+  };
+  weapons.rustyThrowingaxe = {
+    name: 'Rusty Throwing Axe',
+    shortRangeDamage: 2/100,
+    longRangeDamage: 0,
+    mediumRangeDamage: 3/100,
+    ammo: 5,
+    weaponclass: "longrange",
+    weight: 4,
+    mpbonus: 0
+  };
+  weapons.rustyBattleaxe = {
+    name: 'Rusty Battleaxe',
+    shortRangeDamage: 22/100,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0,
+    weaponclass: "shortrange",
+    weight: 7,
+    mpbonus: 0
+  };
+ weapons.rustyKatana = {
+    name: 'Rusty Katana',
+    shortRangeDamage: 17/100,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0,
+    weaponclass: "shortrange",
+    weight: 4,
+    mpbonus: 0
+  };
+  weapons.rustyNinjato = {
+    name: 'Rusty Ninjato',
+    shortRangeDamage: 15/100,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0,
+    weaponclass: "shortrange",
+    weight: 3,
+    mpbonus: 0
+  };
+  weapons.rustyThrowingstars = {
+    name: 'Rusty Throwing Stars',
+    shortRangeDamage: 2/100,
+    longRangeDamage: 2/100,
+    mediumRangeDamage: 7/100,
+    ammo: 10,
+    weaponclass: "longrange",
+    weight: 2,
+    mpbonus: 0
+  };
+   weapons.rustyMorningstar = {
+    name: 'Rusty Morningstar',
+    shortRangeDamage: 29/100,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0,
+    weaponclass: "shortrange",
+    weight: 10,
+    mpbonus: 0
+  };
+     weapons.rustySabre = {
+    name: 'Rusty Sabre',
+    shortRangeDamage: 12/100,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0,
+    weaponclass: "shortrange",
+    weight: 3,
+    mpbonus: 0
+  };
+   weapons.rustyHammer = {
+    name: 'Rusty Hammer',
+    shortRangeDamage: 6/100,
+    longRangeDamage: 0,
+    mediumRangeDamage: 2/100,
+    weaponclass: "shortrange",
+    weight: 2,
+    mpbonus: 0
+  };
+  weapons.rustyWarhammer = {
+    name: 'Rusty Warhammer',
+    shortRangeDamage: 14/100,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0,
+    weaponclass: "shortrange",
+    weight: 4,
+    mpbonus: 0
+  };
+  weapons.rustyLance = {
+    name: 'Rusty Lance',
+    shortRangeDamage: 1/100,
+    longRangeDamage: 0,
+    mediumRangeDamage: 17/100,
+    weaponclass: "mediumrange",
+    weight: 6,
+    mpbonus: 0
+  };
     weapons.theStaff = {
     name: 'Staff',
     shortRangeDamage: 500/100,
@@ -624,5 +837,6 @@ define([], function(){
     weight: 5,
     mpbonus: 0
   };
+  
   return weapons;
 });
