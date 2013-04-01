@@ -38,9 +38,9 @@ define([
 	{ id: 'Orc', min: 0, max: 1 }
       ],
       'rats': [
-        { id: 'hugeRat', min: 0, max: 4 },
-        { id: 'giantRat', min: 1, max: 3 },
-        { id: 'mutantRat', min: 1, max: 2 },
+        { id: 'hugeRat', min: 1, max: 4 },
+        { id: 'giantRat', min: 0, max: 3 },
+        { id: 'mutantRat', min: 0, max: 2 },
         { id: 'ratLord', min: 0, max: 1 }
       ],
       'canines': [
