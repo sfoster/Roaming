@@ -25,12 +25,17 @@ define([
     // predefined NPC groups.
     // The player's level will be used to find the right count in the min-max range
    var npcGroups = {
-      'goblins': [
+      'greenskins': [
         { id: 'goblin', min: 1, max: 4 },
+	{ id: 'angryDog', min: 0, max: 4 },
         { id: 'goblinChamp', min: 0, max: 1 },
         { id: 'goblinShaman', min: 0, max: 1 },
         { id: 'goblinWarlord', min: 0, max: 1 },
-        { id: 'angryDog', min: 0, max: 4 }
+        { id: 'juvinileTroll', min: 0, max: 4 },
+	{ id: 'troll', min: 0, max: 3 },
+        { id: 'trollElder', min: 0, max: 1 },
+        { id: 'trollHulk', min: 0, max: 1 },
+	{ id: 'Orc', min: 0, max: 1 }
       ],
       'rats': [
         { id: 'hugeRat', min: 0, max: 4 },
@@ -38,15 +43,10 @@ define([
         { id: 'mutantRat', min: 1, max: 2 },
         { id: 'ratLord', min: 0, max: 1 }
       ],
-      'trolls': [
-        { id: 'troll', min: 1, max: 4 },
-        { id: 'juvinileTroll', min: 0, max: 3 },
-        { id: 'trollElder', min: 0, max: 1 },
-        { id: 'trollHulk', min: 0, max: 1 }
-      ],
-      'dogs': [
+      'canines': [
         { id: 'angryDog', min: 1, max: 5 },
-        { id: 'rabidDog', min: 0, max: 1 }
+        { id: 'rabidDog', min: 0, max: 1 },
+	{ id: 'angryWolf', min: 0, max: 1 }
       ],
       terrainGroup: function(terrain) {
         // return a single randomly picked creature

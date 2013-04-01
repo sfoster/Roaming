@@ -16,7 +16,7 @@
       "type": "models/NPCEncounter",
       "params": {
         "difficulty": 1,
-        "grouptype": "goblins"
+        "grouptype": "greenskins"
       }
     }
   ]
