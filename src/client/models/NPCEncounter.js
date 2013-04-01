@@ -48,6 +48,22 @@ define([
         { id: 'rabidDog', min: 0, max: 1 },
 	{ id: 'angryWolf', min: 0, max: 1 }
       ],
+      'equines': [
+        { id: 'horse', min: 1, max: 3 },
+        { id: 'centaur', min: 0, max: 2 },
+      ],
+      'bovines': [
+        { id: 'bull', min: 1, max: 5 },
+        { id: 'minotaur', min: 0, max: 1 },
+      ],
+      'felines': [
+	{ id: 'sickCat', min: 0, max: 5 },
+        { id: 'wildcat', min: 1, max: 3 },
+        { id: 'cheetah', min: 0, max: 1 },
+	{ id: 'tiger', min: 0, max: 1 },
+	{ id: 'lioness', min: 0, max: 1 },
+	{ id: 'lion', min: 0, max: 1 },
+      ],
       terrainGroup: function(terrain) {
         // return a single randomly picked creature
         // that's appropriate to the terrain
