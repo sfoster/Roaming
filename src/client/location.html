@@ -119,21 +119,7 @@
       var makeObservable = koHelpers.makeObservable,
           resolveObservable = koHelpers.resolveObservable;
 
-      function setValue(targ, key, value) {
-        // set a value where the key might be a dot-path
-        // e.g. setValue(obj, 'foo.bar', "Bar") === obj.foo.bar = "Bar";
-        var parts = key.split('.');
-        while(parts.length > 1) {
-          targ = targ[ parts.shift() ];
-        }
-        key = parts.shift();
-        if('function'==typeof targ[key]) {
-          targ[key](value);
-        } else {
-          targ[key] = value;
-        }
-        return value;
-      }
+      var setValue = util.setValue;
 
       function createEditableArray(coln) {
         // make a parallel array of observed values, where
@@ -172,7 +158,7 @@
               pname = evt.target.getAttribute('data-propname');
 
           showPicker(type, function(newValue){
-            setValue(viewModel, pname, newValue);
+            setValue(pname, newValue, viewModel);
           });
         },
         save: function(){
