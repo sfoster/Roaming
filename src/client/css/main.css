@@ -1,4 +1,4 @@
-/* 
+/*
 	main.css
 */
 
@@ -8,16 +8,16 @@ html, body {
 	color: #dedede;
 }
 
-h1, h2, h3 { 
+h1, h2, h3 {
 	margin: 0 0 8px 0;
 	font-family: sans-serif;
 	text-align: left;
 }
 
-h2 { 
+h2 {
 	font-size: 1.3em;
 }
-h3 { 
+h3 {
 	font-size: 1.1em;
 }
 
@@ -42,7 +42,7 @@ h3 {
 #playerInfo .player-icon {
 	position: absolute;
 	top: 0; left: 5px;
-	height: 32px; 
+	height: 32px;
 	width: 32px;
 }
 #playerInfo .player-label {
@@ -81,7 +81,7 @@ h3 {
 
 
 .panelist {
-	margin: 0; 
+	margin: 0;
 	padding: 0;
 }
 
@@ -104,25 +104,36 @@ li.panel {
 	list-style-type:  none;
 }
 
-dt { 
-  display: block; 
-  float: left; 
-  width: 12em; 
-  font-weight: bold; 
+.overlay-panel {
+	background: rgba(0,0,0,0.5);
+}
+.info-panel {
+	background: rgba(255,255,255,0.65);
+	color: #333;
+}
+.combat-panel {
+	background: rgba(0,0,0,0.75);
+}
+
+dt {
+  display: block;
+  float: left;
+  width: 12em;
+  font-weight: bold;
   clear: both;
 }
 
-dl:after, dd:after { 
-  content: ".";    
-  display: block;    
-  height: 0;    
+dl:after, dd:after {
+  content: ".";
+  display: block;
+  height: 0;
   overflow: hidden;
   clear: both;
 }
-dd { 
-  display: block; 
-  float: left; 
-  margin: 0 0 0.5em 0; 
+dd {
+  display: block;
+  float: left;
+  margin: 0 0 0.5em 0;
   width: calc(100% - 13em - 12px);
 }
 dt, dd {
@@ -145,14 +156,25 @@ td.num {
 	text-align: right;
 }
 
+.layer {
+	position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+}
 img.backdrop {
 	position: absolute;
 	top: 0; left: 0;
 	z-index: 0;
 	display: block;
-	opacity: 0.35;
+	opacity: 0.65;
 }
-
+.layer-fg {
+  top: 55%;
+  z-index: 10;
+}
+.layer-over {
+  opacity: 1;
+  z-index: 100;
+}
 .toggleable.collapsed > * {
 	display: none;
 }
