@@ -85,7 +85,6 @@ define([
     ], function(region, tile){
       game.region = region;
       game.tile = tile;
-
       // draw and fill the layout
       ui.init( player, tile, region, game );
 
@@ -275,6 +274,20 @@ define([
     var locationHistory = game.player.history[id] || (game.player.history[id] = {});
   });
 
+  game.on("combatroundstart", function(evt){
+    game.ui.set('combat', {
+      allies:evt.allies,
+      opponents:evt.opponents
+    });
+    game.ui.set('showCombat', true);
+  });
+  game.on("combatroundend", function(evt){
+    game.ui.set('combat', {
+      allies:evt.allies,
+      opponents:evt.opponents
+    });
+  });
+
   game.on("afterlocationenter", function(evt){
     var tile = evt.target;
     var hostiles = tile.npcs.filter(isHostile);
@@ -283,17 +296,19 @@ define([
 
       console.log("Combat, with: ", hostiles);
       var combat = new Combat();
-      // combat.start([player], hostiles).then(
-      //   function(result){
-      //     console.log("combat concluded: ", result);
-      //   },
-      //   function(err){
-      //     console.log("combat error: ", err);
-      //   },
-      //   function(update){
-      //     console.log("combat progress: ", update);
-      //   }
-      // );
+      var isFirstRound = true;
+      combat.start([game.player], hostiles).then(
+        function(result){
+          console.log("combat concluded: ", result);
+          game.ui.info("Combat concluded", "There was carnage: <pre>" + JSON.stringify(result,null,2)+"</pre>");
+        },
+        function(err){
+          console.log("combat error: ", err);
+        },
+        function(update){
+          console.log("combat progress: ", update);
+        }
+      );
     }
   });
 

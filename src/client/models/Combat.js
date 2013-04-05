@@ -51,7 +51,9 @@ define([
       game.emit("combatroundend", {
         target: this,
         scoreboard: finalResult,
-        result: result
+        result: result,
+        allies: allies,
+        opponents: opponents
       });
 
       if(allies.filter(alive).length && opponents.filter(alive).length) {
