@@ -5,6 +5,7 @@
   <title>Roaming</title>
   <link rel="stylesheet" type="text/css" href="./css/main.css">
   <link rel="stylesheet" type="text/css" href="./css/grid.css">
+  <link rel="stylesheet" type="text/css" href="./css/terrain.css">
 </head>
 <body>
 
@@ -33,59 +34,50 @@
               <li class="item" data-bind="text: name, css: { equipped: ( $data.isEquipped ) }"></li>
             </ul>
           </li>
-          <li id="stats" class="panel items toggleable">
-            <h2 class="heading">Stats</h2>
-              <table class="listing" cellspacing="0" style="width:100%" data-bind="with: player">
-                <tbody>
-                  <tr>
-                    <th>Level</th>
-                    <td class="num" data-bind="text:stats.level"></td>
-                  </tr>
-                  <tr>
-                    <th>Health</th>
-                    <td class="num" data-bind="text:stats.health"></td>
-                  </tr>
-                  <tr>
-                    <th>Strength</th>
-                    <td class="num" data-bind="text:stats.strength"></td>
-                  </tr>
-                  <tr>
-                    <th>Mana</th>
-                    <td class="num" data-bind="text:stats.mana"></td>
-                  </tr>
-                </tbody>
-              </table>
-
-          </li>
       </ul>
   </section>
   <section id="main" class="area">
-    <section class="location panel" data-bind="with: tile ">
-      <img class="backdrop" data-bind="attr: { src: backdrop }" width="800" height="600">
-      <p data-bind="text: description"></p>
-
-      <div data-bind="visible: !!here.length">
-        <h2>Here</h2>
-        <ul data-bind="foreach: here">
-          <li><span data-bind="text: name"></span> (<span data-bind="text: id"></span>)</li>
-        </ul>
+    <section class="location panel" data-bind="with: tile">
+      <div class="layer layer-bg" data-bind="css: terrain">
+        <div class="layer backdrop" data-bind="style: { backgroundImage: 'url('+backdrop+')' }"></div>
       </div>
-
-      <div data-bind="visible: !!npcs.length">
-        <h2>NPCs</h2>
-        <ul data-bind="foreach: npcs">
-          <li><span data-bind="text: name"></span></li>
-        </ul>
+      <div class="layer layer-fg" data-bind="css: terrain">
+        <div class="layer ground"></div>
       </div>
-      <section id="messages" class="panel toggleable" data-bind="click: $parent.onMessagesClick">
-        <h2 class="heading">Messages</h2>
-        <ul class="compact" data-bind="foreach: $parent.messages">
-          <li class="message" data-bind="html: $data"></li>
-        </ul>
-      </section>
+      <div class="layer layer-over">
+        <div id="info" class="panel info-panel"  data-bind="if: $parent.showInfo()">
+          <div data-bind="with:$parent.info">
+            <h1 data-bind="text:heading"></h1>
+            <div data-bind="html:body"></div>
+          </div>
+          <button data-bind="click: $parent.hideInfo">Ok</button>
+        </div>
+        <div id="combat" class="panel combat-panel"  data-bind="if: $parent.showCombat()">
+          <div class="col col-1of2">
+            <div id="player-info" class="panel overlay-panel">
+              <ul data-bind="foreach: $parent.combat.allies">
+                <li><span data-bind="text: name"></span><span class="health-bar" data-bind="style: { width: $root.health($data) * 10 + 'px'}"></span></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col col-1of2">
+            <div id="npc-info" data-bind="visible: !!npcs.length" class="panel overlay-panel">
+              <ul data-bind="foreach: $parent.combat.opponents">
+                <li><span data-bind="text: name"></span><span class="health-bar" data-bind="style: { width: $root.health($data) * 10 + 'px'}"></span></li>
+              </ul>
+            </div>
+          </div>
+        </div><!-- /#combat -->
+
+        <section id="messages" class="panel toggleable" data-bind="click: $parent.onMessagesClick">
+          <h2 class="heading">Messages</h2>
+          <ul class="compact" data-bind="foreach: $parent.messages">
+            <li class="message" data-bind="html: $data"></li>
+          </ul>
+        </section>
+      </div>
 
     </section>
-
   </section>
 
   <script src="vendor/require.js" data-main="plugins/bootstrap!main"></script>

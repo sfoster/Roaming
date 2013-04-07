@@ -1,0 +1,26 @@
+{
+  "name": "Roaming",
+  "version": "0.0.0",
+  "description": "A simple node-based static file server for dev use",
+  "main": "index.js",
+  "dependencies": {
+    "express": "*",
+    "passport": "*",
+    "passport-browserid": "*"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sfoster/Roaming.git"
+  },
+  "keywords": [
+    "node",
+    "http"
+  ],
+  "author": "Sam Foster",
+  "license": "BSD",
+  "readmeFilename": "README.md"
+}

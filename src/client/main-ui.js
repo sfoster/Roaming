@@ -27,6 +27,20 @@ define([
   var viewModel = ui.viewModel = {
     messages: ko.observableArray([]),
     backdrop: ko.observable('resources/graphics/terrain/clearbg.jpg'),
+    showCombat: ko.observable(false),
+    showInfo: ko.observable(false),
+    hideInfo: function(){ viewModel.showInfo(false); },
+    combat: {
+      allies: ko.observableArray([]),
+      opponents: ko.observableArray([])
+    },
+    health: function(thing){
+      return thing.dead ? ": Dead" : thing.stats.health;
+    },
+    info: {
+      heading: ko.observable("Info"),
+      body: ko.observable("Blah")
+    },
     status: ko.observableArray(['loading']),
     onMessagesClick: onMessagesClick,
     onInventoryClick: onInventoryClick,
@@ -74,6 +88,38 @@ define([
     this._inited = true;
   };
 
+  ui.set = function(pname, value, obj) {
+    obj = obj || viewModel;
+    switch(typeof obj[pname]){
+      case "function":
+        var oldValue =  obj[pname]();
+        console.log("ui.set pname: %s, type: %s", pname, util.getType(oldValue));
+        if("array"==util.getType(oldValue)){
+          // update array in-situ
+          var items = value.map(function(item){
+            return ko.observable(item);
+          });
+          console.log("Updating array: ", pname, items);
+          obj[pname].splice.apply(obj[pname], [0, oldValue.length].concat(items));
+          // obj[pname].valueWillMutate();
+          // oldValue.splice.apply(oldValue, [0, oldValue.length].concat(value));
+          // obj[pname].valueHasMutated();
+          console.log("After update: ", obj[pname]()[0]);
+        } else {
+          obj[pname](value);
+        }
+        break;
+      case "undefined":
+        obj[pname] =value;
+        break;
+      case "object":
+        Object.keys(value).forEach(function(key){
+          ui.set(key, value[key], obj[pname]);
+        });
+        break;
+    }
+  };
+
   ui.onLocationEnter = function(evt){
       var centerTile = evt.target;
       var region = ui.game.region;
@@ -111,6 +157,14 @@ define([
   ui.onEncounterStart = function(evt){
     var encounter = evt.target;
     ui.message(encounter.description);
+    viewModel.tile(game.tile);
+    console.log("ui.onEncounterStart, encounter: ", encounter);
+    // TODO: redraw the stage
+  };
+
+  ui.onCombatStart = function(evt){
+    var combat = evt.target;
+    // TODO: ...
   };
 
   ui.flush = function(dest){
@@ -121,6 +175,12 @@ define([
       coln.splice(0, coln().length);
     }
     console.log("flushed " + dest, coln);
+  };
+
+  ui.info = function(heading, body) {
+    viewModel.info.heading(heading);
+    viewModel.info.body(body);
+    viewModel.showInfo(true);
   };
 
   ui.message = function(cont, opt){

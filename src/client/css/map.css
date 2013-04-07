@@ -1,4 +1,4 @@
-#main { 
+#main {
   overflow: auto;
 }
 #grid, .grid {
@@ -52,12 +52,12 @@
   padding: 4px;
   line-height: 30px;
 }
-.tool[data-selected="true"], 
+.tool[data-selected="true"],
 .tool.active {
     outline: 2px inset red;
 }
 .swatch {
-  width: 3em; height: 3em; 
+  width: 3em; height: 3em;
   display: block;
 }
 #map {

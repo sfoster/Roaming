@@ -12,6 +12,21 @@ define(function(){
       return obj[key];
     }
   }
+  function setValue(key, value, obj) {
+    // set a value where the key might be a dot-path
+    // e.g. setValue('foo.bar', "Bar", obj) === obj.foo.bar = "Bar";
+    if(key.indexOf('.') > -1) {
+      var firstPart = key.substring(0, key.indexOf('.'));
+      key = key.substring(1+key.indexOf('.'));
+      if(!(firstPart in obj)) {
+        throw new Error("setValue: couldn't resolve: "+key+" to a defined value");
+      }
+      return getObject(key, obj[firstPart]);
+    } else {
+      return obj[key] = value;
+    }
+  }
+
   function isPlainObject(obj){
     if ( !obj || typeof obj !== "object" || obj.nodeType || isWindow( obj ) ) {
       return false;
@@ -178,6 +193,7 @@ define(function(){
       return !(undefined === getObject(key, obj));
     },
     getObject: getObject,
+    setValue: setValue,
     getType: getType,
     create: create,
     map: map,
