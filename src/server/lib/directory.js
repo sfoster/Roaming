@@ -120,7 +120,6 @@ exports.html = function(req, res, files, next, dir, showUp, icons){
     fs.readFile(__dirname + '/../assets/style.css', 'utf8', function(err, style){
       if (err) return next(err);
       if (showUp) files.unshift('..');
-      console.log("files to htmlize: " + files.join("\n"));
       str = str
         .replace('{style}', style)
         .replace('{files}', html(files, dir, icons))
