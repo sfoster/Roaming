@@ -8,6 +8,7 @@ define([
     declaredClass: "Player",
     name: "You", // by default
     level: 1,
+    luck: 50/100,
     currentWeapon: 'fishingSpear', // by default
     history: {},
     score: 0,
