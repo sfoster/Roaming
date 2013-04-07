@@ -34,8 +34,8 @@ define([
       allies: ko.observableArray([]),
       opponents: ko.observableArray([])
     },
-    isDead: function(thing){
-      return thing.dead ? ": Dead" : ": Alive: "+thing.stats.health;
+    health: function(thing){
+      return thing.dead ? ": Dead" : thing.stats.health;
     },
     info: {
       heading: ko.observable("Info"),

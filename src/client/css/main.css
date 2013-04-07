@@ -234,3 +234,9 @@ ul.compact > li > p {
 .item.equipped {
 	font-style: italic;
 }
+
+.health-bar {
+	height: 8px;
+	background-color: #ff9;
+	display: block;
+}

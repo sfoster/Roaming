@@ -56,14 +56,14 @@
           <div class="col col-1of2">
             <div id="player-info" class="panel overlay-panel">
               <ul data-bind="foreach: $parent.combat.allies">
-                <li><span data-bind="text: name"></span><span data-bind="if: $data.dead">X</span></li>
+                <li><span data-bind="text: name"></span><span class="health-bar" data-bind="style: { width: $root.health($data) * 10 + 'px'}"></span></li>
               </ul>
             </div>
           </div>
           <div class="col col-1of2">
             <div id="npc-info" data-bind="visible: !!npcs.length" class="panel overlay-panel">
               <ul data-bind="foreach: $parent.combat.opponents">
-                <li><span data-bind="text: name"></span><span data-bind="text: $root.isDead($data)">X</span></li>
+                <li><span data-bind="text: name"></span><span class="health-bar" data-bind="style: { width: $root.health($data) * 10 + 'px'}"></span></li>
               </ul>
             </div>
           </div>
