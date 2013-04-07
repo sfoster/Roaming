@@ -2,22 +2,35 @@ var fs = require('fs');
 var path = require('path');
 var assert = require('assert');
 var express = require('express');
+var dirlisting = require('./lib/directory');
 var passport = require('passport'),
     BrowserIDStrategy = require('passport-browserid').Strategy;
 
-var users = require('./server/lib/users');
+var users = require('./lib/users');
 
-var root = __dirname;
+var root = path.resolve(__dirname, '..');
 var port = process.env.ROAMINGAPP_PORT || 3000;
 var hostname = process.env.ROAMINGAPP_HOSTNAME || 'localhost';
-var isDev = hostname === 'localhost';
+var isDev = (hostname === 'localhost' || hostname.indexOf('192.168.0') > -1);
 var host = port == 80 ? hostname : hostname+':'+port;
-var datadir = process.env.ROAMINGAPP_DATADIR || path.resolve(root, '../data');
+// var datadir = process.env.ROAMINGAPP_DATADIR || path.resolve(root, '../data');
 
 // app is global
 var app = express.createServer();
     app.rootdir = root;
-    app.datadir = datadir;
+
+// Simple route middleware to ensure user is authenticated.
+// Use this route middleware on any resource that needs to be protected. If
+// the request is authenticated (typically via a persistent login session),
+// the request will proceed. Otherwise, the user will be redirected to the
+// login page.
+function ensureAuthenticated(req, res, next) {
+  if (isDev || req.isAuthenticated()) {
+    console.log('ensureAuthenticated, ok, calling next');
+    return next();
+  }
+  res.redirect('/');
+}
 
 // Passport session setup.`
 //   To support persistent login sessions, Passport needs to be able to
@@ -65,7 +78,8 @@ app.configure(function(){
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(app.router);
-  app.use(express['static'](__dirname + '/client'));
+  app.use(dirlisting(app.rootdir));
+  app.use(express['static'](app.rootdir));
 });
 
 function createObject(proto, mixin){
