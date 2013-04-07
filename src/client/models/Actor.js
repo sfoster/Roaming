@@ -3,7 +3,7 @@ define([
 ], function(Compose, util, Inventory){
 
   var StatsProto = {
-  	health: 5,
+    health: 5,
     strength: 5,
     mana: 0,
     level: 1
@@ -44,6 +44,9 @@ define([
       }
     }
 
+    // capture baseline stats
+    this.baseStats = JSON.parse(JSON.stringify(this.stats));
+    
     var weaponId = this.currentWeapon ?
     		this.currentWeapon.id || this.currentWeapon : null;
 
