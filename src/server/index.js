@@ -8,12 +8,11 @@ var passport = require('passport'),
 
 var users = require('./lib/users');
 
-var root = path.resolve(__dirname, '..');
+var root = path.resolve(__dirname, '../..');
 var port = process.env.ROAMINGAPP_PORT || 3000;
 var hostname = process.env.ROAMINGAPP_HOSTNAME || 'localhost';
 var isDev = (hostname === 'localhost' || hostname.indexOf('192.168.0') > -1);
 var host = port == 80 ? hostname : hostname+':'+port;
-// var datadir = process.env.ROAMINGAPP_DATADIR || path.resolve(root, '../data');
 
 // app is global
 var app = express.createServer();
