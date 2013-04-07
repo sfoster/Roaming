@@ -1,0 +1,1 @@
+node.exe ..\src\server\index.js
