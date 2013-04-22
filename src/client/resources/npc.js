@@ -6,6 +6,7 @@ define([], function(){
 
   npc.goblin = {
     name: 'Goblin',
+    icon: 'resources/graphics/GoblinIcon.png',
     strength: 4,
     hp: 10,
     mp: 0,

@@ -4,7 +4,8 @@ define([
 
   var Npc = Actor.extend({
     propertiesWithReferences: [].concat(Actor.prototype.propertiesWithReferences),
-    declaredClass: "Npc"
+    declaredClass: "Npc",
+    icon: "./resources/graphics/BaddieIcon.png"
   });
 
   return Npc;

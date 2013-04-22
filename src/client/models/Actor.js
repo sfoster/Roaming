@@ -61,6 +61,7 @@ define([
   }, {
     declaredClass: "Actor",
     currentWeapon: "",
+    icon: "",
     propertiesWithReferences: ['inventory', 'currentWeapon'],
 
   }, Compose);
