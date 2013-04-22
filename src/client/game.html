@@ -11,12 +11,7 @@
 
   <section id="hud" class="area">
     <div id="playerInfo" class="row">
-      <img class="player-icon" src="./resources/graphics/HeroIcon.png">
-      <div class="col col-1of2">
-        <h2 class="player-label">
-          <span data-bind="text: player.name"></span>
-        </h2>
-      </div>
+      <div class="col col-7of8"></div>
       <div class="col col-1of8">
         Day <span data-bind="text: player.elapsed"></span>
       </div>
@@ -27,12 +22,6 @@
           <li class="panel world-map toggleable">
             <h2 class="heading">Mini Map</h2>
             <canvas id="minimap" width="120" height="120" data-bind="click: onTileClick"></canvas>
-          </li>
-          <li id="inventory" class="panel items toggleable" data-bind="click: onInventoryClick">
-            <h2 class="heading">Inventory</h2>
-            <ul class="compact" data-bind="foreach: player.inventory">
-              <li class="item" data-bind="text: name, css: { equipped: ( $data.isEquipped ) }"></li>
-            </ul>
           </li>
       </ul>
   </section>
@@ -45,29 +34,63 @@
         <div class="layer ground"></div>
       </div>
       <div class="layer layer-over">
-        <div id="info" class="panel info-panel"  data-bind="if: $parent.showInfo()">
+        <div id="allies" class="panel left-panel allies-panel showing">
+          <div data-bind="with:$parent.player">
+            <div class="row">
+              <div class="col col-1of4">
+                <img class="player-icon" src="./resources/graphics/HeroIcon.png">
+              </div>
+              <div class="col col-3of4">
+                <h2 class="player-label">
+                  <span data-bind="text: name"></span>
+                </h2>
+                <span class="health-bar" data-bind="style: { width: $root.health($data) * 10 + 'px'}"></span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col col-1of4"></div>
+              <div class="col col-1of4">
+                Weapon:
+              </div>
+              <div class="col col-2of4" data-bind="text: currentWeapon.name"></div>
+            </div>
+            <div id="inventory" class="items toggleable collapsed" data-bind="click: $root.onInventoryClick">
+              <h2 class="heading">Inventory</h2>
+              <ul class="compact" data-bind="foreach: inventory">
+                <li class="item" data-bind="text: name, css: { equipped: ( $data.isEquipped ) }"></li>
+              </ul>
+            </div>
+          </div><!-- /allies -->
+        </div>
+        <div id="npc-info" class="panel right-panel npc-panel"  data-bind="css: { showing: !!npcs.length }">
+          <div data-bind="foreach: $parent.combat.opponents">
+            <div class="row">
+              <div class="col col-1of4">
+                <img class="player-icon" src="./resources/graphics/HeroIcon.png">
+              </div>
+              <div class="col col-3of4">
+                <h2 class="player-label">
+                  <span data-bind="text: name"></span>
+                </h2>
+                <span class="health-bar" data-bind="style: { width: $root.health($data) * 10 + 'px'}"></span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col col-1of4"></div>
+              <div class="col col-1of4">
+                Weapon:
+              </div>
+              <div class="col col-2of4" data-bind="text: currentWeapon.name"></div>
+            </div>
+          </div><!-- /opponents -->
+        </div><!-- /#combat -->
+        <div id="info" class="panel right-panel info-panel"  data-bind="css: { showing: $parent.showInfo() }, if: $parent.showInfo()">
           <div data-bind="with:$parent.info">
             <h1 data-bind="text:heading"></h1>
             <div data-bind="html:body"></div>
           </div>
           <button data-bind="click: $parent.hideInfo">Ok</button>
         </div>
-        <div id="combat" class="panel combat-panel"  data-bind="if: $parent.showCombat()">
-          <div class="col col-1of2">
-            <div id="player-info" class="panel overlay-panel">
-              <ul data-bind="foreach: $parent.combat.allies">
-                <li><span data-bind="text: name"></span><span class="health-bar" data-bind="style: { width: $root.health($data) * 10 + 'px'}"></span></li>
-              </ul>
-            </div>
-          </div>
-          <div class="col col-1of2">
-            <div id="npc-info" data-bind="visible: !!npcs.length" class="panel overlay-panel">
-              <ul data-bind="foreach: $parent.combat.opponents">
-                <li><span data-bind="text: name"></span><span class="health-bar" data-bind="style: { width: $root.health($data) * 10 + 'px'}"></span></li>
-              </ul>
-            </div>
-          </div>
-        </div><!-- /#combat -->
 
         <section id="messages" class="panel toggleable" data-bind="click: $parent.onMessagesClick">
           <h2 class="heading">Messages</h2>
