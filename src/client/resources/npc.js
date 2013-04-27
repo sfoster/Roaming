@@ -1,9 +1,9 @@
 define([], function(){
-
+  
   var npc = {};
-  // available terrain:
+  // available terrain: 
   // ["clear", "barren", "desert", "marsh", "mountains", "plains", "water", "abyss", "sand", "forest", "ice"]
-
+  
   npc.goblin = {
     name: 'Goblin',
     icon: 'resources/graphics/GoblinIcon.png',
@@ -31,7 +31,7 @@ define([], function(){
     range: 'short, medium',
     evasion: 3,
     terrain: ["marsh", "mountains", "plains", "forest"]
-    // Goblin Shaman has Damage Aura spell/ability
+    // Goblin Shaman has Rage Aura spell/ability
   //(doubles the damage of accompanying fighters )
   };
   npc.goblinWarlord = {
@@ -43,7 +43,45 @@ define([], function(){
     evasion: 6,
     terrain: ["marsh", "mountains", "plains", "forest"]
   };
+npc.juvinileTroll = {
+    name: 'Juvenile Troll',
+    strength: 10,
+    hp: 50,
+    mp: 0,
+    range: 'short',
+    evasion: 3,
+    terrain: ["marsh", "mountains", "plains", "forest", "barren"]
+  };
+  npc.troll = {
+      name: 'troll',
+      strength: 16,
+      hp: 60,
+      mp: 0,
+      range: 'short',
+      evasion: 2,
+      terrain: ["marsh", "mountains", "plains", "forest", "barren"]
+  };
+  npc.trollElder = {
+    name: 'Troll Elder',
+    strength: 4,
+    hp: 25,
+    mp: 20,
+    range: 'short, medium',
+    evasion: 1,
+    terrain: ["marsh", "mountains", "plains", "forest", "barren"]
+    // Troll Elder has Camouflage spell/ability
+  //(makes foes much harder to hit)
+  };
 
+  npc.trollHulk = {
+    name: 'Troll Hulk',
+    strength: 20,
+    hp: 80,
+    mp: 0,
+    range: 'short',
+    evasion: 1,
+    terrain: ["marsh", "mountains", "plains", "forest", "barren"]
+  };
   npc.hugeRat = {
     name: 'Huge Rat',
     strength: 4,
@@ -70,8 +108,8 @@ define([], function(){
     range: 'short,',
     evasion: 10,
     terrain: ["marsh", "mountains", "plains", "forest", "desert"]
-    // Mutant Rat has Poison spell/ability
-  //( does reccuring half damage for 2-3 turns after attack )
+    // Mutant Rat has Venom spell/ability
+  //( half damge reccurs for 2-3 turns after attack )
   };
   npc.ratLord = {
     name: 'Rat Lord',
@@ -81,56 +119,6 @@ define([], function(){
     range:'short',
     evasion: 20,
     terrain: ["marsh", "mountains", "plains", "forest", "desert"]
-  };
-
-   npc.juvinileTroll = {
-    name: 'Juvenile Troll',
-    strength: 10,
-    hp: 50,
-    mp: 0,
-    range: 'short',
-    evasion: 3,
-    terrain: ["marsh", "mountains", "plains", "forest", "barren"]
-  };
-  npc.troll = {
-      name: 'troll',
-      strength: 16,
-      hp: 60,
-      mp: 0,
-      range: 'short',
-      evasion: 2,
-      terrain: ["marsh", "mountains", "plains", "forest", "barren"]
-  };
-  npc.trollElder = {
-    name: 'Troll Elder',
-    strength: 4,
-    hp: 25,
-    mp: 20,
-    range: 'short, medium',
-    evasion: 1,
-    terrain: ["marsh", "mountains", "plains", "forest", "barren"]
-    // Troll Elder has Camo spell/ability
-  //(makes him much harder to hit)
-  };
-
-  npc.trollHulk = {
-    name: 'Troll Hulk',
-    strength: 20,
-    hp: 80,
-    mp: 0,
-    range: 'short',
-    evasion: 1,
-    terrain: ["marsh", "mountains", "plains", "forest", "barren"]
-  };
-
-  npc.python = {
-    name: 'Python',
-    strength: 12,
-    hp: 30,
-    mp: 0,
-    range: 'short',
-    evasion: 5,
-    terrain: ["marsh", "forest"]
   };
   npc.anaconda = {
     name: 'Anaconda',
@@ -149,10 +137,10 @@ define([], function(){
     range: 'short,medium',
     evasion: 7,
     terrain: ["plains", "forest", "barren", "desert"]
-    // Gaint Adder has Hypnotism spell/ability(target loses a turn)
+    // Gaint Adder has Hypnotism spell/ability(target loses 3 turns)
+    // Giant Adder has Strong Venom ability
+    // ( damage reccurs for 3-4 turns after attack )
   };
-
-
   npc.gaintCobra= {
     name: 'Gaint Cobra',
     strength: 22,
@@ -161,8 +149,8 @@ define([], function(){
     range: 'short',
     evasion: 5,
     terrain: ["sand", "barren", "desert"]
-    // Giant Cobra has Poison ability
-    // (see Mutant Rat)
+    // Giant Cobra has Strong Venom ability
+    // ( damage reccurs for 3-4 turns after attack )
   };
   npc.wildcat = {
     name: 'Wildcat',
@@ -208,7 +196,7 @@ define([], function(){
     range: 'short',
     evasion: 28,
     terrain: ["marsh", "forest"]
-
+    
   };
   npc.bear = {
     name: 'Bear',
@@ -227,7 +215,7 @@ define([], function(){
     range: 'short',
     evasion: 6,
     terrain: ["marsh", "forest", "barren"]
-    // Sick Cat has poison spell/abilty
+    // Sick Cat has Venom spell/abilty
     // (see Mutant Rat)
   };
  npc.rabidDog = {
@@ -238,7 +226,7 @@ define([], function(){
     range: 'short',
     evasion: 12,
     terrain: ["marsh", "forest", "barren", "desert"]
-    // Rabid Dog has Poison spell/ability
+    // Rabid Dog has Venom spell/ability
     // (see Mutant Rat)
   };
   npc.lioness = {
@@ -256,7 +244,16 @@ define([], function(){
     hp: 60,
     mp: 0,
     range: 'short',
-    evasion: 20
+    evasion: 20  
+  };
+  npc.lion = {
+    name: 'Lion',
+    strength: 15,
+    hp: 60,
+    mp: 0,
+    range: 'short',
+    evasion: 15,
+    terrain: ["plains"]
   };
   npc.chimpanzee = {
     name: 'Chimpanzee',
@@ -293,13 +290,22 @@ define([], function(){
     evasion: 2,
     terrain: ["plains", "forest", "marsh", "sand", "barren"]
   };
+  npc.bull = {
+    name: 'Bull',
+    strength: 30,
+    hp: 75,
+    mp: 0,
+    range: 'short',
+    evasion: 1, 
+    terrain: ["mountains", "barren"]
+  };
   npc.minotaur = {
     name: 'Minotaur',
     strength: 40,
     hp: 100,
     mp: 0,
     weapon: 'weaponclass:medium range, weaponclass:shortrange',
-    evasion: 1,
+    evasion: 1, 
     terrain: ["mountains", "barren"]
   };
   npc.humanSoldier = {
@@ -363,7 +369,7 @@ define([], function(){
     hp: 300,
     mp: 0,
     range: 'short',
-    evasion: 0,
+    evasion: 0, 
     terrain: ["mountains", "ice", "barren", "forest"]
   };
   npc.juggernaut = {
@@ -372,7 +378,7 @@ define([], function(){
     hp: 1000,
     mp: 0,
     weapon: 'weapons.maul',
-    evasion: 0,
+    evasion: 0, 
     terrain: ["desert"]
   };
   npc.hdyra = {
@@ -381,10 +387,12 @@ define([], function(){
     hp: 300,
     mp: 50,
     range: 'short, medium',
-    evasion: 15,
+    evasion: 15, 
     terrain: ["desert", "sand", "forest"]
     // Hydra has Venom Spit ability
-    // (same as Poison, but medium range)
+    // (same as Venom, but medium range)
+    // Hydra has Deadly Toxin ability
+    //(Double damage reccurs for 5-6 turns after attack)
   };
   npc.cyclop = {
     name: 'Cyclop',
@@ -392,7 +400,7 @@ define([], function(){
     hp: 200,
     mp: 0,
     range: 'short, medium, long',
-    evasion: 2,
+    evasion: 2, 
     terrain: ["desert", "sand", "barren", "mountains"]
   };
 
@@ -402,10 +410,10 @@ define([], function(){
     hp: 500,
     mp: 50,
     range: 'short, medium, long',
-    evasion: 25,
+    evasion: 25, 
     terrain: ["mountains"]
     // Dragon has Flame Breath abilty
-  // (medium+long range attack)
+  // (medium+long range attack, causes burning( half damage reccurs for 2-3 turns after attack))
   };
   npc.theRoc = {
     name: 'The Roc',
@@ -413,12 +421,12 @@ define([], function(){
     hp: 500,
     mp: 0,
     range: 'short, medium',
-    evasion: 20,
+    evasion: 20, 
     terrain: ["mountains"]
   };
-
-
+  
+  
   // All spells cost 10 mp per cast
-  // dmg=strength x wpn dmg divided by 5(?)
+  // dmg=strength x wpn dmg divided by 5(?) 
   return npc;
 });
