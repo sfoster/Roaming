@@ -84,34 +84,20 @@ define([
 
     // faux battle
     opponents.filter(alive).forEach(function(thing){
+      var damage = 1; // should be calculated somehow
       var ally = allies[0]; // could be random or turn-based or whatever
-      var chanceToHit = (2 * game.random()) * (
-              (ally.stats.agility * ally.level) /
-              (thing.stats.agility * thing.level)
-      );
-      if(chanceToHit > 1){
-        var damage = calculateDamage(ally, thing);
-        // update our tallies
-        thing.stats.health = thing.stats.health - damage;
-        result.allies.inflicted+=damage;
-        result.opponents.sustained+=damage;
 
-        console.log("Hit for "+ damage, chanceToHit);
-        game.emit("combatstrike", {
-          target: this,
-          attacker: allies[0],
-          defender: thing,
-          damage: damage
-        });
-      } else {
-        console.log("Missed! "+ chanceToHit);
-        game.emit("combatmiss", {
-          target: this,
-          attacker: allies[0],
-          defender: thing,
-          damage: 0
-        });
-      }
+      // update our tallies
+      thing.stats.health-=damage;
+      result.allies.inflicted+=damage;
+      result.opponents.sustained+=damage;
+
+      game.emit("combatstrike", {
+        target: self,
+        attacker: allies[0],
+        defender: thing,
+        damage: damage
+      });
     });
     // end faux battle
 
@@ -123,20 +109,38 @@ define([
     return result;
   }
 
-  function calculateDamage(attacker, defender){
-    var weapon = attacker.currentWeapon;
-    // NB: only short range implemented
-    var damage = weapon.shortRangeDamage * attacker.stats.strength;
-    if(defender.armor){
-      damage = damage - (damage * defender.armor.effect)
-    }
-    if (damage < 1){
-      console.log("rounding up calculated hit damage: " + damage);
-      damage = 1;
-    }
-    return damage;
+  // not hooked up
+  function combat(player, monsters) {
+    var damage = player.damage(1); // short-range attack
+    var damageInflicted = 0;
+
+    // player attach - he magically attacks them all for now
+    monsters.forEach(function(monster){
+      var chanceToHit = 0.5;
+      var doesHit = Math.random() >= chanceToHit;
+      if(doesHit) {
+
+        console.log("You hit for " + damage + " of " + monster.stats.health);
+        monster.stats.health = monster.stats.health - damage;
+        damageInflicted += damage;
+      } else {
+        console.log("You miss the " + monster.name);
+      }
+    });
+    var deadMonsters = monsters.filter(function(monster){
+      return monster.stats.health <= 0;
+    });
+    console.log("You killed: ", deadMonsters.map(function(monster){ return monster.name; }));
+
+    monsters = monsters.filter(function(monster){
+      return monster.stats.health > 0;
+    });
+    return {
+      killed: deadMonsters,
+      remaining: monsters,
+      damageInflicted: damageInflicted
+    };
   }
 
-  Combat.calculateDamage = calculateDamage;
   return Combat;
 });

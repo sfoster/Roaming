@@ -37,6 +37,8 @@ define([
       return Math.random();
     }
   }, Evented );
+  // for debug
+  window.Combat = Combat;
 
   // the scene is modelled as a stack of states
   var stack = game.stack = (function(){
@@ -266,11 +268,10 @@ define([
   };
 
   function isHostile(npc) {
-    return !npc.friendly;
+    return !(npc.friendly || npc.neutral);
   }
 
   game.on("beforelocationenter", function(evt){
-    console.log("beforelocationenter, flushing messages");
     game.ui.flush();
     game.ui.message("You enter " + evt.target.id);
     var id = game.locationToString(evt.target);
