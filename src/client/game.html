@@ -36,7 +36,7 @@
       <div class="layer layer-over">
         <div id="allies" class="panel left-panel allies-panel showing">
           <div data-bind="with:$parent.player">
-            <div class="row">
+            <div class="row" data-bind="attr: {id: $data._id}">
               <div class="col col-1of4">
                 <img class="actor-icon" data-bind="attr:{src:icon}">
               </div>
@@ -64,7 +64,7 @@
         </div>
         <div id="npc-info" class="panel right-panel npc-panel"  data-bind="css: { showing: !!npcs.length }">
           <div data-bind="foreach: $parent.combat.opponents">
-            <div class="row">
+            <div class="row" data-bind="attr: {id: $data._id}">
               <div class="col col-1of4">
                 <img class="actor-icon" data-bind="attr:{src:icon}">
               </div>

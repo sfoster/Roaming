@@ -288,18 +288,18 @@ define([
     });
   });
 
+  game.on("combatstrike", ui.onCombatStrike);
+
   game.on("afterlocationenter", function(evt){
     var tile = evt.target;
     var hostiles = tile.npcs.filter(isHostile);
     if(hostiles.length) {
       game.ui && game.ui.message("You are faced with: " + util.pluck(hostiles, 'name').join(', '));
 
-      console.log("Combat, with: ", hostiles);
       var combat = new Combat();
       var isFirstRound = true;
       combat.start([game.player], hostiles).then(
         function(result){
-          console.log("combat concluded: ", result);
           game.ui.info("Combat concluded", "There was carnage: <pre>" + JSON.stringify(result,null,2)+"</pre>");
         },
         function(err){

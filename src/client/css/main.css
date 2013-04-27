@@ -276,3 +276,18 @@ ul.compact > li > p {
 	background-color: #ff9;
 	display: block;
 }
+
+@-moz-keyframes pulse {
+  0% {
+    box-shadow: 0 0 5px #f00, 0 0 15px 0px white;
+  }
+  50% {
+    box-shadow: 0 0 15px #f00, 0 0 15px 25px rgba(255,255,255,0.4);
+  }
+  100% {
+    box-shadow: 0 0 5px #f00, 0 0 15px 0 white;
+  }
+}
+.struck {
+  animation: pulse 0.4s ease-in-out;
+}
