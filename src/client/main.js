@@ -294,25 +294,52 @@ define([
 
   game.on("combatstrike", ui.onCombatStrike);
 
-  game.on("afterlocationenter", function(evt){
+  game.initCombat = function(allies, hostiles) {
+    game.ui && game.ui.message("You are faced with: " + util.pluck(hostiles, 'name').join(', '));
+    var combat = new Combat();
+    var isFirstRound = true;
+    return combat.start(allies, hostiles).then(
+      function(result){
+        game.ui.info("Combat concluded", "There was carnage: <pre>" + JSON.stringify(result,null,2)+"</pre>");
+      },
+      function(err){
+        console.log("combat error: ", err);
+      },
+      function(update){
+        console.log("combat progress: ", update);
+      }
+    );
+  };
+
+  game.introducNpcs = function(npcs) {
+    npcs.forEach(function(npc){
+      console.log("At this location you see: " + npc.name);
+    });
+  };
+
+  game.on("locationenter", function(evt){
     var tile = evt.target;
+    // beforelocationenter runs any setup
+    // locationenter is our main hook for location action
+    // things that can happen, and the order they should happen in
+    // * run any encounters
+    // * combat with any hostiles
+    // * dialog with non-hostile
+    // * describe scene and any items
+
     var hostiles = tile.npcs.filter(isHostile);
     if(hostiles.length) {
-      game.ui && game.ui.message("You are faced with: " + util.pluck(hostiles, 'name').join(', '));
-
-      var combat = new Combat();
-      var isFirstRound = true;
-      combat.start([game.player], hostiles).then(
-        function(result){
-          game.ui.info("Combat concluded", "There was carnage: <pre>" + JSON.stringify(result,null,2)+"</pre>");
-        },
-        function(err){
-          console.log("combat error: ", err);
-        },
-        function(update){
-          console.log("combat progress: ", update);
+      tile.onEnter(function(){
+        return game.initCombat([game.player], hostiles);
+      });
+    }
+    // we'll want to know more about any (surviving) npcs
+    if(tile.npcs.length) {
+      tile.onEnter(function(){
+        if(tile.npcs.length) {
+          return game.introducNpcs(tile.npcs);
         }
-      );
+      });
     }
   });
 

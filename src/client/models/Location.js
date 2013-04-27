@@ -13,6 +13,7 @@ define([
     if(!options) return;
     this.__events = {}; // make our own event listener collection
     this._onexits = [];
+    this._onenters = [];
     this.encounters = [];
     this.here = [];
     this.npcs = [];
@@ -47,47 +48,64 @@ define([
     },
     enter: function(player, game){
       var proceed = true;
-      this._onexits = [];
-      // load the backdrop
+      // reset
+      this._onenters.length = 0;
+      this._onexits.length = 0;
 
       game.emit("beforelocationenter", {
         target: this,
         player: player,
         cancel: function(){ proceed = false; }
       });
-      if(proceed){
-        console.log("location enter: ", this, player, game, player.history);
-        // what is in this tile?
-        // does anything happen as I enter?
-        //  run any encounters
+      if(!proceed){
+        return;
+      }
+      console.log("location enter: ", this, player, game, player.history);
+      // what is in this tile?
+      // does anything happen as I enter?
+      //  run any encounters
 
-        // update the player's history with details of this visit
-        // have I been here before?
-        //  check player.history for this location id
-        var locationHistory = player.history[this.id] || (player.history[this.id] = {}),
-            visits = locationHistory.visits || (locationHistory.visits = []);
+      // update the player's history with details of this visit
+      // have I been here before?
+      //  check player.history for this location id
+      var locationHistory = player.history[this.id] || (player.history[this.id] = {}),
+          visits = locationHistory.visits || (locationHistory.visits = []);
 
-        game.emit("locationenter", {
-          target: this,
-          player: player,
-          cancel: function(){ proceed = false; }
-        });
+      visits.push(+new Date());
 
-        visits.push(+new Date());
+      // enter each encounter, return false means stop
+      this.encounters.reduce(function(proceedToNext, encounter){
+        console.log("encounter: ", encounter);
+        return (false !== encounter.enter(player, game));
+      }, true);
 
-        // enter each encounter, return false means stop
-        var self = this;
-        this.encounters.reduce(function(proceedToNext, encounter){
-          console.log("encounter: ", encounter);
-          return (false !== encounter.enter(player, game));
-        }, true);
+      game.emit("locationenter", {
+        target: this,
+        player: player,
+        cancel: function(){ proceed = false; }
+      });
 
+      // run through any registered 'onenter' actions
+      // async action should return a promise
+      // the sequence is live, so actions can add to or truncate the list
+      var sequence = this._onenters;
+      sequence.next = function() {
+        if(!this.length) return;
+        var fn = this.shift();
+        return Promise.when(fn(player, game), this.next.bind(this));
+      };
+
+      Promise.when(sequence.next(), function(){
         game.emit("afterlocationenter", {
           target: this,
           player: player,
           cancel: function(){ proceed = false; }
         });
-      }
+      });
+    },
+
+    onEnter: function(fn){
+     this._onenters.push(fn);
     },
     onExit: function(fn){
      this._onexits.push(fn);
