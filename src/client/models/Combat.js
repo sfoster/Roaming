@@ -126,13 +126,11 @@ define([
   function calculateDamage(attacker, defender){
     var weapon = attacker.currentWeapon;
     // NB: only short range implemented
-    var damage = weapon.shortRangeDamage * attacker.stats.strength;
+    var weaponDamage = weapon.shortRangeDamage/5;
+    var damageChance = Math.random()*2;
+    var damage = Math.floor(weaponDamage * attacker.stats.strength * damageChance);
     if(defender.armor){
       damage = damage - (damage * defender.armor.effect)
-    }
-    if (damage < 1){
-      console.log("rounding up calculated hit damage: " + damage);
-      damage = 1;
     }
     return damage;
   }
