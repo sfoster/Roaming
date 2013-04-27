@@ -329,13 +329,13 @@ define([
 
     var hostiles = tile.npcs.filter(isHostile);
     if(hostiles.length) {
-      tile.onEnter(function(){
+      tile.onAfterEnter(function(){
         return game.initCombat([game.player], hostiles);
       });
     }
     // we'll want to know more about any (surviving) npcs
     if(tile.npcs.length) {
-      tile.onEnter(function(){
+      tile.onAfterEnter(function(){
         if(tile.npcs.length) {
           return game.introducNpcs(tile.npcs);
         }

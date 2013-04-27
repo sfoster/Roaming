@@ -13,7 +13,7 @@ define([
     if(!options) return;
     this.__events = {}; // make our own event listener collection
     this._onexits = [];
-    this._onenters = [];
+    this._onafterenters = [];
     this.encounters = [];
     this.here = [];
     this.npcs = [];
@@ -49,7 +49,7 @@ define([
     enter: function(player, game){
       var proceed = true;
       // reset
-      this._onenters.length = 0;
+      this._onafterenters.length = 0;
       this._onexits.length = 0;
 
       game.emit("beforelocationenter", {
@@ -88,7 +88,7 @@ define([
       // run through any registered 'onenter' actions
       // async action should return a promise
       // the sequence is live, so actions can add to or truncate the list
-      var sequence = this._onenters;
+      var sequence = this._onafterenters;
       sequence.next = function() {
         if(!this.length) return;
         var fn = this.shift();
@@ -104,8 +104,8 @@ define([
       });
     },
 
-    onEnter: function(fn){
-     this._onenters.push(fn);
+    onAfterEnter: function(fn){
+     this._onafterenters.push(fn);
     },
     onExit: function(fn){
      this._onexits.push(fn);
