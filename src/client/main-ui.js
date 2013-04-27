@@ -100,18 +100,12 @@ define([
     switch(typeof obj[pname]){
       case "function":
         var oldValue =  obj[pname]();
-        console.log("ui.set pname: %s, type: %s", pname, util.getType(oldValue));
         if("array"==util.getType(oldValue)){
           // update array in-situ
           var items = value.map(function(item){
             return ko.observable(item);
           });
-          console.log("Updating array: ", pname, items);
           obj[pname].splice.apply(obj[pname], [0, oldValue.length].concat(items));
-          // obj[pname].valueWillMutate();
-          // oldValue.splice.apply(oldValue, [0, oldValue.length].concat(value));
-          // obj[pname].valueHasMutated();
-          console.log("After update: ", obj[pname]()[0]);
         } else {
           obj[pname](value);
         }
@@ -172,6 +166,10 @@ define([
   ui.onCombatStart = function(evt){
     var combat = evt.target;
     // TODO: ...
+  };
+  ui.onCombatStrike = function(evt) {
+    var strikee = evt.defender;
+    strike(strikee);
   };
 
   ui.flush = function(dest){
@@ -245,9 +243,6 @@ define([
     var x = Math.floor(pixelX / tileSize) + map.startX,
         y = Math.floor(pixelY / tileSize) + map.startY;
 
-    // console.log("click x: %s, y: %s, node offset x: %s, y: %s: ", evt.clientX, evt.clientY, mapOffsets.x, mapOffsets.y);
-    // console.log("pixelX: %s, pixelY: %s", pixelX, pixelY, x, y);
-
     if(game.canMoveTo(x,y)) {
       // how to handle moving between regions?
       var hash = '#'+game.locationToString(x,y);
@@ -265,6 +260,24 @@ define([
     $('#inventory').toggleClass('collapsed');
   }
 
+  function strike(thing) {
+    var id = thing._id;
+    if(!id) {
+      console.log("strike: thing without id: ", thing);
+      return;
+    }
+    var elm = document.getElementById(id);
+    if(!elm) {
+      console.log("strike: no element for id: ", id);
+    }
+    elm.addEventListener("animationend", function onAnimationEnd() {
+      console.log("unlistening for animation");
+      elm.removeEventListener("animationend", onAnimationEnd);
+      elm.classList.remove('struck');
+    }, false);
+    console.log("striking: ", elm);
+    elm.classList.add('struck');
+  }
 
   return ui;
 

@@ -31,6 +31,9 @@ define([
   Combat.prototype.roundInterval = 500;
 
   Combat.prototype.start = function(allies, opponents) {
+    this.allies = allies;
+    this.opponents = opponents;
+
     var defd = Promise.defer();
     var self = this;
     var finalResult = {
@@ -41,7 +44,7 @@ define([
     var itv = setInterval(function(){
       game.emit("combatroundstart", {
         scoreboard: finalResult,
-        target: this,
+        target: self,
         allies: allies,
         opponents: opponents
       });
@@ -49,7 +52,7 @@ define([
       finalResult = sumResults(finalResult, result);
 
       game.emit("combatroundend", {
-        target: this,
+        target: self,
         scoreboard: finalResult,
         result: result,
         allies: allies,
@@ -68,8 +71,12 @@ define([
     return defd.promise;
   }
 
-  Combat.prototype.round = function(allies, opponents) {
+  Combat.prototype.round = function() {
+    var allies = this.allies,
+        opponents = this.opponents;
     var combatants = [].concat(allies,opponents);
+
+    var self = this;
     var result = {
       allies: { inflicted: 0, sustained: 0 },
       opponents: { inflicted: 0, sustained: 0 }
