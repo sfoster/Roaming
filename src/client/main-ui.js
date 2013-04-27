@@ -35,7 +35,6 @@ define([
       opponents: ko.observableArray([])
     },
     health: function(thing){
-      
       if(thing.dead) {
           return 0;
       } else {
