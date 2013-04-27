@@ -3,12 +3,13 @@ define([
   'knockout',
   'lib/koHelpers',
   'lib/util',
+  'lib/promise',
   'resources/template',
   'lib/event',
   'models/Map',
   'text!resources/templates/player.html',
   'text!resources/templates/tile.html'
-], function($, ko, koHelpers, util, template, Evented, Map, playerTemplate, tileTemplate){
+], function($, ko, koHelpers, util, Promise, template, Evented, Map, playerTemplate, tileTemplate){
 
   function importTemplate(id, tmpl, bindProperty){
     // setup templates
@@ -182,9 +183,29 @@ define([
   };
 
   ui.info = function(heading, body) {
-    viewModel.info.heading(heading);
-    viewModel.info.body(body);
-    viewModel.showInfo(true);
+    if(viewModel.showInfo()){
+      var queue = ui._infoQueue || (ui._infoQueue = []);
+      queue.push({heading: heading, body: body});
+      var subscription = ui._showInfoSubscription;
+      if(!subscription) {
+        subscription = ui._showInfoSubscription = viewModel.showInfo.subscribe(function(newValue) {
+          if(!newValue && ui._infoQueue && ui._infoQueue.length){
+            var msg = ui._infoQueue.shift();
+            var panel = document.getElementById('info');
+            panel.addEventListener("transitionend", function _onTransitionEnd(evt){
+              panel.removeEventListener("transitionend", _onTransitionEnd);
+              viewModel.info.heading(msg.heading);
+              viewModel.info.body(msg.body);
+              viewModel.showInfo(true);
+            }, false);
+          }
+        });
+      }
+    } else {
+      viewModel.info.heading(heading);
+      viewModel.info.body(body);
+      viewModel.showInfo(true);
+    }
   };
 
   ui.message = function(cont, opt){
