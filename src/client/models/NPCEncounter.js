@@ -27,15 +27,15 @@ define([
    var npcGroups = {
       'greenskins': [
         { id: 'goblin', min: 1, max: 4 },
-	{ id: 'angryDog', min: 0, max: 4 },
+        { id: 'angryDog', min: 0, max: 4 },
         { id: 'goblinChamp', min: 0, max: 1 },
         { id: 'goblinShaman', min: 0, max: 1 },
         { id: 'goblinWarlord', min: 0, max: 1 },
         { id: 'juvinileTroll', min: 0, max: 4 },
-	{ id: 'troll', min: 0, max: 3 },
+        { id: 'troll', min: 0, max: 3 },
         { id: 'trollElder', min: 0, max: 1 },
         { id: 'trollHulk', min: 0, max: 1 },
-	{ id: 'Orc', min: 0, max: 1 }
+        { id: 'Orc', min: 0, max: 1 }
       ],
       'rats': [
         { id: 'hugeRat', min: 1, max: 4 },
@@ -46,7 +46,7 @@ define([
       'canines': [
         { id: 'angryDog', min: 1, max: 5 },
         { id: 'rabidDog', min: 0, max: 1 },
-	{ id: 'angryWolf', min: 0, max: 1 }
+        { id: 'angryWolf', min: 0, max: 1 }
       ],
       'equines': [
         { id: 'horse', min: 1, max: 3 },
@@ -57,12 +57,12 @@ define([
         { id: 'minotaur', min: 0, max: 1 },
       ],
       'felines': [
-	{ id: 'sickCat', min: 0, max: 5 },
+        { id: 'sickCat', min: 0, max: 5 },
         { id: 'wildcat', min: 1, max: 3 },
         { id: 'cheetah', min: 0, max: 1 },
-	{ id: 'tiger', min: 0, max: 1 },
-	{ id: 'lioness', min: 0, max: 1 },
-	{ id: 'lion', min: 0, max: 1 },
+        { id: 'tiger', min: 0, max: 1 },
+        { id: 'lioness', min: 0, max: 1 },
+        { id: 'lion', min: 0, max: 1 },
       ],
       terrainGroup: function(terrain) {
         // return a single randomly picked creature

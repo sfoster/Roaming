@@ -1,11 +1,11 @@
 define(['compose', 'lib/util', 'lib/event'], function(Compose, util, Evented){
   var emit = Evented.emit.bind(this), // it matter what 'this' when we emit and listenr for events. Here, 'this' is the global context
       create = util.create;
-      
+
   var proto = {
     seen: false
   };
-  
+
   var Item = Compose(Compose, {
 
   });
@@ -40,7 +40,7 @@ define(['compose', 'lib/util', 'lib/event'], function(Compose, util, Evented){
       if(item.fixed){
         // no go, raise an event to trigger maybe a sound, or a message
       } else {
-        var proceed = true; 
+        var proceed = true;
         // maybe fire a onbeforetake event, which can block the action if evt.cancel() is called
         emit("beforetake", {
           target: item,
