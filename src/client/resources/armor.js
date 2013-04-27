@@ -140,9 +140,14 @@ define([], function(){
   effect: 16/100,
   encumberance: 0
   };
+   armor.dragonScales = {
+  name: 'Dragonscales',
+  effect: 50/100,
+  encumberance: 5
+  };
     armor.juggernautPlate = {
   name: 'Juggernaut Plate',
-  effect: 50/100,
+  effect: 75/100,
   encumberance: 10
   };
   return armor;
