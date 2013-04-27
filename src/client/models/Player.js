@@ -3,13 +3,13 @@ define([
 ], function(Compose, Evented, util, Inventory, Actor, weapons){
 
   var Player = Actor.extend({
-
     propertiesWithReferences: [].concat(Actor.prototype.propertiesWithReferences),
 
     declaredClass: "Player",
     name: "You", // by default
+    level: 1,
+    luck: 50/100,
     icon: "./resources/graphics/HeroIcon.png",
-    level: 0,
     currentWeapon: 'fishingSpear', // by default
     history: {},
     score: 0,

@@ -32,6 +32,9 @@ define([
     now: function(){
       // game timestamp, second units
       return Math.floor( Date.now() / 1000 );
+    },
+    random: function() {
+      return Math.random();
     }
   }, Evented );
 

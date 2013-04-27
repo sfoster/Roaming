@@ -3,10 +3,11 @@ define([
 ], function(Compose, util, Inventory){
 
   var StatsProto = {
-  	health: 5,
+    health: 5,
     strength: 5,
     mana: 0,
-    level: 1
+    level: 1,
+    agility: 5
   };
 
   function uniqId(stem) {
@@ -48,8 +49,20 @@ define([
         stats.mana = args.mp;
         delete args.mp;
       }
+      if('evasion' in args) {
+        stats.agility = args.evasion;
+        delete args.evasion;
+      }
     }
 
+    // capture baseline stats
+    this.baseStats = JSON.parse(JSON.stringify(this.stats));
+    
+    // calculate a level if there is none
+    if(!this.level) {
+      this.level  = Math.max(1, this.stats.strength * this.stats.agility / 50);
+    }
+    
     var weaponId = this.currentWeapon ?
     		this.currentWeapon.id || this.currentWeapon : null;
 

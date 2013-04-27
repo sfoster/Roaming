@@ -35,7 +35,14 @@ define([
       opponents: ko.observableArray([])
     },
     health: function(thing){
-      return thing.dead ? ": Dead" : thing.stats.health;
+      
+      if(thing.dead) {
+          return 0;
+      } else {
+        var fullHealth = thing.baseStats.health;
+        var percentHealth = 100 * (thing.stats.health/fullHealth);
+        return percentHealth;
+      }
     },
     info: {
       heading: ko.observable("Info"),
