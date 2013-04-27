@@ -63,6 +63,12 @@ define([
           defd.progress(finalResult);
       } else {
         clearInterval(itv);
+        game.emit("combatend", {
+          scoreboard: finalResult,
+          target: self,
+          allies: allies,
+          opponents: opponents
+        });
         defd.resolve(finalResult)
         return;
       };
@@ -136,5 +142,7 @@ define([
   }
 
   Combat.calculateDamage = calculateDamage;
+  Combat.aliveFilter = alive;
+  Combat.deadFilter = not(alive);
   return Combat;
 });

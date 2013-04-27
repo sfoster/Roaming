@@ -76,8 +76,6 @@ define([
   // set up main game stack
   // get region data for the starting position
   // enter the region and tile
-
-
   function enterAt(regionId, x, y) {
 
     // load the region and current tile to set the scene
@@ -271,6 +269,10 @@ define([
     return !(npc.friendly || npc.neutral);
   }
 
+  function getName(thing) {
+    return thing.name;
+  };
+
   game.on("beforelocationenter", function(evt){
     game.ui.flush();
     game.ui.message("You enter " + evt.target.id);
@@ -290,6 +292,29 @@ define([
       allies:evt.allies,
       opponents:evt.opponents
     });
+    var tile = game.tile;
+    evt.opponents.filter(Combat.deadFilter).forEach(function(npc){
+      console.log("combatend, dead opponent: ", npc);
+      // TODO: move out of npcs, possibly as corpose into tile.here
+      // do creatures drop weapon, and need to be searched for anything else?
+      if(npc.currentWeapon && !npc.currentWeapon.attached) {
+        npc.inventory.remove(npc.currentWeapon);
+        game.tile.here.push(npc.currentWeapon);
+        npc.currentWeapon = null;
+      }
+      // remove the npc from the tile's list
+      var idx = game.tile.npcs.indexOf(npc);
+      if(idx > -1) {
+        tile.npcs.splice(idx, 1);
+      }
+      // add the corpose to the tile's items list
+      npc.name += " corpse";
+      game.tile.here.push(npc);
+    });
+  });
+
+  game.on("combatend", function(evt){
+    game.ui.info("Combat concluded", "There was carnage: <pre>" + JSON.stringify(evt.scoreboard,null,2)+"</pre>");
   });
 
   game.on("combatstrike", ui.onCombatStrike);
@@ -300,7 +325,7 @@ define([
     var isFirstRound = true;
     return combat.start(allies, hostiles).then(
       function(result){
-        game.ui.info("Combat concluded", "There was carnage: <pre>" + JSON.stringify(result,null,2)+"</pre>");
+        console.log("combat complete");
       },
       function(err){
         console.log("combat error: ", err);
@@ -311,10 +336,19 @@ define([
     );
   };
 
-  game.introducNpcs = function(npcs) {
-    npcs.forEach(function(npc){
-      console.log("At this location you see: " + npc.name);
-    });
+  game.introduceNpcs = function(npcs) {
+    if(!npcs.length) return;
+    game.ui.info(
+      "NPCs",
+      "At this location you see: "+npcs.map(getName).join(", ")
+    );
+  };
+  game.describeItems = function(items) {
+    if(!items.length) return;
+    game.ui.info(
+      "Items",
+      "At this location you see: "+items.map(getName).join(", ")
+    );
   };
 
   game.on("locationenter", function(evt){
@@ -337,10 +371,15 @@ define([
     if(tile.npcs.length) {
       tile.onAfterEnter(function(){
         if(tile.npcs.length) {
-          return game.introducNpcs(tile.npcs);
+          return game.introduceNpcs(tile.npcs);
         }
       });
     }
+    tile.onAfterEnter(function(){
+      if(tile.here.length) {
+        return game.describeItems(tile.here);
+      }
+    });
   });
 
   game.on("locationexit", function(evt){
