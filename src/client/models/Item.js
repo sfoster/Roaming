@@ -6,20 +6,16 @@ define(['compose', 'lib/util', 'lib/event'], function(Compose, util, Evented){
     seen: false
   };
 
-  var Item = Compose(Compose, {
+  console.log("Loading models/Item");
 
-  });
-
-  util.mixin(Item, {
-    create: function(data){
-      if("string" == typeof data){
-        data = JSON.parse(data);
-      }
-      var item = create(proto, data);
-      return item;
-    },
-    describe: function(item, context){
+  var mixin = util.mixin;
+  var Item = Compose(function(args){
+    mixin(this, args || {});
+    console.log("Item constructor: ", this);
+  }, Evented, {
+    describe: function(context){
       context = context || {};
+      var item = this;
       var player = context.player;
       // is this the first/initial sight of this item?
       // do we own this item?
@@ -33,10 +29,11 @@ define(['compose', 'lib/util', 'lib/event'], function(Compose, util, Evented){
       }
       return description;
     },
-    examine: function(item, context){
-      return item.detailedDescription || item.description;
+    examine: function(context){
+      return this.detailedDescription || this.description;
     },
-    take: function(item, context){
+    take: function(context){
+      var item = this;
       if(item.fixed){
         // no go, raise an event to trigger maybe a sound, or a message
       } else {
@@ -59,7 +56,36 @@ define(['compose', 'lib/util', 'lib/event'], function(Compose, util, Evented){
         }
       }
       return proceed && !item.fixed;
+    },
+    transferTo: function(collection) {
+      var current = this.inCollection;
+      if(current) {
+        if(current.remove) {
+          current.remove(this);
+        } else {
+          current.splice(current.indexOf(this), 1);
+        }
+      }
+      if(collection.add) {
+        collection.add(this);
+      } else {
+        collection.push(this);
+      }
+      this.inCollection = collection;
     }
-  };
+  });
+
+  Item.extend = util.extend;
+
+  // statics
+  util.mixin(Item, {
+    create: function(data){
+      if("string" == typeof data){
+        data = JSON.parse(data);
+      }
+      var item = create(proto, data);
+      return item;
+    },
+  });
   return Item;
 });
