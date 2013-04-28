@@ -2,5 +2,10 @@
   "x": 4,
   "y": 4,
   "id": "4,4",
-  "terrain": "mountains"
+  "terrain": "mountains",
+  "here": [
+    {
+      "resource": "resources/items#rope"
+    }
+  ]
 }
