@@ -53,6 +53,11 @@ define([
     onMessagesClick: onMessagesClick,
     onInventoryClick: onInventoryClick,
     onTileClick: onTileClick,
+    onTileItemClick: function(item, evt){
+      ui.emit("tileitemclick", {
+          target: item,
+      });
+    },
     tile: null
   };
 

@@ -86,7 +86,7 @@
             <h1 data-bind="text:heading"></h1>
             <div data-bind="if:body"><div data-bind="html:body"></div></div>
             <div data-bind="foreach: items">
-              <div data-bind="html:name"></div>
+              <div data-bind="html:name, click: $root.onTileItemClick"></div>
             </div>
           </div>
 

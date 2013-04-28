@@ -201,45 +201,6 @@ define([
     return names[keyMask];
   }
 
-  function resolveItem(id, defaults){
-    var cat = 'items',
-        delimIdx = id.indexOf('/'),
-        item;
-    if(delimIdx > -1){
-      cat = id.substring(0, delimIdx);
-      id = id.substring(delimIdx+1);
-    }
-    switch(cat){
-      case 'misc':
-      case 'items':
-        item = items[id];
-        break;
-      case 'armor':
-        item = armor[id];
-        break;
-      case 'weapons':
-        item = weapons[id];
-        break;
-      default:
-        item = items[id] || weapons[id] || armor[id];
-        break;
-    }
-    if(!item && defaults) {
-       item = util.create(defaults, { id: id, category: cat });
-    }
-    if(!item.id) item.id = id;
-    if(!item.category) item.category = cat;
-    return item;
-  }
-
-  game.ui.on('itemclick', function(evt){
-    var id = evt.id,
-        item = resolveItem(id, { name: evt.text });
-    console.log("taking item: ", item);
-    // just add it directly. We might want a context menu or something eventually with a list of avail. actions
-    player.inventory.push(item);
-  });
-
   game.canMoveTo = function(x,y,_region) {
     var region = _region || game.region;
     var tile = region.getTileAtCoord(x,y);
@@ -298,6 +259,7 @@ define([
       // TODO: move out of npcs, possibly as corpose into tile.here
       // do creatures drop weapon, and need to be searched for anything else?
       if(npc.currentWeapon && !npc.currentWeapon.attached) {
+        npc.currentWeapon.transferTo(game.tile.here);
         npc.inventory.remove(npc.currentWeapon);
         game.tile.here.push(npc.currentWeapon);
         npc.currentWeapon = null;
@@ -336,6 +298,15 @@ define([
       }
     );
   };
+
+  game.ui.on("tileitemclick", function(evt){
+    var item = evt.target;
+    if(!item.fixed) {
+      console.log("take item: ", item);
+      item.transferTo(game.player.inventory);
+      console.log(item.name +" moved to player inventory: ", game.player.inventory);
+    }
+  });
 
   game.introduceNpcs = function(npcs) {
     if(!npcs.length) return;
