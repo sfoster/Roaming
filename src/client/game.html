@@ -30,9 +30,6 @@
       <div class="layer layer-bg" data-bind="css: terrain">
         <div class="layer backdrop" data-bind="style: { backgroundImage: 'url('+backdrop+')' }"></div>
       </div>
-      <div class="layer layer-fg" data-bind="css: terrain">
-        <div class="layer ground"></div>
-      </div>
       <div class="layer layer-over">
         <div id="allies" class="panel left-panel allies-panel showing">
           <div data-bind="with:$parent.player">
@@ -87,8 +84,12 @@
         <div id="info" class="panel right-panel info-panel"  data-bind="css: { showing: $parent.showInfo() }, if: $parent.showInfo()">
           <div data-bind="with:$parent.info">
             <h1 data-bind="text:heading"></h1>
-            <div data-bind="html:body"></div>
+            <div data-bind="if:body"><div data-bind="html:body"></div></div>
+            <div data-bind="foreach: items">
+              <div data-bind="html:name"></div>
+            </div>
           </div>
+
           <button data-bind="click: $parent.hideInfo">Ok</button>
         </div>
 

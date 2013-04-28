@@ -309,6 +309,7 @@ define([
       }
       // add the corpose to the tile's items list
       npc.name += " corpse";
+      npc.fixed = true; // you can't take corpses with you
       game.tile.here.push(npc);
     });
   });
@@ -345,10 +346,7 @@ define([
   };
   game.describeItems = function(items) {
     if(!items.length) return;
-    game.ui.info(
-      "Items",
-      "At this location you see: "+items.map(getName).join(", ")
-    );
+    game.ui.showItems(items);
   };
 
   game.on("locationenter", function(evt){

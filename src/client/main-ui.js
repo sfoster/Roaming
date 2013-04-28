@@ -46,7 +46,8 @@ define([
     },
     info: {
       heading: ko.observable("Info"),
-      body: ko.observable("Blah")
+      body: ko.observable("Blah"),
+      items: ko.observableArray([])
     },
     status: ko.observableArray(['loading']),
     onMessagesClick: onMessagesClick,
@@ -148,10 +149,6 @@ define([
       centerTile.backdrop = centerTile.backdrop.replace(/^.*image!/, '')
       viewModel.tile(centerTile);
 
-      if(centerTile.here.length) {
-        ui.message("Items at this location: " + pluckNames(centerTile.here).join(", "));
-      }
-
       console.log("UI: location enter: ", cx, cy, centerTile.backdrop);
   };
 
@@ -182,29 +179,47 @@ define([
     console.log("flushed " + dest, coln);
   };
 
-  ui.info = function(heading, body) {
+  ui.showItems = function(items, heading) {
+    ui.info(heading || "Items", '', items);
+  };
+
+  function updateObservableArray(arr, newItems) {
+    if(newItems) {
+      arr.splice.apply(arr, [0, arr.length].concat(newItems));
+    } else {
+      arr.splice(0, arr.length);
+    }
+  }
+
+  ui.info = function(heading, body, items) {
+    var update = function(){
+      viewModel.info.heading(heading);
+      viewModel.info.body(body);
+      updateObservableArray(viewModel.info.items, items);
+      viewModel.showInfo(true);
+      // tidy up any timer associated with this update
+      ui._infoCloseTimer = null;
+    };
     if(viewModel.showInfo()){
+      // the info panel is already showing,
+      // so queue up this update for when it is next closed
       var queue = ui._infoQueue || (ui._infoQueue = []);
-      queue.push({heading: heading, body: body});
+      queue.push(update);
       var subscription = ui._showInfoSubscription;
       if(!subscription) {
+        // if we're not already listening for showInfo(), set up the callback to process the queue
         subscription = ui._showInfoSubscription = viewModel.showInfo.subscribe(function(newValue) {
           if(!newValue && ui._infoQueue && ui._infoQueue.length){
-            var msg = ui._infoQueue.shift();
-            var panel = document.getElementById('info');
-            panel.addEventListener("transitionend", function _onTransitionEnd(evt){
-              panel.removeEventListener("transitionend", _onTransitionEnd);
-              viewModel.info.heading(msg.heading);
-              viewModel.info.body(msg.body);
-              viewModel.showInfo(true);
-            }, false);
+            if(!ui._infoCloseTimer){
+              var infoUpdate = ui._infoQueue.shift();
+              // guestimate around 1/2s for the transition to complete
+              ui._infoCloseTimer = setTimeout(infoUpdate, 500);
+            }
           }
         });
       }
     } else {
-      viewModel.info.heading(heading);
-      viewModel.info.body(body);
-      viewModel.showInfo(true);
+      update();
     }
   };
 
