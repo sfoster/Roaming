@@ -9,7 +9,8 @@ define([
     'location': 'models/Location',
     'player': 'models/Player',
     'region': 'models/Region',
-    'npc': 'models/npc'
+    'npc': 'models/npc',
+    'items': 'models/Item'
   };
 
 
@@ -70,10 +71,12 @@ define([
   }
 
   function resolveModelData(data) {
+    // { resource: 'some/path' }
     var resourceId = ('resource' in data) ? data.resource : '';
     var resourceData;
 
     if(!resourceId) {
+      // { params: { 'foo': 'bar' }, }
       resourceData = data.params || {};
       return wrapAsPromise(resourceData);
     }
@@ -83,6 +86,7 @@ define([
         suffix = '',
         fragmentMatch = resourceId.match(/^([^#]+)(#.+)/);
     if(fragmentMatch) {
+      // { resource: 'foo/bar#bazz' }
       loaderPrefix = 'plugins/property!';
       resourceId = fragmentMatch[1];
       suffix = fragmentMatch[2];
@@ -105,6 +109,14 @@ define([
     var Clazz;
     var resourceData;
 
+    if(!type && value.resource) {
+      // support magic type-mapping for resources/foo#bar
+      // if 'foo' is a registered type
+      type = value.resource.replace(/^resources\/(\w+).*/, '$1');
+      if(!(type in resourceClassMap)) {
+        type = null;
+      }
+    }
     // simplest case - just return data
     if(!type){
       return resolveModelData(value);
