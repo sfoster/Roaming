@@ -22,6 +22,9 @@ define([
 
     // create the player's inventory
     var inventory = this.inventory = Inventory.resolve(args.inventory || []);
+    inventory.forEach(function(item){
+      item.inCollection = inventory;
+    });
     delete args.inventory;
 
     var equipped = args.equipped || {};
@@ -57,12 +60,12 @@ define([
 
     // capture baseline stats
     this.baseStats = JSON.parse(JSON.stringify(this.stats));
-    
+
     // calculate a level if there is none
     if(!this.level) {
       this.level  = Math.max(1, this.stats.strength * this.stats.agility / 50);
     }
-    
+
     var weaponId = this.currentWeapon ?
     		this.currentWeapon.id || this.currentWeapon : null;
 
