@@ -59,10 +59,16 @@ define(['compose', 'lib/util', 'lib/event'], function(Compose, util, Evented){
     },
     transferTo: function(collection) {
       var current = this.inCollection;
+      console.log("transferTo for item:"+this.name, current);
       if(current) {
         if(current.remove) {
           current.remove(this);
         } else {
+          var idx = current.indexOf(this);
+          console.log("index of item in current collection: ", idx);
+          if(idx > -1) {
+
+          }
           current.splice(current.indexOf(this), 1);
         }
       }
