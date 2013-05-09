@@ -1,6 +1,5 @@
 define([
   'dollar', 'lib/util', 'lib/event', 'resources/template',
-  'knockout', 'lib/koHelpers',
   'main-ui',
   'lib/UrlRouter',
   'promise',
@@ -12,8 +11,7 @@ define([
   'models/Combat'
 ], function(
     $, util, Evented, template,
-    ko, koHelpers,
-    ui,
+      ui,
     UrlRouter,
     Promise,
     markdown,
@@ -69,8 +67,7 @@ define([
   if(!player.score){
     player.score = 0;
   }
-  game._player = player;
-  player = game.player = koHelpers.makeObservable(player);
+  game.player = player;
 
   // login or init player
   // set up main game stack
@@ -172,7 +169,7 @@ define([
     router.match(window.location.hash); // returns the data object if successfull, undefined if not.
   };
 
-  var currentLocation = player.position() || START_LOCATION;
+  var currentLocation = player.position || START_LOCATION;
   router.match(window.location.hash || '#'+currentLocation);
 
   ////////////////////////////////
@@ -298,15 +295,6 @@ define([
       }
     );
   };
-
-  game.ui.on("tileitemclick", function(evt){
-    var item = evt.target;
-    if(!item.fixed) {
-      console.log("take item: ", item);
-      item.transferTo(game.player.inventory);
-      console.log(item.name +" moved to player inventory: ", game.player.inventory);
-    }
-  });
 
   game.introduceNpcs = function(npcs) {
     if(!npcs.length) return;
