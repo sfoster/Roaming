@@ -1,3 +1,4 @@
-define(['./knockout', './knockout.layers2d'], function(ko){
+define(['./knockout.mapping'], function(ko){
+  // knockout.mapping loads ./knockout for us
   return ko;
 });
