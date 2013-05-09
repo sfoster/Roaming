@@ -1,6 +1,7 @@
 // koHelpers.js
-define(['knockout', 'lib/util'], function(ko, util){
-
+define(['knockout', 'vendor/knockout/knockout.postbox', 'lib/util'], function(ko, _postbox, util){
+  window.postbox = _postbox;
+  window.ko = ko;
   function updateArray(arr, newItems) {
     if(newItems) {
       arr.splice.apply(arr, [0, arr.length].concat(newItems));
@@ -8,6 +9,21 @@ define(['knockout', 'lib/util'], function(ko, util){
       arr.splice(0, arr.length);
     }
   }
+
+  ko.observable.fn.propertyChange = function(key, newValue) {
+
+    var fromIdx = this.indexOf(item);
+    if('string' == typeof collection) {
+      collection = util.getObject(collection);
+    }
+    if(fromIdx < 0) {
+      console.warn("koHelpers: moveItemTo: item not in this array");
+      return;
+    }
+    this.splice(fromIdx, 1);
+    toIndex = (undefined == toIndex || toIndex < 0) ? collection.length : toIndex;
+    collection.splice(toIndex, 0, item);
+  };
 
   ko.observableArray.fn.transferItem = function(item, collection, toIndex) {
     var fromIdx = this.indexOf(item);
@@ -23,34 +39,39 @@ define(['knockout', 'lib/util'], function(ko, util){
     collection.splice(toIndex, 0, item);
   };
 
-  function makeObservable(obj, options) {
-    options = options || {};
+  // maybe create a ViewModel class, where we clone the source object
+  // and subscribe all the observables to publish changes using the object-path as topic
+
+  function makeObservable(obj, depth) {
+    // TODO: ensure objects are cloned and assigned to the parent clone,
+    // not the original object
     if(ko.isObservable( obj )){
       return obj;
     }
-    var value = obj;
-    var type = util.getType(value);
+    var sourceValue = obj;
+    var observableValue;
+    var type = util.getType(sourceValue);
 
-    var observable = {};
     depth = depth || 0;
     if('array' == type) {
-      updateArray(value, value.map(function(item, i){
+      observableValue = ko.observableArray(sourceValue.map(function(item, i){
         return makeObservable(item, depth-1);
       }));
       // array() -> array of observable items
       // array()[0]() -> the original item. Bleagh
-      return ko.observableArray(value);
+      return observableValue;
     } else if(/^object/.test(type)) {
       // ko provides no equivalent to observableArray for objects - to watch property changes
-      // so, optionally walk the tree but return the object itself as-is
-      if(depth >= 0) {
-        Object.keys(value).forEach(function(key){
-          value[key] = makeObservable(value[key], depth-1);
-        })
-      }
-      return value;
+      // so walk the tree
+      observableValue = ko.observable({});
+      Object.keys(sourceValue).forEach(function(key){
+        if(/^_|observable/.test(key)) return;
+        observableValue[key] = makeObservable(sourceValue[key], depth+1);
+        observableValue[key].publishOn(key);
+      });
+      return observableValue;
     } else {
-      return ko.observable(value);
+      return ko.observable(sourceValue);
     }
   }
 
