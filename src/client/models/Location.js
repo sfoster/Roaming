@@ -3,9 +3,10 @@ define([
   'lib/util',
   'lib/event',
   'promise',
+  'models/Collection',
   'lib/clone',
   'resources/terrain'
-], function($, util, Evented, Promise, sanitizedClone, terrain){
+], function($, util, Evented, Promise, Collection, sanitizedClone, terrain){
   var emit = Evented.emit.bind(this), // it matter what 'this' when we emit and listenr for events. Here, 'this' is the global context
       create = util.create;
 
@@ -15,10 +16,18 @@ define([
     this._onexits = [];
     this._onafterenters = [];
     this.encounters = [];
-    this.here = [];
+    var hereItems= this.here = [];
+    hereItems._name = 'location.here';
     this.npcs = [];
-    for(var i in options){
-      this[i] = options[i];
+    for(var key in options){
+      if('here' == key) {
+        this.here.push.apply(this.here, options.here.map(function(item){
+          item.inCollection = hereItems;
+          return item;
+        }));
+      } else {
+        this[key] = options[key];
+      }
     }
     if(this._resourceId) {
       this.regionId = this._resourceId.replace(/^\/?location\/([^\/]+)\/(\d+,\d+)/, '$1');
