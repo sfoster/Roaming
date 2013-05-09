@@ -1,34 +1,8 @@
 define([
-	'compose', 'lib/event', 'resources/items', 'resources/weapons'
-], function(Compose, Evented, itemResources, weaponResources){
+	'compose', 'resources/items', 'resources/weapons'
+], function(Compose, itemResources, weaponResources){
 
-  var Inventory = Compose(Array, Evented, {
-    add: function(item, options){
-      this.push(item);
-      this.emit("afteradd", {
-        target: item,
-        player: player,
-        cancel: function(){ proceed = false; }
-      });
-    },
-    remove: function(item, options){
-      for(var i=0; i<this.length; i++){
-        if(this[i] === item){
-          break;
-        }
-      }
-      if(i < this.length) {
-        this.splice(idx, 1);
-        this.emit("afterremove", {
-          target: item,
-          player: player,
-          cancel: function(){ proceed = false; }
-        });
-      }
-      return this;
-    }
-  });
-
+  Inventory = {};
   Inventory.resolve = function(items) {
   	if(!(items instanceof Array)) {
   		items = [items];
