@@ -25,10 +25,10 @@
           </li>
       </ul>
   </section>
-  <section id="main" class="area">
+  <section id="main" class="area" data-bind="if:tileId">
     <section class="location panel" data-bind="with: tile">
       <div class="layer layer-bg" data-bind="css: terrain">
-        <div class="layer backdrop" data-bind="style: { backgroundImage: 'url('+backdrop+')' }"></div>
+        <div class="layer backdrop" data-bind="style: { backgroundImage: 'url('+backdrop()+')' }"></div>
       </div>
       <div class="layer layer-over">
         <div id="allies" class="panel left-panel allies-panel showing">
@@ -85,8 +85,8 @@
           <div data-bind="with:$parent.info">
             <h1 data-bind="text:heading"></h1>
             <div data-bind="if:body"><div data-bind="html:body"></div></div>
-            <div data-bind="foreach: items">
-              <div data-bind="html:name, click: $root.onTileItemClick"></div>
+            <div data-bind="foreach:items">
+              <div data-bind="html:name, click:$parent.items.transferItem.bind($parent.items, $data, 'ui.viewModel.player.inventory', -1)"></div>
             </div>
           </div>
 

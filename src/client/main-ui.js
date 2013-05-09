@@ -11,6 +11,7 @@ define([
   'text!resources/templates/tile.html'
 ], function($, ko, koHelpers, util, Promise, template, Evented, Map, playerTemplate, tileTemplate){
 
+  console.log("main-ui: typeof ko.mapping: ", typeof ko.mapping);
   function importTemplate(id, tmpl, bindProperty){
     // setup templates
     var tmplNode = document.createElement('script');
@@ -21,8 +22,9 @@ define([
     return document.body.appendChild( tmplNode );
   }
 
-  var ui = {
-    _inited: false
+  var ui = window.ui = {
+    _inited: false,
+    ko: ko
   };
 
   var viewModel = ui.viewModel = {
@@ -53,13 +55,15 @@ define([
     onMessagesClick: onMessagesClick,
     onInventoryClick: onInventoryClick,
     onTileClick: onTileClick,
-    onTileItemClick: function(item, evt){
-      ui.emit("tileitemclick", {
-          target: item,
-      });
-    },
-    tile: null
+    tileId: ko.observable()
   };
+  viewModel.tileId.subscribe(function(tileId){
+    viewModel.tile = ko.mapping.fromJS(ui.game.tile);
+    console.log("viewModel, tileId changed: ", tileId);
+    // koHelpers.updateArray(
+    //     viewModel.tile.here, ui.game.tile.here
+    // );
+  })
 
   importTemplate('player-template', playerTemplate, 'player');
   importTemplate('location-template', tileTemplate, 'location');
@@ -83,8 +87,13 @@ define([
     }
 
     this.game = game;
-    viewModel.player = player;
-    viewModel.tile = ko.observable( tile );
+    this.viewModel.player = ko.mapping.fromJS(player, {
+      'inventory': {
+        key: function(data) {
+          return ko.utils.unwrapObservable(data.name);
+        }
+      }
+    });
 
     var minimap =this.minimap = new Map({
       id: 'minimap',
@@ -132,7 +141,7 @@ define([
       var region = ui.game.region;
       var minimap =this.minimap;
 
-      if(viewModel.tile.id === centerTile.id) {
+      if(viewModel.tile && viewModel.tile.id === centerTile.id) {
         return;
       }
 
@@ -152,7 +161,8 @@ define([
       /////////////////////////////////////
 
       centerTile.backdrop = centerTile.backdrop.replace(/^.*image!/, '')
-      viewModel.tile(centerTile);
+      viewModel.tile = centerTile;
+      viewModel.tileId(centerTile.id);
 
       console.log("UI: location enter: ", cx, cy, centerTile.backdrop);
   };
@@ -160,9 +170,7 @@ define([
   ui.onEncounterStart = function(evt){
     var encounter = evt.target;
     ui.message(encounter.description);
-    viewModel.tile(game.tile);
     console.log("ui.onEncounterStart, encounter: ", encounter);
-    // TODO: redraw the stage
   };
 
   ui.onCombatStart = function(evt){
@@ -188,19 +196,11 @@ define([
     ui.info(heading || "Items", '', items);
   };
 
-  function updateObservableArray(arr, newItems) {
-    if(newItems) {
-      arr.splice.apply(arr, [0, arr.length].concat(newItems));
-    } else {
-      arr.splice(0, arr.length);
-    }
-  }
-
   ui.info = function(heading, body, items) {
     var update = function(){
       viewModel.info.heading(heading);
       viewModel.info.body(body);
-      updateObservableArray(viewModel.info.items, items);
+      koHelpers.updateArray(viewModel.info.items, items);
       viewModel.showInfo(true);
       // tidy up any timer associated with this update
       ui._infoCloseTimer = null;
