@@ -152,7 +152,12 @@ define([
               value.forEach(function(refData, idx, coln){
                 var promisedValue = thaw(refData).then(function(pData){
                   // console.log("refd property %s resolved: %o", pname, pData);
-                  coln[idx] = pData;
+                  if(coln.addAt) {
+                    // Let Collection instances do their thing
+                    coln.addAt(pData, idx);
+                  } else {
+                    coln[idx] = pData;
+                  }
                 });
                 promiseQueue.push(promisedValue);
               });
