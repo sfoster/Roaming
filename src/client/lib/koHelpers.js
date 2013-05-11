@@ -43,6 +43,7 @@ define(['knockout', 'vendor/knockout/knockout.postbox', 'lib/util'], function(ko
   // and subscribe all the observables to publish changes using the object-path as topic
 
   function makeObservable(obj, depth) {
+    console.log("makeObservable, obj:", obj);
     // TODO: ensure objects are cloned and assigned to the parent clone,
     // not the original object
     if(ko.isObservable( obj )){
@@ -65,12 +66,23 @@ define(['knockout', 'vendor/knockout/knockout.postbox', 'lib/util'], function(ko
       // so walk the tree
       observableValue = ko.observable({});
       Object.keys(sourceValue).forEach(function(key){
-        if(/^_|observable/.test(key)) return;
+        if('_' == key.charAt(0)){
+          return;
+        }
+        if('name'==key || 'id'==key) {
+          // special-case 'name', as function.name is immutable
+          // and its unlikely name will change anyhow
+          observableValue[key] = sourceValue[key];
+          return;
+        }
+        console.log("makeObservable of type:"+type, key, sourceValue);
         observableValue[key] = makeObservable(sourceValue[key], depth+1);
+        console.log("madeObservable for key: "+key, observableValue[key]);
         observableValue[key].publishOn(key);
       });
       return observableValue;
     } else {
+      console.log("making observable of type: " + type, sourceValue);
       return ko.observable(sourceValue);
     }
   }
