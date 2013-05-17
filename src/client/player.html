@@ -18,27 +18,27 @@
       overflow: auto;
     }
     .item .field-id {
-      
+
     }
   </style>
 </head>
 <body>
-<section id="hud" class="panel" data-bind="template: 'player-template'">
-</section>  
-<section id="main" class="panel">
+<section id="hud" class="panel" data-bind="with:player">
+  <div id="playerInfo" data-bind="template: 'player-template'"></div>
+</section>
+<section id="main" class="panel" data-bind="with:player">
   <h2>Inventory</h2>
   <ul data-bind="foreach: inventory">
     <li class="item" data-bind="text: name, css: { equipped: ( $data.isEquipped ) }"></li>
   </ul>
   <h2>Visits</h2>
-  <ul data-bind="foreach: Object.keys(visits)">
+  <ul data-bind="foreach: visits">
     <li data-bind="attr: { 'data-itemid': $index }">
       <span data-bind="text: id">id</span>
       <span data-bind="text: timestamp">timestamp</span>
     </li>
   </ul>
-  
-</section>  
+</section>
 
 <script src="./vendor/require.js"></script>
 <script src="./config.js"></script>
@@ -60,24 +60,31 @@
   })();
 
   require([
-    'knockout', 
-    'lib/koHelpers', 
-    'plugins/resource!player/'+(config.playerid || 'guest'), 
+    'knockout',
+    'lib/koHelpers',
+    'plugins/resource!player/'+(config.playerid || 'guest'),
     'text!resources/templates/player.html'
   ], function(ko, koHelpers, player, playerTemplate){
     // get player id
     // load player data
 
     // setup templates
-    var tmplNode = document.createElement('script'); 
+    var tmplNode = document.createElement('script');
     tmplNode.setAttribute('type', 'text/html');
     tmplNode.id = 'player-template';
     var tmplText = document.createTextNode( playerTemplate );
     tmplNode.appendChild(tmplText);
-    document.body.appendChild( tmplNode );
+    document.body.appendChild(tmplNode);
 
-    player = window.player = koHelpers.makeObservable(player);
-    ko.applyBindings(player);
+    window.player = player;
+    window.ko = ko;
+    var viewModel = window.viewModel = {
+      player: ko.mapping.fromJS(player)
+    };
+    viewModel.player.inventory.subscribe(function(newValue){
+      console.log("inventory change: ", newValue);
+    });
+    ko.applyBindings(viewModel);
   });
 </script>
 </body>
