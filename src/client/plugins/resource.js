@@ -5,20 +5,64 @@ define([
   'lib/json/ref'
 ], function($, Promise, util, json){
 
-  var resourceClassMap = {
-    'location': 'models/Location',
-    'player': 'models/Player',
-    'region': 'models/Region',
-    'npc': 'models/npc',
-    'items': 'models/Item'
+  var resourceMapping = {
+    _map: {
+      'location': 'models/Location',
+      'player': 'models/Player',
+      'region': 'models/Region',
+      'npc': 'models/npc',
+      'items': 'models/Item',
+      'armor': 'models/Item',
+      'weapon': 'models/Item'
+    },
+    resolve: function(id) {
+      id = id.replace(/#.*/, '');
+      if(id.indexOf('resources/') == 0) {
+        id = id.substring('resources/'.length);
+        return this.resolve(id);
+      }
+      if(id.indexOf('/data/') == 0) {
+        id = id.substring('/data/'.length);
+        return this.resolve(id);
+      }
+      var prefix = id.replace(/^[^\/]+\//);
+      // check for explicit registered prefix => Model match
+      if(prefix in this._map) {
+        return this._map[prefix];
+      }
+      console.warn("Nothing mapped for: " + id);
+    },
+    register: function(prefix, resourcePath) {
+      this._map[prefix] = resourcePath;
+    }
   };
 
+  function promisedRequire(resources){
+    var defd = Promise.defer();
+    console.log("promisedRequire for ", resources);
+    require(
+      resources,
+      function(){
+        console.log("promisedRequire resolving with ", arguments[0]);
+        defd.resolve.apply(defd, arguments);
+      },
+      function(){
+        defd.reject.apply(defd, arguments);
+      }
+    );
+    return defd.promise;
+  }
 
-  function fetch(url){
+  function fetch(url, options){
+    options = options || {};
+    // are we fetching data to be thawed, or a module?
+    var isData = (/\.json$/.test(url));
+    // TODO: need to handle module differently
+    //
     var defd = Promise.defer();
     $.ajax({
       url: url,
-      dataType: 'json',
+      dataType: options.dataType || 'json',
       success: function(resp){
         defd.resolve.apply(defd, arguments);
       },
@@ -28,9 +72,6 @@ define([
       }
     });
     return defd.promise;
-  }
-  function registerType(typestr, resourcePath) {
-    resourceClassMap[typestr] = resourcePath;
   }
 
   function wrapAsPromise(value) {
@@ -43,10 +84,26 @@ define([
 
   function resolveTypeToModel(type) {
     // resolve convenience aliases to their actual resource ids
+    var factory = resourceMapping.resolve(type);
+    console.log("resolveTypeToModel: ", type, factory);
+    if(factory) {
+      if(type.indexOf("#") > -1) {
+        factory += type.substring(type.indexOf("#"));
+      }
+      return resolveModel(factory);
+    } else {
+      var defd = Promise.defer();
+      setTimeout(function(){
+        defd.reject(new Error("Unable to resolve " + type + " to Model"));
+      },0);
+      return defd.promise;
+    }
+  }
+
+  function resolveModel(resourceId) {
     var defd = Promise.defer();
     var loaderPrefix = '',
         suffix = '',
-        resourceId = type,
         fragmentMatch = resourceId.match(/^([^#]+)(#.+)/);
 
     if(fragmentMatch) {
@@ -54,17 +111,10 @@ define([
       resourceId = fragmentMatch[1];
       suffix += fragmentMatch[2];
     }
-    if(resourceId in resourceClassMap) {
-      resourceId = resourceClassMap[resourceId];
-      fragmentMatch = resourceId.match(/^([^#]+)(#.+)/);
-      if(fragmentMatch) {
-        loaderPrefix = 'plugins/property!';
-        resourceId = fragmentMatch[1];
-        suffix += fragmentMatch[2];
-      }
-    }
+    console.log("resolveModel: ", loaderPrefix+resourceId+suffix);
     // load via the property plugin if the resourceId has a fragment identifier
     require([loaderPrefix+resourceId+suffix], function(Model){
+      console.log("resolveModel, loaded ", Model);
       defd.resolve(Model);
     });
     return defd.promise;
@@ -105,20 +155,19 @@ define([
 
   function thaw(value) {
     var defd = Promise.defer();
+    var factory = value.factory;
     var type = value.type; // TODO: are there cases where we infer type?
     var Clazz;
     var resourceData;
+    console.log("thaw: ", value, type||factory);
 
-    if(!type && value.resource) {
+    if(!(type || factory) && value.resource) {
       // support magic type-mapping for resources/foo#bar
       // if 'foo' is a registered type
-      type = value.resource.replace(/^resources\/(\w+).*/, '$1');
-      if(!(type in resourceClassMap)) {
-        type = null;
-      }
+      type = resourceMapping.resolve(value.resource);
     }
     // simplest case - just return data
-    if(!type){
+    if(!(type || factory)){
       return resolveModelData(value);
     }
 
@@ -128,7 +177,7 @@ define([
       },
       function(data){
         resourceData = data;
-        return resolveTypeToModel(type);
+        return factory ? resolveModel(factory) : resolveTypeToModel(type);
       },
       function(Model){
         // thawing out resource data can involve multiple asyn steps
@@ -200,40 +249,59 @@ define([
 
   var resourcePlugin = {
     thaw: thaw,
-    registerType: registerType,
+    registerType: function(prefix, resourcePath){
+      return resourceMapping.register(prefix, resourcePath);
+    },
+    resolveType: function(typeId){
+      return resourceMapping.resolve(typeId);
+    },
     load: function (resourceId, req, onLoad, requireConfig) {
-      var resourceParts = resourceId.split('/');
-      var resourceType = resourceParts.shift();
-      var resourceUrl = req.toUrl(resourceId + '.json');
+      console.log("resource plugin load: "+resourceId, req, requireConfig);
+      var resourceFactoryId = resourceMapping.resolve(resourceId);
+      var fragmentId = "", loaderPrefix = "";
+      var isJson = false;
+
+      var fragmentMatch = resourceId.match(/^([^#]+)(#.+)/);
+      if(fragmentMatch) {
+        loaderPrefix = 'plugins/property!';
+        resourceId = fragmentMatch[1];
+        fragmentId = fragmentMatch[2];
+      }
+      // e.g. player/guest becomes player/guest.json
+      // what about resources/items#rock?
+      var resourceUrl = req.nameToUrl(resourceId);
+      if(resourceUrl.indexOf('/data/') > -1) {
+        resourceUrl = resourceUrl.replace(/\.js$/, '.json');
+        isJson = true;
+      }
 
       // promise to represent the loaded and expanded resource
       // which might entail nested resource loading
-      var promisedGet = fetch(resourceUrl);
-      promisedGet.then(function(resp){
-        var resourceData;
-        if(resp.status && resp.status !== "ok") {
-          console.error("Problem loading: "+resourceUrl + ", response was: ", resp);
-          throw new Error("Resource "+resourceId+"failed to load: " + resp.status);
-        }
-        resourceData = json.resolveJson(resp.status ? resp.d : resp);
-        resourceData._resourceUrl = resourceUrl;
-        resourceData._resourceId = resourceId;
-
-        // console.log("resolved resourceData: ", resourceData);
-        var dataType = resourceType;
-        // console.log("promisedGet callback, dataType: %s, resourceData: %o", dataType, resourceData);
-
-        thaw({ type: dataType, params: resourceData }).then(function(resource){
+      console.info("load: "+resourceId, resourceUrl);
+      var promisedData;
+      if(isJson) {
+        promisedData = fetch(resourceUrl, { dataType: 'json' }).then(function(resp){
+          var resourceData = fragmentId ?
+                  util.getObject(resp, fragmentId.substring(1)) : resp;
+          resourceData._resourceUrl = resourceUrl;
+          resourceData._resourceId = resourceId;
+          return resourceData;
+        });
+      } else {
+        promisedData = promisedRequire([loaderPrefix+resourceId+fragmentId]);
+      }
+      promisedData.then(function(resourceData){
+        console.info("Got promisedData: ", resourceData, ", factory: ", resourceFactoryId);
+        thaw({ factory: resourceFactoryId, params: resourceData }).then(function(resource){
           // console.log("resource is ready: ", resource);
           onLoad(resource);
         }, function(){
           onLoad({});
         });
-
       }, function(){
-        console.warn("Failed to load: " + resourceUrl);
-        console.log("errback given args: ", arguments);
-        onLoad({});
+          console.warn("Failed to load: " + resourceUrl);
+          console.log("errback given args: ", arguments);
+          onLoad({});
       });
     }
   };
