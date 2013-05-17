@@ -13,7 +13,7 @@ define([
       'npc': 'models/npc',
       'items': 'models/Item',
       'armor': 'models/Item',
-      'weapon': 'models/Item'
+      'weapons': 'models/Item'
     },
     resolve: function(id) {
       id = id.replace(/#.*/, '');
@@ -25,7 +25,8 @@ define([
         id = id.substring('/data/'.length);
         return this.resolve(id);
       }
-      var prefix = id.replace(/^[^\/]+\//);
+      var prefix = id.indexOf('/') > -1 ?
+            id.substring(0, id.indexOf('/')) : id;
       // check for explicit registered prefix => Model match
       if(prefix in this._map) {
         return this._map[prefix];
@@ -114,7 +115,7 @@ define([
     console.log("resolveModel: ", loaderPrefix+resourceId+suffix);
     // load via the property plugin if the resourceId has a fragment identifier
     require([loaderPrefix+resourceId+suffix], function(Model){
-      console.log("resolveModel, loaded ", Model);
+      console.log("resolveModel, loaded ", Model.name || Model);
       defd.resolve(Model);
     });
     return defd.promise;
@@ -164,7 +165,7 @@ define([
     if(!(type || factory) && value.resource) {
       // support magic type-mapping for resources/foo#bar
       // if 'foo' is a registered type
-      type = resourceMapping.resolve(value.resource);
+      factory = resourceMapping.resolve(value.resource);
     }
     // simplest case - just return data
     if(!(type || factory)){
