@@ -1,16 +1,12 @@
 define(['compose', 'lib/util'], function(Compose, util){
-  var create = util.create;
-
-  var proto = {
-  };
-
   console.log("Loading models/Item");
-
+  var create = util.create;
   var mixin = util.mixin;
-  var Item = Compose(function(args){
+  var ItemModel = Compose(function Item(args){
     mixin(this, args || {});
     console.log("Item constructor: ", this);
   }, {
+    declaredClass: "Item",
     examine: function(context){
       return this.detailedDescription || this.description;
     },
@@ -38,17 +34,17 @@ define(['compose', 'lib/util'], function(Compose, util){
     }
   });
 
-  Item.extend = util.extend;
+  ItemModel.extend = util.extend;
 
   // statics
-  util.mixin(Item, {
+  util.mixin(ItemModel, {
     create: function(data){
       if("string" == typeof data){
         data = JSON.parse(data);
       }
-      var item = new Item(data);
+      var item = new ItemModel(data);
       return item;
     },
   });
-  return Item;
+  return ItemModel;
 });
