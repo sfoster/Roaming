@@ -38,6 +38,12 @@
       <span data-bind="text: timestamp">timestamp</span>
     </li>
   </ul>
+  <h2>Here</h2>
+  <ul data-bind="foreach: $root.here, click:$parent.here.transferItem.bind($parent.here, $data, 'viewModel.player.inventory', -1)">
+    <li data-bind="attr: { 'data-itemid': $index }">
+      <span data-bind="text: name">name</span>
+    </li>
+  </ul>
 </section>
 
 <script src="./vendor/require.js"></script>
@@ -63,8 +69,10 @@
     'knockout',
     'lib/koHelpers',
     'plugins/resource!player/'+(config.playerid || 'guest'),
-    'text!resources/templates/player.html'
-  ], function(ko, koHelpers, player, playerTemplate){
+    'text!resources/templates/player.html',
+    'plugins/resource!resources/items#apple',
+    'models/Item'
+  ], function(ko, koHelpers, player, playerTemplate, apple, Item){
     // get player id
     // load player data
 
@@ -78,9 +86,16 @@
 
     window.player = player;
     window.ko = ko;
+    var hereItems = [
+      apple
+    ];
+    hereItems[0].inCollection = hereItems;
+
     var viewModel = window.viewModel = {
-      player: ko.mapping.fromJS(player)
+      player: ko.mapping.fromJS(player),
+      here: ko.mapping.fromJS(hereItems)
     };
+
     viewModel.player.inventory.subscribe(function(newValue){
       console.log("inventory change: ", newValue);
     });
