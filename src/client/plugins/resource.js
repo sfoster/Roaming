@@ -40,11 +40,9 @@ define([
 
   function promisedRequire(resources){
     var defd = Promise.defer();
-    console.log("promisedRequire for ", resources);
     require(
       resources,
       function(){
-        console.log("promisedRequire resolving with ", arguments[0]);
         defd.resolve.apply(defd, arguments);
       },
       function(){
@@ -112,10 +110,8 @@ define([
       resourceId = fragmentMatch[1];
       suffix += fragmentMatch[2];
     }
-    console.log("resolveModel: ", loaderPrefix+resourceId+suffix);
-    // load via the property plugin if the resourceId has a fragment identifier
+    // load via the property plugin if the repl.start(prompt, source, eval, useGlobal, ignoreUndefined);d has a fragment identifier
     require([loaderPrefix+resourceId+suffix], function(Model){
-      console.log("resolveModel, loaded ", Model.name || Model);
       defd.resolve(Model);
     });
     return defd.promise;
@@ -160,7 +156,6 @@ define([
     var type = value.type; // TODO: are there cases where we infer type?
     var Clazz;
     var resourceData;
-    console.log("thaw: ", value, type||factory);
 
     if(!(type || factory) && value.resource) {
       // support magic type-mapping for resources/foo#bar
@@ -278,7 +273,6 @@ define([
 
       // promise to represent the loaded and expanded resource
       // which might entail nested resource loading
-      console.info("load: "+resourceId, resourceUrl);
       var promisedData;
       if(isJson) {
         promisedData = fetch(resourceUrl, { dataType: 'json' }).then(function(resp){
@@ -292,7 +286,6 @@ define([
         promisedData = promisedRequire([loaderPrefix+resourceId+fragmentId]);
       }
       promisedData.then(function(resourceData){
-        console.info("Got promisedData: ", resourceData, ", factory: ", resourceFactoryId);
         thaw({ factory: resourceFactoryId, params: resourceData }).then(function(resource){
           // console.log("resource is ready: ", resource);
           onLoad(resource);

@@ -35,8 +35,11 @@ define(['knockout', 'vendor/knockout/knockout.postbox', 'lib/util'], function(ko
       return;
     }
     this.splice(fromIdx, 1);
-    toIndex = (undefined == toIndex || toIndex < 0) ? collection.length : toIndex;
-    collection.splice(toIndex, 0, item);
+    if(undefined == toIndex || toIndex < 0) {
+      collection.push(item);
+    } else {
+      collection.splice(toIndex, 0, item);
+    }
   };
 
   // maybe create a ViewModel class, where we clone the source object

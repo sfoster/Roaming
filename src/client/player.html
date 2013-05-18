@@ -39,8 +39,8 @@
     </li>
   </ul>
   <h2>Here</h2>
-  <ul data-bind="foreach: $root.here, click:$parent.here.transferItem.bind($parent.here, $data, 'viewModel.player.inventory', -1)">
-    <li data-bind="attr: { 'data-itemid': $index }">
+  <ul data-bind="foreach: $root.here">
+    <li data-bind="click:$root.here.transferItem.bind($root.here, $data, 'viewModel.player.inventory', -1)">
       <span data-bind="text: name">name</span>
     </li>
   </ul>
@@ -70,9 +70,9 @@
     'lib/koHelpers',
     'plugins/resource!player/'+(config.playerid || 'guest'),
     'text!resources/templates/player.html',
-    'plugins/resource!resources/items#apple',
+    'plugins/resource!resources/items#hagStone',
     'models/Item'
-  ], function(ko, koHelpers, player, playerTemplate, apple, Item){
+  ], function(ko, koHelpers, player, playerTemplate, hagStone, Item){
     // get player id
     // load player data
 
@@ -86,8 +86,9 @@
 
     window.player = player;
     window.ko = ko;
-    var hereItems = [
-      apple
+    window.tile = {};
+    var hereItems = tile.here = [
+      hagStone
     ];
     hereItems[0].inCollection = hereItems;
 
@@ -95,9 +96,14 @@
       player: ko.mapping.fromJS(player),
       here: ko.mapping.fromJS(hereItems)
     };
+    viewModel.here.subscribe(function(change){
+      tile.here = ko.mapping.toJS(viewModel.here);
+      console.log("tile.here: ", tile.here);
+    });
 
     viewModel.player.inventory.subscribe(function(newValue){
-      console.log("inventory change: ", newValue);
+      player.inventory = ko.mapping.toJS(viewModel.player.inventory);
+      console.log("inventory change: ", player.inventory);
     });
     ko.applyBindings(viewModel);
   });
