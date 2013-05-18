@@ -94,6 +94,9 @@ define([
         }
       }
     });
+    this.viewModel.player.inventory.subscribe(function(changed){
+      player.inventory = ko.toJS(changed);
+    });
 
     var minimap =this.minimap = new Map({
       id: 'minimap',

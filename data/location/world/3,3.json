@@ -13,7 +13,7 @@
   "terrain": "plains",
   "encounters": [
     {
-      "type": "models/NPCEncounter",
+      "factory": "models/NPCEncounter",
       "params": {
         "difficulty": 1,
         "grouptype": "greenskins"

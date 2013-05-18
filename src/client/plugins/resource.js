@@ -265,7 +265,7 @@ define([
       }
       // e.g. player/guest becomes player/guest.json
       // what about resources/items#rock?
-      var resourceUrl = req.nameToUrl(resourceId);
+      var resourceUrl = req.nameToUrl(resourceId, null);
       if(resourceUrl.indexOf('/data/') > -1) {
         resourceUrl = resourceUrl.replace(/\.js$/, '.json');
         isJson = true;
