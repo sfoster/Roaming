@@ -13,7 +13,8 @@ define([
       'npc': 'models/npc',
       'items': 'models/Item',
       'armor': 'models/Item',
-      'weapons': 'models/Item'
+      'weapons': 'models/Item',
+      'encounters': 'models/Encounter'
     },
     resolve: function(id) {
       id = id.replace(/#.*/, '');

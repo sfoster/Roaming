@@ -12,14 +12,11 @@
   "terrain": "barren",
   "encounters": [
     {
-      "resource": "resources/encounters#npc"
-    }
-  ],
-  "npcs": [
-    {
-      "type": "npc",
-      "resource": "resources/npc#theRoc",
-      "count": 1
+      "factory": "models/NPCEncounter",
+      "params": {
+        "difficulty": 1,
+        "grouptype": "trolls"
+      }
     }
   ]
 }

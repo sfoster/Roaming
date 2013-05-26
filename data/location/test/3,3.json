@@ -12,7 +12,11 @@
   "terrain": "plains",
   "encounters": [
     {
-      "resource": "resources/encounters#npc"
+      "factory": "models/NPCEncounter",
+      "params": {
+        "difficulty": 1,
+        "grouptype": "trolls"
+      }
     }
   ],
   "npcs": [

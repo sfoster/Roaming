@@ -64,6 +64,12 @@ define([
         { id: 'lioness', min: 0, max: 1 },
         { id: 'lion', min: 0, max: 1 },
       ],
+      'trolls': [
+        { id: 'juvinileTroll', min: 0, max: 2 },
+        { id: 'troll', min: 1, max: 5 },
+        { id: 'trollElder', min: 0, max: 1 },
+        { id: 'trollHulk', min: 0, max: 2 }
+      ],
       terrainGroup: function(terrain) {
         // return a single randomly picked creature
         // that's appropriate to the terrain
