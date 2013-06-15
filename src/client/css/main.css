@@ -21,7 +21,19 @@ h3 {
 	font-size: 1.1em;
 }
 
-#hud {
+.stage-width {
+	position: relative;
+	width: 800px;
+	margin: 0 auto;
+}
+
+#wrapper {
+	margin: 5px 10px;
+	min-width: 800px;
+	min-height: 600px;
+	position: relative;
+}
+#topbar {
 	background-color: #000;
 	position: absolute;
 	top: 0; right: 0;
@@ -33,10 +45,8 @@ h3 {
 	-moz-box-shadow:    0px 4px 30px rgba(0, 0, 0, 0.97);
 	box-shadow:         0px 4px 30px rgba(0, 0, 0, 0.97);
 }
+
 #playerInfo {
-	position: relative;
-	width: 800px;
-	margin: 0 auto;
 	padding-top: 8px;
 }
 #playerInfo .player-icon {
@@ -57,15 +67,20 @@ h3 {
 	/*background-color: rgba(0,0,0, 0.6);*/
 	position: relative;
 	top: 32px;
-	min-width: 800px;
 	min-height: 600px;
 }
-#drawer {
+
+#footer {
+	background-color: #000;
 	position: absolute;
-	top: 52px; right: 10px;
-	width: 200px;
-	bottom: 60px;
+	bottom: 0; right: 0;
+	left: 0;
+	display: block;
+	min-height: 64px;
 	z-index: 5;
+	-webkit-box-shadow: 0px -10px 20px 0px rgba(0, 0, 0, 0.57);
+	-moz-box-shadow:    0px -10px 20px 0px rgba(0, 0, 0, 0.57);
+	box-shadow:         0px -10px 20px 0px rgba(0, 0, 0, 0.57);
 }
 
 #messages {
@@ -87,6 +102,7 @@ h3 {
 
 .area {
 	position: relative;
+	margin: 0 auto;
 }
 
 .panel {

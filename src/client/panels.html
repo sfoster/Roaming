@@ -4,57 +4,110 @@
   <meta charset="utf-8">
   <title>Roaming</title>
   <link rel="stylesheet" type="text/css" href="./css/main.css">
-  <script src="./vendor/jquery.js"></script>
+  <link rel="stylesheet" type="text/css" href="./css/grid.css">
+  <link rel="stylesheet" type="text/css" href="./css/terrain.css">
 </head>
-<body>
+<body id="wrapper">
 
-  <section id="hud" class="area">
-    <div id="nearby"></div>
-    <div id="playerInfo" data-bind="with: player">
-      <div data-bind="template: 'player-template'"></div>
+  <section id="topbar" class="area">
+    <!-- top bar: game/high-level player info -->
+    <div id="playerInfo" class="stage-width row">
+      <div class="col col-7of8"></div>
+      <div class="col col-1of8">
+        Day <span data-bind="text: player.elapsed"></span>
+      </div>
     </div>
-  </section>  
-  <section id="drawer" class="area">
-      <ul class="panelist">
-          <li class="panel world-map toggleable">
-            <h2 class="heading">Mini Map</h2>
-            <canvas id="minimap" width="120" height="120" data-bind="click: onTileClick"></canvas>
-          </li>
-          <li class="panel inventory toggleable">
-            <h2 class="heading">Inventory</h2>
-            <ul data-bind="foreach: player.inventory">
-              <li data-bind="text: name">One</li>
-              <li data-bind="text: name">One</li>
-            </ul>
-          </li>
-          <li class="panel weapon">
-            [equipped item details here]
-          </li>
-      </ul>
   </section>
-  <section id="main" class="area">
-    <section class="panel toggleable">
-	    <h2 class="heading">Messages</h2>
-	    <ul data-bind="foreach: messages">
-	      <li data-bind="text: $data">Message One</li>
-	      <li data-bind="text: $data">Message 2</li>
-	    </ul>
-    </section>
-    <section class="location" data-bind="template: { name: 'location-template', data: tile }">
-    </section>  
-    <section id="status" data-bind="click: onStatusClick" class="panel toggleable collapsed">
-      <h2 class="heading">Status</h2>
-      <ul data-bind="foreach: status">
-        <li data-bind="text: $data">status one</li>
-        <li data-bind="text: $data">status 2</li>
-      </ul>
-    </section>
 
-  </section>  
+  <section id="footer" class="area">
+    <!-- bottom bar: navigation & panel tabs -->
+    <div class="stage-width row">
+      <div class="col col-7of8"></div>
+      <div class="col col-1of8">
+        <canvas id="minimap" width="120" height="120" data-bind="click: onTileClick"></canvas>
+      </div>
+    </div>
+  </section>
+  <section id="main" class="stage-width area">
+    <section class="location stage-width panel" data-bind="with: tile">
+      <div class="layer layer-bg" data-bind="css: terrain">
+        <div class="layer backdrop" data-bind="style: { backgroundImage: 'url('+backdrop()+')' }"></div>
+      </div>
+      <div class="layer layer-over">
+        <div id="allies" class="panel left-panel allies-panel showing">
+          <div data-bind="with:$parent.player">
+            <div class="row" data-bind="attr: {id: $data._id}">
+              <div class="col col-1of4">
+                <img class="actor-icon" data-bind="attr:{src:icon}">
+              </div>
+              <div class="col col-3of4">
+                <h2 class="player-label">
+                  <span data-bind="text: name"></span>
+                </h2>
+                <span class="health-bar" data-bind="style: { width: $root.health($data) + '%'}"></span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col col-1of4"></div>
+              <div class="col col-1of4">
+                Weapon:
+              </div>
+              <div class="col col-2of4" data-bind="text: currentWeapon.name"></div>
+            </div>
+            <div id="inventory" class="items toggleable collapsed" data-bind="click: $root.onInventoryClick">
+              <h2 class="heading">Inventory</h2>
+              <ul class="compact" data-bind="foreach: inventory">
+                <li class="item" data-bind="text: name, css: { equipped: ( $data.isEquipped ) }"></li>
+              </ul>
+            </div>
+          </div><!-- /allies -->
+        </div>
+        <div id="npc-info" class="panel right-panel npc-panel"  data-bind="css: { showing: !!npcs.length }">
+          <div data-bind="foreach: $parent.combat.opponents">
+            <div class="row" data-bind="attr: {id: $data._id}">
+              <div class="col col-1of4">
+                <img class="actor-icon" data-bind="attr:{src:icon}">
+              </div>
+              <div class="col col-3of4">
+                <h2 class="player-label">
+                  <span data-bind="text: name"></span>
+                </h2>
+                <span class="health-bar" data-bind="style: { width: $root.health($data) + '%'}"></span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col col-1of4"></div>
+              <div class="col col-1of4">
+                Weapon:
+              </div>
+              <div class="col col-2of4" data-bind="text: currentWeapon.name"></div>
+            </div>
+          </div><!-- /opponents -->
+        </div><!-- /#combat -->
+        <div id="info" class="panel right-panel info-panel"  data-bind="css: { showing: $parent.showInfo() }, if: $parent.showInfo()">
+          <div data-bind="with:$parent.info">
+            <h1 data-bind="text:heading"></h1>
+            <div data-bind="if:body"><div data-bind="html:body"></div></div>
+            <div data-bind="foreach:items">
+              <div data-bind="html:name, click:$parent.items.transferItem.bind($parent.items, $data, 'ui.viewModel.player.inventory', -1)"></div>
+            </div>
+          </div>
+
+          <button data-bind="click: $parent.hideInfo">Ok</button>
+        </div>
+
+        <section id="messages" class="panel toggleable" data-bind="click: $parent.onMessagesClick">
+          <h2 class="heading">Messages</h2>
+          <ul class="compact" data-bind="foreach: $parent.messages">
+            <li class="message" data-bind="html: $data"></li>
+          </ul>
+        </section>
+      </div>
+
+    </section>
+  </section>
   <script>
-  	$('.toggleable').click(function(evt){
-  		$(this).toggleClass('collapsed');
-  	});
+
   </script>
 </body>
 </html>

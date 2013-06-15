@@ -1,4 +1,4 @@
-/* 
+/*
   core.css
 */
 body {
@@ -33,13 +33,13 @@ h1, h2, h3, h3, h4, h5 {
 .media .img img {display:block;}
 .media .imgExt{float:right; margin-left: 10px;}
 
-.fullwidth { 
-  width: 100%; 
+.fullwidth {
+  width: 100%;
 }
-.mediumheight { 
+.mediumheight {
   height: 8em;
 }
-.shortheight { 
+.shortheight {
   height: 3em;
 }
 
