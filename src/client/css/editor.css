@@ -49,6 +49,26 @@ h1 {
   border: 2px solid;
   border-color: #fff #ccc #666 #ccc;
 }
+
+.tooldrawer {
+  padding: 1px;
+  min-height: 2.5em;
+}
+.tooldrawer button {
+  padding: 6px 14px;
+  border: 2px outset #eee;
+  border-radius: 6px;
+}
+#tooldrawer button:hover {
+  background-color: #99ffff;
+}
+
+#drawer {
+  width: 200px;
+  position: absolute;
+  top: 5px; bottom: 5px; right: 5px;
+}
+
 .media.header {
   margin-left: 0;
 }

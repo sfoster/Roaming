@@ -64,24 +64,6 @@ h1, h2, h3, h3, h4, h5 {
 .horizontallist li {
   display: inline-block;
 }
-.tooldrawer {
-  padding: 1px;
-  min-height: 2.5em;
-}
-.tooldrawer button {
-  padding: 6px 14px;
-  border: 2px outset #eee;
-  border-radius: 6px;
-}
-#tooldrawer button:hover {
-  background-color: #99ffff;
-}
-
-#drawer {
-  width: 200px;
-  position: absolute;
-  top: 5px; bottom: 5px; right: 5px;
-}
 #hud {
   position: absolute;
   top: 5px; right: 210px; left: 5px;
