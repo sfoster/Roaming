@@ -66,8 +66,10 @@ define([
       this.level  = Math.max(1, this.stats.strength * this.stats.agility / 50);
     }
 
-    var weaponId = this.currentWeapon ?
-    		this.currentWeapon.id || this.currentWeapon : null;
+    if(args.currentWeapon) {
+      this.currentWeapon = args.currentWeapon;
+    }
+    var weaponId = this.currentWeapon.id;
 
     inventory.forEach(function(item){
       if(weaponId && weaponId == item.id) {

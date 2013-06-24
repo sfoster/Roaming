@@ -1,8 +1,18 @@
 define([], function(){
-  
+
   var weapons = {};
   var weaponClasses = {};
-  
+
+  weapons.fist = {
+    name: 'fist',
+    shortRangeDamage: 1,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0,
+    weaponclass: "shortrange",
+    weight: 0,
+    mpbonus: 0
+  };
+
   weapons.knife = {
     name: 'Knife',
     shortRangeDamage: 5,
@@ -33,7 +43,7 @@ define([], function(){
     weight: 2,
     mpbonus: 0
   };
-  
+
   weapons.throwingKnife = {
     name: 'Throwing Knife',
     shortRangeDamage: 3,
@@ -63,7 +73,7 @@ define([], function(){
     weight: 3,
     mpbonus: 0
   };
-  
+
   weapons.spear = {
     name: 'Spear',
     shortRangeDamage: 1,
@@ -127,7 +137,7 @@ define([], function(){
     weaponclass: "shortrange",
     weight: 10,
     mpbonus: 0
-  };  
+  };
   weapons.longbowAndarrow = {
     name: 'Longbow',
     shortRangeDamage: 4,
@@ -137,7 +147,7 @@ define([], function(){
     weaponclass: "longrange",
     weight: 1,
     mpbonus: 0
-  };   
+  };
   weapons.shortsword = {
     name: 'Shortsword',
     shortRangeDamage: 15,
@@ -146,7 +156,7 @@ define([], function(){
     weaponclass: "shortrange",
     weight: 2,
     mpbonus: 0
-  };  
+  };
   weapons.longsword = {
     name: 'Longsword',
     shortRangeDamage: 25,
@@ -624,7 +634,7 @@ define([], function(){
     weight: 2,
     mpbonus: 0
   };
-  
+
   weapons.rustytThrowingknife = {
     name: 'Rusty Throwing Knife',
     shortRangeDamage: 2,
@@ -654,7 +664,7 @@ define([], function(){
     weight: 3,
     mpbonus: 0
   };
-  
+
   weapons.rustySpear = {
     name: 'Rusty Spear',
     shortRangeDamage: 1,
@@ -681,7 +691,7 @@ define([], function(){
     weaponclass: "shortrange",
     weight: 2,
     mpbonus: 0
-  };  
+  };
   weapons.rustyLongsword = {
     name: 'Rusty Longsword',
     shortRangeDamage: 22,
@@ -837,6 +847,6 @@ define([], function(){
     weight: 5,
     mpbonus: 0
   };
-  
+
   return weapons;
 });

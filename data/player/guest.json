@@ -5,6 +5,7 @@
   "position": "world/3,3",
   "elapsed": 0,
   "inventory": [
+      { "resource": "resources/weapons#knife" },
       { "resource": "resources/items#cloak" },
       { "resource": "resources/items#apple" }
   ],
