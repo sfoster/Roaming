@@ -11,15 +11,15 @@
       background-color: #654321;
       color: #dedede;
     }
-    .row {
+/*    .row {
       background-color: yellow;
       outline: 1px solid #cc6
     }
     .col {
       background-color: orange;
       outline: 1px solid #990
-    } 
-
+    }
+*/
     .stage-width {
       margin: 0 auto;
       width: 800px;
@@ -49,8 +49,8 @@
     }
     .screen {
       position: absolute;
-      top: 40px; 
-      left: 0; 
+      top: 40px;
+      left: 0;
       right: 0;
       bottom: 40px;
       z-index: 1;
@@ -85,6 +85,35 @@
     #footer {
       bottom: 0;
     }
+
+    /* data styles */
+    table.stats {
+      border-collapse: collapse;
+      border-spacing: 0;
+    }
+    .stats th {
+      text-align: left;
+      padding: 3px 9px;
+      font-weight: normal;
+    }
+    .stats td {
+      padding: 3px 9px;
+      text-align: right;
+      font-weight: bold;
+    }
+    .stats tr:nth-child(even) > td,
+    .stats tr:nth-child(even) > th {
+      background-color: rgba(0,0,0,0.2);
+    }
+
+    /* inventory styles */
+    .equipped {
+      font-style: italic;
+    }
+
+    #playerInfo > .panel {
+      background-color: rgba(0,0,0, 0.3);
+    }
   </style>
 </head>
 <body id="wrapper">
@@ -94,18 +123,18 @@
     <div class="stage-width row">
       <div id="playerInfoLabel"
            class="col col-1of4 screenLabel"
-           data-screen="player" 
+           data-screen="player"
            data-bind="css: { active: ( activeScreen()=='player' ) }">
         Player
       </div>
-      <div id="gameInfoLabel" 
+      <div id="gameInfoLabel"
            class="col col-1of4 screenLabel"
-           data-screen="game" 
+           data-screen="game"
            data-bind="css: { active: ( activeScreen()=='game' ) }">
         Game menu</div>
-      <div id="locationLabel" 
+      <div id="locationLabel"
            class="col col-1of2 screenLabel"
-           data-screen="location" 
+           data-screen="location"
            data-bind="css: { active: ( activeScreen()=='location' ) }">
         Location
       </div>
@@ -121,22 +150,41 @@
     </div>
   </section>
 
-  <section id="playerInfo" 
+  <section id="playerInfo"
            class="screen"
            data-bind="css: { collapsed: ( activeScreen()!='player' ) }">
     <div class="stage-width stage-height panel" data-bind="with:player">
-      Player Avatar
-      Current Weapon
-      Stats
-      <div id="inventory" class="items">
-        <h2 class="heading">Inventory</h2>
-        <ul class="compact" data-bind="foreach: inventory">
-          <li class="item" data-bind="text: name, css: { equipped: ( $data.isEquipped ) }"></li>
-        </ul>
+      <div class="row" data-bind="attr: {id: $data._id}">
+        <div class="col col-1of2">
+          <h2 class="player-label">
+            <img class="actor-icon" data-bind="attr:{src:icon}">
+            <span data-bind="text: name" style="vertical-align: top"></span>
+          </h2>
+          <span class="health-bar" data-bind="style: { width: $root.health($data) + '%'}"></span>
+          <table class="stats" style="width:50%">
+            <tr><th>Health</th><td data-bind="text: stats.health"></td></tr>
+            <tr><th>Strength</th><td data-bind="text: stats.strength"></td></tr>
+            <tr><th>Mana</th><td data-bind="text: stats.mana"></td></tr>
+            <tr><th>Level</th><td data-bind="text: stats.level"></td></tr>
+            <tr><th>Agility</th><td data-bind="text: stats.agility"></td></tr>
+          </table>
+          <p>
+            Weapon:
+            <span class="col col-1of2" data-bind="text: currentWeapon.name"></span>
+          </p>
+        </div>
+        <div class="col col-1of2">
+          <div id="inventory" class="items">
+            <h2 class="heading">Inventory</h2>
+            <ul class="compact" data-bind="foreach: inventory">
+              <li class="item" data-bind="text: name, css: { equipped: ( $data.isEquipped ) }"></li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   </section>
-    
+
   <section id="gameInfo" class="screen"
            data-bind="css: { collapsed: ( activeScreen()!='game' ) }">
     <div class="stage-width panel">
@@ -216,7 +264,7 @@
     require([
       'dollar',
       'knockout',
-      'resources/npc', 
+      'resources/npc',
       'plugins/resource!player/guest',
       'plugins/resource!location/'+locationId,
       'models/npc'
