@@ -11,15 +11,6 @@
       background-color: #654321;
       color: #dedede;
     }
-/*    .row {
-      background-color: yellow;
-      outline: 1px solid #cc6
-    }
-    .col {
-      background-color: orange;
-      outline: 1px solid #990
-    }
-*/
     .stage-width {
       margin: 0 auto;
       width: 800px;
@@ -42,10 +33,13 @@
     .area {
       background-color: green;
     }
+
     .screen.collapsed {
-      transition: 0.1s ease-out;
       transform:scaleY(0);
-      z-index: -1;
+      /* squash then move off-screen */
+      transition-duration: 0.15s, 0s;
+      transition-delay:    0s, 0.15s;
+      left: -2000px;
     }
     .screen {
       position: absolute;
@@ -54,25 +48,78 @@
       right: 0;
       bottom: 40px;
       z-index: 1;
-      transition: transform 0.2s ease-out;
-      transition-property: transform, z-index;
+
       transform-origin: 50% 0;
       transform:scaleY(100%);
-      display: block;
+
+      /* move on-screen then un-squash */
+      transition-property: transform, left;
+      transition-timing-function: ease-out;
+      transition-duration: 1.6s, 0s;
+      transition-delay:    0s, 0s;
+    }
+    .panel.collapsed {
+      transform:translate(-800px, 0);
+      /* squash then move off-screen */
+      transition-property: transform, z-index;
+      transition-duration: 0.45s, 0s;
+      transition-delay:    0s, 0.45s;
+      z-index: -1;
+    }
+    .panel.right-panel.collapsed {
+      transform:translate(800px, 0);
     }
     .panel {
       position: relative;
       padding: 6px 12px;
+      left: 0;
+      display: block;
+      transform-origin: 0 50%;
+      transform:translate(0, 0);
+
+      /* move on-screen then un-squash */
+      transition-property: transform, z-index;
+      transition-timing-function: ease-out;
+      transition-duration: 0.6s, 0s;
+      transition-delay:    0s, 0.6s;
+      z-index: 1;
     }
     .screen > .panel {
       border: 1px solid #000;
-      background-color: #fff;
     }
     .screenLabel {
       background-color: transparent;
     }
     .screenLabel.active {
+
       background-color: #fff;
+    }
+    .layer {
+      position: absolute;
+      top: 0; left: 0; bottom: 0; right: 0;
+      z-index: 10;
+
+      transform:scaleY(1) translateY(0);
+
+      /* move on-screen then un-squash */
+      transition-property: transform, top;
+      transition-timing-function: ease-out;
+      transition-duration: 0.3s, 0s;
+      transition-delay:    0s, 0s;
+    }
+    .layer.collapsed {
+      transform:scaleY(0) translateY(600px);
+      /* squash then move off-screen */
+      transition-duration: 0.15s, 0s;
+      transition-delay:    0s, 0.15s;
+      top: -2000px;
+    }
+
+    .layer.layer-bg {
+      z-index: 0;
+    }
+    .layer.layer-fg {
+      z-index: 100;
     }
 
     #footer, #topbar {
@@ -114,6 +161,10 @@
     #playerInfo > .panel {
       background-color: rgba(0,0,0, 0.3);
     }
+
+    #combatLayer {
+      background-color: rgba(0,255,0, 0.6);
+    }
   </style>
 </head>
 <body id="wrapper">
@@ -151,7 +202,7 @@
   </section>
 
   <section id="playerInfo"
-           class="screen"
+           class="screen collapsed"
            data-bind="css: { collapsed: ( activeScreen()!='player' ) }">
     <div class="stage-width stage-height panel" data-bind="with:player">
       <div class="row" data-bind="attr: {id: $data._id}">
@@ -185,7 +236,7 @@
     </div>
   </section>
 
-  <section id="gameInfo" class="screen"
+  <section id="gameInfo" class="screen collapsed"
            data-bind="css: { collapsed: ( activeScreen()!='game' ) }">
     <div class="stage-width panel">
       <button>Save Game</button>
@@ -195,22 +246,22 @@
     </div>
   </section>
 
-  <section id="locationScreen" class="screen"
+  <section id="locationScreen"
+           class="screen collapsed"
            data-bind="css: { collapsed: ( activeScreen()!='location' ) }">
+    <div class="stage-width stage-height panel" data-bind="with: tile">
+      Description
+      Items
+      Combat
+      Special Encounters
+      Dialogue
 
-    <div class="stage-width panel" data-bind="with: tile">
-        Description
-        Items
-        Combat
-        Special Encounters
-        Dialogue
+      <div class="layer layer-bg" data-bind="css: terrain">
+        <div class="layer backdrop" data-bind="style: { backgroundImage: 'url('+backdrop+')' }"></div>
+      </div>
 
-        <div class="layer layer-bg" data-bind="css: terrain">
-          <div class="layer backdrop" data-bind="style: { backgroundImage: 'url('+backdrop+')' }"></div>
-        </div>
-
-        <div id="combatLayer" class="layer layer-over">
-        <div id="allies" class="panel left-panel allies-panel showing">
+      <div id="combatLayer" class="layer layer-over collapsed">
+        <div id="allies" class="panel left-panel allies-panel collapsed" style="display:none">
           <div data-bind="with:$parent.player">
             <div class="row" data-bind="attr: {id: $data._id}">
               <div class="col col-1of4">
@@ -232,7 +283,7 @@
             </div>
           </div><!-- /allies -->
         </div>
-        <div id="npc-info" class="panel right-panel npc-panel">
+        <div id="npc-info" class="panel right-panel npc-panel collapsed" style="display:none">
           <div data-bind="foreach: $parent.combat.opponents">
             <div class="row" data-bind="attr: {id: $data._id}">
               <div class="col col-1of4">
@@ -264,26 +315,91 @@
     require([
       'dollar',
       'knockout',
+      'promise',
       'resources/npc',
       'plugins/resource!player/guest',
       'plugins/resource!location/'+locationId,
       'models/npc'
-    ], function($, ko, npc, player, tile, Npc){
+    ], function($, ko, Promise, npc, player, tile, Npc){
       window.player = player;
       window.tile = tile;
 
-      viewModel = {
-        activeScreen: ko.observable("player"), // game, tile
-        player: player,
-        tile: tile,
-        health: function(){
+      function classTransition(elm, options) {
+        var className = options.className;
+        var defd = Promise.defer();
+        var resolved = false;
+        var verb = options.add ? 'add' : 'remove';
+        $elm = $(elm);
+
+        $elm.one('transitionend webkitTransitionEnd oTransitionEnd otransitionend', function() {
+          if(!resolved)
+            defd.resolve((resolved = true));
+        });
+        setTimeout(function(){
+          $elm[verb+'Class'](className);
+        }, 0);
+        return defd.promise;
+      }
+
+      function _ViewModel(player, tile, region, game){
+        this.activeScreen = ko.observable("location"); // game, location, player
+        this.player = player;
+        this.tile = tile;
+        this.health = function(){
           return 50;
-        },
-        combat: {
-          opponents: []
-        }
+        };
+        this.combat = {
+          opponents: ko.observableArray([])
+        };
+        this.inCombat = ko.computed(function(){
+          var isCombat = !!this.combat.opponents().length;
+          return isCombat;
+        }, this);
       };
+      window.viewModel = new _ViewModel(player, tile, null, null);
       ko.applyBindings( viewModel );
+
+      function setDisplayDefault(elm) {
+        elm.style.removeProperty("display");
+      }
+      function setDisplayNone(elm) {
+        elm.style.display = "none";
+      }
+
+      viewModel.inCombat.subscribe(function(isCombat){
+        var $panels = $("#combatLayer > .panel");
+        var combatLayer = document.querySelector("#combatLayer");
+
+        console.log("inCombat.subscribe: ", isCombat);
+        if(isCombat) {
+          // show the combat layer
+          $panels.each(function(){
+            setDisplayDefault(this);
+          });
+          setDisplayDefault(combatLayer);
+          classTransition(combatLayer, {
+            className: 'collapsed', remove: true
+          }).then(function(){
+            // slide in the participants
+            $panels.each(function(){
+              this.classList.remove("collapsed");
+            });
+          });
+        } else {
+          // slide away the participants
+          classTransition($panels, {
+            className: 'collapsed',
+            add: true
+          }).then(function(){
+            // then take the panels out of the document flow
+            $panels.each(function(node){
+              setDisplayNone(this);
+            });
+            // and hide the combat layer
+            combatLayer.classList.add("collapsed");
+          });
+        }
+      });
 
       $("#topbar").delegate(".screenLabel", "click", function(){
         var context = ko.contextFor(this);
