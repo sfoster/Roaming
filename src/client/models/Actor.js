@@ -10,15 +10,9 @@ define([
     agility: 5
   };
 
-  function uniqId(stem) {
-    return (stem || 'thing')+'_'+(uniqId._count++);
-  }
-  uniqId._count = 0;
-
   var Actor = Compose(function(args) {
-  	args = args || {};
-    this._id = uniqId();
-    console.log("Actor ctor, got args", args);
+    util.prepareModel(this, args || {});
+    console.log("Actor: ", this.name, this.type, this._id);
 
     // create the player's inventory
     var inventory = this.inventory = Inventory.resolve(args.inventory || []);
@@ -84,6 +78,7 @@ define([
     // }
   }, {
     declaredClass: "Actor",
+    type: "actor",
     currentWeapon: "",
     icon: "",
     propertiesWithReferences: ['inventory', 'currentWeapon'],

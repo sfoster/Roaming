@@ -188,9 +188,24 @@ define(function(){
     return value < lbound ? lbound : (value > ubound ? ubound : value);
   };
 
+  var typeCounts = {};
+
   return {
     hasProperty: function(obj, key) {
       return !(undefined === getObject(key, obj));
+    },
+    // prolly belongs in some object/model helper lib or superclass
+    prepareModel: function(model, args) {
+      mixin(this, args || {});
+      if(!model.name) {
+        model.name = model.id || model.type;
+      }
+      if(!(model.type in typeCounts)) {
+        typeCounts[model.type] = -1;
+      }
+      typeCounts[model.type]++;
+      model._id = (model.id || model.type)+'_'+typeCounts[model.type];
+      return model;
     },
     getObject: getObject,
     setValue: setValue,

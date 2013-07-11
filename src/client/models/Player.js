@@ -6,6 +6,7 @@ define([
     propertiesWithReferences: [].concat(Actor.prototype.propertiesWithReferences),
 
     declaredClass: "Player",
+    type: "player",
     name: "You", // by default
     level: 1,
     luck: 50/100,

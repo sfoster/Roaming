@@ -2,11 +2,13 @@ define(['compose', 'lib/util'], function(Compose, util){
   console.log("Loading models/Item");
   var create = util.create;
   var mixin = util.mixin;
+  var typeCounts = {};
   var ItemModel = Compose(function Item(args){
-    mixin(this, args || {});
-    console.log("Item constructor: ", this);
+    util.prepareModel(this, args || {});
+    console.log("Item constructor: ", this.name, this.type, this._id);
   }, {
     declaredClass: "Item",
+    type: "item",
     examine: function(context){
       return this.detailedDescription || this.description;
     },
