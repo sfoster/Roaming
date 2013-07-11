@@ -5,7 +5,6 @@ define(['compose', 'lib/util'], function(Compose, util){
   var typeCounts = {};
   var ItemModel = Compose(function Item(args){
     util.prepareModel(this, args || {});
-    console.log("Item constructor: ", this.name, this.type, this._id);
   }, {
     declaredClass: "Item",
     type: "item",

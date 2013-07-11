@@ -196,7 +196,7 @@ define(function(){
     },
     // prolly belongs in some object/model helper lib or superclass
     prepareModel: function(model, args) {
-      mixin(this, args || {});
+      mixin(model, args || {});
       if(!model.name) {
         model.name = model.id || model.type;
       }
