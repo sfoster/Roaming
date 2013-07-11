@@ -1,0 +1,30 @@
+<div class="stage-width stage-height panel">
+  <div class="row" data-bind="attr: {id: $data._id}">
+    <div class="col col-1of2">
+      <h2 class="player-label">
+        <img class="actor-icon" data-bind="if: icon, attr:{src:icon}">
+        <span data-bind="text: name" style="vertical-align: top"></span>
+      </h2>
+      <span class="health-bar" data-bind="style: { width: $root.health($data) + '%'}"></span>
+      <table class="stats" style="width:50%">
+        <tr><th>Health</th><td data-bind="text: stats.health"></td></tr>
+        <tr><th>Strength</th><td data-bind="text: stats.strength"></td></tr>
+        <tr><th>Mana</th><td data-bind="text: stats.mana"></td></tr>
+        <tr><th>Level</th><td data-bind="text: stats.level"></td></tr>
+        <tr><th>Agility</th><td data-bind="text: stats.agility"></td></tr>
+      </table>
+      <p>
+        Weapon:
+        <span class="col col-1of2" data-bind="text: currentWeapon.name"></span>
+      </p>
+    </div>
+    <div class="col col-1of2">
+      <div id="inventory" class="items">
+        <h2 class="heading">Inventory</h2>
+        <ul class="compact" data-bind="foreach: inventory">
+          <li class="item" data-bind="text: name, css: { equipped: ( $data.isEquipped ) }"></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
