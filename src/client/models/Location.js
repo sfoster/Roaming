@@ -19,16 +19,14 @@ define([
     var hereItems= this.here = [];
     hereItems._name = 'location.here';
     this.npcs = [];
-    for(var key in options){
-      if('here' == key) {
-        this.here.push.apply(this.here, options.here.map(function(item){
-          item.inCollection = hereItems;
-          return item;
-        }));
-      } else {
-        this[key] = options[key];
-      }
+    if(options.here) {
+      this.here.push.apply(this.here, options.here.map(function(item){
+        item.inCollection = hereItems;
+        return item;
+      }));
     }
+    this.type = this.terrain;
+    util.prepareModel(this, options);
     if(this._resourceId) {
       this.regionId = this._resourceId.replace(/^\/?location\/([^\/]+)\/(\d+,\d+)/, '$1');
     }

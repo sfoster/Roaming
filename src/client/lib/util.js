@@ -201,12 +201,14 @@ define(function(){
       if(!model.name) {
         model.name = model.id || model.type;
       }
-      if(!(model.type in typeCounts)) {
-        typeCounts[model.type] = -1;
-      }
-      typeCounts[model.type]++;
       // give everything a unique identifier
-      model._id = (model.id || model.type)+'_'+typeCounts[model.type];
+      if(!model._id) {
+        if(!(model.type in typeCounts)) {
+          typeCounts[model.type] = -1;
+        }
+        typeCounts[model.type]++;
+        model._id = (model.id || model.type)+'_'+typeCounts[model.type];
+      }
       return model;
     },
     getObject: getObject,
