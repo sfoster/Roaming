@@ -3,80 +3,27 @@
 */
 
 html, body {
-	margin: 0; padding: 0;
 	background-color: #654321;
 	color: #dedede;
 }
 
-.panel.collapsed {
-  transform:translate(-800px, 0);
-  /* squash then move off-screen */
-  transition-property: transform, z-index;
-  transition-duration: 0.45s, 0s;
-  transition-delay:    0s, 0.45s;
-  z-index: -1;
-}
-.panel.right-panel.collapsed {
-  transform:translate(800px, 0);
-}
-.panel {
-  position: relative;
-  padding: 6px 12px;
-  left: 0;
-  display: block;
-  transform-origin: 0 50%;
-  transform:translate(0, 0);
-
-  /* move on-screen then un-squash */
-  transition-property: transform, z-index;
-  transition-timing-function: ease-out;
-  transition-duration: 0.6s, 0s;
-  transition-delay:    0s, 0.6s;
-  z-index: 1;
-}
 .screen > .panel {
   border: 1px solid #000;
 }
-.screenLabel {
-  background-color: transparent;
-}
-.screenLabel.active {
 
-  background-color: #fff;
+.screenLabel > h2 {
+	padding: 2px 8px;
+	font-weight: normal;
+	opacity: 0.6;
 }
-.layer {
-  position: absolute;
-  top: 0; left: 0; bottom: 0; right: 0;
-  z-index: 10;
-
-  transform:scaleY(1) translateY(0);
-
-  /* move on-screen then un-squash */
-  transition-property: transform, top;
-  transition-timing-function: ease-out;
-  transition-duration: 0.3s, 0s;
-  transition-delay:    0s, 0s;
+.screenLabel > h2:hover {
+	opacity: 1;
+	cursor: pointer;
 }
-.layer.collapsed {
-  transform:scaleY(0) translateY(600px);
-  /* squash then move off-screen */
-  transition-duration: 0.15s, 0s;
-  transition-delay:    0s, 0.15s;
-  top: -2000px;
-}
-
-.layer.layer-bg {
-  z-index: 0;
-}
-.layer.layer-fg {
-  z-index: 100;
-}
-
-#wrapper {
-	margin: 5px 10px;
-	min-width: 800px;
-	min-height: 600px;
-	position: relative;
+.screenLabel.active > h2 {
+	font-weight: bold;
+	opacity: 0.8;
+	text-shadow: 0px 8px 18px rgba(255, 255, 255, 0.9), 0px 2px 2px rgba(0, 0, 0, 0.8);
 }
 
 #footer, #topbar {
@@ -85,149 +32,17 @@ html, body {
 }
 
 #topbar {
-	background-color: #000;
-	top: 0;
 	display: block;
 	min-height: 32px;
 	z-index: 5;
-	-webkit-box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.97);
-	-moz-box-shadow:    0px 4px 30px rgba(0, 0, 0, 0.97);
-	box-shadow:         0px 4px 30px rgba(0, 0, 0, 0.97);
 }
 
-#playerInfo {
-	padding-top: 8px;
-}
-#playerInfo .player-icon {
-	position: absolute;
-	top: 0; left: 5px;
-	height: 32px;
-	width: 32px;
-}
-#playerInfo .player-label {
-	position: relative;
-	padding-left: 40px;
-}
-#playerInfo h2.player-label {
-	font-size: 1em;
-}
-
-#main {
-	/*background-color: rgba(0,0,0, 0.6);*/
-	position: relative;
-	top: 32px;
-	min-height: 600px;
-}
 
 #footer {
-	background-color: #000;
-	position: absolute;
-	bottom: 0; right: 0;
-	left: 0;
-	display: block;
 	min-height: 64px;
 	z-index: 5;
-	-webkit-box-shadow: 0px -10px 20px 0px rgba(0, 0, 0, 0.57);
-	-moz-box-shadow:    0px -10px 20px 0px rgba(0, 0, 0, 0.57);
-	box-shadow:         0px -10px 20px 0px rgba(0, 0, 0, 0.57);
 }
 
-#messages {
-	position: absolute;
-	bottom: 0; left: 0px; right: 10px;
-	z-index: 5;
-	background: #000;
-}
-#messages > ul {
-	max-height: 5em;
-	overflow: auto;
-}
-
-
-.panelist {
-	margin: 0;
-	padding: 0;
-}
-
-.area {
-	position: relative;
-	margin: 0 auto;
-}
-
-.panel {
-	display: block;
-	padding: 8px;
-	margin: 10px;
-
-	/*background-color: rgba(0,255,51, 0.6);*/
-	-webkit-box-shadow: 0px -4px 30px rgba(0, 0, 0, 0.97);
-	-moz-box-shadow:    0px -4px 30px rgba(0, 0, 0, 0.97);
-	box-shadow:         0px -4px 30px rgba(0, 0, 0, 0.97);
-}
-
-li.panel {
-	list-style-type:  none;
-}
-
-.overlay-panel {
-	background: rgba(0,0,0,0.5);
-}
-.allies-panel {
-	background: rgba(255,255,255,0.65);
-	color: #333;
-	position: absolute;
-	width: 38%;
-	left: 0;
-	top: 150px;
-}
-.npc-panel {
-	position: absolute;
-	width: 38%;
-	right: 0;
-	top: 150px;
-}
-
-.right-panel.showing,
-.left-panel.showing {
-	transform: translateX(0); /*slide in from the right*/
-}
-.right-panel {
-	position: absolute;
-	right: 0;
-	transition: transform 0.3s ease-out;
-	transform: translateX(110%); /*tucked off to the right*/
-}
-.left-panel {
-	position: absolute;
-	left: 0;
-	transition: transform 0.3s ease-out;
-	transform: translateX(-110%); /*tucked off to the left*/
-}
-
-.info-panel {
-	background: rgba(255,255,255,0.65);
-	color: #333;
-	width: 45%;
-	top: 10px;
-	bottom: 10px;
-}
-
-.combat-panel {
-	background: rgba(0,0,0,0.75);
-}
-
-#main > .location {
-	max-width: 784px;
-	height: 600px;
-	margin: 0 auto;
-	position: relative;
-	overflow: hidden;
-}
-
-.layer {
-	position: absolute;
-  top: 0; left: 0; bottom: 0; right: 0;
-}
 img.backdrop {
 	position: absolute;
 	top: 0; left: 0;
@@ -235,14 +50,7 @@ img.backdrop {
 	display: block;
 	opacity: 0.65;
 }
-.layer-fg {
-  top: 55%;
-  z-index: 10;
-}
-.layer-over {
-  opacity: 1;
-  z-index: 100;
-}
+
 .toggleable.collapsed > * {
 	display: none;
 }

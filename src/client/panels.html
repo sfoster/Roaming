@@ -6,6 +6,7 @@
   <link rel="stylesheet" type="text/css" href="./css/grid.css">
   <link rel="stylesheet" type="text/css" href="./css/core.css">
   <link rel="stylesheet" type="text/css" href="./css/layout.css">
+  <link rel="stylesheet" type="text/css" href="./css/main.css">
   <style>
     html, body {
       margin: 0; padding: 0;
@@ -15,17 +16,6 @@
 
     .screen > .panel {
       border: 1px solid #000;
-    }
-
-    #footer, #topbar {
-      position: absolute;
-      left: 0; right: 0;
-    }
-    #topbar {
-      top: 0;
-    }
-    #footer {
-      bottom: 0;
     }
 
     /* inventory styles */
@@ -81,18 +71,19 @@
            class="col col-1of4 screenLabel"
            data-screen="player"
            data-bind="css: { active: ( activeScreen()=='player' ) }">
-        Player
+        <h2>Player</h2>
       </div>
       <div id="gameInfoLabel"
            class="col col-1of4 screenLabel"
            data-screen="game"
            data-bind="css: { active: ( activeScreen()=='game' ) }">
-        Game menu</div>
+        <h2>Game Info</h2>
+      </div>
       <div id="locationLabel"
            class="col col-1of2 screenLabel"
            data-screen="location"
            data-bind="css: { active: ( activeScreen()=='location' ) }">
-        Location
+        <h2>Location</h2>
       </div>
     </div>
   </section>
