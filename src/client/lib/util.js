@@ -197,6 +197,7 @@ define(function(){
     // prolly belongs in some object/model helper lib or superclass
     prepareModel: function(model, args) {
       mixin(model, args || {});
+      // give everything a name
       if(!model.name) {
         model.name = model.id || model.type;
       }
@@ -204,6 +205,7 @@ define(function(){
         typeCounts[model.type] = -1;
       }
       typeCounts[model.type]++;
+      // give everything a unique identifier
       model._id = (model.id || model.type)+'_'+typeCounts[model.type];
       return model;
     },
