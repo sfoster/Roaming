@@ -5,121 +5,16 @@
   <title>Roaming</title>
   <link rel="stylesheet" type="text/css" href="./css/grid.css">
   <link rel="stylesheet" type="text/css" href="./css/core.css">
+  <link rel="stylesheet" type="text/css" href="./css/layout.css">
   <style>
     html, body {
       margin: 0; padding: 0;
       background-color: #654321;
       color: #dedede;
     }
-    .stage-width {
-      margin: 0 auto;
-      width: 800px;
-      -moz-box-sizing: border-box;
-      -webkit-box-sizing: border-box;
-    }
-    .stage-height {
-      height: 480px;
-      -moz-box-sizing: border-box;
-      -webkit-box-sizing: border-box;
-    }
 
-    #wrapper {
-      margin: 5px 10px;
-      min-width: 800px;
-      min-height: 600px;
-      position: relative;
-    }
-
-    .area {
-      background-color: green;
-    }
-
-    .screen.collapsed {
-      transform:scaleY(0);
-      /* squash then move off-screen */
-      transition-duration: 0.15s, 0s;
-      transition-delay:    0s, 0.15s;
-      left: -2000px;
-    }
-    .screen {
-      position: absolute;
-      top: 40px;
-      left: 0;
-      right: 0;
-      bottom: 40px;
-      z-index: 1;
-
-      transform-origin: 50% 0;
-      transform:scaleY(100%);
-
-      /* move on-screen then un-squash */
-      transition-property: transform, left;
-      transition-timing-function: ease-out;
-      transition-duration: 0.4s, 0s;
-      transition-delay:    0s, 0s;
-    }
-    .panel.collapsed {
-      transform:translate(-800px, 0);
-      /* squash then move off-screen */
-      transition-property: transform, z-index;
-      transition-duration: 0.45s, 0s;
-      transition-delay:    0s, 0.45s;
-      z-index: -1;
-    }
-    .panel.right-panel.collapsed {
-      transform:translate(800px, 0);
-    }
-    .panel {
-      position: relative;
-      padding: 6px 12px;
-      left: 0;
-      display: block;
-      transform-origin: 0 50%;
-      transform:translate(0, 0);
-
-      /* move on-screen then un-squash */
-      transition-property: transform, z-index;
-      transition-timing-function: ease-out;
-      transition-duration: 0.6s, 0s;
-      transition-delay:    0s, 0.6s;
-      z-index: 1;
-    }
     .screen > .panel {
       border: 1px solid #000;
-    }
-    .screenLabel {
-      background-color: transparent;
-    }
-    .screenLabel.active {
-
-      background-color: #fff;
-    }
-    .layer {
-      position: absolute;
-      top: 0; left: 0; bottom: 0; right: 0;
-      z-index: 10;
-
-      transform:scaleY(1) translateY(0);
-
-      /* move on-screen then un-squash */
-      transition-property: transform, top;
-      transition-timing-function: ease-out;
-      transition-duration: 0.3s, 0s;
-      transition-delay:    0s, 0s;
-    }
-    .layer.collapsed {
-      transform:scaleY(0) translateY(600px);
-      /* squash then move off-screen */
-      transition-duration: 0.15s, 0s;
-      transition-delay:    0s, 0.15s;
-      top: -2000px;
-    }
-
-    .layer.layer-bg {
-      z-index: 0;
-    }
-    .layer.layer-fg {
-      z-index: 100;
     }
 
     #footer, #topbar {
@@ -131,26 +26,6 @@
     }
     #footer {
       bottom: 0;
-    }
-
-    /* data styles */
-    table.stats {
-      border-collapse: collapse;
-      border-spacing: 0;
-    }
-    .stats th {
-      text-align: left;
-      padding: 3px 9px;
-      font-weight: normal;
-    }
-    .stats td {
-      padding: 3px 9px;
-      text-align: right;
-      font-weight: bold;
-    }
-    .stats tr:nth-child(even) > td,
-    .stats tr:nth-child(even) > th {
-      background-color: rgba(0,0,0,0.2);
     }
 
     /* inventory styles */
@@ -197,7 +72,7 @@
     }
   </style>
 </head>
-<body id="wrapper">
+<body class="wrapper">
 
   <section id="topbar" class="area">
     <!-- top bar: game/high-level player info -->

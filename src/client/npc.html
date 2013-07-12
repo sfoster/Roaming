@@ -7,6 +7,7 @@
   <meta name="viewport" content="initial-scale=1">
   <link rel="stylesheet" href="./css/core.css" type="text/css">
   <link rel="stylesheet" href="./css/listing.css" type="text/css">
+  <link rel="stylesheet" href="./css/layout.css" type="text/css">
   <style>
     h1 {
       margin: 0;
@@ -18,14 +19,14 @@
       overflow: auto;
     }
     .item .field-id {
-      
+
     }
   </style>
 </head>
 <body>
 <section id="hud" class="panel">
   <h1>NPCs Table</h1>
-</section>  
+</section>
 <section id="drawer" class="panel">
     <ul id="toollist" class="panelist">
     </ul>
@@ -53,9 +54,9 @@
       </tr>
     </tbody>
   </table>
-</section>  
+</section>
 <section id="detail" class="panel">
-</section>  
+</section>
 
 <script src="./vendor/require.js"></script>
 <script src="./config.js"></script>
@@ -65,7 +66,7 @@
 
     var viewModel = window.viewModel =  {
       npcs: [],
-    };    
+    };
     Object.keys(npcs).forEach(function(id){
       var thing  = new Npc(npcs[id]);
       thing.id = id;

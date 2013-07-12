@@ -1,0 +1,166 @@
+/*
+  layout.css
+  layout elements and positioning
+*/
+
+/* the outermost wrapper, contains areas */
+.wrapper {
+  margin: 5px 10px;
+  min-width: 800px;
+  min-height: 600px;
+  position: relative;
+}
+
+/*
+ * area
+ * the page/viewport is divided int "area" regions
+ * probably should just call these regions :)
+ */
+.area {
+  background-color: green;
+}
+
+.stage-width {
+  margin: 0 auto;
+  width: 800px;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+.stage-height {
+  height: 480px;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+
+
+/*
+ * screen
+ * containers which are stacked and occupy the whole stage
+ */
+.screen.collapsed {
+  transform:scaleY(0);
+  /* squash then move off-screen */
+  transition-duration: 0.15s, 0s;
+  transition-delay:    0s, 0.15s;
+  left: -2000px;
+}
+.screen {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  right: 0;
+  bottom: 40px;
+  z-index: 1;
+
+  transform-origin: 50% 0;
+  transform:scaleY(1);
+
+  /* move on-screen then un-squash */
+  transition-property: transform, left;
+  transition-timing-function: ease-out;
+  transition-duration: 0.4s, 0s;
+  transition-delay:    0s, 0s;
+}
+
+/*
+ * panel
+ * main sub-windowing component
+ * can be nested or stacked
+ * transition in/out
+ */
+.panel {
+  border: 1px solid #eee;
+  border-bottom-color: #ccc;
+  margin-bottom: 2px;
+  border-radius: 6px;
+  min-height: 20px;
+}
+
+.panel {
+  position: relative;
+  padding: 6px 12px;
+  left: 0;
+  display: block;
+  transform-origin: 0 50%;
+  transform:translate(0, 0);
+
+  /* move on-screen then un-squash */
+  transition-property: transform, z-index;
+  transition-timing-function: ease-out;
+  transition-duration: 0.6s, 0s;
+  transition-delay:    0s, 0.6s;
+  z-index: 1;
+}
+.panel.collapsed {
+  transform:translate(-800px, 0);
+  /* squash then move off-screen */
+  transition-property: transform, z-index;
+  transition-duration: 0.45s, 0s;
+  transition-delay:    0s, 0.45s;
+  z-index: -1;
+}
+.panel.right-panel.collapsed {
+  transform:translate(800px, 0);
+}
+
+/*
+ * layer
+ * - stackable overlays,
+ * - fill their container
+ * - transition in/out
+ */
+.layer {
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  z-index: 10;
+
+  transform:scaleY(1) translateY(0);
+
+  /* move on-screen then un-squash */
+  transition-property: transform, top;
+  transition-timing-function: ease-out;
+  transition-duration: 0.3s, 0s;
+  transition-delay:    0s, 0s;
+}
+.layer.collapsed {
+  transform:scaleY(0) translateY(600px);
+  /* squash then move off-screen */
+  transition-duration: 0.15s, 0s;
+  transition-delay:    0s, 0.15s;
+  top: -2000px;
+}
+
+.layer.layer-bg {
+  z-index: 0;
+}
+.layer.layer-fg {
+  z-index: 100;
+}
+
+/* layout elements:
+   TODO: move to layout
+*/
+#hud {
+  position: absolute;
+  top: 5px; right: 210px; left: 5px;
+  height: 160px;
+  background-color: #666;
+}
+#main {
+  position: absolute;
+  top: 170px; right: 210px; left: 5px; bottom: 60px;
+  padding: 10px;
+  min-height: 60px;
+  background-color: #fff;
+}
+
+#status {
+  right: 210px; left: 5px; bottom: 5px;
+  height: 55px;
+  padding: 5px 10px;
+  position: absolute;
+  background: #ccc;
+  color: #666;
+  font-size: 0.8em;
+  overflow: auto;
+}

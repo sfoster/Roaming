@@ -7,6 +7,7 @@
   <meta name="viewport" content="initial-scale=1">
   <link rel="stylesheet" href="./css/core.css" type="text/css">
   <link rel="stylesheet" href="./css/listing.css" type="text/css">
+  <link rel="stylesheet" href="./css/layout.css" type="text/css">
   <style>
     h1 {
       margin: 0;
@@ -18,14 +19,14 @@
       overflow: auto;
     }
     .item .field-id {
-      
+
     }
   </style>
 </head>
 <body>
 <section id="hud" class="panel">
   <h1>Weapons Table</h1>
-</section>  
+</section>
 <section id="drawer" class="panel">
     <ul id="toollist" class="panelist">
     </ul>
@@ -44,7 +45,7 @@
     <tbody>
     </tbody>
   </table>
-</section>  
+</section>
 
 <script type="text/x-template" id="item-template">
 <tr class="item">
@@ -73,7 +74,7 @@
     paths: config.packages
   }, ['dollar', 'resources/weapons'], function($, weapons){
     var tmpl= $('#item-template')[0].innerHTML;
-    var itemsHtml = [], 
+    var itemsHtml = [],
         pattern = /\{\{([^}]+)\}\}/g;
     Object.keys(weapons).forEach(function(id){
       var data  = Object.create(weapons[id]);

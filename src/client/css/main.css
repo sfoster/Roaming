@@ -8,23 +8,68 @@ html, body {
 	color: #dedede;
 }
 
-h1, h2, h3 {
-	margin: 0 0 8px 0;
-	font-family: sans-serif;
-	text-align: left;
+.panel.collapsed {
+  transform:translate(-800px, 0);
+  /* squash then move off-screen */
+  transition-property: transform, z-index;
+  transition-duration: 0.45s, 0s;
+  transition-delay:    0s, 0.45s;
+  z-index: -1;
+}
+.panel.right-panel.collapsed {
+  transform:translate(800px, 0);
+}
+.panel {
+  position: relative;
+  padding: 6px 12px;
+  left: 0;
+  display: block;
+  transform-origin: 0 50%;
+  transform:translate(0, 0);
+
+  /* move on-screen then un-squash */
+  transition-property: transform, z-index;
+  transition-timing-function: ease-out;
+  transition-duration: 0.6s, 0s;
+  transition-delay:    0s, 0.6s;
+  z-index: 1;
+}
+.screen > .panel {
+  border: 1px solid #000;
+}
+.screenLabel {
+  background-color: transparent;
+}
+.screenLabel.active {
+
+  background-color: #fff;
+}
+.layer {
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  z-index: 10;
+
+  transform:scaleY(1) translateY(0);
+
+  /* move on-screen then un-squash */
+  transition-property: transform, top;
+  transition-timing-function: ease-out;
+  transition-duration: 0.3s, 0s;
+  transition-delay:    0s, 0s;
+}
+.layer.collapsed {
+  transform:scaleY(0) translateY(600px);
+  /* squash then move off-screen */
+  transition-duration: 0.15s, 0s;
+  transition-delay:    0s, 0.15s;
+  top: -2000px;
 }
 
-h2 {
-	font-size: 1.3em;
+.layer.layer-bg {
+  z-index: 0;
 }
-h3 {
-	font-size: 1.1em;
-}
-
-.stage-width {
-	position: relative;
-	width: 800px;
-	margin: 0 auto;
+.layer.layer-fg {
+  z-index: 100;
 }
 
 #wrapper {
@@ -33,11 +78,15 @@ h3 {
 	min-height: 600px;
 	position: relative;
 }
+
+#footer, #topbar {
+  position: absolute;
+  left: 0; right: 0;
+}
+
 #topbar {
 	background-color: #000;
-	position: absolute;
-	top: 0; right: 0;
-	left: 0;
+	top: 0;
 	display: block;
 	min-height: 32px;
 	z-index: 5;
@@ -167,45 +216,12 @@ li.panel {
 	background: rgba(0,0,0,0.75);
 }
 
-dt {
-  display: block;
-  float: left;
-  width: 12em;
-  font-weight: bold;
-  clear: both;
-}
-
-dl:after, dd:after {
-  content: ".";
-  display: block;
-  height: 0;
-  overflow: hidden;
-  clear: both;
-}
-dd {
-  display: block;
-  float: left;
-  margin: 0 0 0.5em 0;
-  width: calc(100% - 13em - 12px);
-}
-dt, dd {
-  padding: 3px 6px;
-}
-
 #main > .location {
 	max-width: 784px;
 	height: 600px;
 	margin: 0 auto;
 	position: relative;
 	overflow: hidden;
-}
-
-tbody > tr > th {
-	font-weight: normal;
-	text-align: left;
-}
-td.num {
-	text-align: right;
 }
 
 .layer {
@@ -261,17 +277,6 @@ img.backdrop {
 	transform:rotate(90deg);
 	-webkit-transform:rotate(90deg);
 }
-ul.compact {
-	margin: 0 0 0.5em 0;
-	padding: 0;
-}
-ul.compact > li {
-	list-style-type: none;
-	margin: 0 0 2px 0;
-}
-ul.compact > li > p {
-	margin: 0;
-}
 
 .message {
 	-webkit-box-shadow: 0 0 2px rgba(0, 0, 0, 0.57);
@@ -306,4 +311,9 @@ ul.compact > li > p {
 }
 .struck {
   animation: pulse 0.4s ease-in-out;
+}
+
+.encounter {
+  background-color: #f9f9d9;
+  color: #900;
 }

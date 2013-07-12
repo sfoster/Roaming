@@ -7,6 +7,7 @@
   <meta name="viewport" content="initial-scale=1">
   <link rel="stylesheet" href="./css/core.css" type="text/css">
   <link rel="stylesheet" href="./css/listing.css" type="text/css">
+  <link rel="stylesheet" href="./css/layout.css" type="text/css">
   <style>
     h1 {
       margin: 0;
@@ -34,7 +35,7 @@
 <body>
 <section id="hud" class="panel">
   <h1>NPCs Table</h1>
-</section>  
+</section>
 <section id="drawer" class="panel">
     <ul id="toollist" class="panelist">
     </ul>
@@ -55,9 +56,9 @@
     <tbody>
     </tbody>
   </table>
-</section>  
+</section>
 <section id="detail" class="panel">
-</section>  
+</section>
 
 <script type="text/x-template" id="item-template">
 <tr class="item" data-itemid="{{id}}">
@@ -90,21 +91,21 @@
   }, ['dolalr', 'store/main', 'resources/npc'], function($, store, npc){
     var npcTable = [];
     var tmpl= $('#item-template')[0].innerHTML;
-    var itemsHtml = [], 
+    var itemsHtml = [],
         pattern = /\{\{([^}]+)\}\}/g;
-    
+
     var toItem = function(data, id){
       data  = Object.create(data);
       data.id = id;
       return data;
     };
-    
+
     $('#npcs').delegate('.button--remove', 'click', function(evt){
       var id = getIdFromNode(evt.target);
       console.log("Click on node: ", id);
       npcStore.remove(id);
     });
-    
+
     function getIdFromNode(node){
       var id, $node = $(node);
       return $(node).closest('.item')[0].getAttribute('data-itemid');
@@ -113,15 +114,15 @@
     var npcTable = Object.keys(npc).map(function(id){
       return toItem(npc[id], id);
     });
-    
+
     var npcStore = store.Observable(new store.Memory({
       data: npcTable
     }));
-    
+
     $.fn.insertAt = function(selector, idx) {
       // jquery extension to insert contents at a particular position
-      var cont = this, 
-          $refNode = $(selector), 
+      var cont = this,
+          $refNode = $(selector),
           children = $refNode.children();
 
       if(undefined === idx || idx >= children.length) {
@@ -131,7 +132,7 @@
       }
       return this;
     }
-    
+
     // TODO: need to drum up a quick quide to querying
     // support * wildcard queries
     var results = npcStore.query({range: 'short'});
@@ -142,7 +143,7 @@
       return str;
     }
     function decorateWithIndex(item, idx){
-      item = Object.create(item); 
+      item = Object.create(item);
       item.rowIndex = idx;
       return item;
     }
@@ -151,7 +152,7 @@
         return $(str).insertAt(selector, idx);
       };
     }
-    
+
     var insertNodes = insertInto('#npcs tbody');
     results
       .map(decorateWithIndex)
@@ -167,10 +168,10 @@
       evasion: 5,
       terrain: ["plains"]
     };
-    
+
     results.observe(function(item, removedFrom, insertedInto){
       console.log("results observer, removed from: %s, inserted into: %s", removedFrom, insertedInto);
-      
+
       if(insertedInto > -1) {
         // item was added
         var arr = new Array(insertedInto); // sparse array
@@ -183,7 +184,7 @@
         console.log("item was removed, at index: ", removedFrom, " of ", results.length);
         // remove everything after and including the affected item
         $('#npcs tbody').children().slice(removedFrom).remove();
-        
+
         var arr = new Array(removedFrom); // sparse arrqy
         // don't touch elements not needing changes
         var dirtyitems= results.slice(removedFrom);

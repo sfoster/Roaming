@@ -1,19 +1,25 @@
 /*
   core.css
+  text and content element styles
 */
+
 body {
   background-color: #ddd;
   font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
 }
 
+
+/* heading styles */
 h1, h2, h3, h3, h4, h5 {
   margin: 0;
   padding: 0.2em 0 0.75em 0;
 }
 
-.hidden {
-  display: none;
-  /* TODO: some fancy transition */
+h2 {
+  font-size: 1.3em;
+}
+h3 {
+  font-size: 1.1em;
 }
 
 .hint {
@@ -26,7 +32,15 @@ h1, h2, h3, h3, h4, h5 {
   padding: 0.1em 0 0.3em 0;
 }
 
-/* ====== media ====== */
+.screenLabel {
+  background-color: transparent;
+}
+.screenLabel.active {
+  background-color: #fff;
+}
+
+
+/* ====== media block ====== */
 .media {margin:10px;}
 .media, .bd {overflow:hidden; _overflow:visible; zoom:1;}
 .media .img {float:left; margin-right: 10px;}
@@ -42,20 +56,82 @@ h1, h2, h3, h3, h4, h5 {
 .shortheight {
   height: 3em;
 }
+.hidden {
+  display: none;
+}
 
 .panelist {
   list-style-type: none;
   padding: 0;
   margin: 0;
 }
-.panel {
-  border: 1px solid #eee;
-  border-bottom-color: #ccc;
-  margin-bottom: 2px;
-  border-radius: 6px;
-  min-height: 20px;
-  position: relative;
+
+/* data presentation styles */
+dt {
+  display: block;
+  float: left;
+  width: 12em;
+  font-weight: bold;
+  clear: both;
 }
+
+dl:after, dd:after {
+  content: ".";
+  display: block;
+  height: 0;
+  overflow: hidden;
+  clear: both;
+}
+dd {
+  display: block;
+  float: left;
+  margin: 0 0 0.5em 0;
+  width: calc(100% - 13em - 12px);
+}
+dt, dd {
+  padding: 3px 6px;
+}
+
+tbody > tr > th {
+  font-weight: normal;
+  text-align: left;
+}
+td.num {
+  text-align: right;
+}
+
+table.stats {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+.stats th {
+  text-align: left;
+  padding: 3px 9px;
+  font-weight: normal;
+}
+.stats td {
+  padding: 3px 9px;
+  text-align: right;
+  font-weight: bold;
+}
+.stats tr:nth-child(even) > td,
+.stats tr:nth-child(even) > th {
+  background-color: rgba(0,0,0,0.2);
+}
+
+/* list styles */
+ul.compact {
+  margin: 0 0 0.5em 0;
+  padding: 0;
+}
+ul.compact > li {
+  list-style-type: none;
+  margin: 0 0 2px 0;
+}
+ul.compact > li > p {
+  margin: 0;
+}
+
 .horizontallist {
   list-style-type: none;
   padding: 0;
@@ -64,32 +140,4 @@ h1, h2, h3, h3, h4, h5 {
 .horizontallist li {
   display: inline-block;
 }
-#hud {
-  position: absolute;
-  top: 5px; right: 210px; left: 5px;
-  height: 160px;
-  background-color: #666;
-}
-#main {
-  position: absolute;
-  top: 170px; right: 210px; left: 5px; bottom: 60px;
-  padding: 10px;
-  min-height: 60px;
-  background-color: #fff;
-}
 
-#status {
-  right: 210px; left: 5px; bottom: 5px;
-  height: 55px;
-  padding: 5px 10px;
-  position: absolute;
-  background: #ccc;
-  color: #666;
-  font-size: 0.8em;
-  overflow: auto;
-}
-
-.encounter {
-  background-color: #f9f9d9;
-  color: #900;
-}

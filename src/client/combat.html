@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="./css/core.css" type="text/css">
   <link rel="stylesheet" href="./css/listing.css" type="text/css">
   <link rel="stylesheet" href="./css/grid.css" type="text/css">
+  <link rel="stylesheet" href="./css/layout.css" type="text/css">
   <style>
     h1 {
       margin: 0;
@@ -108,16 +109,16 @@
 <body>
 <section id="hud" class="panel">
   <h1>Combat</h1>
-</section>  
+</section>
 <section id="drawer" class="panel">
   <ul id="toollist" class="panelist">
   </ul>
 </section>
 <section id="main" class="panel">
 
-</section>  
+</section>
 <section id="detail" class="panel">
-</section>  
+</section>
 
 <div id="combatPanel">
   <div id="playerRow" class="row">
@@ -130,7 +131,7 @@
             <dt>Health</dt><dd>10</dd>
           </dl>
         </div>
-      </div>  
+      </div>
     </div>
   </div>
   <div id="arenaRow" class="row">
@@ -161,7 +162,7 @@
             <li class="icon32 attack-icon attack-icon--magic" title="Magic Attack"></li>
           </ul>
         </div>
-      </div>  
+      </div>
 
       <div class="media combatActor">
         <div class="img">
@@ -177,7 +178,7 @@
             <li class="icon32 attack-icon attack-icon--magic" title="Magic Attack"></li>
           </ul>
         </div>
-      </div>  
+      </div>
 
       <div class="media combatActor">
         <div class="img">
@@ -193,7 +194,7 @@
             <li class="icon32 attack-icon attack-icon--magic" title="Magic Attack"></li>
           </ul>
         </div>
-      </div>  
+      </div>
 
       <div class="media combatActor">
         <div class="img">
@@ -209,7 +210,7 @@
             <li class="icon32 attack-icon attack-icon--magic" title="Magic Attack"></li>
           </ul>
         </div>
-      </div>  
+      </div>
 
     </div>
   </div>
@@ -219,24 +220,24 @@
 <script type="text/javascript" src="./config.js"></script>
 <script>
   require(['dollar', 'resources/npc', 'models/Player', 'models/npc'], function($, npc, Player, Npc){
-    
+
     var player = new Player({
-     inventory: Player.initialInventory 
+     inventory: Player.initialInventory
     });
-    
+
     var goblin = Npc.create('goblin');
     var goblinChamp = Npc.create('goblinChamp');
-    
+
     function combat(player, monsters) {
       var damage = player.damage(1); // short-range attack
       var damageInflicted = 0;
 
-      // player attach - he magically attacks them all for now 
+      // player attach - he magically attacks them all for now
       monsters.forEach(function(monster){
         var chanceToHit = 0.5;
-        var doesHit = Math.random() >= chanceToHit; 
+        var doesHit = Math.random() >= chanceToHit;
         if(doesHit) {
-          
+
           console.log("You hit for " + damage + " of " + monster.stats.health);
           monster.stats.health = monster.stats.health - damage;
           damageInflicted += damage;
@@ -258,7 +259,7 @@
         damageInflicted: damageInflicted
       };
     }
-    
+
     var monsters = [goblin, goblinChamp];
     var itv = setInterval(function(){
       if(!monsters.length) {
