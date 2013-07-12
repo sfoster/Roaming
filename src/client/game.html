@@ -3,8 +3,11 @@
 <head>
   <meta charset="utf-8">
   <title>Roaming</title>
-  <link rel="stylesheet" type="text/css" href="./css/main.css">
   <link rel="stylesheet" type="text/css" href="./css/grid.css">
+  <link rel="stylesheet" type="text/css" href="./css/core.css">
+  <link rel="stylesheet" type="text/css" href="./css/layout.css">
+  <link rel="stylesheet" type="text/css" href="./css/main.css">
+
   <link rel="stylesheet" type="text/css" href="./css/terrain.css">
   <style>
     /* stuff only used on this page */
@@ -81,15 +84,102 @@
 
   </style>
 </head>
-<body>
-
-  <section id="main" class="area" data-bind="if:tileId">
-    <section class="location panel" data-bind="with: tile">
-      <div class="layer layer-bg" data-bind="css: terrain">
-        <div class="layer backdrop" data-bind="style: { backgroundImage: 'url('+backdrop()+')' }"></div>
+<body class="wrapper">
+  <section id="topbar" class="area">
+    <!-- top bar: hud and screen navigation -->
+    <div class="stage-width row">
+      <div id="playerInfoLabel"
+           class="col col-1of4 screenLabel"
+           data-screen="player"
+           data-bind="css: { active: ( activeScreen()=='player' ) }">
+        <h2>Player</h2>
       </div>
-      <div class="layer layer-over">
-        <div id="allies" class="panel left-panel allies-panel showing">
+      <div id="gameInfoLabel"
+           class="col col-1of4 screenLabel"
+           data-screen="game"
+           data-bind="css: { active: ( activeScreen()=='game' ) }">
+        <h2>Game Info</h2>
+      </div>
+      <div id="locationLabel"
+           class="col col-1of2 screenLabel"
+           data-screen="location"
+           data-bind="css: { active: ( activeScreen()=='location' ) }">
+        <h2>Location</h2>
+      </div>
+    </div>
+  </section>
+
+  <section id="footer" class="area">
+    <!-- bottom bar: ?? -->
+    <div class="stage-width row">
+      <div class="col col-7of8"></div>
+      <div class="col col-1of8">
+      </div>
+    </div>
+  </section>
+
+  <section id="playerInfo"
+           class="screen collapsed"
+           data-bind="css: { collapsed: ( activeScreen()!='player' ) }">
+    <div data-bind="template: { name: 'actor-inspector', data: player }">
+    </div>
+  </section>
+
+  <section id="gameInfo" class="screen collapsed"
+           data-bind="css: { collapsed: ( activeScreen()!='game' ) }">
+    <div class="stage-width panel">
+      <div>
+        Day <span data-bind="text: player.elapsed"></span>
+      </div>
+      <button>Save Game</button>
+      <button>Restore Game</button>
+      <h2>Credits</h2>
+      <p>...</p>
+    </div>
+  </section>
+
+  <section id="locationScreen"
+           class="screen collapsed"
+           data-bind="if: ('tile' in $data), css: { collapsed: ( activeScreen()!='location' ) }">
+    <div class="stage-width stage-height panel" data-bind="with: tile">
+      <div class="layer layer-fg">
+        <canvas id="minimap" width="120" height="120" data-bind="click: $root.onTileClick"></canvas>
+      </div>
+
+      <div class="layer layer-bg" data-bind="css: terrain">
+        <div class="layer backdrop" data-bind="style: { backgroundImage: 'url('+backdrop+')' }"></div>
+      </div>
+
+      <div class="layer layer-fg">
+        <div  class="panel"
+              style="background-color: rgba(0,0,0,0.5)"
+              data-bind="template: { name: 'summary-inspector', data: $data }">
+        </div>
+        <div class="panel" style="background-color: rgba(0,0,0,0.5)">
+          <h2>In here also:</h2>
+          <ul>
+            <li>Items List</li>
+            <li>Combat</li>
+            <li>Special Encounters</li>
+            <li>Dialogue</li>
+          </ul>
+        </div>
+      </div>
+
+      <div id="info" class="panel right-panel info-panel"  data-bind="css: { showing: $parent.showInfo() }, if: $parent.showInfo()">
+        <div data-bind="with:$parent.info">
+          <h1 data-bind="text:heading"></h1>
+          <div data-bind="if:body"><div data-bind="html:body"></div></div>
+          <div data-bind="foreach:items">
+            <div data-bind="html:name, click:if(!$data.fixed){ $parent.items.transferItem.bind($parent.items, $data, 'ui.viewModel.player.inventory', -1) }"></div>
+          </div>
+        </div>
+
+        <button data-bind="click: $parent.hideInfo">Ok</button>
+      </div>
+
+      <div id="combatLayer" class="layer layer-over collapsed">
+        <div id="allies" class="panel left-panel allies-panel collapsed" style="display:none">
           <div data-bind="with:$parent.player">
             <div class="row" data-bind="attr: {id: $data._id}">
               <div class="col col-1of4">
@@ -107,17 +197,11 @@
               <div class="col col-1of4">
                 Weapon:
               </div>
-              <div class="col col-2of4" data-bind="text: currentWeapon.name"></div>
+              <div class="col col-1of2" data-bind="text: currentWeapon.name"></div>
             </div>
-            <div id="inventory" class="items toggleable collapsed" data-bind="click: $root.onInventoryClick">
-              <h2 class="heading">Inventory</h2>
-              <ul class="compact" data-bind="foreach: inventory">
-                <li class="item" data-bind="text: name, css: { equipped: ( $data.isEquipped ) }"></li>
-              </ul>
-            </div>
-          </div><!-- /allies -->
-        </div>
-        <div id="npc-info" class="panel right-panel npc-panel"  data-bind="css: { showing: !!npcs.length }">
+          </div>
+        </div><!-- /allies -->
+        <div id="npc-info" class="panel right-panel npc-panel collapsed" style="display:none">
           <div data-bind="foreach: $parent.combat.opponents">
             <div class="row" data-bind="attr: {id: $data._id}">
               <div class="col col-1of4">
@@ -135,31 +219,18 @@
               <div class="col col-1of4">
                 Weapon:
               </div>
-              <div class="col col-2of4" data-bind="text: currentWeapon.name"></div>
+              <div class="col col-1of2" data-bind="text: currentWeapon.name"></div>
             </div>
           </div><!-- /opponents -->
         </div><!-- /#combat -->
-        <div id="info" class="panel right-panel info-panel"  data-bind="css: { showing: $parent.showInfo() }, if: $parent.showInfo()">
-          <div data-bind="with:$parent.info">
-            <h1 data-bind="text:heading"></h1>
-            <div data-bind="if:body"><div data-bind="html:body"></div></div>
-            <div data-bind="foreach:items">
-              <div data-bind="html:name, click:if(!$data.fixed){ $parent.items.transferItem.bind($parent.items, $data, 'ui.viewModel.player.inventory', -1) }"></div>
-            </div>
-          </div>
-
-          <button data-bind="click: $parent.hideInfo">Ok</button>
-        </div>
-
-        <section id="messages" class="panel toggleable" data-bind="click: $parent.onMessagesClick">
-          <h2 class="heading">Messages</h2>
-          <ul class="compact" data-bind="foreach: $parent.messages">
-            <li class="message" data-bind="html: $data"></li>
-          </ul>
-        </section>
       </div>
-
-    </section>
+    </div>
+  </section>
+  <section id="messages" class="panel toggleable" style="display:none" data-bind="click: $root.onMessagesClick">
+    <h2 class="heading">Messages</h2>
+    <ul class="compact" data-bind="foreach: $root.messages">
+      <li class="message" data-bind="html: $data"></li>
+    </ul>
   </section>
 
   <script src="vendor/require.js" data-main="plugins/bootstrap!main"></script>

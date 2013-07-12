@@ -141,7 +141,7 @@ define(function(){
   // Shared empty constructor function to aid in prototype-chain creation.
   var ctor = function(){};
 
-  // OO helpers barrowed from Backbone
+  // OO helpers borrowed from Backbone
   var inherits = function(parent, protoProps, staticProps) {
     var child;
 

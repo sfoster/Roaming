@@ -7,9 +7,9 @@ define([
   'resources/template',
   'lib/event',
   'models/Map',
-  'text!resources/templates/player.html',
-  'text!resources/templates/tile.html'
-], function($, ko, koHelpers, util, Promise, template, Evented, Map, playerTemplate, tileTemplate){
+  'plugins/template!resources/templates/summaryInspector.html!summary-inspector',
+  'plugins/template!resources/templates/actorInspector.html!actor-inspector'
+], function($, ko, koHelpers, util, Promise, template, Evented, Map){
 
   console.log("main-ui: typeof ko.mapping: ", typeof ko.mapping);
   function importTemplate(id, tmpl, bindProperty){
@@ -27,16 +27,48 @@ define([
     ko: ko
   };
 
-  var viewModel = ui.viewModel = {
-    messages: ko.observableArray([]),
-    backdrop: ko.observable('resources/graphics/terrain/clearbg.jpg'),
-    showCombat: ko.observable(false),
-    showInfo: ko.observable(false),
-    hideInfo: function(){ viewModel.showInfo(false); },
-    combat: {
+  function _ViewModel(player, tile, region, game){
+     this.tile = ko.computed(function(){
+      var id = this.tileId();
+      return ko.mapping.fromJS(ui.game.tile)
+     }, this);
+
+    this.player = ko.mapping.fromJS(player, {
+      'inventory': {
+        key: function(data) {
+          return ko.utils.unwrapObservable(data.name);
+        }
+      }
+    });
+
+    this.player.inventory.subscribe(function(changed){
+      player.inventory = ko.toJS(changed);
+    });
+
+    console.log("ViewModel ctor");
+    this.tileId.subscribe(function(tileId){
+      console.log("ViewModel, tileId observer:", tileId, ui.game.tile);
+      console.log("viewModel, tileId changed: ", tileId);
+    });
+
+    this.onTileClick = function(){};
+
+    this.combat = {
       allies: ko.observableArray([]),
       opponents: ko.observableArray([])
-    },
+    };
+    this.inCombat = ko.computed(function(){
+      var isCombat = !!this.combat.opponents().length;
+      return isCombat;
+    }, this);
+    console.log("/ViewModel ctor");
+  };
+  _ViewModel.prototype = {
+    activeScreen: ko.observable('location'),
+    messages: ko.observableArray([]),
+    backdrop: ko.observable('resources/graphics/terrain/clearbg.jpg'),
+    showInfo: ko.observable(false),
+    hideInfo: function(){ viewModel.showInfo(false); },
     health: function(thing){
       if(thing.dead) {
           return 0;
@@ -49,7 +81,10 @@ define([
     info: {
       heading: ko.observable("Info"),
       body: ko.observable("Blah"),
-      items: ko.observableArray([])
+      items: ko.observableArray([]),
+      onItemClick: function() {
+        // who wants it?
+      }
     },
     status: ko.observableArray(['loading']),
     onMessagesClick: onMessagesClick,
@@ -57,16 +92,9 @@ define([
     onTileClick: onTileClick,
     tileId: ko.observable()
   };
-  viewModel.tileId.subscribe(function(tileId){
-    viewModel.tile = ko.mapping.fromJS(ui.game.tile);
-    console.log("viewModel, tileId changed: ", tileId);
-    // koHelpers.updateArray(
-    //     viewModel.tile.here, ui.game.tile.here
-    // );
-  })
 
-  importTemplate('player-template', playerTemplate, 'player');
-  importTemplate('location-template', tileTemplate, 'location');
+  // importTemplate('player-template', playerTemplate, 'player');
+  // importTemplate('location-template', tileTemplate, 'location');
 
   util.mixin(ui, Evented);
 
@@ -87,16 +115,7 @@ define([
     }
 
     this.game = game;
-    this.viewModel.player = ko.mapping.fromJS(player, {
-      'inventory': {
-        key: function(data) {
-          return ko.utils.unwrapObservable(data.name);
-        }
-      }
-    });
-    this.viewModel.player.inventory.subscribe(function(changed){
-      player.inventory = ko.toJS(changed);
-    });
+    window.viewModel = ui.viewModel = new _ViewModel(player, tile, region, game);
 
     var minimap =this.minimap = new Map({
       id: 'minimap',
@@ -105,7 +124,12 @@ define([
     });
 
     // console.log("viewModel.player: ", viewModel.player);
+    console.log("applyBindings");
     ko.applyBindings( viewModel );
+    console.log("/applyBindings");
+
+    console.log("Setting activeScreen");
+    viewModel.activeScreen = ko.observable("location"); // game, location, player
 
     game.on('locationenter', ui.onLocationEnter.bind(ui));
     game.on('encounterstart', ui.onEncounterStart.bind(ui));
@@ -143,6 +167,7 @@ define([
       var centerTile = evt.target;
       var region = ui.game.region;
       var minimap =this.minimap;
+      console.log("onLocationEnter, tile:", centerTile.id);
 
       if(viewModel.tile && viewModel.tile.id === centerTile.id) {
         return;
@@ -163,11 +188,11 @@ define([
 
       /////////////////////////////////////
 
-      centerTile.backdrop = centerTile.backdrop.replace(/^.*image!/, '')
-      viewModel.tile = centerTile;
-      viewModel.tileId(centerTile.id);
-
+      centerTile.backdrop = centerTile.backdrop.replace(/^.*image!/, '');
       console.log("UI: location enter: ", cx, cy, centerTile.backdrop);
+      console.log("Assigning tileId");
+      viewModel.tileId(centerTile.id);
+      console.log("/Assigning tileId");
   };
 
   ui.onEncounterStart = function(evt){

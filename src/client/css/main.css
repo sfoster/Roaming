@@ -51,6 +51,9 @@ img.backdrop {
 	opacity: 0.65;
 }
 
+#combatLayer {
+  background-color: rgba(12, 5, 0, 0.9);
+}
 
 .toggleable.collapsed > * {
 	display: none;
