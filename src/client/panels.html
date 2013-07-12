@@ -18,47 +18,12 @@
       border: 1px solid #000;
     }
 
-    /* inventory styles */
-    .equipped {
-      font-style: italic;
-    }
-
     #playerInfo > .panel {
       background-color: rgba(0,0,0, 0.3);
     }
 
     #combatLayer {
       background-color: rgba(0,255,0, 0.6);
-    }
-    #allies {
-      position: absolute;
-      bottom: 0; top: 0;
-      left: 0; right: 60%;
-    }
-    #npc-info {
-      position: absolute;
-      bottom: 0;
-      top: 0;
-      left: 60%; right: 0;
-    }
-    .actor-icon {
-      transition-property: translate, box-shadow;
-      transition-duration: 0.35s;
-      transition-delay: 0s, 0s;
-      transition-timing-function: ease-in-out;
-      box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
-    }
-    .actor-icon.attacking {
-      transform: translate(310px, 40px);
-      transition-duration: 0.35s;
-      transition-delay: 0s, 0s;
-      box-shadow: 0 10px 15px 5px rgba(0, 0, 0, 0.7);
-    }
-    .right-panel .actor-icon.attacking {
-      transform: translate(-80px, 40px);
-    }
-    .actor-icon.hit {
-      box-shadow: 0 10px 25px 15px rgba(255, 0, 0, 0.7);
     }
   </style>
 </head>
@@ -107,6 +72,9 @@
   <section id="gameInfo" class="screen collapsed"
            data-bind="css: { collapsed: ( activeScreen()!='game' ) }">
     <div class="stage-width panel">
+      <div>
+        Day <span data-bind="text: player.elapsed"></span>
+      </div>
       <button>Save Game</button>
       <button>Restore Game</button>
       <h2>Credits</h2>
@@ -118,15 +86,31 @@
            class="screen collapsed"
            data-bind="css: { collapsed: ( activeScreen()!='location' ) }">
     <div class="stage-width stage-height panel" data-bind="with: tile">
-      Description
-      Items
-      Combat
-      Special Encounters
-      Dialogue
+      <div class="layer layer-fg">
+        <canvas id="minimap" width="120" height="120" data-bind="click: $root.onTileClick"></canvas>
+      </div>
 
       <div class="layer layer-bg" data-bind="css: terrain">
         <div class="layer backdrop" data-bind="style: { backgroundImage: 'url('+backdrop+')' }"></div>
       </div>
+
+      <div class="layer layer-fg">
+        <div  class="panel"
+              style="background-color: rgba(0,0,0,0.5)"
+              data-bind="template: { name: 'summary-inspector', data: $data }">
+        </div>
+        <div class="panel" style="background-color: rgba(0,0,0,0.5)">
+          <h2>In here also:</h2>
+          <ul>
+            <li>Items List</li>
+            <li>Combat</li>
+            <li>Special Encounters</li>
+            <li>Dialogue</li>
+          </ul>
+        </div>
+      </div>
+
+
 
       <div id="combatLayer" class="layer layer-over collapsed">
         <div id="allies" class="panel left-panel allies-panel collapsed" style="display:none">
@@ -188,6 +172,7 @@
       'plugins/resource!player/guest',
       'plugins/resource!location/'+locationId,
       'models/npc',
+      'plugins/template!resources/templates/summaryInspector.html!summary-inspector',
       'plugins/template!resources/templates/actorInspector.html!actor-inspector'
     ], function($, ko, Promise, npc, player, tile, Npc){
       window.player = player;
@@ -214,6 +199,7 @@
         this.activeScreen = ko.observable("location"); // game, location, player
         this.player = player;
         this.tile = tile;
+        this.onTileClick = function(){};
         this.health = function(){
           return 50;
         };

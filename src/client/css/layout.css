@@ -164,12 +164,16 @@
   bottom: 0;
 }
 
-#main {
+#allies {
   position: absolute;
-  top: 170px; right: 210px; left: 5px; bottom: 60px;
-  padding: 10px;
-  min-height: 60px;
-  background-color: #fff;
+  bottom: 0; top: 0;
+  left: 0; right: 60%;
+}
+#npc-info {
+  position: absolute;
+  bottom: 0;
+  top: 0;
+  left: 60%; right: 0;
 }
 
 #status {
@@ -194,8 +198,12 @@
 
 #main {
 	/*background-color: rgba(0,0,0, 0.6);*/
-	position: relative;
-	top: 32px;
 	min-height: 600px;
+  position: absolute;
+  top: 170px; right: 210px; left: 5px; bottom: 60px;
+  padding: 10px;
+  min-height: 60px;
+  background-color: #fff;
 }
+
 

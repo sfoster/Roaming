@@ -23,11 +23,30 @@ h3 {
 }
 
 /* ====== media block ====== */
-.media {margin:10px;}
-.media, .bd {overflow:hidden; _overflow:visible; zoom:1;}
-.media .img {float:left; margin-right: 10px;}
-.media .img img {display:block;}
-.media .imgExt{float:right; margin-left: 10px;}
+.media,
+.summary {
+  margin:10px;
+}
+.media, .bd,
+.summary {
+  overflow:hidden;
+  _overflow:visible;
+  zoom:1;
+}
+.media > .img,
+.summary > .img {
+  float:left;
+  margin-right: 10px;
+}
+.media > .img > img,
+.summary > .img > img {
+  display:block;
+}
+.media > .imgExt,
+.summary > .imgExt{
+  float:right;
+  margin-left: 10px;
+}
 
 .fullwidth {
   width: 100%;
@@ -140,16 +159,20 @@ ul.compact > li > p {
 .screenLabel.active {
 }
 
-.actor-label {
-  position: absolute;
-  top: 0; left: 5px;
-  height: 32px;
-  width: 32px;
-}
-.actor-label {
-  position: relative;
-  padding-left: 40px;
-}
-h2.actor-label {
+/* summary block */
+h2.name-label {
   font-size: 1em;
+  margin-bottom: 0;
 }
+.summary-type {
+  display: block;
+  font-style: italic;
+  margin-bottom: 0.5em;
+}
+
+
+/* inventory styles */
+.equipped {
+  font-style: italic;
+}
+

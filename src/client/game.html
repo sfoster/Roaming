@@ -83,22 +83,6 @@
 </head>
 <body>
 
-  <section id="hud" class="area">
-    <div id="playerInfo" class="row">
-      <div class="col col-7of8"></div>
-      <div class="col col-1of8">
-        Day <span data-bind="text: player.elapsed"></span>
-      </div>
-    </div>
-  </section>
-  <section id="drawer" class="area">
-      <ul class="panelist">
-          <li class="panel world-map toggleable">
-            <h2 class="heading">Mini Map</h2>
-            <canvas id="minimap" width="120" height="120" data-bind="click: onTileClick"></canvas>
-          </li>
-      </ul>
-  </section>
   <section id="main" class="area" data-bind="if:tileId">
     <section class="location panel" data-bind="with: tile">
       <div class="layer layer-bg" data-bind="css: terrain">
