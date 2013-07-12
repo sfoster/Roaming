@@ -239,19 +239,17 @@ define([
   });
 
   game.on("combatroundstart", function(evt){
-    game.ui.set('combat', {
-      allies:evt.allies,
-      opponents:evt.opponents
-    });
+    game.ui.set('allies', evt.allies, ui.viewModel.combat);
+    game.ui.set('opponents', evt.opponents, ui.viewModel.combat);
     game.ui.set('showCombat', true);
   });
   game.on("combatroundend", function(evt){
-    game.ui.set('combat', {
-      allies:evt.allies,
-      opponents:evt.opponents
-    });
     var tile = game.tile;
-    evt.opponents.filter(Combat.deadFilter).forEach(function(npc){
+    var deadOpponents = evt.opponents.filter(Combat.deadFilter);
+    var aliveOpponents = evt.opponents.filter(Combat.aliveFilter);
+    var aliveAllies = evt.allies.filter(Combat.aliveFilter);
+
+    deadOpponents.forEach(function(npc){
       console.log("combatend, dead opponent: ", npc);
       // TODO: move out of npcs, possibly as corpose into tile.here
       // do creatures drop weapon, and need to be searched for anything else?
@@ -271,6 +269,17 @@ define([
       npc.fixed = true; // you can't take corpses with you
       game.tile.here.push(npc);
     });
+    game.ui.set('allies', aliveAllies, ui.viewModel.combat);
+    game.ui.set('opponents', aliveOpponents, ui.viewModel.combat);
+
+    if(!aliveOpponents.length) {
+      game.ui.set('showCombat', false);
+      // yay you won
+    }
+    if(!aliveAllies.length) {
+      game.ui.set('showCombat', false);
+      // ugh, all dead. handle game over
+    }
   });
 
   game.on("combatend", function(evt){
@@ -281,6 +290,7 @@ define([
 
   game.initCombat = function(allies, hostiles) {
     game.ui && game.ui.message("You are faced with: " + util.pluck(hostiles, 'name').join(', '));
+
     var combat = new Combat();
     var isFirstRound = true;
     return combat.start(allies, hostiles).then(

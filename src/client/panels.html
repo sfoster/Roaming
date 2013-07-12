@@ -163,6 +163,7 @@
       'dollar',
       'knockout',
       'promise',
+      'lib/uiUtil',
       'resources/npc',
       'plugins/resource!player/guest',
       'plugins/resource!location/'+locationId,
@@ -170,27 +171,14 @@
       'plugins/resource!resources/npc#troll',
       'plugins/template!resources/templates/summaryInspector.html!summary-inspector',
       'plugins/template!resources/templates/actorInspector.html!actor-inspector'
-    ], function($, ko, Promise, npc, player, tile, Npc, troll){
+    ], function($, ko, Promise, uiUtil, npc, player, tile, Npc, troll){
       window.player = player;
       window.troll = troll;
       window.tile = tile;
 
-      function classTransition(elm, options) {
-        var className = options.className;
-        var defd = Promise.defer();
-        var resolved = false;
-        var verb = options.add ? 'add' : 'remove';
-        $elm = $(elm);
-
-        $elm.one('transitionend webkitTransitionEnd oTransitionEnd otransitionend', function() {
-          if(!resolved)
-            defd.resolve((resolved = true));
-        });
-        setTimeout(function(){
-          $elm[verb+'Class'](className);
-        }, 0);
-        return defd.promise;
-      }
+      var classTransition = uiUtil.classTransition,
+          setDisplayDefault = uiUtil.setDisplayDefault,
+          setDisplayNone = uiUtil.setDisplayNone;
 
       function _ViewModel(player, tile, region, game){
         this.activeScreen = ko.observable("location"); // game, location, player
@@ -213,13 +201,7 @@
       }
       window.viewModel = new _ViewModel(player, tile, null, null);
       ko.applyBindings( viewModel );
-
-      function setDisplayDefault(elm) {
-        elm.style.removeProperty("display");
-      }
-      function setDisplayNone(elm) {
-        elm.style.display = "none";
-      }
+      console.log("Applied bindings");
 
       viewModel.inCombat.subscribe(function(isCombat){
         var $panels = $("#combatLayer > .panel");

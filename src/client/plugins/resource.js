@@ -253,7 +253,7 @@ define([
       return resourceMapping.resolve(typeId);
     },
     load: function (resourceId, req, onLoad, requireConfig) {
-      console.log("resource plugin load: "+resourceId, req, requireConfig);
+      // console.log("resource plugin load: "+resourceId, req, requireConfig);
       var resourceFactoryId = resourceMapping.resolve(resourceId);
       var fragmentId = "", loaderPrefix = "";
       var isJson = false;

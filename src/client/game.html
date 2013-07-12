@@ -8,7 +8,7 @@
   <link rel="stylesheet" type="text/css" href="./css/layout.css">
   <link rel="stylesheet" type="text/css" href="./css/main.css">
 
-  <link rel="stylesheet" type="text/css" href="./css/terrain.css">
+  <!-- link rel="stylesheet" type="text/css" href="./css/terrain.css" -->
   <style>
     /* stuff only used on this page */
     #messages {
@@ -22,43 +22,8 @@
       overflow: auto;
     }
 
-    li.panel {
-      list-style-type:  none;
-    }
-
     .overlay-panel {
       background: rgba(0,0,0,0.5);
-    }
-    .allies-panel {
-      background: rgba(255,255,255,0.65);
-      color: #333;
-      position: absolute;
-      width: 38%;
-      left: 0;
-      top: 150px;
-    }
-    .npc-panel {
-      position: absolute;
-      width: 38%;
-      right: 0;
-      top: 150px;
-    }
-
-    .right-panel.showing,
-    .left-panel.showing {
-      transform: translateX(0); /*slide in from the right*/
-    }
-    .right-panel {
-      position: absolute;
-      right: 0;
-      transition: transform 0.3s ease-out;
-      transform: translateX(110%); /*tucked off to the right*/
-    }
-    .left-panel {
-      position: absolute;
-      left: 0;
-      transition: transform 0.3s ease-out;
-      transform: translateX(-110%); /*tucked off to the left*/
     }
 
     .info-panel {
@@ -72,15 +37,6 @@
     .combat-panel {
       background: rgba(0,0,0,0.75);
     }
-
-    #main > .location {
-      max-width: 784px;
-      height: 600px;
-      margin: 0 auto;
-      position: relative;
-      overflow: hidden;
-    }
-
 
   </style>
 </head>

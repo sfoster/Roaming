@@ -3,24 +3,16 @@ define([
   'knockout',
   'lib/koHelpers',
   'lib/util',
+  'lib/uiUtil',
   'lib/promise',
   'resources/template',
   'lib/event',
   'models/Map',
   'plugins/template!resources/templates/summaryInspector.html!summary-inspector',
   'plugins/template!resources/templates/actorInspector.html!actor-inspector'
-], function($, ko, koHelpers, util, Promise, template, Evented, Map){
+], function($, ko, koHelpers, util, uiUtil, Promise, template, Evented, Map){
 
   console.log("main-ui: typeof ko.mapping: ", typeof ko.mapping);
-  function importTemplate(id, tmpl, bindProperty){
-    // setup templates
-    var tmplNode = document.createElement('script');
-    tmplNode.setAttribute('type', 'text/html');
-    tmplNode.id = id;
-    var tmplText = document.createTextNode( tmpl );
-    tmplNode.appendChild(tmplText);
-    return document.body.appendChild( tmplNode );
-  }
 
   var ui = window.ui = {
     _inited: false,
@@ -28,6 +20,11 @@ define([
   };
 
   function _ViewModel(player, tile, region, game){
+
+    var classTransition = uiUtil.classTransition,
+        setDisplayDefault = uiUtil.setDisplayDefault,
+        setDisplayNone = uiUtil.setDisplayNone;
+
      this.tile = ko.computed(function(){
       var id = this.tileId();
       return ko.mapping.fromJS(ui.game.tile)
@@ -61,6 +58,42 @@ define([
       var isCombat = !!this.combat.opponents().length;
       return isCombat;
     }, this);
+
+    this.inCombat.subscribe(function(isCombat){
+      var $panels = $("#combatLayer > .panel");
+      var combatLayer = document.querySelector("#combatLayer");
+
+      console.log("inCombat.subscribe: ", isCombat);
+      if(isCombat) {
+        // show the combat layer
+        $panels.each(function(){
+          setDisplayDefault(this);
+        });
+        setDisplayDefault(combatLayer);
+        classTransition(combatLayer, {
+          className: 'collapsed', remove: true
+        }).then(function(){
+          // slide in the participants
+          $panels.each(function(){
+            this.classList.remove("collapsed");
+          });
+        });
+      } else {
+        // slide away the participants
+        classTransition($panels, {
+          className: 'collapsed',
+          add: true
+        }).then(function(){
+          // then take the panels out of the document flow
+          $panels.each(function(node){
+            setDisplayNone(this);
+          });
+          // and hide the combat layer
+          combatLayer.classList.add("collapsed");
+        });
+      }
+    });
+    this.activeScreen = ko.observable("location"); // game, location, player
     console.log("/ViewModel ctor");
   };
   _ViewModel.prototype = {
@@ -123,13 +156,13 @@ define([
       tileSize: MINIMAP_TILE_SIZE
     });
 
-    // console.log("viewModel.player: ", viewModel.player);
-    console.log("applyBindings");
-    ko.applyBindings( viewModel );
-    console.log("/applyBindings");
+    $("#topbar").delegate(".screenLabel", "click", function(){
+      var context = ko.contextFor(this);
+      context.$data.activeScreen( this.getAttribute("data-screen") );
+    });
 
-    console.log("Setting activeScreen");
-    viewModel.activeScreen = ko.observable("location"); // game, location, player
+    // console.log("viewModel.player: ", viewModel.player);
+    ko.applyBindings( viewModel );
 
     game.on('locationenter', ui.onLocationEnter.bind(ui));
     game.on('encounterstart', ui.onEncounterStart.bind(ui));
@@ -144,10 +177,11 @@ define([
         var oldValue =  obj[pname]();
         if("array"==util.getType(oldValue)){
           // update array in-situ
-          var items = value.map(function(item){
-            return ko.observable(item);
-          });
-          obj[pname].splice.apply(obj[pname], [0, oldValue.length].concat(items));
+          ko.mapping.fromJS(value, {}, obj[pname]);
+          // var items = value.map(function(item){
+          //   return ko.observable(item);
+          // });
+          // obj[pname].splice.apply(obj[pname], [0, oldValue.length].concat(items));
         } else {
           obj[pname](value);
         }
@@ -156,9 +190,10 @@ define([
         obj[pname] =value;
         break;
       case "object":
-        Object.keys(value).forEach(function(key){
-          ui.set(key, value[key], obj[pname]);
-        });
+        ko.mapping.fromJS(value, {}, obj[pname]);
+        // Object.keys(value).forEach(function(key){
+        //   ui.set(key, value[key], obj[pname]);
+        // });
         break;
     }
   };
@@ -190,9 +225,7 @@ define([
 
       centerTile.backdrop = centerTile.backdrop.replace(/^.*image!/, '');
       console.log("UI: location enter: ", cx, cy, centerTile.backdrop);
-      console.log("Assigning tileId");
       viewModel.tileId(centerTile.id);
-      console.log("/Assigning tileId");
   };
 
   ui.onEncounterStart = function(evt){
@@ -330,6 +363,7 @@ define([
 
   function strike(thing) {
     var id = thing._id;
+    console.log("strike: thing id: ", id, thing);
     if(!id) {
       console.log("strike: thing without id: ", thing);
       return;
