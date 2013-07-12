@@ -41,7 +41,7 @@ define([
       opponents: { inflicted: 0, sustained: 0 }
     };
 
-    var itv = setInterval(function(){
+    var perRound = function(){
       game.emit("combatroundstart", {
         scoreboard: finalResult,
         target: self,
@@ -62,20 +62,24 @@ define([
       if(allies.filter(alive).length && opponents.filter(alive).length) {
           defd.progress(finalResult);
       } else {
-        clearInterval(itv);
-        game.emit("combatend", {
+        self.end({
           scoreboard: finalResult,
           target: self,
           allies: allies,
           opponents: opponents
         });
-        defd.resolve(finalResult)
+        defd.resolve(finalResult);
         return;
       };
-    }, this.roundInterval);
-
+    };
+    setTimeout(perRound, 0);
     return defd.promise;
   }
+  Combat.prototype.end = function(outcome) {
+        clearInterval(this._itv);
+        delete this._itv;
+        game.emit("combatend", outcome);
+  };
 
   Combat.prototype.round = function() {
     var allies = this.allies,
