@@ -1,11 +1,21 @@
-<div class="stage-width stage-height panel">
-  <div class="row" data-bind="attr: {id: $data._id}">
+<div class="stage-width stage-height panel" data-bind="attr: {id: $data._id}">
+  <div class="row">
     <div class="col col-1of2">
-      <h2 class="actor-label">
-        <img class="actor-icon" data-bind="if: icon, attr:{src:icon}">
-        <span data-bind="text: name" style="vertical-align: top"></span>
-      </h2>
-      <span class="health-bar" data-bind="style: { width: $root.health($data) + '%'}"></span>
+      <div class="media summary">
+        <span class="img">
+          <img class="icon" data-bind="if: icon, attr:{src:icon}">
+        </span>
+        <div class="bd">
+          <h2 class="summary-name" data-bind="text: name"></h2>
+          <span class="summary-type" data-bind="text: type"></span>
+          <!--ko if:('description' in $data) -->
+          <div class="description" data-bind="html: description">
+          </div>
+          <!--/ko-->
+        </div>
+      </div>
+    </div>
+    <div class="col col-1of2">
       <table class="stats" style="width:50%">
         <tr><th>Health</th><td data-bind="text: stats.health"></td></tr>
         <tr><th>Strength</th><td data-bind="text: stats.strength"></td></tr>
@@ -18,6 +28,8 @@
         <span class="col col-1of2" data-bind="text: currentWeapon.name"></span>
       </p>
     </div>
+  </div>
+  <div class="row">
     <div class="col col-1of2">
       <div id="inventory" class="items">
         <h2 class="heading">Inventory</h2>
@@ -25,6 +37,8 @@
           <li class="item" data-bind="text: name, css: { equipped: ( $data.isEquipped ) }"></li>
         </ul>
       </div>
+    </div>
+    <div class="col col-1of2">
     </div>
   </div>
 </div>
