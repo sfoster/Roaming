@@ -10,7 +10,19 @@ define([], function(){
     mediumRangeDamage: 0,
     weaponclass: "shortrange",
     weight: 0,
-    mpbonus: 0
+    mpbonus: 0,
+    fixed: true
+  };
+
+  weapons.claws = {
+    name: 'claws',
+    shortRangeDamage: 1,
+    longRangeDamage: 0,
+    mediumRangeDamage: 0,
+    weaponclass: "shortrange",
+    weight: 0,
+    mpbonus: 0,
+    fixed: true
   };
 
   weapons.knife = {
@@ -784,7 +796,7 @@ define([], function(){
     weight: 2,
     mpbonus: 0
   };
-   weapons.rustyMorningstar = {
+  weapons.rustyMorningstar = {
     name: 'Rusty Morningstar',
     shortRangeDamage: 29,
     longRangeDamage: 0,
@@ -793,7 +805,7 @@ define([], function(){
     weight: 10,
     mpbonus: 0
   };
-     weapons.rustySabre = {
+  weapons.rustySabre = {
     name: 'Rusty Sabre',
     shortRangeDamage: 12,
     longRangeDamage: 0,
@@ -829,7 +841,7 @@ define([], function(){
     weight: 6,
     mpbonus: 0
   };
-    weapons.theStaff = {
+  weapons.theStaff = {
     name: 'Staff',
     shortRangeDamage: 500,
     longRangeDamage: 500,
@@ -838,7 +850,7 @@ define([], function(){
     weight: 1,
     mpbonus: 0
   };
-    weapons.theDragonsword = {
+  weapons.theDragonsword = {
     name: 'Dragonsword',
     shortRangeDamage: 500,
     longRangeDamage: 0,
@@ -848,5 +860,12 @@ define([], function(){
     mpbonus: 0
   };
 
+  // give each weapon a type property (weapons are a type of item)
+  for(var id in weapons) {
+    if(!('shortRangeDamage' in weapons[id])) {
+      continue;
+    }
+    weapons[id].type = 'weapon';
+  }
   return weapons;
 });

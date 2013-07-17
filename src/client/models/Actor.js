@@ -1,6 +1,6 @@
 define([
-  'compose', 'lib/util', 'models/Inventory'
-], function(Compose, util, Inventory){
+  'compose', 'lib/util', 'models/Inventory', 'models/Item', 'resources/weapons'
+], function(Compose, util, Inventory, Item, weapons){
 
   var StatsProto = {
     health: 5,
@@ -63,19 +63,18 @@ define([
     if(args.currentWeapon) {
       this.currentWeapon = args.currentWeapon;
     }
-    var weaponId = this.currentWeapon.id;
+    var weaponId = this.currentWeapon && this.currentWeapon.id;
 
     inventory.forEach(function(item){
       if(weaponId && weaponId == item.id) {
+        // Found weapon in inventory
         this.currentWeapon = item;
-        equipped[item.id] = true;
       }
+      // flag equipped items
       item.isEquipped = !!equipped[item.id];
     }, this);
-
-    // if(this.currentWeapon && typeof this.currentWeapon === "string") {
-    //   this.currentWeapon = weapons[this.currentWeapon];
-    // }
+    // setup the currentWeapon property
+    this.equipWeapon( this.currentWeapon );
   }, {
     declaredClass: "Actor",
     type: "actor",
@@ -83,6 +82,22 @@ define([
     icon: "",
     propertiesWithReferences: ['inventory', 'currentWeapon'],
 
+    equipWeapon: function(weapon) {
+      if(!weapon) {
+        // No weapon, going with an attached body part
+        if(this.type == "player" || this.type == "humanoid") {
+          weapon = weapons.fist;
+        } else {
+          weapon = weapons.claws;
+        }
+      }
+      if(!(weapon instanceof Item)) {
+        weapon = new Item(weapon);
+      }
+      weapon.isEquipped = true;
+      this.currentWeapon = weapon;
+      return this;
+    }
   }, Compose);
 
   return Actor;
