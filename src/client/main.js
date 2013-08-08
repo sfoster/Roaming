@@ -253,7 +253,7 @@ define([
       console.log("combatend, dead opponent: ", npc);
       // TODO: move out of npcs, possibly as corpose into tile.here
       // do creatures drop weapon, and need to be searched for anything else?
-      if(npc.currentWeapon && !npc.currentWeapon.attached) {
+      if(npc.currentWeapon && !npc.currentWeapon.fixed) {
         npc.currentWeapon.transferTo(game.tile.here);
         npc.inventory.remove(npc.currentWeapon);
         game.tile.here.push(npc.currentWeapon);
@@ -291,7 +291,7 @@ define([
   game.initCombat = function(allies, hostiles) {
     game.ui && game.ui.message("You are faced with: " + util.pluck(hostiles, 'name').join(', '));
 
-    var combat = new Combat();
+    var combat = new Combat({ roundInterval: 250 });
     var isFirstRound = true;
     return combat.start(allies, hostiles).then(
       function(result){
@@ -301,7 +301,8 @@ define([
         console.log("combat error: ", err);
       },
       function(update){
-        console.log("combat progress: ", update);
+        // console.log("combat progress, pausing ", update);
+        // combat.pause();
       }
     );
   };

@@ -27,7 +27,9 @@
     }
 
     .info-panel {
-      background: rgba(255,255,255,0.65);
+      background: rgba(255,255,255,0.95);
+      -webkit-box-shadow: 0px -4px 30px rgba(153, 153, 153, 0.47);
+      box-shadow:         0px -4px 30px rgba(153, 153, 153, 0.47);
       color: #333;
       width: 45%;
       top: 10px;
@@ -122,7 +124,7 @@
         </div>
       </div>
 
-      <div id="info" class="panel right-panel info-panel"  data-bind="css: { showing: $parent.showInfo() }, if: $parent.showInfo()">
+      <div id="info" class="panel right-panel layer-over info-panel"  data-bind="css: {  collapsed: !$parent.showInfo() }, if: $parent.showInfo()" style="">
         <div data-bind="with:$parent.info">
           <h1 data-bind="text:heading"></h1>
           <div data-bind="if:body"><div data-bind="html:body"></div></div>
@@ -134,7 +136,7 @@
         <button data-bind="click: $parent.hideInfo">Ok</button>
       </div>
 
-      <div id="combatLayer" class="layer layer-over collapsed">
+      <div id="combatLayer" class="layer layer-fg collapsed">
         <div id="allies" class="panel left-panel allies-panel collapsed" style="display:none">
           <div data-bind="with:$parent.player">
             <div class="row" data-bind="attr: {id: $data._id}">
@@ -145,7 +147,7 @@
                 <h2 class="player-label">
                   <span data-bind="text: name"></span>
                 </h2>
-                <span class="health-bar" data-bind="style: { width: $root.health($data) + '%'}"></span>
+                <span class="health-bar" data-bind="attr: { 'data-width': $root.health($data) + '%'}"></span>
               </div>
             </div>
             <div class="row">
@@ -178,8 +180,11 @@
               <div class="col col-1of2" data-bind="text: currentWeapon.name"></div>
             </div>
           </div><!-- /opponents -->
-        </div><!-- /#combat -->
-      </div>
+        </div><!--/#npc-info -->
+        <div id="combat-toolbar" class="layer" style="bottom: 0; height: 24px; width: 100px; left: 50%; margin-left: -50px; background-color: #fff">
+          <button data-bind="click: $parent.combat.pause">⏯</button>
+        </div>
+      </div><!-- /#combat -->
     </div>
   </section>
   <section id="messages" class="panel toggleable" style="display:none" data-bind="click: $root.onMessagesClick">

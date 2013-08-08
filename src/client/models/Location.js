@@ -39,6 +39,7 @@ define([
     if(!this.backdrop) {
       // use the default for the terrain type
       this.backdrop = terrain[this.terrain].backdrop.replace(/^.*image!/, '');
+      console.log("Setting default backdrop: "+this.backdrop);
     }
     if(!this.description){
       this.description = "You enter an area of " + this.terrain

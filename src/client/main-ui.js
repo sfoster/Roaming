@@ -103,6 +103,7 @@ define([
     showInfo: ko.observable(false),
     hideInfo: function(){ viewModel.showInfo(false); },
     health: function(thing){
+      console.log("health of ", thing);
       if(thing.dead) {
           return 0;
       } else {
@@ -149,6 +150,7 @@ define([
 
     this.game = game;
     window.viewModel = ui.viewModel = new _ViewModel(player, tile, region, game);
+    console.log("viewModel: ", viewModel);
 
     var minimap =this.minimap = new Map({
       id: 'minimap',

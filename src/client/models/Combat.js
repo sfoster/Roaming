@@ -33,6 +33,7 @@ define([
   Combat.prototype.start = function(allies, opponents) {
     this.allies = allies;
     this.opponents = opponents;
+    this._running = true;
 
     var defd = Promise.defer();
     var self = this;
@@ -60,7 +61,7 @@ define([
       });
 
       if(allies.filter(alive).length && opponents.filter(alive).length) {
-          defd.progress(finalResult);
+        defd.progress(finalResult);
       } else {
         self.end({
           scoreboard: finalResult,
@@ -72,13 +73,41 @@ define([
         return;
       };
     };
-    setTimeout(perRound, 0);
+
+    this.tick = function(ms) {
+      if(!this._running) {
+        return;
+      }
+      perRound();
+      setTimeout(this.tick, isNaN(ms) ? this.roundInterval : ms);
+    }.bind(this);
+
+    this.tick();
     return defd.promise;
-  }
+  };
+
+  Combat.prototype.pause = function() {
+    if(this._running) {
+      this._running = false;
+      game.emit("combatpaused", {
+        target: this
+      });
+    }
+  };
+  Combat.prototype.resume = function() {
+    if(!this._ended) {
+      this._running = true;
+      game.emit("combatresumed", {
+        target: this
+      });
+      setTimeout(this.tick, this.roundInterval/2);
+    }
+  };
+
   Combat.prototype.end = function(outcome) {
-        clearInterval(this._itv);
-        delete this._itv;
-        game.emit("combatend", outcome);
+    this._running = false;
+    this._ended = true;
+    game.emit("combatend", outcome);
   };
 
   Combat.prototype.round = function() {
