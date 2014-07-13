@@ -1,6 +1,6 @@
 define(function (){
 
-	// summary: 
+	// summary:
 	//    a mixin/trait that provides basic event management capabilities
 
 	var Evented = {
@@ -8,7 +8,7 @@ define(function (){
 		__events: {},
 		on: function(name, fn) {
 			// pubsub thing
-			var events = this.__events, 
+			var events = this.__events,
 				listeners = events[name] || (events[name] = []);
 			listeners.push(fn);
 			return {
@@ -24,7 +24,7 @@ define(function (){
 		removeAllListeners: function(name) {
 		  // remove all listeners of a particular type
 			// pubsub thing
-			
+
 			// ditch all listeners associated w. that nam
 			// no ceremonies here.
 			this.__events[name] = [];

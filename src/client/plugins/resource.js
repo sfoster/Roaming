@@ -39,6 +39,10 @@ define([
     }
   };
 
+  function assertType(thing, type) {
+    return typeof thing === type;
+  }
+
   function promisedRequire(resources){
     var defd = Promise.defer();
     require(
@@ -119,7 +123,12 @@ define([
   }
 
   function resolveModelData(data) {
-    // { resource: 'some/path' }
+    // console.log("resolveModelData: ", data, "("+typeof data+")");
+    if(!assertType(data, 'object')) {
+      console.log("resolveModelData: data not an object:", data);
+      throw "resolveModelData: data not an object";
+    }
+
     var resourceId = ('resource' in data) ? data.resource : '';
     var resourceData;
 
@@ -142,6 +151,7 @@ define([
 
     // load via the property plugin if the resourceId has a fragment identifier
     require([loaderPrefix+resourceId+suffix], function(resourceData){
+      console.log("resource: resolveModelData, require callback for: " +loaderPrefix+resourceId+suffix, resourceData, "("+typeof resourceData+")");
       // put the resource data into place
       if(suffix && !('id' in resourceData)) {
         resourceData.id = (suffix.split('#'))[1];
@@ -154,7 +164,9 @@ define([
   function thaw(value) {
     var defd = Promise.defer();
     var factory = value.factory;
-    var type = value.type; // TODO: are there cases where we infer type?
+    var type = value.type;
+    // TODO: there are cases where we infer type
+
     var Clazz;
     var resourceData;
 

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Test Event Bubbling</title>
+<body class="wrapper">
+
+  <script src="../client/vendor/require.js"></script>
+  <script src="../client/config.js"></script>
+
+  <script type="text/javascript">
+    require({
+      baseUrl: '../client',
+      paths: {
+        'test': '../test'
+      }
+    }, [
+      'compose',
+      'knockout',
+      'lib/util',
+      'lib/event'
+    ],
+    function(Compose, ko, util, Evented) {
+      ko.extenders.propertyName = function(target, name) {
+          target.propertyName = name;
+          return target;
+      };
+      var Subscribable = ko.subscribable;
+      var typeCounts = {};
+
+      var count = 0;
+      var Model = Compose(function(){
+        // first constructor/initializer
+        this._subscriptions = {};
+      },
+      Evented, // Models implement Evented
+      ko.subscribable['fn'], // mixin the subscribable prototype methods
+      {
+        declaredClass: "XModel",
+        type: 'default',
+        update: function(name, value, options){
+          var old = this[name];
+          if('object' == typeof old && old instanceof Model) {
+            // detach
+            console.log("replacing watched property: ", name, old);
+          }
+          if(this[name] !== value) {
+            this[name] = value;
+          }
+          if('object' == typeof value && value instanceof Model) {
+            // attach
+            this._watchProperty(name, value);
+            for(var key in value) {
+              value.update(key, value[key]);
+            }
+          }
+          this.dispatchChangeEvent(name, value);
+          return this;
+        },
+        dispatchChangeEvent: function(name, value) {
+          this.emit(this._id+':propertychange', { source: name, value: value });
+        },
+        _watchProperty: function(name, value) {
+          var prop = value || this[name];
+          if(prop.on) {
+            // console.log('listening for: ' + prop._id+':propertychange');
+            Evented.on(prop._id+':propertychange', function(_event) {
+              var event = Object.create(_event);
+              if(event.source) {
+                event.source = name+'.'+event.source;
+              }
+              // console.log(this._id+' ('+this.name+') publishing propertychange event', event);
+              Evented.emit(this._id+':propertychange', event);
+              Evented.emit(this._id+'.'+event.source, event);
+            }.bind(this));
+          }
+
+        }
+      }, function(args) {
+        this._id = 'default' + (count++);
+        for(var i in args) {
+          var prop = this[i] = args[i];
+          this._watchProperty(i, prop);
+        }
+      });
+
+      var leeds = window.leeds = new Model({ name: 'Leeds' });
+      var bradford = window.bradford = new Model({ name: 'Bradford' });
+      var wyorks = window.wyorks = new Model({ name: 'West Yorkshire', town: leeds });
+      var uk = window.uk = new Model({ name: 'United Kingdom', county: wyorks });
+      var continent = window.continent = new Model({ name: 'Europe', country: uk });
+
+      Evented.on(continent._id+'.country.county.town.name', function(event) {
+        console.log(continent.name + ' ' + event.source + ' propertychange: ', event.value);
+      });
+
+    });
+
+    function propertyChange(){
+      leeds.update('name', 'Sunny Leeds');
+    }
+    function modelChange(){
+      wyorks.update('town', bradford);
+    }
+
+
+    function doIt() {
+      console.profile();
+      propertyChange();
+      modelChange();
+      console.profileEnd();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Test Evented Model</title>
+<body class="wrapper">
+
+  <script src="../client/vendor/require.js"></script>
+  <script src="../client/config.js"></script>
+
+  <script type="text/javascript">
+    require({
+      baseUrl: '../client',
+      paths: {
+        'test': '../test'
+      }
+    }, [
+      'compose',
+      'lib/event',
+      'lib/util',
+      'lib/switchboard'
+    ],
+
+    function(Compose, Evented, util, switchboard) {
+      function Model(args) {
+        for(var i in args) {
+          this[i] = args[i];
+        }
+        if ('id' in this) {
+          Model.byId[this.id] = this;
+        }
+      };
+      window.Model = Model;
+      Model.byId = {};
+      Model.prototype.registerProperty = function(name, child) {
+        this[name] = child;
+        // 'player1.currentTile' => '0,3' where there's a tile object with id '0,3'
+        // '_id0.weapon' => _id78
+        switchboard.alias(this.id + '.' + name, child.id);
+        this.emit(name + ':change', { target: child, source: this });
+      };
+      Model.prototype.emit = function(topic, payload) {
+        console.log(this.id + ' emit: ', this.id + ':' + topic, payload);
+        switchboard.emit(this.id + ':' + topic, payload);
+      };
+
+      function Tile() {
+        return Model.apply(this, arguments);
+      }
+      Tile.prototype = Object.create(Model.prototype);
+      Tile.prototype.constructor = Tile;
+      Tile.prototype.enter = function() {
+        this.emit('enter', { target: this });
+      };
+
+      window.Tile = Tile;
+      window.switchboard = switchboard;
+
+      var a = new Model({ id: '_id0', name: 'A' });
+      var b = new Model({ id: '_id1', name: 'B' });
+      var c = new Model({ id: '_id2', name: 'C' });
+      var d = new Model({ id: '_id3', name: 'D' });
+      var ad = new Model({ id: '_id4', name: 'AD' });
+      a.registerProperty('d', ad);
+      a.registerProperty('b', b);
+      a.b.registerProperty('c', c);
+      a.b.c.registerProperty('d', d);
+
+      window.game = new Model({ id: 'game', name: 'The Game' });
+      window.player = new Model({ id: 'player_0', name: 'Bob' });
+      window.sword = new Model({ id: 'weapon_0', name: 'Longsword' });
+      window.monster = new Model({ id: 'rpg_3', name: 'Plains Thing' });
+      window.tile = new Tile({
+        id: '4,3', name: 'The High Plains'
+      });
+      game.registerProperty('player', player);
+      player.registerProperty('weapon', sword);
+
+      // player starts out at 4,3
+      player.registerProperty('currentTile', tile);
+
+      // bind game.currentTile to player.currentTile
+      var onCurrentTileChange = switchboard.on(player.id + '.currentTile:change', function(evt) {
+        console.log('updating game.currentTile:', evt.target);
+        if (evt.source == this) {
+          console.log('got own currentTile:change event: ', evt);
+        } else {
+          this.registerProperty('currentTile', evt.target);
+        }
+      }.bind(game));
+      game.registerProperty('currentTile', player.currentTile);
+
+      var onCurrentTileEnterHandle = switchboard.on('game.currentTile:enter', function(evt) {
+        console.info('game.currentTile:enter event from ', evt.target.name);
+      });
+      console.log('registered handle for currentTile: ', onCurrentTileEnterHandle);
+
+      tile.enter();
+
+      // player moves to 4,4
+      player.registerProperty('currentTile', new Tile({
+        id: '4,4', name: 'Some marshes',
+        here: [monster]
+      }));
+      console.log('game.currentTile is now: ', game.currentTile);
+      player.currentTile.enter();
+
+    });
+  </script>
+</body>
+</html>

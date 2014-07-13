@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Test Evented Model</title>
+<body class="wrapper">
+
+  <script src="../client/vendor/require.js"></script>
+  <script src="../client/config.js"></script>
+
+  <script type="text/javascript">
+    require({
+      baseUrl: '../client',
+      paths: {
+        'test': '../test'
+      }
+    }, [
+      'lib/util',
+      'lib/event',
+      'models/EventedModel'
+    ],
+    function(util, Evented, Model) {
+      console.log('Model', Model);
+      console.log('Model instance', new Model);
+      var leeds = window.leeds = new Model({ id: '@leeds', name: 'Leeds' });
+      var bradford = window.bradford = new Model({ id: '@bradford', name: 'Bradford' });
+      var wyorks = window.wyorks = new Model({ id: '@wyorks', name: 'West Yorkshire', town: leeds });
+      var uk = window.uk = new Model({ name: 'United Kingdom', county: wyorks });
+    });
+
+    function propertyChange() {
+      console.log('updating name property of leeds model', leeds.get('name'));
+      leeds.update('name', 'Sunny Leeds');
+    }
+    function modelChange(){
+      wyorks.update('town', bradford);
+    }
+
+
+    function doIt() {
+      leeds.on('name:change', function(event) {
+        console.info('leeds name change, event: ', event);
+      });
+      wyorks.on('town:change', function(event) {
+        console.info('town:change, event ', event);
+      });
+      wyorks.on('town.name:change', function(event) {
+        console.info('Yes, the town changed, so subproperty name changed too ', event, ' propertychange: ', event.value);
+      });
+      uk.on('county.town.name:change', function(event) {
+        console.info('Yes, the town changed, so subproperty name changed too ', event, ' propertychange: ', event.value);
+      });
+
+      //console.profile();
+      propertyChange();
+      modelChange();
+      //console.profileEnd();
+    }
+  </script>
+</body>
+</html>
