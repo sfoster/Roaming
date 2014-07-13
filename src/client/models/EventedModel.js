@@ -122,6 +122,7 @@ define([
         this[key] = value;
         propertyCreated = key;
       }
+      console.log('initProperty for: ', key, value, type);
       this.registerProperty(key, this[key], type);
       return propertyCreated;
     },
@@ -200,21 +201,28 @@ define([
       this[key] = this.registerProperty(key, new EventedModel(value), type || 'object');
       return key;
     },
+    _prepareCtorArgs: function(args) {
+      args = Object.create(args);
+      var id = args.id || args._id;
+      var modelType = args.type || this.type;
+
+      if(!(('name' in args) && args.name)) {
+        args.name = args.id || modelType;
+      }
+      if (!id) {
+        if(!(modelType in typeCounts)) {
+          typeCounts[modelType] = -1;
+        }
+        id = modelType + '_'  + (++typeCounts[modelType]);
+      }
+      args._id = id;
+      return args;
+    }
   }, function(args){
     if(!args) return this;
-    args = Object.create(args);
-    if(!('name' in args) && args.name) {
-      args.name = args.id || args.type;
-    }
-    var id = args.id || args._id;
-    var modelType = args.type || this.type;
-    if (!id) {
-      if(!(modelType in typeCounts)) {
-        typeCounts[modelType] = -1;
-      }
-      id = modelType + '_'  + (++typeCounts[modelType]);
-    }
-    this._id = id;
+    args = this._prepareCtorArgs(args);
+    this._id = args._id;
+    delete args._id;
 
     // set up .keys, .values
     this._isDirty = this.registerProperty('_isDirty', false, 'boolean');
