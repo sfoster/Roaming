@@ -78,7 +78,7 @@ define([
       this._topicKeys[topic]
       Evented.on(this._id+":"+topic+"propertychange", callback);
     } else {
-      console.log("XModel#"+this._id + " subscribe to what??");
+      console.log("ObservableModel#"+this._id + " subscribe to what??");
     }
   };
 
@@ -89,14 +89,14 @@ define([
   Evented, // Models implement Evented
   ko.subscribable['fn'], // mixin the subscribable prototype methods
   {
-    declaredClass: "XModel",
+    declaredClass: "ObservableModel",
     type: 'default',
     toJS: function() {
       var cleanThis = {};
       for(var p in this) {
         if(
           "declaredClass" == p ||
-          (p in XModel.prototype) ||
+          (p in ObservableModel.prototype) ||
           "_" == p[0]
         ) {
           continue;
@@ -119,7 +119,7 @@ define([
       this._keys[key] = type;
       var prop = this[key];
       // subscribe to changes to the property to broadcast to any observers at the model level
-      // console.log('XModel#'+this._id+ ' _watchProperty ', key);
+      // console.log('ObservableModel#'+this._id+ ' _watchProperty ', key);
       if('function' !== typeof prop.subscribe) {
         return;
       }
@@ -127,7 +127,7 @@ define([
         this._isDirty();
         // some property has changed.
         // publish as event on the model
-        console.log("XModel#"+this._id+" _watchProperty subscribe callback, got new value: %s, key: %s", newValue, key);
+        console.log("ObservableModel#"+this._id+" _watchProperty subscribe callback, got new value: %s, key: %s", newValue, key);
         Evented.emit(this._id+':propertychange', { value: newValue, name: key });
       }, this);
 
@@ -138,7 +138,7 @@ define([
       }
       // subscribe to our own property changes
       this.on(function(newValue, topic){
-        console.log("XModel#"+this._id+" got notification on topic: %s, value: %s", key, newValue, topic);
+        console.log("ObservableModel#"+this._id+" got notification on topic: %s, value: %s", key, newValue, topic);
 
       }, this, key);
 
@@ -184,7 +184,7 @@ define([
       if (typeof this[name] == "function") {
         return this[name]();
       } else {
-        throw  new Error("XModel get:"+name +": type is " +typeof this[name]);
+        throw  new Error("ObservableModel get:"+name +": type is " +typeof this[name]);
       }
     },
     remove: function(name, options){

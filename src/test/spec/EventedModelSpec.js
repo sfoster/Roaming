@@ -1,9 +1,9 @@
-define(["models/EventedModel"], function(XModel) {
-	console.log("XModelSpec loaded XModel: ", XModel);
+define(["models/EventedModel"], function(EventedModel) {
+	console.log("EventedModelSpec loaded EventedModel: ", EventedModel);
 
-  window.XModel = XModel;
+  window.EventedModel = EventedModel;
 
-  var grue = new XModel({
+  var grue = new EventedModel({
       foo: "Foo",
       bar: "Bar",
       hats: ["too fancy", "just right"],
@@ -13,7 +13,7 @@ define(["models/EventedModel"], function(XModel) {
   console.log("stats.age: ", grue.get("stats").get("age"));
   console.log("stats: ", grue.get("stats").toJS());
 
-  describe("XModels", function() {
+  describe("EventedModels", function() {
   	var data = {
   		foo: "Foo",
   		bar: "Bar",
@@ -22,26 +22,26 @@ define(["models/EventedModel"], function(XModel) {
   	};
 
     it('should be a constructor', function() {
-      expect(typeof XModel).toBe("function");
-      expect((new XModel) instanceof XModel).toBeTruthy();
+      expect(typeof EventedModel).toBe("function");
+      expect((new EventedModel) instanceof EventedModel).toBeTruthy();
     });
     it('should have an on method', function() {
-      var model = new XModel;
+      var model = new EventedModel;
       expect(typeof model.on).toBe('function');
     });
 
     it('should create sub-models for object properties', function() {
-      var model = new XModel(data);
-      expect(XModel.isInstanceOf(model.stats)).toBeTruthy();
+      var model = new EventedModel(data);
+      expect(EventedModel.isInstanceOf(model.stats)).toBeTruthy();
     });
 
     it('should provide access to sub-model properties', function() {
-      var model = new XModel(data);
+      var model = new EventedModel(data);
       expect(model.get('stats').get('age')).toBe(2);
     });
 
     it('should notify when we update a property', function() {
-    	var model = new XModel(data);
+    	var model = new EventedModel(data);
     	var notified = false;
       console.log("test - subscribing to model.foo");
     	model.on('foo:change', function(evt){
@@ -55,8 +55,8 @@ define(["models/EventedModel"], function(XModel) {
 
     it('should maintain nested models', function() {
       console.log('should maintain nested models');
-      var model = new XModel(data);
-      var altStats = new XModel({ age: 100, hp: 12, level: 9 });
+      var model = new EventedModel(data);
+      var altStats = new EventedModel({ age: 100, hp: 12, level: 9 });
       var statsNotified = 0;
       var ageNotified = 0;
       var altAgeNotified = 0;
@@ -96,7 +96,7 @@ define(["models/EventedModel"], function(XModel) {
     });
 
     it('sub-property subscriptions should survive updates to ancestor properties', function() {
-      var model = new XModel(data);
+      var model = new EventedModel(data);
       console.log("sub-property subscriptions should survive updates, using data:", data);
       var changedAge;
       console.log("subscribing to model");
@@ -108,7 +108,7 @@ define(["models/EventedModel"], function(XModel) {
       model.get("stats").update("age", 99);
       expect(changedAge).toBe(99);
 
-      model.update("stats", new XModel({ age: 18, race: "alien" }));
+      model.update("stats", new EventedModel({ age: 18, race: "alien" }));
       expect(model.get('stats').get('age')).toBe(18);
       expect(model.get('stats').get('race')).toBe('alien');
       expect(model.get('stats').get('health')).toBeFalsy();
@@ -121,6 +121,6 @@ define(["models/EventedModel"], function(XModel) {
   });
 
   return {
-    name: "XModelSpec"
+    name: "EventedModelSpec"
   };
 });
