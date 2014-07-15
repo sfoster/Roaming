@@ -66,13 +66,11 @@
     }
   };
 </script>
-<script src="../vendor/require.js"></script>
+<script src="./vendor/require.js"></script>
+<script src="./config.js"></script>
 <script>
-  require({
-    baseUrl: '..',
-    // configure our AMD loader
-    paths: config.packages
-  }, ['dollar', 'resources/weapons'], function($, weapons){
+  require(['dollar', 'resources/weapons'], function($, weapons){
+    console.log('weapons: ', weapons)
     var tmpl= $('#item-template')[0].innerHTML;
     var itemsHtml = [],
         pattern = /\{\{([^}]+)\}\}/g;

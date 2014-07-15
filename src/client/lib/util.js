@@ -102,6 +102,15 @@ define(function(){
     return obj;
   }
 
+  function flatten(source) {
+    var target = {};
+    for(var i in source) {
+      target[i] = getType(source[i]).indexOf('object') === 0 ?
+        flatten(source[i]) : source[i];
+    }
+    return target;
+  }
+
   function create(obj){
     var clone, empty = {};
     if(obj instanceof Array){
@@ -220,6 +229,7 @@ define(function(){
     pluck: pluck,
     values: values,
     keys: keys,
+    flatten: flatten,
     extend: extend,
     inherits: inherits,
     clamp: clamp

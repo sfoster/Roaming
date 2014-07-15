@@ -1,11 +1,7 @@
-define(['compose', 'lib/util'], function(Compose, util){
+define(['compose', 'lib/util', 'models/EventedModel'], function(Compose, util, EventedModel){
   console.log("Loading models/Item");
-  var create = util.create;
-  var mixin = util.mixin;
-  var typeCounts = {};
-  var ItemModel = Compose(function Item(args){
-    util.prepareModel(this, args || {});
-  }, {
+
+  var ItemModel = Compose(EventedModel, {
     declaredClass: "Item",
     type: "item",
     examine: function(context){

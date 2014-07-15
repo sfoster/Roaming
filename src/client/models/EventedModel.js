@@ -195,13 +195,15 @@ define([
 
     initArrayProperty: function(key, value, type) {
       this[key] = this.registerProperty(key, value, type || 'array');
-      return key;
+      return this[key];
     },
     initObjectProperty: function(key, value, type) {
-      this[key] = this.registerProperty(key, new EventedModel(value), type || 'object');
-      return key;
+      this[key] = this.registerProperty(key,
+                  new EventedModel(value), type || 'object');
+      return this[key];
     },
     _prepareCtorArgs: function(args) {
+      console.log('EventedModel _prepareCtorArgs');
       args = Object.create(args);
       var id = args.id || args._id;
       var modelType = args.type || this.type;
@@ -218,9 +220,10 @@ define([
       args._id = id;
       return args;
     }
-  }, function(args){
+  }, Compose, function(args){
     if(!args) return this;
-    args = this._prepareCtorArgs(args);
+    args = util.flatten(this._prepareCtorArgs(args));
+    console.log('EventedModel ctor, got args: ', args);
     this._id = args._id;
     delete args._id;
 
@@ -231,9 +234,17 @@ define([
 
     // init each property from the args object
     var key, type, value;
-    for(key in args) {
-      if(!key || '_' == key.charAt(0)) continue;
+    function nextKey(obj) {
+      for(var key in obj) {
+        if(!key || '_' == key.charAt(0)) continue;
+        return key;
+      }
+    }
+
+    while((key = nextKey(args))) {
       value = args[key];
+      args[key] = null; // some args might have prototypes
+      delete args[key];
       type = util.getType(value);
       switch(type) {
         case "function":
