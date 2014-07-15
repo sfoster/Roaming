@@ -67,8 +67,15 @@ define([
         stats.agility = args.evasion;
         delete args.evasion;
       }
-      args.stats = stats;
 
+      if (!args.inventory) {
+        args.inventory = [];
+      }
+      if (!args.equipped) {
+        args.equipped = {};
+      }
+
+      args.stats = stats;
       console.log("Actor _prepareCtorArgs, made args: ", args);
       return args;
     },

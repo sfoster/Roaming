@@ -1,37 +1,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Jasmine Spec Runner</title>
-	<link rel="shortcut icon" type="image/png" href="./lib/jasmine-1.1.0.rc1/jasmine_favicon.png">
-	<link rel="stylesheet" type="text/css" href="./lib/jasmine-1.1.0.rc1/jasmine.css">
-	<script type="text/javascript" src="./lib/jasmine-1.1.0.rc1/jasmine.js"></script>
-	<script type="text/javascript" src="./lib/jasmine-1.1.0.rc1/jasmine-html.js"></script>
+  <title>Jasmine Spec Runner</title>
+  <link rel="shortcut icon" type="image/png" href="./lib/jasmine-1.1.0.rc1/jasmine_favicon.png">
+  <link rel="stylesheet" type="text/css" href="./lib/jasmine-1.1.0.rc1/jasmine.css">
+  <script type="text/javascript" src="./lib/jasmine-1.1.0.rc1/jasmine.js"></script>
+  <script type="text/javascript" src="./lib/jasmine-1.1.0.rc1/jasmine-html.js"></script>
 
-	<script src="../client/vendor/require.js"></script>
-	<script src="../client/config.js"></script>
+  <script src="../client/vendor/require.js"></script>
+  <script src="../client/config.js"></script>
 
-	<script type="text/javascript">
-		require({
-			baseUrl: '../client',
-			paths: {
-				'test': '../test'
-			}
-		}, [
-			//include all specs to be run
-			// 'test/spec/ModuleSpec',
-			// 'test/spec/ResourceLoaderSpec',
-			// 'test/spec/EventedModelSpec',
-			// 'test/spec/ItemSpec',
-			'test/spec/ActorSpec'
-		],
-			function() {
-				//run tests
-				jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
-				jasmine.getEnv().execute();
-			});
-	</script>
+  <script type="text/javascript">
+    require({
+      baseUrl: '../client',
+      paths: {
+      'test': '../test'
+      }
+    }, [
+      //include all specs to be run
+      // 'test/spec/ModuleSpec',
+      // 'test/spec/ResourceLoaderSpec',
+      // 'test/spec/EventedModelSpec',
+      // 'test/spec/ItemSpec',
+      'test/spec/ActorSpec'
+    ],
+    function() {
+      //run tests
+
+      var homerReporter = {
+        skipped: 0,
+        reportSuiteResults: function(suite) {
+          if (suite.totalCount === 0) {
+          this.skipped = 1;
+          }
+        },
+        reportRunnerResults: function(runner) {
+          var results = runner.results();
+          console.log('reportRunnerResults: ', results);
+          if (results.failedCount) {
+            console.log('homerReporter says no');
+            document.getElementById('announceFailure').play();
+          } else if(!this.skipped) {
+            console.log('homerReporter says yes');
+            document.getElementById('announceSuccess').play();
+          }
+        }
+      };
+      jasmine.getEnv().addReporter(homerReporter);
+      jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
+      jasmine.getEnv().execute();
+    });
+  </script>
 </head>
 
 <body>
+
+  <audio id="announceSuccess" preload="auto" src="./woohoo.mp3"></audio>
+  <audio id="announceFailure" preload="auto" src="./doh.mp3"></audio>
 </body>
 </html>
