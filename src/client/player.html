@@ -24,11 +24,22 @@
   </style>
 </head>
 <body>
-<section id="hud" class="panel" data-bind="with:player">
+<section id="hud" class="panel" data-bind="model:player">
+  <script type="text/notes">
+    associate #hud with object player
+    inject template #player-template into #playerInfo.innerHTML
+    and look for any further bindings within it, given this context
+  </script>
   <div id="playerInfo" data-bind="template: 'player-template'"></div>
 </section>
-<section id="main" class="panel" data-bind="with:player">
+<section id="main" class="panel" data-bind="model:player">
   <h2>Inventory</h2>
+  <script type="text/notes">
+    fill this element with rendered items from the inventory collection,
+    using the child nodes as ad-hoc template.
+    inject template #player-template into #playerInfo.innerHTML
+    and look for any further bindings within it, given this context
+  </script>
   <ul data-bind="foreach: inventory">
     <li class="item" data-bind="text: name, css: { equipped: ( $data.isEquipped ) }"></li>
   </ul>
@@ -67,13 +78,12 @@
   })();
 
   require([
-    'knockout',
-    'lib/koHelpers',
     'plugins/resource!player/'+(config.playerid || 'guest'),
     'text!resources/templates/player.html',
     'plugins/resource!resources/items#hagStone',
-    'models/Item'
-  ], function(ko, koHelpers, player, playerTemplate, hagStone, Item){
+    'models/Item',
+    'views/View'
+  ], function(player, playerTemplate, hagStone, Item, View){
     // get player id
     // load player data
 
@@ -86,7 +96,6 @@
     document.body.appendChild(tmplNode);
 
     window.player = player;
-    window.ko = ko;
     window.tile = {};
     var hereItems = tile.here = [
       hagStone
@@ -94,19 +103,24 @@
     hereItems[0].inCollection = hereItems;
 
     var viewModel = window.viewModel = {
-      player: ko.mapping.fromJS(player),
-      here: ko.mapping.fromJS(hereItems)
+      player: player,
+      here: hereItems
     };
-    viewModel.here.subscribe(function(change){
-      tile.here = ko.mapping.toJS(viewModel.here);
-      console.log("tile.here: ", tile.here);
-    });
 
-    viewModel.player.inventory.subscribe(function(newValue){
-      player.inventory = ko.mapping.toJS(viewModel.player.inventory);
-      console.log("inventory change: ", player.inventory);
+    var playerView = new View({
+      template: playerTemplate,
+      context: player,
     });
-    ko.applyBindings(viewModel);
+    playerView.attach('playerInfo');
+    // viewModel.here.subscribe(function(change){
+    //   tile.here = ko.mapping.toJS(viewModel.here);
+    //   console.log("tile.here: ", tile.here);
+    // });
+
+    // viewModel.player.inventory.subscribe(function(newValue){
+    //   player.inventory = ko.mapping.toJS(viewModel.player.inventory);
+    //   console.log("inventory change: ", player.inventory);
+    // });
   });
 </script>
 </body>
