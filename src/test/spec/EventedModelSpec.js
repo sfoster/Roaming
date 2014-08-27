@@ -118,6 +118,25 @@ define(["models/EventedModel"], function(EventedModel) {
       expect(changedAge).toBe(19);
     });
 
+    it ('should allow unsubscription', function() {
+      var model = new EventedModel(data);
+      var changedAge;
+      var subscription = model.on('stats.age:change', function(evt){
+        console.log("model stats.age:change subscribe callback");
+        changedAge = evt.value;
+      });
+      console.log("updating stats")
+      model.get("stats").update("age", 99);
+      expect(changedAge).toBe(99);
+
+      console.log("unsubscribing");
+      subscription.remove();
+
+      model.get("stats").update("age", 2012);
+      expect(model.get("stats").get("age")).toBe(2012);
+      expect(changedAge).toBe(99);
+    });
+
   });
 
   return {

@@ -14,6 +14,7 @@ define(['resources/template'], function(createTemplate) {
     for(var key in (config || {})) {
       this[key] = config[key];
     }
+    this._attachedSubscriptions = [];
   }
   View._nextId = 0;
   View.events = [];
@@ -67,32 +68,69 @@ define(['resources/template'], function(createTemplate) {
         return [str];
       }
     }
+    var context = this.context;
+    var isModel = (typeof context.on == 'function');
+
     Array.forEach(
       container.querySelectorAll('*[data-bind]'),
       function(elm) {
-        var context = this.context;
         var bindings = elm.getAttribute('data-bind').split(/;\s*/);
         var pair, type, key;
         var setRe = /(\w+:\s*[a-z0-9_.\-]+),?/g;
-        var submatches;
+        var submatches, valuestr;
         for(var i=0; i<bindings.length; i++) {
           pair = nameValue(bindings[i]);
           type = pair[0];
           key = pair[1];
           switch (type) {
             case 'text':
-              elm.textContent = context[key];
+              elm.textContent = isModel ? context.get(key) :
+                                          context[key];
+              this._bindTextContentToModelProperty(key, elm);
               break;
           case 'attr':
-            while ((submatches = setRe.exec(key))) {
+            valuestr = key;
+            while ((submatches = setRe.exec(valuestr))) {
               pair = nameValue(submatches[1]);
-              elm.setAttribute(pair[0], pair[1]);
+              name = pair[0]; key = pair[1];
+              elm.setAttribute(name, isModel ? context.get(key) :
+                                               context[key]);
+              this._bindAttributeToModelProperty(name, key, elm);
             }
             break;
           }
         }
     }, this);
-  }
+  };
+  View.prototype.detach = function() {
+    var subscription;
+    while((subscription = this._attachedSubscriptions.shift())) {
+      subscription.remove();
+    }
+    if (this.container) {
+      delete this.container.dataset.viewid;
+    }
+    this._unregisterAttachedEvents();
+  };
+
+  View.prototype._handleModelPropertyChange = function() {
+
+  };
+
+  View.prototype._bindAttributeToModelProperty = function(name, prop, elm) {
+    var model = this.context;
+    var subscription = model.on(prop + ':change', function(evt) {
+      elm.setAttribute(name, evt.value);
+    });
+    this._attachedSubscriptions.push(subscription);
+  };
+  View.prototype._bindTextContentToModelProperty = function(prop, elm) {
+    var model = this.context;
+    var subscription = model.on(prop + ':change', function(evt) {
+      elm.textContent = evt.value;
+    });
+    this._attachedSubscriptions.push(subscription);
+  };
 
   View.prototype._registerEvents = function() {
     var target = window;
