@@ -6,11 +6,7 @@ define([
 
   var DEBUG = false;
   var debug = {
-    log: function () {
-      if (!DEBUG) return;
-      var args = ['Actor'].concat(Array.slice(arguments));
-      console.log.apply(console, args);
-    }
+    log: DEBUG ? console.log.bind(console, 'EventedModel') : function() {}
   };
 /*
   the Model on feature, should let me do:
