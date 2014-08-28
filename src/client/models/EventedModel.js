@@ -4,6 +4,14 @@ define([
   'lib/switchboard'
 ], function(Compose, util, switchboard){
 
+  var DEBUG = false;
+  var debug = {
+    log: function () {
+      if (!DEBUG) return;
+      var args = ['Actor'].concat(Array.slice(arguments));
+      console.log.apply(console, args);
+    }
+  };
 /*
   the Model on feature, should let me do:
   * instance.on(fn); // notify of all changes
@@ -53,7 +61,7 @@ define([
       } else {
         topicFlags[topic] = 1;
       }
-      console.warn('on: add callback for topic ' + this._id + '.' + topic);
+      debug.log('on: add callback for topic ' + this._id + '.' + topic);
       return switchboard.on(this._id + '.' + topic, callback);
     },
     removeAllListeners: function(topic) {
@@ -122,7 +130,6 @@ define([
         this[key] = value;
         propertyCreated = key;
       }
-      console.log('initProperty for: ', key, value, type);
       this.registerProperty(key, this[key], type);
       return propertyCreated;
     },
@@ -137,17 +144,17 @@ define([
       var isModelChange = EventedModel.isInstanceOf(oldValue);
       // overwrite the alias we created for the old value.
       if (isModelChange) {
-        console.log('update: update '+ key + ' alias from: ', this._id + '.' + oldValue._id,
+        debug.log('update: update '+ key + ' alias from: ', this._id + '.' + oldValue._id,
           'to: ', this._id + '.' + value._id);
         this.registerProperty(key, value);
       }
       this[key] = value;
-      console.log('publishing event: ', this._id+'.'+key+':change');
+      debug.log('publishing event: ', this._id+'.'+key+':change');
       this.emit(key+':change', { value: this[key], name: key });
       if (isModelChange) {
         // notify of changes to child properties
         // optimized by only firing for events listeners have registered for
-        console.log('walking old model: ', oldValue);
+        debug.log('walking old model: ', oldValue);
         var subkeys = Object.keys(oldValue._keys);
         subkeys.length && subkeys.forEach(function(subkey) {
           var topic = key + '.' + subkey  + ':change';
@@ -161,7 +168,7 @@ define([
     },
     get: function(key, options){
       if (typeof this[key] == "function") {
-        console.log("EventedModel get:"+key +": type is " +typeof this[key]);
+        debug.log("EventedModel get:"+key +": type is " +typeof this[key]);
         return this[key]();
       } else {
         return this[key];
@@ -203,7 +210,7 @@ define([
       return this[key];
     },
     _prepareCtorArgs: function(args) {
-      console.log('EventedModel _prepareCtorArgs');
+      debug.log('EventedModel _prepareCtorArgs');
       args = Object.create(args);
       var id = args.id || args._id;
       var modelType = args.type || this.type;
@@ -223,7 +230,7 @@ define([
   }, Compose, function(args){
     if(!args) return this;
     args = util.flatten(this._prepareCtorArgs(args));
-    console.log('EventedModel ctor, got args: ', args);
+    debug.log('EventedModel ctor, got args: ', args);
     this._id = args._id;
     delete args._id;
 
@@ -248,7 +255,7 @@ define([
       type = util.getType(value);
       switch(type) {
         case "function":
-          console.info("Assigning function property: ", key, value);
+          debug.log("Assigning function property: ", key, value);
           this[key] = value;
           break;
         default:
@@ -264,6 +271,6 @@ define([
     }
   }
 
-  // console.log("After Compose, EventedModel.prototype.subscribe: ", EventedModel.prototype.subscribe.toString());
+  // debug.log("After Compose, EventedModel.prototype.subscribe: ", EventedModel.prototype.subscribe.toString());
   return EventedModel;
 });

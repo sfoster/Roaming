@@ -6,6 +6,15 @@ define([
   'resources/weapons'
 ], function(Compose, util, EventedModel, Inventory, Item, weapons){
 
+  var DEBUG = false;
+  var debug = {
+    log: function () {
+      if (!DEBUG) return;
+      var args = ['Actor'].concat(Array.slice(arguments));
+      console.log.apply(console, args);
+    }
+  };
+
   function isImmutable(thing) {
     return (typeof thing === 'object');
   }
@@ -19,7 +28,7 @@ define([
   };
 
   var Actor = Compose(Compose, function() {
-    console.log("first Actor ctor");
+    debug.log("first Actor ctor");
   }, EventedModel, {
     declaredClass: "Actor",
     type: "actor",
@@ -45,7 +54,7 @@ define([
     },
     _prepareCtorArgs: function(args) {
       args = EventedModel.prototype._prepareCtorArgs.call(this, args);
-      console.log("Actor _prepareCtorArgs, got args: ", args);
+      debug.log("Actor _prepareCtorArgs, got args: ", args);
       var stats = args.stats || Object.create(StatsProto);
       // move stats properties into stats object
       for(key in StatsProto) {
@@ -76,14 +85,14 @@ define([
       }
 
       args.stats = stats;
-      console.log("Actor _prepareCtorArgs, made args: ", args);
+      debug.log("Actor _prepareCtorArgs, made args: ", args);
       return args;
     },
     initStatsProperty: function(name, initialValue, type) {
       // capture baseline stats
       initialValue.type = 'stats';
       var stats = this.initObjectProperty('stats', initialValue, type);
-      console.log('initStatsProperty, this.stats: ', this.stats);
+      debug.log('initStatsProperty, this.stats: ', this.stats);
       this.baseStats = util.flatten(typeof initialValue.toJS  == 'function' ?
                         initialValue.toJS() : initialValue);
       return stats;
@@ -95,10 +104,10 @@ define([
       //   item.inCollection = inventory;
       // });
       // delete args.inventory;
-      console.warn("TODO");
+      console.warn("TODO: implement initInventoryProperty");
     },
     completeInit: function() {
-      console.log("Actor ctor: ", this.name, this.type, this._id);
+      debug.log("Actor ctor: ", this.name, this.type, this._id);
 
       // calculate a level if there is none
       var stats = this.stats;
@@ -123,7 +132,7 @@ define([
       this.equipWeapon( this.currentWeapon );
     }
   },function() {
-    console.log("last Actor ctor");
+    debug.log("last Actor ctor");
   });
 
   return Actor;

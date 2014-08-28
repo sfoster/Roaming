@@ -5,6 +5,15 @@ define([
   'lib/json/ref'
 ], function($, Promise, util, json){
 
+  var DEBUG = false;
+  var debug = {
+    log: function () {
+      if (!DEBUG) return;
+      var args = ['Actor'].concat(Array.slice(arguments));
+      console.log.apply(console, args);
+    }
+  };
+
   var resourceMapping = {
     _map: {
       'location': 'models/Location',
@@ -89,7 +98,7 @@ define([
   function resolveTypeToModel(type) {
     // resolve convenience aliases to their actual resource ids
     var factory = resourceMapping.resolve(type);
-    console.log("resolveTypeToModel: ", type, factory);
+    debug.log("resolveTypeToModel: ", type, factory);
     if(factory) {
       if(type.indexOf("#") > -1) {
         factory += type.substring(type.indexOf("#"));
@@ -123,9 +132,9 @@ define([
   }
 
   function resolveModelData(data) {
-    // console.log("resolveModelData: ", data, "("+typeof data+")");
+    // debug.log("resolveModelData: ", data, "("+typeof data+")");
     if(!assertType(data, 'object')) {
-      console.log("resolveModelData: data not an object:", data);
+      debug.log("resolveModelData: data not an object:", data);
       throw "resolveModelData: data not an object";
     }
 
@@ -151,7 +160,7 @@ define([
 
     // load via the property plugin if the resourceId has a fragment identifier
     require([loaderPrefix+resourceId+suffix], function(resourceData){
-      console.log("resource: resolveModelData, require callback for: " +loaderPrefix+resourceId+suffix, resourceData, "("+typeof resourceData+")");
+      debug.log("resource: resolveModelData, require callback for: " +loaderPrefix+resourceId+suffix, resourceData, "("+typeof resourceData+")");
       // put the resource data into place
       if(suffix && !('id' in resourceData)) {
         resourceData.id = (suffix.split('#'))[1];
@@ -209,7 +218,7 @@ define([
             if(value instanceof Array) {
               value.forEach(function(refData, idx, coln){
                 var promisedValue = thaw(refData).then(function(pData){
-                  // console.log("refd property %s resolved: %o", pname, pData);
+                  // debug.log("refd property %s resolved: %o", pname, pData);
                   if(coln.addAt) {
                     // Let Collection instances do their thing
                     coln.addAt(pData, idx);
@@ -244,7 +253,7 @@ define([
     ];
 
     Promise.seq(sequence).then(function(instance){
-      // console.log("thawed resource is ready: ", instance);
+      // debug.log("thawed resource is ready: ", instance);
       defd.resolve(instance);
     }, function(){
       defd.reject("Failed to fully thaw value");
@@ -265,7 +274,7 @@ define([
       return resourceMapping.resolve(typeId);
     },
     load: function (resourceId, req, onLoad, requireConfig) {
-      // console.log("resource plugin load: "+resourceId, req, requireConfig);
+      // debug.log("resource plugin load: "+resourceId, req, requireConfig);
       var resourceFactoryId = resourceMapping.resolve(resourceId);
       var fragmentId = "", loaderPrefix = "";
       var isJson = false;
@@ -300,14 +309,14 @@ define([
       }
       promisedData.then(function(resourceData){
         thaw({ factory: resourceFactoryId, params: resourceData }).then(function(resource){
-          // console.log("resource is ready: ", resource);
+          // debug.log("resource is ready: ", resource);
           onLoad(resource);
         }, function(){
           onLoad({});
         });
       }, function(){
           console.warn("Failed to load: " + resourceUrl);
-          console.log("errback given args: ", arguments);
+          debug.log("errback given args: ", arguments);
           onLoad({});
       });
     }
