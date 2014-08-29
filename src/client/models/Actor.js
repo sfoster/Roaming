@@ -8,11 +8,7 @@ define([
 
   var DEBUG = false;
   var debug = {
-    log: function () {
-      if (!DEBUG) return;
-      var args = ['Actor'].concat(Array.slice(arguments));
-      console.log.apply(console, args);
-    }
+    log: DEBUG ? console.log.bind(console, 'Actor') : function() {}
   };
 
   function isImmutable(thing) {
