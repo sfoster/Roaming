@@ -2,7 +2,7 @@ define([
   'compose', 'lib/util', 'resources/template'
 ], function(Compose, util, createTemplate) {
 
-  var DEBUG = true;
+  var DEBUG = false;
   var debug = {
     log: DEBUG ? console.log.bind(console, 'View') : function() {}
   };
@@ -13,17 +13,20 @@ define([
      * attach - to document/element. implies render
      * detach - keep state but unrender
      */
+    debug.log('new ' + this.declaredClass, config);
     this.events = Array.slice(this.constructor.events, 0);
     this.attachedEvents = Array.slice(this.constructor.attachedEvents, 0);
     this.context = {};
     this.subviews = [];
-    this.id = 'view_' + (this.constructor._nextId++);
+    this.id = this.declaredClass + '_' + (this.constructor._nextId++);
 
     for(var key in (config || {})) {
       this[key] = config[key];
     }
     this._attachedSubscriptions = [];
   }
+  ElementView.prototype.declaredClass = 'ElementView';
+
   ElementView.prototype.registerSubView = function(view) {
     this.subviews.push(view);
     view.parent = this;
@@ -56,8 +59,8 @@ define([
       this._applyElementBindings(element);
     }
     if (this.template) {
-      var frag = this._renderToFragment();
-      element.appendChild(frag.firstChild);
+      var content = this._render();
+      element.appendChild(content);
     } else {
       // use the markup given
       Array.forEach(element.querySelectorAll('*[data-bind]'),
@@ -78,13 +81,15 @@ define([
       return template.text || template.templateText;
     }
   };
-  ElementView.prototype._renderToFragment = function() {
+  ElementView.prototype._render = function() {
     var template = this._getTemplate(this.template);
     var templateString = (typeof template == 'string') ?
                           template : template.text || template.templateText;
+
     var frag = this._fragment;
     if (!frag) {
-      frag = document.createDocumentFragment();
+      frag = this._fragment = document.createDocumentFragment();
+      // out-of-document node we'll build the output on
       frag.appendChild(document.createElement('div'));
     }
     var element = frag.firstChild;
@@ -95,7 +100,7 @@ define([
     } else {
       element.innerHTML = createTemplate(templateString)(this.context);
     }
-    return frag;
+    return frag.firstElementChild;
   };
 
   function nameValue(str, delim) {
@@ -113,7 +118,19 @@ define([
 
   ElementView.prototype._applyElementBindings = function(elem) {
     var context = this.context;
-    var isModel = (typeof context.on == 'function');
+    var isModel = (typeof context.get == 'function');
+
+    var getValue = function(key, fallback) {
+      if(!(key in this)) {
+        if (key.indexOf('$root') === 0) {
+          return util.getObject(key.substring('$root'.length));
+        }
+        console.warn('getValue: ' + key + ' no in context');
+        return fallback;
+      }
+      return isModel ? this.get(key) : this[key];
+    }.bind(context);
+
     var bindings = elem.getAttribute('data-bind').split(/;\s*/);
     var pair, type, key;
     var setRe = /(\w+:\s*[a-z0-9_.\-]+),?/g;
@@ -125,8 +142,7 @@ define([
       key = pair[1];
       switch (type) {
         case 'text':
-          elem.textContent = isModel ? context.get(key) :
-                                      context[key];
+          elem.textContent = getValue(key);
           this._bindTextContentToModelProperty(key, elem);
           break;
         case 'attr':
@@ -134,8 +150,7 @@ define([
           while ((submatches = setRe.exec(valuestr))) {
             pair = nameValue(submatches[1]);
             name = pair[0]; key = pair[1];
-            elem.setAttribute(name, isModel ? context.get(key) :
-                                             context[key]);
+            elem.setAttribute(name, getValue(key));
             this._bindAttributeToModelProperty(name, key, elem);
           }
           break;
@@ -147,7 +162,7 @@ define([
           } else {
             // spin off a sub-view
             var subview = new ElementView({
-              context: util.getObject(key)
+              context: util.getObject(key) || {}
             });
             debug.log('created subview: ', subview);
             this.registerSubView(subview);
@@ -159,7 +174,7 @@ define([
           var subview = new ElementView({
             // TODO: need to look-ahead to see if the bindings array
             // includes a context for this subview
-            context: this.context,
+            context: this.context || {},
             template: key
           });
           debug.log('created subview: ', subview,
@@ -172,8 +187,8 @@ define([
           var subview = new ListView({
             // TODO: need to look-ahead to see if the bindings array
             // includes a context for this subview
-            context: this.context,
-            template: key
+            context: getValue(key) || [],
+            template: elem.innerHTML.trim()
           });
           debug.log('created subview: ', subview);
           this.registerSubView(subview);
@@ -262,9 +277,44 @@ define([
     }
   };
 
-  var ListView = Compose(View, {
-    attach: function() {
-      debug.log('ListView attach');
+  var ListView = Compose(ElementView, {
+    declaredClass: 'ListView',
+    _render: function(elem) {
+      debug.log('ListView _render');
+      var template = this._getTemplate(this.template);
+      var templateString = (typeof template == 'string') ?
+                            template : template.text || template.templateText;
+
+      var frag = this._fragment;
+      if (!frag) {
+        frag = this._fragment = document.createDocumentFragment();
+      }
+      var container = (frag.firstChild ||
+                       frag.appendChild(document.createElement('div')));
+      // make template node
+      // TODO: support template() too?
+      container.innerHTML = templateString.trim();
+      var itemNodeTemplate = container.removeChild(container.firstElementChild);
+      // empty out the fragment, we'll accumulate the output there
+      while (frag.hasChildNodes()) {
+        frag.removeChild(frag.firstChild);
+      }
+      var listContext = this.context;
+      listContext.forEach(function(itemContext) {
+        var element = itemNodeTemplate.cloneNode();
+        frag.appendChild(element);
+        // replace with item context temporarily
+        this.context = itemContext;
+
+        if (templateString.contains('data-bind')) {
+          // apply bindings on the item node itself
+          this._applyElementBindings(element);
+          Array.forEach(element.querySelectorAll('*[data-bind]'),
+                        this._applyElementBindings.bind(this));
+        }
+      }, this);
+      this.context = listContext;
+      return frag;
     }
   });
   ListView._nextId = 0;

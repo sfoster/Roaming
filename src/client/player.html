@@ -50,7 +50,7 @@
     and look for any further bindings within it, given this context
   </script>
   <ul data-bind="foreach: inventory">
-    <li class="item" data-bind="text: name, css: { equipped: ( $data.isEquipped ) }"></li>
+    <li class="item" data-bind="text: name; css: { equipped: ( $data.isEquipped ) }"></li>
   </ul>
   <h2>Visits</h2>
   <ul data-bind="foreach: visits">
@@ -116,16 +116,12 @@
       here: hereItems
     };
 
-    var hudView = window.hudView = new View.ElementView({
-
-    });
+    var hudView = window.hudView = new View.ElementView({});
     hudView.attach('hud', true);
 
-    // var playerView = window.playerInfoView = new View({
-    //   template: playerTemplate,
-    //   context: player,
-    // });
-    // playerView.attach('playerInfo');
+    var mainView = window.mainView = new View.ElementView({});
+    mainView.attach('main', true);
+
 
     // viewModel.here.subscribe(function(change){
     //   tile.here = ko.mapping.toJS(viewModel.here);
