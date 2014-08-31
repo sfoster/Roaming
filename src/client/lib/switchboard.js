@@ -4,6 +4,11 @@ define([
   'lib/event'
 ], function(Compose, util, Evented){
 
+  var DEBUG = false;
+  var debug = {
+    log: DEBUG ? console.log.bind(console, 'switchboard') : function() {}
+  };
+
   /* switchboard keeps track of stuff like:
      ui needs to know when game.tile changes
      game has tile property, which descends from EventedModel
@@ -22,12 +27,11 @@ define([
      ui needs to know when game.combatants[0].weapon.damage changes
      combatants[0] doesn't normally exist
      but the switchboard can be notified when it does
-     game.combatants
     */
 
   var switchboard = Compose.create(Evented, {
     // alias('Mark Twain', 'Samuel Clemens')
-    // i.e. Samuel Clemens is aka Mark Twain
+    // i.e. Mark Twain is an alias of Samuel Clemens
     _aliases: {},
     _reverseAliases: {},
     alias: function(aka, id) {
@@ -68,7 +72,7 @@ define([
 
       var reverseAliases = this._reverseAliases[id] || (this._reverseAliases[id] = {});
       reverseAliases[aka] = id;
-      console.log('aliased %s to %s', id, aka);
+      debug.log('aliased %s to %s', id, aka);
 
       return alias;
     },
@@ -110,6 +114,31 @@ define([
       });
     })
   });
+
+  switchboard.Evented = {
+    emit: function(topic, payload) {
+      switchboard.emit(this._id + '.' + topic, payload);
+    },
+    on: function(topic, callback) {
+      var topicFlags = this._topicFlags || (this._topicFlags = {});
+      if ("*" === topic) {
+        console.warn('catch-all listeners not implemented');
+      }
+      if (topic in topicFlags) {
+        topicFlags[topic] += 1;
+      } else {
+        topicFlags[topic] = 1;
+      }
+      debug.log('on: add callback for topic ' + this._id + '.' + topic);
+      return switchboard.on(this._id + '.' + topic, callback);
+    },
+    removeAllListeners: function(topic) {
+      if((topic in this._topicFlags) && this._topicFlags[topic]) {
+        this._topicFlags[topic]--;
+      }
+      return switchboard.removeAllListeners(this._id + '.' + topic);
+    }
+  };
 
   return switchboard;
 });

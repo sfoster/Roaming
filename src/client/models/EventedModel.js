@@ -43,36 +43,11 @@ define([
   }
 
   var typeCounts = {};
-  var Evented = {
-    emit: function(topic, payload) {
-      switchboard.emit(this._id + '.' + topic, payload);
-    },
-    on: function(topic, callback) {
-      var topicFlags = this._topicFlags || (this._topicFlags = {});
-      if ("*" === topic) {
-        console.warn('catch-all listeners not implemented');
-      }
-      if (topic in topicFlags) {
-        topicFlags[topic] += 1;
-      } else {
-        topicFlags[topic] = 1;
-      }
-      debug.log('on: add callback for topic ' + this._id + '.' + topic);
-      return switchboard.on(this._id + '.' + topic, callback);
-    },
-    removeAllListeners: function(topic) {
-      if((topic in this._topicFlags) && this._topicFlags[topic]) {
-        this._topicFlags[topic]--;
-      }
-      return switchboard.removeAllListeners(this._id + '.' + topic);
-    }
-  };
-
   var EventedModel = Compose(function(){
     this._keyAliases = {};
     this._keys = {};
   },
-  Evented, // Models implement Evented
+  switchboard.Evented, // Models implement Evented
   {
     declaredClass: "EventedModel",
     type: 'default',
