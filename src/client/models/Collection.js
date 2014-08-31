@@ -1,40 +1,79 @@
 define([
-    'compose', 'lib/event'
-], function(Compose, Evented){
+    'compose', 'lib/switchboard', 'lib/util'
+], function(Compose, switchboard, util){
 
-  var Collection = Compose(Array, Evented, {
-    declaredClass: "Collection",
-    add: function(item, options){
-      this.push(item);
-      item.inCollection = this;
-      this.emit("afteradd", {
-        target: item,
-        cancel: function(){ proceed = false; }
+  var DEBUG = false;
+  var debug = {
+    log: DEBUG ? console.log.bind(console, 'Collection') : function() {}
+  };
+
+  var typeCounts = {};
+  var Collection = Compose(function(entries, options){
+    this._array = entries ? Array.slice(entries, 0) : [];
+    if (options) {
+      util.mixin(options);
+    }
+  },
+  switchboard.Evented, // Models implement Evented
+  {
+    declaredClass: 'Collection',
+    type: 'collection',
+    toJS: function() {
+      return this._array;
+    },
+    size: function() {
+      return this._array.length;
+    },
+    get: function(index) {
+      return this._array[index];
+    },
+    indexOf: function(entry) {
+      return this._array.indexOf(entry);
+    },
+    add: function(entry) {
+      var ret = this._array.push(entry);
+      var lastIndex = this._array.length - 1;
+      this.emit('change', {
+        value: entry,
+        index: lastIndex,
+        action: 'add'
+      });
+      return ret;
+    },
+    update: function(index, entry) {
+      var oldValue = this._array[index];
+      this._array.splice(index, 1, entry);
+      this.emit('change', {
+        value: entry,
+        oldValue: oldValue,
+        index: index,
+        action: 'update'
       });
     },
-    addAt: function(item, index){
-      this[index] = item;
-      item.inCollection = this;
-      this.emit("afteradd", {
-        target: item,
-        cancel: function(){ proceed = false; }
+    remove: function(index) {
+      var ret = this._array.splice(index, 1)[0];
+      this.emit('change', {
+        action: 'remove',
+        value: ret,
+        index: index
+      });
+      return ret;
+    },
+    removeAll: function() {
+      this._array.length = 0;
+      this.emit('change', {
+        action: 'removeall',
+        value: null
       });
     },
-    remove: function(item, options){
-      for(var i=0; i<this.length; i++){
-        if(this[i] === item){
-          break;
-        }
-      }
-      if(i < this.length) {
-        this.splice(idx, 1);
-        console.log("Removing item: ", item);
-        this.emit("afterremove", {
-          target: item,
-          cancel: function(){ proceed = false; }
-        });
-      }
-      return this;
+    forEach: function(fn, thisObj) {
+      return this._array.forEach(fn, thisObj || this);
+    },
+    map: function(fn, thisObj) {
+      return this._array.map(fn, thisObj || this);
+    },
+    filter: function(fn, thisObj) {
+      return this._array.filter(fn, thisObj || this);
     }
   });
 
