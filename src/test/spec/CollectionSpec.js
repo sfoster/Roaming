@@ -87,29 +87,31 @@ define(["compose", "models/Collection", "lib/util"], function(Compose, Collectio
     it("can remove items", function() {
       var removedEntry = this.testGroup.remove(0);
       expect(this.testGroup.size()).toBe(2);
-      expect(removedEntry).toBe(this.testData.entry1st);
-      expect(this.testGroup.get(0)).toBe(this.testData.entry2nd);
+      expect(removedEntry.name).toBe('first');
+      expect(this.testGroup.get(0).name).toBe('second');
     });
 
     it("can empty all items", function() {
       this.testGroup.removeAll();
       expect(this.testGroup.size()).toBe(0);
+      expect(this.testGroup.values.length).toBe(0);
     });
 
 
     it("maintains a values array", function() {
+      var fourth = new TestEntry({ name: 'fourth'});
       expect(this.testGroup.values.length).toBe(3);
       expect(this.testGroup.values.map(function(entry) {
         return entry.name;
-      })).toBe(['first', 'second', 'third']);
+      })).toEqual(['first', 'second', 'third']);
       this.testGroup.remove(1);
       expect(this.testGroup.values.map(function(entry) {
         return entry.name;
-      })).toBe(['first', 'third']);
+      })).toEqual(['first', 'third']);
       this.testGroup.add(fourth);
       expect(this.testGroup.values.map(function(entry) {
         return entry.name;
-      })).toBe(['first', 'third', 'fourth']);
+      })).toEqual(['first', 'third', 'fourth']);
     });
 
     it("raises change event on update", function() {

@@ -29,19 +29,23 @@ define([
     },
     update: function(index, entry, quietly) {
       this.values.splice(index, 1, entry);
-      return EventedModel.prototype.update.call(this, index, entry, quietly);
+      return EventedModel.prototype.update.call(this, ''+index, entry, quietly);
     },
     //
     // inherits update, index is used as property name
     //
     remove: function(index, quietly) {
-      this.values.splice(index, 1);
-      var ret = EventedModel.prototype.remove.call(this, index, quietly);
       var len = this.size();
+      this.values.splice(index, 1);
+      var ret = EventedModel.prototype.remove.call(this, ''+index, quietly);
       // re-map entries after this one
-      for (var key = index+1; key < len; key++) {
+      var nextIndex = index+1;
+      for (var key, idx = nextIndex; idx < len; idx++) {
+        key = ''+idx;
         this._keys[key -1] = this._keys[key];
+        this[key -1] = this[key];
         delete this._keys[key];
+        delete this[key];
       }
       return ret;
     },
