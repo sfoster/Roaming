@@ -46,6 +46,7 @@ define([
   var EventedModel = Compose(function(){
     this._keyAliases = {};
     this._keys = {};
+    this._topicFlags = {};
   },
   switchboard.Evented, // Models implement Evented
   {
@@ -54,7 +55,7 @@ define([
     toJS: function() {
       var cleanThis = {};
       for(var p in this) {
-        if(
+        if (
           "declaredClass" == p ||
           (p in EventedModel.prototype) ||
           "_" == p[0]
@@ -70,6 +71,7 @@ define([
       return cleanThis;
     },
     registerProperty: function(key, initialValue, type) {
+      key = ''+key;
       this._keys[key] = type;
 
       // if the property is a sub-model
@@ -85,6 +87,7 @@ define([
       var propertyCreated, fnName
       // console.log('initProperty ' + key + ' of type: ' + type);
       // try initializer specific to this key
+      key = ''+key;
       fnName = "init"+key.charAt(0).toUpperCase()+key.substring(1)+"Property";
       if(fnName in this) {
         propertyCreated = this[fnName](key, value, type);
@@ -104,22 +107,31 @@ define([
       this.registerProperty(key, this[key], type);
       return propertyCreated;
     },
-    update: function(key, value, options){
-      this.emit(key+':willchange', {
-        value: this[key],
-        name: key,
-        type: 'update',
-        newValue: value
-      });
-      var oldValue = this[key];
-      var isModelChange = EventedModel.isInstanceOf(oldValue);
-      // overwrite the alias we created for the old value.
-      if (isModelChange) {
-        debug.log('update: update '+ key + ' alias from: ', this._id + '.' + oldValue._id,
-          'to: ', this._id + '.' + value._id);
-        this.registerProperty(key, value);
+    add: function() {
+      return this.update.apply(this, arguments);
+    },
+    update: function(key, value, quietly){
+      key = ''+key;
+      var isModelChange, oldValue;
+      var shouldEmit = !(this._inBatchUpdate || quietly);
+      if (!this.hasOwnProperty(key)) {
+        this.initProperty(key, value, util.getType(value));
+      } else {
+        oldValue = this[key];
+        isModelChange = EventedModel.isInstanceOf(oldValue);
+
+        // overwrite the alias we created for the old value.
+        if (isModelChange) {
+          debug.log('update: update '+ key + ' alias from: ', this._id + '.' + oldValue._id,
+            'to: ', this._id + '.' + value._id);
+          this.registerProperty(key, value);
+        }
+        this[key] = value;
       }
-      this[key] = value;
+
+      if (!this._inBatchUpdate) {
+        this._updateObservedProperties();
+      }
       debug.log('publishing event: ', this._id+'.'+key+':change');
       this.emit(key+':change', { value: this[key], name: key });
       if (isModelChange) {
@@ -130,14 +142,14 @@ define([
         subkeys.length && subkeys.forEach(function(subkey) {
           var topic = key + '.' + subkey  + ':change';
           if (topic in this._topicFlags) {
-            this.emit(topic, { value: value[subkey], name: subkey, oldValue: oldValue[subkey] });
+            shouldEmit && this.emit(topic, { value: value[subkey], name: subkey, oldValue: oldValue[subkey] });
           }
         }, this);
       }
-
       return this;
     },
-    get: function(key, options){
+    get: function(key){
+      key = ''+key;
       if (typeof this[key] == "function") {
         debug.log("EventedModel get:"+key +": type is " +typeof this[key]);
         return this[key]();
@@ -145,28 +157,26 @@ define([
         return this[key];
       }
     },
-    remove: function(name, options){
-      this.emit(name+':willchange', {
-        value: this[name],
-        newValue: undefined,
-        name: name,
-        type: 'remove'
-      });
-      var returnValue = this[name].peek();
-      delete this._keys[name];
+    remove: function(key, quietly){
+      var shouldEmit = !(this._inBatchUpdate || quietly);
+      var returnValue = this[key];
+      delete this._keys[key];
       // TODO: update and notify of keys and values array properties
       //this.keys.valueWillMutate();
       //this.values.valueWillMutate();
-      this[name] = null;
-      delete this[name];
-      var alias = this._keyAliases[name];
+      this[key] = null;
+      delete this[key];
+      var alias = this._keyAliases[key];
       if (alias && typeof alias.remover == 'function') {
         alias.remover();
-        delete this._keyAliases[name];
+        delete this._keyAliases[key];
       }
 
+      if (!this._inBatchUpdate) {
+        this._updateObservedProperties();
+      }
       // could do some teardown on orphaned child models
-      this.emit(name+':change', { name: name, type: 'remove' });
+      shouldEmit && this.emit(key+':change', { name: key, type: 'remove' });
       return returnValue;
     },
     // subscribe: wrappedSubscribe,
@@ -181,13 +191,12 @@ define([
       return this[key];
     },
     _prepareCtorArgs: function(args) {
-      debug.log('EventedModel _prepareCtorArgs');
-      args = Object.create(args);
-      var id = args.id || args._id;
-      var modelType = args.type || this.type;
+      var config = args.length ? Object.create(args.shift()) : {};
+      var id = config.id || config._id;
+      var modelType = config.type || this.type;
 
-      if(!(('name' in args) && args.name)) {
-        args.name = args.id || modelType;
+      if(!(('name' in config) && config.name)) {
+        config.name = config.id || modelType;
       }
       if (!id) {
         if(!(modelType in typeCounts)) {
@@ -195,44 +204,62 @@ define([
         }
         id = modelType + '_'  + (++typeCounts[modelType]);
       }
-      args._id = id;
-      return args;
-    }
-  }, Compose, function(args){
-    if(!args) return this;
-    args = util.flatten(this._prepareCtorArgs(args));
-    debug.log('EventedModel ctor, got args: ', args);
-    this._id = args._id;
-    delete args._id;
-
-    // set up .keys, .values
-    this._isDirty = this.registerProperty('_isDirty', false, 'boolean');
-    this.keys = this.registerProperty('keys', [], 'array');
-    this.values = this.registerProperty('values', [], 'array');
-
-    // init each property from the args object
-    var key, type, value;
-    function nextKey(obj) {
-      for(var key in obj) {
-        if(!key || '_' == key.charAt(0)) continue;
-        return key;
+      config._id = id;
+      return config;
+    },
+    _init: function(props) {
+      // set up .keys, .values
+      this._inBatchUpdate = true;
+      this._isDirty = false;
+      if (!('keys' in this._keys)) {
+        this.keys = this.registerProperty('keys', this.keys || [], 'array');
       }
-    }
-
-    while((key = nextKey(args))) {
-      value = args[key];
-      args[key] = null; // some args might have prototypes
-      delete args[key];
-      type = util.getType(value);
-      switch(type) {
-        case "function":
-          debug.log("Assigning function property: ", key, value);
-          this[key] = value;
-          break;
-        default:
-          this.initProperty(key, value, type);
+      if (!('values' in this._keys)) {
+        this.values = this.registerProperty('values', this.values || [], 'array');
       }
-    }
+
+      // init each property from the props object
+      var key, type, value;
+      function nextKey(obj) {
+        for(var key in obj) {
+          key = ''+key;
+          if(!key || '_' == key.charAt(0)) continue;
+          return key;
+        }
+      }
+
+      while((key = nextKey(props))) {
+        value = props[key];
+        props[key] = null; // some props might have prototypes
+        delete props[key];
+        type = util.getType(value);
+        switch(type) {
+          case "function":
+            debug.log("Assigning function property: ", key, value);
+            this[key] = value;
+            break;
+          default:
+            this.initProperty(key, value, type);
+        }
+      }
+      this._inBatchUpdate = false;
+      this._updateObservedProperties();
+    },
+    _updateObservedProperties: function() {
+      this.keys = Object.keys(this._keys); // use getter?
+      this.keys.sort();
+      this.values = this.keys.map(function(key) {
+        return this[key];
+      }, this)
+    },
+  }, function(){
+    var props = arguments.length ?
+                util.flatten(this._prepareCtorArgs(Array.slice(arguments, 0))) :
+                this._prepareCtorArgs([]);
+    this._id = props._id;
+    delete props._id;
+
+    this._init(props);
   });
   EventedModel.isInstanceOf = function(thing) {
     if(thing && typeof thing == 'object' && thing instanceof EventedModel) {

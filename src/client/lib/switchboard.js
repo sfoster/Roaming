@@ -19,7 +19,6 @@ define([
       });
      switchboard finds it knows what 'game' is
      and tells game to watching its tile property; mutators update and remove will call
-      game.emit('tile:willchange', { topic: tile, willChange })
       // do the change, then...
       game.emit('tile:change', { topic: tile, value: game.tile });
       ui's onTileChange method is called with the payload

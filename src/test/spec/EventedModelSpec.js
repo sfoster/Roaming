@@ -1,4 +1,4 @@
-define(["models/EventedModel"], function(EventedModel) {
+define(["models/EventedModel", "lib/util"], function(EventedModel, util) {
 	console.log("EventedModelSpec loaded EventedModel: ", EventedModel);
 
   window.EventedModel = EventedModel;
@@ -51,6 +51,25 @@ define(["models/EventedModel"], function(EventedModel) {
     	model.update("foo", "New fu");
       expect(model.get('foo')).toBe("New fu");
       expect(notified).toBeTruthy();
+    });
+
+    it('should maintain an array of keys', function() {
+      var emptyModel = new EventedModel({});
+      var model = new EventedModel(data);
+      var expectedEmptyKeys = ['name', 'keys', 'values'];
+      expectedEmptyKeys.sort();
+
+      expect(util.getType(emptyModel.keys)).toBe('array');
+      expect(emptyModel.keys.length).toBe(expectedEmptyKeys.length);
+      expect(emptyModel.keys).toEqual(expectedEmptyKeys);
+
+      expect(model.keys.length).  toBe(expectedEmptyKeys.length + 4);
+
+      emptyModel.add('foo', 'Foo');
+      expect(emptyModel.keys.length).toBe(expectedEmptyKeys.length + 1);
+
+      emptyModel.remove('foo');
+      expect(emptyModel.keys).toEqual(expectedEmptyKeys);
     });
 
     it('should maintain nested models', function() {

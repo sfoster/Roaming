@@ -43,9 +43,9 @@ define(["compose", "models/Collection", "lib/util"], function(Compose, Collectio
     });
 
     it("can lookup items by index", function() {
-      expect(this.testGroup.get(0)).toBe(this.testData.entry1st);
-      expect(this.testGroup.get(1)).toBe(this.testData.entry2nd);
-      expect(this.testGroup.get(2)).toBe(this.testData.entry3rd);
+      expect(this.testGroup.get(0).name).toBe(this.testData.entry1st.name);
+      expect(this.testGroup.get(1).name).toBe(this.testData.entry2nd.name);
+      expect(this.testGroup.get(2).name).toBe(this.testData.entry3rd.name);
       expect(this.testGroup.get(3)).toBeUndefined();
     });
 
@@ -94,6 +94,22 @@ define(["compose", "models/Collection", "lib/util"], function(Compose, Collectio
     it("can empty all items", function() {
       this.testGroup.removeAll();
       expect(this.testGroup.size()).toBe(0);
+    });
+
+
+    it("maintains a values array", function() {
+      expect(this.testGroup.values.length).toBe(3);
+      expect(this.testGroup.values.map(function(entry) {
+        return entry.name;
+      })).toBe(['first', 'second', 'third']);
+      this.testGroup.remove(1);
+      expect(this.testGroup.values.map(function(entry) {
+        return entry.name;
+      })).toBe(['first', 'third']);
+      this.testGroup.add(fourth);
+      expect(this.testGroup.values.map(function(entry) {
+        return entry.name;
+      })).toBe(['first', 'third', 'fourth']);
     });
 
     it("raises change event on update", function() {
