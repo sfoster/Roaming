@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Test Collections</title>
+<body class="wrapper">
+
+  <ul id="towns">
+  </ul>
+  <script src="../client/vendor/require.js"></script>
+  <script src="../client/config.js"></script>
+
+  <script type="text/javascript">
+    require({
+      baseUrl: '../client',
+      paths: {
+        'test': '../test'
+      }
+    }, [
+      'lib/util',
+      'lib/event',
+      'models/EventedModel',
+      'models/Collection'
+    ],
+    function(util, Evented, Model, Collection) {
+      console.log('Collection', Collection);
+      console.log('Collection instance', new Collection);
+      window.Collection = Collection;
+      window.EventedModel = Model;
+
+      var leeds = window.leeds = new Model({ id: '@leeds', name: 'Leeds' });
+      var bradford = window.bradford = new Model({ id: '@bradford', name: 'Bradford' });
+      var halifax = window.halifax = new Model({ id: '@halifax', name: 'Halifax' });
+      var wakefield = window.wakefield = new Model({ id: '@wakefield', name: 'Wakefield' });
+
+      var towns = window.towns = new Collection([leeds, bradford, halifax]);
+    });
+
+    function propertyChange() {
+      console.log('updating name property of leeds model', leeds.get('name'));
+      leeds.update('name', 'Sunny Leeds');
+    }
+    function collectionChange(){
+      towns.add(wakefield);
+    }
+
+    function renderList(coln) {
+      var list = document.getElementById('towns');
+      list.innerHTML = '';
+      coln.forEach(function(town, index) {
+        var viewModel = {
+          name: town.get('name'),
+          index: index
+        };
+        var content = '<li>{index} {name}</li>'.replace(/\{([^\}]+)\}/g, function(m, key) {
+          return viewModel[key];
+        });
+        list.insertAdjacentHTML('beforeend', content);
+      });
+    }
+
+    function doIt() {
+      renderList(towns);
+      towns.on('change', function(event) {
+        console.info('towns collecton change, event: ', event);
+        renderList(towns);
+      });
+
+      collectionChange();
+      propertyChange();
+      //console.profileEnd();
+    }
+  </script>
+</body>
+</html>
