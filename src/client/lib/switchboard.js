@@ -8,6 +8,42 @@ define([
   var debug = {
     log: DEBUG ? console.log.bind(console, 'switchboard') : function() {}
   };
+/*
+  TODO:
+2-way alias:
+alias 'bar' to 'foo'
+events on 'foo' notify 'foo', 'bar' listeners
+events on 'bar' notify 'bar', 'foo' listeners
+
+2-way one-many alias
+alias 'nonsense words' to 'foo';
+alias 'nonsense words' to 'bar';
+events on 'foo' notify 'foo', 'nonsense words' listeners
+events on 'nonsense words' notify 'nonsense words', 'foo', 'bar' listeners
+
+alias('currentTile', 'tile_0');
+groupAlias('nearby', 'tile_0');
+events on 'tile_0' notify 'tile_0', 'currentTile', 'nearby' listeners
+events on 'currentTile' notify 'currentTile', 'tile_0', 'nearby' listeners
+
+2-way alias:
+alias(aliasName, targetId):
+  register alias in id => alias table
+  register alias in alias => id table
+emit('alias', payload)
+  lookup id for alias
+  emit for 'alias' listeners
+  emit for 'id' listeners
+
+2-way group (one-many) alias:
+groupAlias(aliasName, targetId):
+  register alias in id => alias table
+  register alias in alias => id table
+emit('alias', payload)
+  lookup id for alias
+  emit for 'alias' listeners
+  emit for 'id' listeners
+*/
 
   /* switchboard keeps track of stuff like:
      ui needs to know when game.tile changes
@@ -33,7 +69,7 @@ define([
     // i.e. Mark Twain is an alias of Samuel Clemens
     _aliases: {},
     _reverseAliases: {},
-    alias: function(aka, id) {
+    alias: function(aka, id, oneToMany) {
       if (!id) {
         return this._aliases[aka];
       }
@@ -41,8 +77,17 @@ define([
         return this._getAliasesForId(id);
       }
 
+      if (oneToMany) {
+        return this._aliasMany(aka, id);
+      } else {
+        return this._aliasOne(aka, id);
+      }
+    },
+      // one aka references exactly 1 id
+    _aliasOne: function(aka, id) {
       var aliases = this._aliases;
       var alias = this._aliases[aka];
+
       if (alias && alias.target === id) {
         // dupe, return quietly
         return alias;
@@ -50,6 +95,7 @@ define([
         // new value: clean up previous alias then proceed
         alias.remove();
       }
+
       var remover = function() {
         delete this._aliases[aka];
         var reverses = this._reverseAliases[id];
@@ -75,6 +121,64 @@ define([
 
       return alias;
     },
+    // one aka references 1-many ids
+    // e.g. collection changes, model keys, model values
+    // when an event affects any of the ids which fall under and alias
+    // listeners to events on that alias should be notified
+    _aliasMany: function(aka, id) {
+      var aliases = this._aliases;
+      var aliasIds = this._aliases[aka]; // store ids for this alias
+
+      if (!aliasIds) {
+        this._aliases[aka] = aliasIds = [];
+        aliasIds.key = aka;
+      }
+      var matchIndex = -1;
+      if (aliasIds.some(function(alias, idx) {
+        matchIndex = idx;
+        return alias.target === id;
+      })) {
+        // dupe, return quietly
+        return aliasIds[matchIndex];
+      }
+
+      var remover = function() {
+        var manyIds = this._aliases[aka];
+        var matchIndex = -1;
+        if (manyIds.some(function(alias, idx) {
+          matchIndex = idx;
+          return alias.target === id;
+        })) {
+          // pull it out of the array
+          manyIds.splice(1, 1);
+        }
+
+        var reverses = this._reverseAliases[id];
+        if (reverses && (aka in reverses)) {
+          delete reverses[aka];
+        }
+        for(var i in reverses) {
+          break;
+        }
+        if (i === undefined) {
+          this._reverseAliases[id] = null;
+          delete this._reverseAliases[id];
+        }
+      }.bind(this);
+
+      // e.g.: alias('game.players', 'rita', true);
+      // return { target: 'rita', key: 'game.players', remove: remover, multiple: true }
+      // such that emit('rita:change') fires listeners for 'game.players:change'
+      var alias = { target: id, key: aka, remove: remover };
+      aliasIds.push(alias);
+
+      var reverseAliases = this._reverseAliases[id] || (this._reverseAliases[id] = {});
+      reverseAliases[aka] = id;
+      debug.log('aliased %s to %s', id, aka);
+
+      return alias;
+    },
+
     _getAliasesForId: function(id) {
       var aliases = [];
       var suffix, prefix, word, aliasKey;
@@ -111,7 +215,12 @@ define([
       names.forEach(function(name) {
         Evented.emit(name + suffix, payload);
       });
-    })
+    }),
+    reset: function() {
+      this.removeAllListeners();
+      this._aliases = {};
+      this._reverseAliases = {};
+    }
   });
 
   switchboard.Evented = {

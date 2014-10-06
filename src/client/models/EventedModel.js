@@ -82,7 +82,6 @@ define([
       }
       return initialValue;
     },
-    // when a property is created, hook a subscriber to it to notify topic subscribers
     initProperty: function(key, value, type) {
       var propertyCreated, fnName
       // console.log('initProperty ' + key + ' of type: ' + type);

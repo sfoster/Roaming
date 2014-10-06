@@ -28,16 +28,30 @@ define([
       return this.update(nextIndex, entry, quietly);
     },
     update: function(index, entry, quietly) {
+      var shouldEmit = !(this._inBatchUpdate || quietly);
+      var shouldUpdateObserveds = !this._inBatchUpdate;
+
       this.values.splice(index, 1, entry);
-      return EventedModel.prototype.update.call(this, ''+index, entry, quietly);
+      var updated = EventedModel.prototype.update.call(this, ''+index, entry, quietly);
+
+      shouldUpdateObserveds && this._updateObservedProperties();
+      shouldEmit && this.emit('change', {
+        action: 'update',
+        value: updated,
+        index: index
+      });
+      return updated;
     },
     //
     // inherits update, index is used as property name
     //
     remove: function(index, quietly) {
+      var shouldEmit = !(this._inBatchUpdate || quietly);
+      var shouldUpdateObserveds = !this._inBatchUpdate;
+
       var len = this.size();
       this.values.splice(index, 1);
-      var ret = EventedModel.prototype.remove.call(this, ''+index, quietly);
+      var removed = EventedModel.prototype.remove.call(this, ''+index, quietly);
       // re-map entries after this one
       var nextIndex = index+1;
       for (var key, idx = nextIndex; idx < len; idx++) {
@@ -47,7 +61,13 @@ define([
         delete this._keys[key];
         delete this[key];
       }
-      return ret;
+      shouldUpdateObserveds && this._updateObservedProperties();
+      shouldEmit && this.emit('change', {
+        action: 'remove',
+        value: removed,
+        index: index
+      });
+      return removed;
     },
     removeAll: function(quietly) {
       var shouldEmit = !(this._inBatchUpdate || quietly);

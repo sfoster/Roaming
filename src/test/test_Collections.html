@@ -5,8 +5,8 @@
   <title>Test Collections</title>
 <body class="wrapper">
 
-  <ul id="towns">
-  </ul>
+  <div id="towns">
+  </div>
   <script src="../client/vendor/require.js"></script>
   <script src="../client/config.js"></script>
 
@@ -46,13 +46,13 @@
 
     function renderList(coln) {
       var list = document.getElementById('towns');
-      list.innerHTML = '';
+      list.innerHTML = '<h1>' + coln.size() + ' towns</h1>';
       coln.forEach(function(town, index) {
         var viewModel = {
           name: town.get('name'),
           index: index
         };
-        var content = '<li>{index} {name}</li>'.replace(/\{([^\}]+)\}/g, function(m, key) {
+        var content = '<div data-id="{index}">{index} {name}</div>'.replace(/\{([^\}]+)\}/g, function(m, key) {
           return viewModel[key];
         });
         list.insertAdjacentHTML('beforeend', content);
@@ -61,13 +61,26 @@
 
     function doIt() {
       renderList(towns);
+      console.log('rendered initial list with: ', towns.map(function(t) { return t.name; }));
       towns.on('change', function(event) {
         console.info('towns collecton change, event: ', event);
         renderList(towns);
+        var changedItemSelector = '#towns > [data-id="'+ event.index + '"]';
+        console.log('highlighting changed item at: ', changedItemSelector);
+        document.querySelector(changedItemSelector).style.fontWeight = 'bold';
+      });
+      towns.on('0.change', function(event) {
+        console.info('towns collecton change, event: ', event);
+        renderList(towns);
+        var changedItemSelector = '#towns > [data-id="'+ event.index + '"]';
+        console.log('highlighting changed item at: ', changedItemSelector);
+        document.querySelector(changedItemSelector).style.fontWeight = 'bold';
       });
 
       collectionChange();
+      console.log('collection changed: ', towns.map(function(t) { return t.name; }));
       propertyChange();
+      console.log('a property of a collection item changed: ', towns.map(function(t) { return t.name; }));
       //console.profileEnd();
     }
   </script>
