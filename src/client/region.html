@@ -25,25 +25,43 @@
     })();
 
     var regionId = config.region || 'test';
+
     require([
-      'knockout', 
-      'lib/util', 
+      'lib/util',
+      'resources/template',
       'plugins/resource!region/'+regionId+'/index',
       'models/Location'
-    ],function(ko, util, region, Location) {
+    ],function(util, template, region, Location) {
+
+      function trim(str) {
+        // TODO: make sure we have a shim
+        return str.trim();
+      }
+
+      var colors = {
+        'abyss': 'rgba(51,51,51,1)',
+        'mountains': 'rgba(153,153,153,1)',
+        'plains': 'rgba(153,255,153,1)',
+        'forest': 'rgba(0,153,0,1)',
+        'water': 'rgba(51,51,204,1)',
+        'barren': 'rgba(204,204,180,1)',
+        'marsh': 'rgba(51,204,51,1)',
+        'default': 'rgba(51,51,155,1)'
+      };
+
       function pluck(ar, p) {
         return ar.map(function(item){
           return item[p];
         });
       }
-      
-      var TILE_SIZE = 20, 
+
+      var TILE_SIZE = 20,
           REGION_WIDTH = TILE_SIZE * (1+pluck(region.tiles, 'x').reduce(function(a, b){
             return Math.max(a, b);
-          })), 
+          })),
           REGION_HEIGHT = TILE_SIZE * (1+pluck(region.tiles, 'y').reduce(function(a, b){
             return Math.max(a, b);
-          })); 
+          }));
       console.log("REGION_WIDTH: %s, REGION_HEIGHT: %s", REGION_WIDTH, REGION_HEIGHT);
 
       var canvasNode = document.getElementById('mapCanvas');
@@ -51,10 +69,10 @@
       canvasNode.height = REGION_HEIGHT;
       canvasNode.style.width = REGION_WIDTH+'px';
       canvasNode.style.height = REGION_HEIGHT+'px';
-      
+
       console.log("REGION_WIDTH", REGION_WIDTH);
       console.log("REGION_HEIGHT", REGION_HEIGHT);
-      
+
       function drawAxes() {
         var layer = [
           { assign: 'fillStyle', value: 'rgba(51,51,51,0.5)' },
@@ -80,18 +98,62 @@
              { assign: 'font', value: 'normal 8px sans-serif' },
              { call: 'fillText', value: [ "loading", 1, 3 ] }
            ];
-           
-      var viewModel = {
+
+      var terrainMap = [
+        { call: 'clearRect', value: [0, 0,  REGION_WIDTH, REGION_HEIGHT]},
+        { assign: 'textBaseline', value: 'top' },
+        { assign: 'font', value: 'normal 9px sans-serif' },
+        { assign: 'strokeStyle', value: '#000' },
+        { assign: 'lineWidth', value: 1 }
+      ];
+
+      var ui = {
         id: region.id,
-        tiles:  ko.observableArray([]),
-        layers: ko.observableArray([
+        tiles: [],
+        mapRenderlayers: [
           loadingLabel
-        ]),
+        ],
+        init: function() {
+          var tiles = this.tiles = region.tiles.map(function(stub){
+            stub.id = stub.x+','+stub.y;
+            stub.terrain = stub.type;
+            return new Location(stub);
+          });
+
+          tiles.forEach(function(tile){
+            var scale = TILE_SIZE, x = scale*tile.x, y = scale*tile.y;
+            console.assert(tile.terrain && tile.terrain in colors, tile.terrain + " is a valid color");
+            terrainMap.push(
+              { assign: 'fillStyle', value: colors[tile.terrain] || colors[tile['default']] },
+              { call: 'fillRect', value: [x, y, scale, scale] },
+              { call: 'strokeRect', value: [x, y, scale, scale] }
+              // { assign: 'fillStyle', value: "#fff" },
+              // { call: 'fillText', value: [ tile.id + ': ' + tile.terrain, 3+x, 3+y ] }
+            );
+          });
+
+          this.registerEvents();
+
+          this.updateMapRenderLayers([ terrainMap, drawAxes() ]);
+          this.updateTiles();
+        },
+        registerEvents: function() {
+          document.getElementById('mapCanvas')
+            .addEventListener('click', this);
+        },
+        handleEvent: function(evt) {
+          if('click' == evt.type) {
+            switch(evt.target.id) {
+              case 'mapCanvas':
+                return this.onMapClick(ui, evt);
+            }
+          }
+        },
         onMapClick: function(vm, evt){
           console.log("Click: ", evt);
-          var x = evt.pageX - evt.target.offsetLeft, 
+          var x = evt.pageX - evt.target.offsetLeft,
               y = evt.pageY - evt.target.offsetTop;
-          var tile_x = Math.floor(x / TILE_SIZE),  
+          var tile_x = Math.floor(x / TILE_SIZE),
               tile_y = Math.floor(y / TILE_SIZE);
           console.log("tile size: %s, x: %s, y: %s, tile x: %s, tile y: %s", TILE_SIZE, x, y, tile_x, tile_y);
 
@@ -100,59 +162,54 @@
             hn.scrollIntoView();
           }
           // location.href = '?location='+region.id+'/'+tile_x+','+tile_y;
+        },
+        updateMapRenderLayers: function(layers) {
+          var ctx = document.getElementById('mapCanvas').getContext('2d');
+          layers.forEach(function(instructions){
+            instructions.forEach(function(instruct){
+              if(instruct.assign) {
+                ctx[instruct.assign] = instruct.value;
+              } else if(instruct.call) {
+                // TODO: maybe require the value to always be an array to optimize a little here
+                ctx[instruct.call].apply(ctx, instruct.value instanceof Array ? instruct.value : [instruct.value]);
+              }
+            });
+          });
+        },
+        updateTiles: function() {
+          var tiles = this.tiles;
+          var itemTemplate = trim(document.getElementById('itemTemplate').innerHTML);
+          itemTemplate = template(itemTemplate);
+          var tileTemplate = trim(document.getElementById('tileTemplate').innerHTML);
+          tileTemplate = template(tileTemplate);
+
+          var container = document.querySelector('#main > ul');
+          var tilesHTMLs = tiles.map(function(tile) {
+            var hereHTMLs = (tile.here || []).map(function(item) {
+              return itemTemplate(item);
+            });
+            var encounterHTMLs = (tile.encounters || []).map(function(item) {
+              return itemTemplate(item);
+            });
+            var viewModel = util.create(tile, {
+              parentId: this.id,
+              hereListHTML: hereHTMLs.join('\n'),
+              encountersListHTML: hereHTMLs.join('\n'),
+            });
+            var tileHTML = tileTemplate(viewModel);
+            return tileHTML;
+          }, this);
+          container.innerHTML = tilesHTMLs.join('\n');
         }
       };
-      
-      var colors = {
-        'abyss': 'rgba(51,51,51,1)',
-        'mountains': 'rgba(153,153,153,1)',
-        'plains': 'rgba(153,255,153,1)',
-        'forest': 'rgba(0,153,0,1)',
-        'water': 'rgba(51,51,204,1)',
-        'barren': 'rgba(204,204,180,1)',
-        'marsh': 'rgba(51,204,51,1)',
-        'default': 'rgba(51,51,155,1)'
-      };
-      
-      var tiles = region.tiles.map(function(stub){
-        stub.id = stub.x+','+stub.y;
-        stub.terrain = stub.type;        
-        return new Location(stub);
-      });
-      viewModel.tiles.splice.apply(viewModel.tiles, [0, tiles.length].concat(tiles));
 
       // region.loadTiles(ids).then(function(tiles){
       //   // sanity check that all tiles look good
       //   console.assert(0 === missingIds.length, "Tiles without ids: ", missingIds);
-        
-
-        var terrainMap = [
-          { call: 'clearRect', value: [0, 0,  REGION_WIDTH, REGION_HEIGHT]},
-          { assign: 'textBaseline', value: 'top' },
-          { assign: 'font', value: 'normal 9px sans-serif' },
-          { assign: 'strokeStyle', value: '#000' },
-          { assign: 'lineWidth', value: 1 }
-        ];
-        tiles.forEach(function(tile){
-          var scale = TILE_SIZE, x = scale*tile.x, y = scale*tile.y;
-          console.assert(tile.terrain && tile.terrain in colors, tile.terrain + " is a valid color");
-          terrainMap.push(
-            { assign: 'fillStyle', value: colors[tile.terrain] || colors[tile['default']] },
-            { call: 'fillRect', value: [x, y, scale, scale] },
-            { call: 'strokeRect', value: [x, y, scale, scale] }
-            // { assign: 'fillStyle', value: "#fff" },
-            // { call: 'fillText', value: [ tile.id + ': ' + tile.terrain, 3+x, 3+y ] }
-          );
-        });
-        var arLayers = viewModel.layers(),
-            len = arLayers.length;
-            
-        viewModel.layers([ terrainMap, drawAxes() ]);
       // });
 
-      console.log("applying bindings");
-      ko.applyBindings(viewModel);
-      console.log("/applying bindings");
+      ui.init();
+
       setTimeout(function(){
         console.log("showing #main");
         document.getElementById("main").style.display = "block";
@@ -164,36 +221,39 @@
 
 <body>
   <section id="map">
-    <canvas id="mapCanvas" width="400" height="400" data-bind="click: onMapClick, layers2d: layers" style="width:400px; height: 400px"></canvas>
+    <canvas id="mapCanvas" width="400" height="400" data-bind="click: onMapClick" style="width:400px; height: 400px"></canvas>
   </section>
   <section id="main" class="panel" style="display:none">
     <h2>Region: <span data-bind="text: id"></span></h2>
     <a href="#12,12">12,12</a>
-    <ul data-bind="foreach: tiles">
+    <ul></ul>
+    <script type="text/template" id="itemTemplate">
+      <li><span>{name}</span> (<span>{type}</span>)</li>
+    </script>
+    <script type="text/template" id="tileTemplate">
       <li>
-        <h2>Location: 
-          <a data-bind="attr: { id:'jump_'+id, href:'location.html?location='+$parent.id+'/'+id+'#edit' }, text: id"></a></h2>
+        <h2>Location:
+          <a id="jump_{id}" href="location.html?location={parentId}/{id}#edit">{id}</a></h2>
         <dl>
           <dt>Region:</dt>
-          <dd data-bind="text: regionId"></dd>
+          <dd>{regionId}</dd>
           <dt>Terrain:</dt>
-          <dd data-bind="text: terrain"></dd>
+          <dd>{terrain}</dd>
           <dt>Description:</dt>
-          <dd data-bind="text: description"></dd>
+          <dd>{description}</dd>
         </dl>
 
         <h2>Here</h2>
-        <ul data-bind="foreach: here">
-          <li><span data-bind="text: name"></span> (<span data-bind="text: type"></span>)</li>
+        <ul data-from="here">
+          {hereListHTML}
         </ul>
         <h2>Encounters</h2>
-        <ul data-bind="foreach: encounters">
-          <li><span data-bind="text: name"></span> (<span data-bind="text: type"></span>)</li>
+        <ul data-from="encounters">
+          {encountersListHTML}
         </ul>
-
       </li>
-    </ul>
-  </section>  
+    </script>
+  </section>
 
 </body>
 </html>
