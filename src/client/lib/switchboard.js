@@ -21,44 +21,8 @@ define([
       arr.pop();
     }
   }
-/*
-  TODO:
-2-way alias:
-alias 'bar' to 'foo'
-events on 'foo' notify 'foo', 'bar' listeners
-events on 'bar' notify 'bar', 'foo' listeners
 
-2-way one-many alias
-alias 'nonsense words' to 'foo';
-alias 'nonsense words' to 'bar';
-events on 'foo' notify 'foo', 'nonsense words' listeners
-events on 'nonsense words' notify 'nonsense words', 'foo', 'bar' listeners
-
-alias('currentTile', 'tile_0');
-groupAlias('nearby', 'tile_0');
-events on 'tile_0' notify 'tile_0', 'currentTile', 'nearby' listeners
-events on 'currentTile' notify 'currentTile', 'tile_0', 'nearby' listeners
-
-2-way alias:
-alias(aliasName, targetId):
-  register alias in id => alias table
-  register alias in alias => id table
-emit('alias', payload)
-  lookup id for alias
-  emit for 'alias' listeners
-  emit for 'id' listeners
-
-2-way group (one-many) alias:
-groupAlias(aliasName, targetId):
-  register alias in id => alias table
-  register alias in alias => id table
-emit('alias', payload)
-  lookup id for alias
-  emit for 'alias' listeners
-  emit for 'id' listeners
-*/
-
-  /* switchboard keeps track of stuff like:
+  /* switchboard: lets one event topic be known by other names
      ui needs to know when game.tile changes
      game has tile property, which descends from EventedModel
      ui says switchboard.on('game.currentTile.x:change', ui.onTileChange.bind(ui));
@@ -126,64 +90,9 @@ emit('alias', payload)
 
       return alias;
     },
-    // one aka references 1-many ids
-    // e.g. collection changes, model keys, model values
-    // when an event affects any of the ids which fall under and alias
-    // listeners to events on that alias should be notified
-    _aliasMany: function(aka, id) {
-      var aliases = this._aliases;
-      var aliasIds = this._aliases[aka]; // store ids for this alias
-
-      if (!aliasIds) {
-        this._aliases[aka] = aliasIds = [];
-        aliasIds.key = aka;
-      }
-      var matchIndex = -1;
-      if (aliasIds.some(function(alias, idx) {
-        matchIndex = idx;
-        return alias.target === id;
-      })) {
-        // dupe, return quietly
-        return aliasIds[matchIndex];
-      }
-
-      var remover = function() {
-        var manyIds = this._aliases[aka];
-        var matchIndex = -1;
-        if (manyIds.some(function(alias, idx) {
-          matchIndex = idx;
-          return alias.target === id;
-        })) {
-          // pull it out of the array
-          manyIds.splice(1, 1);
-        }
-
-        var reverses = this._reverseAliases[id];
-        if (reverses && (aka in reverses)) {
-          delete reverses[aka];
-        }
-        for(var i in reverses) {
-          break;
-        }
-        if (i === undefined) {
-          this._reverseAliases[id] = null;
-          delete this._reverseAliases[id];
-        }
-      }.bind(this);
-
-      // e.g.: alias('game.players', 'rita', true);
-      // return { target: 'rita', key: 'game.players', remove: remover, multiple: true }
-      // such that emit('rita:change') fires listeners for 'game.players:change'
-      var alias = { target: id, key: aka, remove: remover };
-      aliasIds.push(alias);
-
-      var reverseAliases = this._reverseAliases[id] || (this._reverseAliases[id] = {});
-      reverseAliases[aka] = id;
-      debug.log('aliased %s to %s', id, aka);
-
-      return alias;
+    resolveAlias: function(aka) {
+      return this._aliases[aka];
     },
-
     _getAliasesForId: function(id) {
       var aliases = [];
       var suffix, prefix, word, aliasKey;
