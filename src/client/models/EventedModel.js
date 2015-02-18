@@ -13,9 +13,9 @@ define([
   * instance.on(fn); // notify of all changes
   * instance.on('foo', fn); // be notified of any changes to current or future 'foo' properties
   * instance.on('foo.bar', fn); // be notified of any changes to current or future 'bar' properties
-                                   // on current or future 'foo' properties
+                                // on current or future 'foo' properties
 
-  foo is a further EventedModel instance, and announces changes to its bar property to listeners
+  ..where foo is a further EventedModel instance, and announces changes to its bar property to listeners
 
 */
 
@@ -48,7 +48,6 @@ define([
     this._keys = {};
     this._topicFlags = {};
   },
-  switchboard.Evented, // Models implement Evented
   {
     declaredClass: "EventedModel",
     type: 'default',
@@ -81,6 +80,28 @@ define([
         // FIXME: watch for remove events to update the switchboard?
       }
       return initialValue;
+    },
+    emit: function(topic, payload) {
+      switchboard.emit(this._id + '.' + topic, payload);
+    },
+    on: function(topic, callback) {
+      var topicFlags = this._topicFlags || (this._topicFlags = {});
+      if ("*" === topic) {
+        console.warn('catch-all listeners not implemented');
+      }
+      if (topic in topicFlags) {
+        topicFlags[topic] += 1;
+      } else {
+        topicFlags[topic] = 1;
+      }
+      debug.log('on: add callback for topic ' + this._id + '.' + topic);
+      return switchboard.on(this._id + '.' + topic, callback);
+    },
+    removeAllListeners: function(topic) {
+      if((topic in this._topicFlags) && this._topicFlags[topic]) {
+        this._topicFlags[topic]--;
+      }
+      return switchboard.removeAllListeners(this._id + '.' + topic);
     },
     initProperty: function(key, value, type) {
       var propertyCreated, fnName
@@ -253,7 +274,7 @@ define([
     },
   }, function(){
     var props = arguments.length ?
-                util.flatten(this._prepareCtorArgs(Array.slice(arguments, 0))) :
+                util.flatten(this._prepareCtorArgs(Array.prototype.slice.call(arguments, 0))) :
                 this._prepareCtorArgs([]);
     this._id = props._id;
     delete props._id;

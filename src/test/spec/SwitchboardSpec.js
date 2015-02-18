@@ -24,17 +24,23 @@ define(["lib/switchboard", "lib/util"], function(switchboard, util) {
     it('can alias another name to an id', function() {
       switchboard.alias('bar', 'foo');
       var callCount = 0;
-      switchboard.on('bar:change', function(){
+      console.log('alias another name to an id...')
+      switchboard.on('bar:change', function(evt){
+        console.log('got bar:change event', evt);
         callCount++;
       });
-      switchboard.on('foo:change', function(){
+      switchboard.on('foo:change', function(evt){
+        console.log('got foo:change event', evt);
         callCount++;
       });
+      console.log('emitting foo:change event');
       switchboard.emit('foo:change', "payload");
+      console.log('/emitting foo:change, callCount:', callCount);
       expect(callCount).toBe(2);
       callCount = 0;
+      // alias is one-way, so although foo is aliased as bar, bar isn't foo
       switchboard.emit('bar:change', "payload");
-      expect(callCount).toBe(2);
+      expect(callCount).toBe(1);
 
     });
     it('can be reset cleanly', function() {

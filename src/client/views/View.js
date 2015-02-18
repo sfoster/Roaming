@@ -6,7 +6,12 @@ define([
   var debug = {
     log: DEBUG ? console.log.bind(console, 'View') : function() {}
   };
+  function assert(thing, message) {
+    if (!thing) throw message || "assertion failure";
+  }
 
+  var ArraySlice = function () {
+    Array.prototype.slice
   function ElementView(config) {
     /* represent stuff
      * and receive input
@@ -14,8 +19,11 @@ define([
      * detach - keep state but unrender
      */
     debug.log('new ' + this.declaredClass, config);
-    this.events = Array.slice(this.constructor.events, 0);
-    this.attachedEvents = Array.slice(this.constructor.attachedEvents, 0);
+    console.assert(this.constructor.events instanceof Array);
+    console.assert(this.constructor.attachedEvents instanceof Array);
+
+    this.events = this.constructor.events.slice(0);
+    this.attachedEvents = this.constructor.attachedEvents.slice(0);
     this.context = {};
     this.subviews = [];
     this.id = this.declaredClass + '_' + (this.constructor._nextId++);

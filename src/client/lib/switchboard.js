@@ -8,6 +8,19 @@ define([
   var debug = {
     log: DEBUG ? console.log.bind(console, 'switchboard') : function() {}
   };
+
+  function emptyObject(obj) {
+    if (!obj) return;
+    for (var i in obj) {
+      obj[i] = null;
+      delete obj[i];
+    }
+  }
+  function emptyArray(arr) {
+    while (arr && arr.length) {
+      arr.pop();
+    }
+  }
 /*
   TODO:
 2-way alias:
@@ -69,7 +82,7 @@ emit('alias', payload)
     // i.e. Mark Twain is an alias of Samuel Clemens
     _aliases: {},
     _reverseAliases: {},
-    alias: function(aka, id, oneToMany) {
+    alias: function(aka, id) {
       if (!id) {
         return this._aliases[aka];
       }
@@ -77,14 +90,6 @@ emit('alias', payload)
         return this._getAliasesForId(id);
       }
 
-      if (oneToMany) {
-        return this._aliasMany(aka, id);
-      } else {
-        return this._aliasOne(aka, id);
-      }
-    },
-      // one aka references exactly 1 id
-    _aliasOne: function(aka, id) {
       var aliases = this._aliases;
       var alias = this._aliases[aka];
 
@@ -217,36 +222,11 @@ emit('alias', payload)
       });
     }),
     reset: function() {
+      emptyObject(this._aliases);
+      emptyObject(this._reverseAliases);
       this.removeAllListeners();
-      this._aliases = {};
-      this._reverseAliases = {};
     }
   });
-
-  switchboard.Evented = {
-    emit: function(topic, payload) {
-      switchboard.emit(this._id + '.' + topic, payload);
-    },
-    on: function(topic, callback) {
-      var topicFlags = this._topicFlags || (this._topicFlags = {});
-      if ("*" === topic) {
-        console.warn('catch-all listeners not implemented');
-      }
-      if (topic in topicFlags) {
-        topicFlags[topic] += 1;
-      } else {
-        topicFlags[topic] = 1;
-      }
-      debug.log('on: add callback for topic ' + this._id + '.' + topic);
-      return switchboard.on(this._id + '.' + topic, callback);
-    },
-    removeAllListeners: function(topic) {
-      if((topic in this._topicFlags) && this._topicFlags[topic]) {
-        this._topicFlags[topic]--;
-      }
-      return switchboard.removeAllListeners(this._id + '.' + topic);
-    }
-  };
 
   return switchboard;
 });

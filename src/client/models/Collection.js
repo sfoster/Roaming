@@ -25,22 +25,33 @@ define([
     },
     add: function(entry, quietly) {
       var nextIndex = this.values.length;
-      return this.update(nextIndex, entry, quietly);
+      return this._update(nextIndex, entry, {
+        operation: 'add',
+        quietly: quietly
+      });
     },
-    update: function(index, entry, quietly) {
+    _update: function(index, entry, options) {
+      var quietly = options.quietly;
       var shouldEmit = !(this._inBatchUpdate || quietly);
       var shouldUpdateObserveds = !this._inBatchUpdate;
 
       this.values.splice(index, 1, entry);
-      var updated = EventedModel.prototype.update.call(this, ''+index, entry, quietly);
+      EventedModel.prototype.update.call(this, ''+index, entry, quietly);
 
       shouldUpdateObserveds && this._updateObservedProperties();
+      console.log('Collection _update, shouldEmit: ', shouldEmit);
       shouldEmit && this.emit('change', {
-        action: 'update',
-        value: updated,
+        action: options.operation,
+        value: this[index],
         index: index
       });
-      return updated;
+      return this[index];
+    },
+    update: function(index, entry, quietly) {
+      return this._update(index, entry, {
+        operation: 'update',
+        quietly: quietly
+      });
     },
     //
     // inherits update, index is used as property name

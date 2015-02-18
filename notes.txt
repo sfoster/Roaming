@@ -1,5 +1,27 @@
+observer/subscriber thoughts:
+
+model property 'bar' on 'foo' changed.
+resolve 'bar' to some unambiguous id, get listeners and hand event to them
+
+model ids are auto-generated.
+So if we want the UI to display player attributes we might say:
+on player attribute change -> update && render
+where player is an object created and re-created at runtime
+so we need to alias 'player model id' to 'player' whenever we (re)create player
+location is a fixed reference to the current tile.
+ it points at different tile objects at runtime
+ we want to be able to have the UI render location and any changes
+ so when location is updated (its an observable) it dispatches an event
+
+location is a getter to tiles[current_position]
+  tile property changes publish tile_id/contents:change
+  switchboard looks up tile_id, discovers it is aliased as 'location' and re-broadcasts
+
+
+bind referen
+--
 Layer masks in pixelmator: http://www.pxm-tuts.com/tutorials/tools/layer-masks/
-Icons: 
+Icons:
 
 * Baddie icon for encounters and combat
   Icon.1_22.png
@@ -8,22 +30,22 @@ Icons:
 
 * Dead baddie
   Icon.2_51.png
-  
+
 * Hero icon: you
   Icon.1_80.png
   Icon.1_05.png
   Icon.2_67.png
 
 * Hero death:
-  Icon.4_63.png  
+  Icon.4_63.png
 
 * Weapon Attack icon
   Icon.5_46.png
-  
+
 * Magic attack
   Icon.5_97.png
 
-* Select target icon: 
+* Select target icon:
   Icon.1_07.png
 
 * Start battle
@@ -33,15 +55,15 @@ Icons:
 * Flee battle
   Icon.4_33.png
 
-* Money/gold icon: 
+* Money/gold icon:
   Icons8_78.png
-  
+
 --
-resources: 
+resources:
 
 * player
   /:username
-  properties like: 
+  properties like:
     role: "hero",
     speed: 150,
     hitPoints: 100,
@@ -58,7 +80,7 @@ resources:
     weapons: [
       {id: "spear"}
     ],
-	
+
 * map
   /map
 * region
@@ -83,11 +105,11 @@ place the player into the world, and the starting point
  - trigger enter the region
  - trigger enter the tile
 
-the game loads the world location: 
+the game loads the world location:
   it gets any game state, starts timers, and so on.
 the game loads the player
   it gets any saved location, stats, inventory
-the game loads the starting location 
+the game loads the starting location
   it returns the region and the current tile
   (we can pass a coord and it resolves this )
 
@@ -122,5 +144,5 @@ Effect: You find a Dagger
 Description: You find a slightly rusted but servicable Sword washed up on the shores of a small
 river.
 Effect: You find a Sword
- 
+
 

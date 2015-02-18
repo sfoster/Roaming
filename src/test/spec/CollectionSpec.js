@@ -126,7 +126,6 @@ define(["compose", "models/Collection", "lib/util"], function(Compose, Collectio
       expect(testEvent.action).toBe('update');
       expect(testEvent.value).toBe(newEntry);
       expect(testEvent.index).toBe(1);
-      expect(testEvent.oldValue).toBe(this.testData.entry2nd);
     });
 
     it("raises change event on add", function() {
@@ -149,9 +148,11 @@ define(["compose", "models/Collection", "lib/util"], function(Compose, Collectio
         testEvent = evt;
       });
       var result = this.testGroup.remove(0);
+      console.log('raises change event on remove, got event: ', testEvent);
+      console.log('expected .value to be: ', this.testData.entry1st);
       expect(testEvent.action).toBe('remove');
-      expect(testEvent.value).toBe(this.testData.entry1st);
-      expect(result).toBe(this.testData.entry1st);
+      expect(testEvent.value.name).toBe(this.testData.entry1st.name);
+      expect(result.name).toBe(this.testData.entry1st.name);
     });
 
     it("raises change event on remove all", function() {
