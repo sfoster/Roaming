@@ -1,22 +1,22 @@
-define(['lib/event'], function(Evented){
+define(['lib/switchboard'], function(switchboard){
   var exports = {};
-  
-  exports.take = function(thing, player){
+
+  exports.take = function(thing, actor){
     if(!thing.fixed) {
       var proceed = true;
-      emit("beforetake", {
-        target: thing,
-        player: player,
+      switchboard.emit("actor:beforetake", {
+        target: thing, // what got took?
+        actor: actor, // who took it?
         cancel: function(){ proceed = false; }
       });
       if(proceed){
-        player.inventory.add(thing);
+        actor.inventory.add(thing);
       }
-      emit("aftertake", {
-        target: thing,
-        player: player
+      switchboard.emit("actor:aftertake", {
+        actor: actor,
+        target: thing
       });
-      
+
     }
   }
 });
