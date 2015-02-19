@@ -12,8 +12,6 @@
   "currentWeapon": {
     "resource": "resources/weapons#knife"
   },
-  "stats": {
-    "health": 20
-  },
+  "health": 20,
   "visits": []
 }

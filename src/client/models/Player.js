@@ -14,7 +14,11 @@ define([
     currentWeapon: 'fishingSpear', // by default
     history: {},
     score: 0,
-    // stats: built in ctor
+    // stats
+    level: 1,
+    health: 12,
+    strength: 12,
+    mana: 5,
     visits: null,
     damage: function(distance){
       var level = this.level;
