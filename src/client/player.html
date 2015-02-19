@@ -32,16 +32,12 @@
   </style>
 </head>
 <body>
-<section id="hud" class="panel" data-bind="model:player">
-  <script type="text/notes">
-    associate #hud with object player
-    inject template #player-template into #playerInfo.innerHTML
-    and look for any further bindings within it, given this context
-  </script>
+<section id="hud" class="panel">
   <span class="where" data-bind="text: position"></span>
-  <div id="playerInfo" data-bind="template: #player-template"></div>
+  <div id="playerInfo">
+  </div>
 </section>
-<section id="main" class="panel" data-bind="model:player">
+<section id="main" class="panel">
   <h2>Inventory</h2>
   <script type="text/notes">
     fill this element with rendered items from the inventory collection,
@@ -49,23 +45,25 @@
     inject template #player-template into #playerInfo.innerHTML
     and look for any further bindings within it, given this context
   </script>
-  <ul data-bind="foreach: inventory">
-    <li class="item" data-bind="text: name; css: { equipped: ( $data.isEquipped ) }"></li>
+  <ul id="inventory">
   </ul>
   <h2>Visits</h2>
-  <ul data-bind="foreach: visits">
-    <li data-bind="attr: { 'data-itemid': $index }">
-      <span data-bind="text: id">id</span>
-      <span data-bind="text: timestamp">timestamp</span>
-    </li>
+  <ul id="visits">
   </ul>
   <h2>Here</h2>
-  <ul data-bind="foreach: $root.here">
-    <li data-bind="click:$root.here.transferItem.bind($root.here, $data, 'viewModel.player.inventory', -1)">
-      <span data-bind="text: name">name</span>
-    </li>
+  <ul id="hereItems">
   </ul>
 </section>
+
+<script type="text/template" id="itemTemplate">
+  <li class="item {equipped}">{name}</li>
+</script>
+<script type="text/template" id="visitTemplate">
+  <li data-itemid="{index}">
+    <span>{id}</span>
+    <span>{timestamp}</span>
+  </li>
+</script>
 
 <script src="./vendor/require.js"></script>
 <script src="./config.js"></script>
@@ -87,40 +85,111 @@
   })();
 
   require([
+    'resources/template',
+    'lib/util',
+    'models/Item',
     'plugins/resource!player/'+(config.playerid || 'guest'),
     'text!resources/templates/player.html',
+    'resources/weapons',
+    'resources/items',
     'plugins/resource!resources/items#hagStone',
-    'models/Item',
-    'views/View'
-  ], function(player, playerTemplate, hagStone, Item, View){
+  ], function(template, util, Item, player, playerTemplate,
+              weapons, items, hagStone){
     // get player id
     // load player data
-
-    // setup templates
-    var tmplNode = document.createElement('script');
-    tmplNode.setAttribute('type', 'text/html');
-    tmplNode.id = 'player-template';
-    var tmplText = document.createTextNode( playerTemplate );
-    tmplNode.appendChild(tmplText);
-    document.body.appendChild(tmplNode);
 
     window.player = player;
     window.tile = {};
     var hereItems = tile.here = [
       hagStone
     ];
-    hereItems[0].inCollection = hereItems;
 
     var viewModel = window.viewModel = {
       player: player,
       here: hereItems
     };
 
-    var hudView = window.hudView = new View.ElementView({});
-    hudView.attach('hud', true);
+    // populate HUD and hook up event listeners
 
-    var mainView = window.mainView = new View.ElementView({});
-    mainView.attach('main', true);
+    var hud = {
+      init: function() {
+        this.element = document.getElementById('hud');
+        this.registerEvents();
+        this.updatePlayerInfo(player);
+      },
+      registerEvents: function() {
+
+      },
+      handleEvent: function(evt) {
+
+      },
+      updatePlayerInfo: function(player) {
+        var container = document.getElementById('playerInfo');
+        var infoTemplate = template(playerTemplate);
+        container.innerHTML = infoTemplate(player);
+      }
+    };
+
+    function createTemplateFromScriptNode(node) {
+      return template(node.innerHTML);
+    }
+    var mainUI = {
+      init: function() {
+
+        this.element = document.getElementById('main');
+        this.registerEvents();
+        this.updateInventory(player.inventory);
+        // this.updateVisits(player.visits);
+        this.updateHereItems(tile.here);
+      },
+      registerEvents: function() {
+
+      },
+      handleEvent: function(evt) {
+
+      },
+      updateInventory: function(inventory) {
+        var itemTemplate = createTemplateFromScriptNode(
+          document.getElementById('itemTemplate')
+        );
+        var container = document.getElementById('inventory');
+        var itemHTMLs = inventory.map(function(item) {
+          return itemTemplate(util.create(item, {
+                  equipped: item.equipped ? 'equipped' : '' }));
+        });
+        container.innerHTML = itemHTMLs.join('\n');
+      },
+      updateVisits: function(visits) {
+        var itemTemplate = createTemplateFromScriptNode(
+          document.getElementById('visitTemplate')
+        );
+        var container = document.getElementById('visits');
+        var itemHTMLs = visits.map(function(item, index) {
+          return itemTemplate(util.create(item, {
+            index: index
+          }));
+        });
+        container.innerHTML = itemHTMLs.join('\n');
+      },
+      updateHereItems: function(items) {
+        var itemTemplate = createTemplateFromScriptNode(
+          document.getElementById('itemTemplate')
+        );
+        var container = document.getElementById('hereItems');
+        var itemHTMLs = items.map(function(item, index) {
+          console.log('item: ', item)
+          var html = itemTemplate(util.create(item, {
+            equipped: false,
+            index: index
+          }));
+          return html;
+        });
+        container.innerHTML = itemHTMLs.join('\n');
+      }
+    };
+
+    hud.init();
+    mainUI.init();
 
     // viewModel.here.subscribe(function(change){
     //   tile.here = ko.mapping.toJS(viewModel.here);
