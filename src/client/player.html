@@ -40,10 +40,7 @@
 <section id="main" class="panel">
   <h2>Inventory</h2>
   <script type="text/notes">
-    fill this element with rendered items from the inventory collection,
-    using the child nodes as ad-hoc template.
-    inject template #player-template into #playerInfo.innerHTML
-    and look for any further bindings within it, given this context
+    fill this element with rendered items from the inventory collection
   </script>
   <ul id="inventory">
   </ul>
@@ -68,48 +65,45 @@
 <script src="./vendor/require.js"></script>
 <script src="./config.js"></script>
 <script>
-  (function(){
-    // pull config from querystring
-    var expectedKeys = { playerid: true };
-    var queryStr = location.search.substring(1);
-    var pairs, nameValue, params = {};
-    if(queryStr){
-      pairs = queryStr.split('&');
-      for(var i=0; i<pairs.length; i++) {
-        nameValue = pairs[i].split('=');
-        if(nameValue[0] && (nameValue[0] in expectedKeys)){
-          config[ nameValue[0] ] = nameValue[1];
-        }
-      }
-    }
-  })();
-
   require([
     'resources/template',
     'lib/util',
-    'models/Item',
-    'plugins/resource!player/'+(config.playerid || 'guest'),
+    'resources/player',
+    'resources/item',
+    'plugins/vendor/json!player/'+(config.playerid || 'guest') + '.json',
     'text!resources/templates/player.html',
     'resources/weapons',
     'resources/items',
     'plugins/resource!resources/items#hagStone',
-  ], function(template, util, Item, player, playerTemplate,
+  ], function(template, util, Player, Item, playerData, playerTemplate,
               weapons, items, hagStone){
-    // get player id
-    // load player data
 
-    window.player = player;
+    window.player = playerData = Player.fillDefaults(playerData);
     window.tile = {};
     var hereItems = tile.here = [
       hagStone
     ];
 
     var viewModel = window.viewModel = {
-      player: player,
+      player: playerData,
       here: hereItems
     };
 
-    // populate HUD and hook up event listeners
+    // player entity is all data
+    // but we need to resolve references to things like weapon, inventory items
+
+    // getPlayerInventory()
+    // getPlayerWeapon()
+    // getPlayerStats()
+
+    //
+    // render player stats
+    // render player icon
+    // get player inventory
+    //    and render each item
+    // get player history
+    //    and render each item
+    // render player current weapon
 
     var hud = {
       init: function() {
@@ -154,6 +148,8 @@
         );
         var container = document.getElementById('inventory');
         var itemHTMLs = inventory.map(function(item) {
+          console.log('inventory item: ', item);
+          item = Item.fillDefaults(item);
           return itemTemplate(util.create(item, {
                   equipped: item.equipped ? 'equipped' : '' }));
         });
