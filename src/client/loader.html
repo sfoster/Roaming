@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Roaming: Loader Viewer</title>
+  <meta name="viewport" content="initial-scale=1">
+  <link rel="stylesheet" href="./css/core.css" type="text/css">
+  <link rel="stylesheet" href="./css/listing.css" type="text/css">
+  <link rel="stylesheet" href="./css/layout.css" type="text/css">
+  <style>
+    h1 {
+      margin: 0;
+      padding: 12px;
+      font-size: 1.4em;
+      color: #000;
+    }
+    #main {
+      position: relative;
+      top: auto;
+      left: 0; right: 0; bottom: auto;
+      overflow: auto;
+    }
+    #resourceId {
+      width: calc(100% - 6rem);
+      box-sizing: border-box;
+      padding: 0.5rem;
+      height: 3rem;
+    }
+    #main > button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      margin: 10px;
+      padding: 0.5rem;
+      width: 5rem;
+      height: 3rem;
+    }
+    #output {
+      width: calc(100% - 6rem);
+      box-sizing: border-box;
+      padding: 0.5rem;
+      height: 12rem;
+      overflow: auto;
+    }
+    .loading {
+      background-color: #ffc;
+      transition: background-color 1s ease;
+    }
+  </style>
+</head>
+<body>
+  <h1>Loader Test Page</h1>
+<section id="main" class="panel">
+  <input type="text" id="resourceId" value="">
+  <button type="button">Load It</button>
+  <pre id="output"></pre>
+</section>
+<pre id="examples">
+<a href="?resourceid=location/test/3,3">location/test/3,3</a>
+<a href="?resourceid=resources/encounters#npc">resources/encounters#npc</a>
+<a href="?resourceid=resources/items#hagStone">resources/items#hagStone</a>
+<a href="?resourceid=player/guest">player/guest</a>
+</pre>
+<script type="text/template" id="itemTemplate">
+  <li class="item {equipped}">{name}</li>
+</script>
+<script type="text/template" id="visitTemplate">
+  <li data-itemid="{index}">
+    <span>{id}</span>
+    <span>{timestamp}</span>
+  </li>
+</script>
+
+<script src="./vendor/require.js"></script>
+<script src="./config.js"></script>
+<script>
+  require([
+    'resources/template',
+    'lib/util',
+    'lib/resolve',
+    'resources/player',
+    'resources/item',
+    'text!resources/templates/player.html',
+    'resources/weapons',
+    'resources/items'
+  ], function(template, util, resolve, Player, Item, playerTemplate,
+              weapons, items){
+
+    var viewModel = window.viewModel = {};
+
+    function createTemplateFromScriptNode(node) {
+      return template(node.innerHTML);
+    }
+    var mainUI = {
+      init: function() {
+
+        this.element = document.getElementById('main');
+        this.button = this.element.querySelector('button');
+        this.resourceIdInput = document.getElementById('resourceId');
+        this.outputContainer = document.getElementById('output');
+        this.registerEvents();
+
+        var initialResourceId = config.resourceid;
+        if (initialResourceId) {
+          this.resourceIdInput.value = initialResourceId;
+          this.loadResource(initialResourceId);
+        } else {
+          this.resourceIdInput.value = "";
+        }
+      },
+      registerEvents: function() {
+        this.button.addEventListener('click', this);
+        this.resourceIdInput.addEventListener('keyup', this);
+      },
+      handleEvent: function(evt) {
+        switch (evt.target) {
+          case this.button:
+            this.loadResource(this.resourceIdInput.value);
+            break;
+          case this.resourceIdInput:
+            if (evt.keyCode == 13) {
+              this.loadResource(this.resourceIdInput.value);
+            }
+            break;
+        }
+      },
+      loadResource: function(resourceId) {
+        resolve.resolveResource(resourceId).then(function(resourceData) {
+          console.log('required: ', resourceData, 'resourceId: ', resourceId);
+          // var resourceData = fragmentId ?
+          //         util.getObject(fragmentId.substring(1), resp) : resp;
+          // resourceData._resourceId = resourceId;
+          this.renderLoadedThing(resourceData);
+          this.outputContainer.classList.remove('loading');
+
+        }.bind(this), function(err) {
+          console.warn('loadResource failed: ', err);
+        });
+        this.outputContainer.classList.add('loading');
+      },
+
+      renderLoadedThing: function(thing) {
+        this.outputContainer.innerHTML = JSON.stringify(thing, null, 2);
+      }
+    };
+
+    mainUI.init();
+
+  });
+</script>
+</body>
+</html>

@@ -2,8 +2,8 @@ define([
   'dollar',
   'promise',
   'lib/util',
-  'lib/json/ref'
-], function($, Promise, util, json){
+  'lib/resolve'
+], function($, Promise, util, resolveLib){
 
   var DEBUG = false;
   var debug = {
@@ -99,7 +99,7 @@ define([
       if(type.indexOf("#") > -1) {
         factory += type.substring(type.indexOf("#"));
       }
-      return resolveModel(factory);
+      return resolveLib.resolveResource(factory);
     } else {
       var defd = Promise.defer();
       setTimeout(function(){
@@ -107,63 +107,6 @@ define([
       },0);
       return defd.promise;
     }
-  }
-
-  function resolveModel(resourceId) {
-    var defd = Promise.defer();
-    var loaderPrefix = '',
-        suffix = '',
-        fragmentMatch = resourceId.match(/^([^#]+)(#.+)/);
-
-    if(fragmentMatch) {
-      loaderPrefix = 'plugins/property!';
-      resourceId = fragmentMatch[1];
-      suffix += fragmentMatch[2];
-    }
-    // load via the property plugin if the repl.start(prompt, source, eval, useGlobal, ignoreUndefined);d has a fragment identifier
-    require([loaderPrefix+resourceId+suffix], function(Model){
-      defd.resolve(Model);
-    });
-    return defd.promise;
-  }
-
-  function resolveModelData(data) {
-    // debug.log("resolveModelData: ", data, "("+typeof data+")");
-    if(!assertType(data, 'object')) {
-      debug.log("resolveModelData: data not an object:", data);
-      throw "resolveModelData: data not an object";
-    }
-
-    var resourceId = ('resource' in data) ? data.resource : '';
-    var resourceData;
-
-    if(!resourceId) {
-      // { params: { 'foo': 'bar' }, }
-      resourceData = data.params || {};
-      return wrapAsPromise(resourceData);
-    }
-
-    var defd = Promise.defer();
-    var loaderPrefix = '',
-        suffix = '',
-        fragmentMatch = resourceId.match(/^([^#]+)(#.+)/);
-    if(fragmentMatch) {
-      // { resource: 'foo/bar#bazz' }
-      loaderPrefix = 'plugins/property!';
-      resourceId = fragmentMatch[1];
-      suffix = fragmentMatch[2];
-    }
-
-    // load via the property plugin if the resourceId has a fragment identifier
-    require([loaderPrefix+resourceId+suffix], function(resourceData){
-      debug.log("resource: resolveModelData, require callback for: " +loaderPrefix+resourceId+suffix, resourceData, "("+typeof resourceData+")");
-      // put the resource data into place
-      if(suffix && !('id' in resourceData)) {
-        resourceData.id = (suffix.split('#'))[1];
-      }
-      defd.resolve(resourceData);
-    });
-    return defd.promise;
   }
 
   function thaw(value) {
@@ -182,16 +125,16 @@ define([
     }
     // simplest case - just return data
     if(!(type || factory)){
-      return resolveModelData(value);
+      return resolveLib.resolveObjectProperties(value);
     }
 
     var sequence = [
       function(){
-        return resolveModelData(value);
+        return resolveLib.resolveObjectProperties(value);
       },
       function(data){
         resourceData = data;
-        return factory ? resolveModel(factory) : resolveTypeToModel(type);
+        return factory ? resolveLib.resolveResource(factory) : resolveTypeToModel(type);
       },
       function(Model){
         // thawing out resource data can involve multiple asyn steps

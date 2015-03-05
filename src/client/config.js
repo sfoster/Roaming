@@ -30,8 +30,8 @@ var config = {
 
 (function(){
   // pull config from querystring
-  var expectedKeys = { playerid: true };
-  
+  var expectedKeys = { playerid: true, tileid: true, region: true, resourceid: true };
+
   var queryStr = location.search.substring(1);
   var pairs, nameValue, params = {};
   if(queryStr){
@@ -41,6 +41,9 @@ var config = {
       if(nameValue[0] && (nameValue[0] in expectedKeys)){
         config[ nameValue[0] ] = nameValue[1];
       }
+    }
+    if(i >= pairs.length && location.hash) {
+        config[ nameValue[0] ] += location.hash;
     }
   }
 })();

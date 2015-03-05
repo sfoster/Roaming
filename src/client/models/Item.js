@@ -1,12 +1,13 @@
-define(['compose', 'lib/util', 'models/EventedModel'], function(Compose, util, EventedModel){
+define([], function(){
   console.log("Loading models/Item");
 
-  function ItemModel(itemData) {
-    return util.mixin(itemData, {
-      declaredClass: "Item",
-      type: "item",
-    });
-  }
+  function ItemModel(args) {
+    for (var i in args || {}) {
+      this[i] = args[i];
+    }
+  };
+  ItemModel.prototype.declaredClass = "Item";
+  ItemModel.prototype.type = "item";
 
     // examine: function(context){
     //   return this.detailedDescription || this.description;
@@ -35,17 +36,13 @@ define(['compose', 'lib/util', 'models/EventedModel'], function(Compose, util, E
     // }
 
 
-  // ItemModel.extend = util.extend;
-
   // statics
-  util.mixin(ItemModel, {
-    create: function(data){
+  ItemModel.create = function(data){
       if("string" == typeof data){
         data = JSON.parse(data);
       }
       var item = new ItemModel(data);
       return item;
-    },
-  });
+  }
   return ItemModel;
 });
