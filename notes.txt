@@ -1,3 +1,100 @@
+observers/models overcooked. Refocus on the game!
+
+I think there's still value in the loader though -
+Maybe not Model classes, but prefilling defaults, resolving references.
+Can use the same mapping
+--
+replace models with entities - dumb data.
+entities with references?
+player has inventory
+player.inventory = [
+  { $ref: 'some/path/#name' },
+]
+
+player.getInventory
+player.addToInventory
+player.getInventoryItem
+player.removeFromInventory
+
+player.getCurrentWeapon
+player.assignCurrentWeapon
+
+weapon and inventory should persist alongside actor/player entity data.
+
+
+--
+player: some character with state that we can persist.
+players state == game state
+tile data: includes location attributes, item/encounter/npc references
+region data: list of tiles, maybe some metadata on entry points?
+items: types from modules, specific instances are unique?
+npcs: ditto
+encounters: modules/generic module can examine tile and play out encounter based on npcs, items etc.
+
+
+some mvps:
+ - play through adventure without combat
+   start at some point.
+   explore map
+   encounters and special items on tiles as far as necessary to unlock adventure
+   quest logic and completion
+
+
+start the game
+  load saved game / init new game
+  load tiles
+  render map
+  enter initial tile
+
+game
+  - container for tiles/regions
+  - pointers to current tile
+  (delegates from player?)
+
+player state (game state really)
+ - save/replay game, needs:
+  - history
+  - current tile
+  - inventory, stats
+
+tile data - static tile data. scripts/interactions
+  - items/inventory
+  - npcs
+  - encounters/behaviors
+
+minimal working UI:
+- render some attributes of the current tile
+- display player icon with some attributes
+- display choices: tile == whole screen.
+- n/s/e/w buttons - enabled/disabled as appropriate
+
+-we move from tile a to tile b
+  render description/graphics for this tile
+  update player visited history
+  things that happen when player enters the tile
+
+we engage with NPC
+  dialog happens
+  inventory is exchanged
+  history is updated, some flag is set?
+
+we combat monster
+  monster has inventory
+  monster has stats
+  when monster is dead,
+    announce deadness/victory as part of combat
+    render change in monster state,
+    update tile if the monster was part of the static story/contents of that tile
+    the monster's inventory is transfered to the tile
+    score update
+
+something is added to player inventory
+  update rendering of inventory list
+  if its a special item, trigger subroutine
+  take it out of wherever it came from
+
+
+--
 observer/subscriber thoughts:
 
 model property 'bar' on 'foo' changed.

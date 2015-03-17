@@ -62,6 +62,7 @@ define(function(){
     if('undefined' == t) return 'undefined';
     if(null === thing) return 'null';
     if('object' === t) {
+      if(typeof thing.then == 'function') return 'thenable';
       if(thing instanceof Array) return 'array';
       if( isWindow(thing) ) return 'window';
       if(thing instanceof Date) return 'date';

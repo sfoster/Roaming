@@ -3,7 +3,7 @@
   "afar": "it looks like grass and more grass",
   "here": [
     {
-      "resource": "resources/items#edibleMushroom"
+      "$resource": "resources/items#edibleMushroom"
     }
   ],
   "id": "3,3",
@@ -21,14 +21,18 @@
   ],
   "npcs": [
     {
-      "resource": "resources/npc#troll",
-      "type": "npc",
-      "count": 3
+      "$resource": "resources/npc#troll",
+      "params": {
+        "type": "npc",
+        "count": 3
+      }
     },
     {
       "resource": "resources/npc#trollElder",
-      "type": "npc",
-      "count": 2
+      "params": {
+        "type": "npc",
+        "count": 2
+      }
     }
   ]
 }
