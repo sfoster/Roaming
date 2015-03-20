@@ -42,6 +42,7 @@ define([
         suffix = '',
         fragmentMatch = resourceId.match(/^([^#]+)(#.+)/),
         isJson = false;
+    var resourceRefId = resourceId;
 
     if(fragmentMatch) {
       loaderPrefix = 'plugins/property!';
@@ -62,10 +63,10 @@ define([
     var promise = new Promise(function(resolve, reject) {
       // load via the property plugin if the repl.start(prompt, source, eval, useGlobal, ignoreUndefined);d has a fragment identifier
       require([loaderPrefix+resourceId+suffix], function(result){
-        console.log('resolve, ' + loaderPrefix+resourceId+suffix + ' loaded data: ', JSON.stringify(result, null, 2));
+        console.log('resolve, ' + loaderPrefix+resourceId+suffix + ' loaded data: ', result);
         var expandedResult = resolveObjectProperties(result);
-        expandedResult.$resource = resourceId;
         expandedResult.then(function(result) {
+          result._resourceId = resourceRefId;
           console.log('resolveResource, got result: ', result);
           resolve(result);
         }, function(err) {
@@ -85,14 +86,17 @@ define([
     var eventualResults = Object.keys(resourceData).map(function(key) {
       var value = resourceData[key];
       var valueType = util.getType(value);
-      console.log('walkObject, ', value, key, valueType);
+      var resourceId;
       switch (valueType) {
         case 'object':
         case 'objectish':
           if(value.$resource) {
+            resourceId = value.$resource
             // treat value as a reference: resource: { }
             // TODO: keep track of depth to avoid recursion errors?
             return resolveObjectProperties(value).then(function(result) {
+              // console.log('walkObject, resolved, ', valueAsString, result);
+              result._resourceId = resourceId;
               resolvedData[key] = result;
             }, function(err) {
               console.warn('walkObject: Error resolving key, value: ', key, value);
@@ -113,7 +117,9 @@ define([
           var eventualItems = value.map(function(item, idx) {
             if ('object' == typeof item) {
               if('$resource' in item) {
+                var resourceId = item.$resource;
                 return resolveObjectProperties(item).then(function(result) {
+                  result._resourceId = resourceId;
                   resolvedData[key][idx] = result;
                 });
               } else {
@@ -143,10 +149,11 @@ define([
 
     // walk the structure, deferencing as we go
     // FIXME: is it $resource or 'resource' or what?
-    var resourceId = data.$resource;
+    var resourceRefId = data.$resource;
+    var resourceId = resourceRefId;
     var params = data.params;
     delete data.params;
-    delete data.$resource;
+    // delete data.$resource;
     var resourceData;
     var promisedResult;
     if(resourceId) {
@@ -173,7 +180,6 @@ define([
             if (params) {
               util.mixin(result, params);
             }
-            result.$resource = resourceId;
             resolve(result);
           }, function(err) {
             console.err('resolveObjectProperties: Error attempting to walk object', err);
@@ -185,7 +191,6 @@ define([
       // plain value, nothing to resolve
       promisedResult = walkObject(data);
     }
-
     return promisedResult;
   }
 
