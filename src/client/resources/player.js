@@ -21,7 +21,12 @@ define(['lib/util'], function(util) {
 
   var Player = {
     fillDefaults: function(playerData) {
-      return util.create(playerDefaults, playerData);
+      for(var i in playerDefaults) {
+        if(!playerData.hasOwnProperty(i)) {
+          playerData[i] = playerDefaults[i];
+        }
+      }
+      return playerData;
     },
     getInventory: function(playerData) {
       // TODO: resolve any references in the inventory slot

@@ -63,11 +63,11 @@ define([
     var promise = new Promise(function(resolve, reject) {
       // load via the property plugin if the repl.start(prompt, source, eval, useGlobal, ignoreUndefined);d has a fragment identifier
       require([loaderPrefix+resourceId+suffix], function(result){
-        console.log('resolve, ' + loaderPrefix+resourceId+suffix + ' loaded data: ', result);
+        // console.log('resolve, ' + loaderPrefix+resourceId+suffix + ' loaded data: ', result);
         var expandedResult = resolveObjectProperties(result);
         expandedResult.then(function(result) {
           result._resourceId = resourceRefId;
-          console.log('resolveResource, got result: ', result);
+          // console.log('resolveResource, got result: ', result);
           resolve(result);
         }, function(err) {
           console.warn('resolveResource, got error: ', err);
@@ -91,7 +91,8 @@ define([
         case 'object':
         case 'objectish':
           if(value.$resource) {
-            resourceId = value.$resource
+            resourceId = value.$resource;
+            console.log('walkObject, resourceId: ', resourceId);
             // treat value as a reference: resource: { }
             // TODO: keep track of depth to avoid recursion errors?
             return resolveObjectProperties(value).then(function(result) {
@@ -115,20 +116,25 @@ define([
         case 'arraylike':
           resolvedData[key] = [];
           var eventualItems = value.map(function(item, idx) {
-            if ('object' == typeof item) {
-              if('$resource' in item) {
-                var resourceId = item.$resource;
-                return resolveObjectProperties(item).then(function(result) {
-                  result._resourceId = resourceId;
-                  resolvedData[key][idx] = result;
-                });
-              } else {
-                return walkObject(item);
-              }
+            if(item.$resource) {
+              var resourceId = item.$resource;
+              // treat item as a reference: resource: { }
+              return resolveObjectProperties(item).then(function(result) {
+                // console.log('walkObject, resolved, ', itemAsString, result);
+                result._resourceId = resourceId;
+                return result;
+              }, function(err) {
+                console.warn('walkObject: Error resolving key, item: ', key, item);
+                throw err;
+              });
+            } else {
+              return item;
             }
-            return item;
           });
-          return Promise.all(eventualItems);
+          return Promise.all(eventualItems).then(function(items) {
+            resolvedData[key] = items;
+          });
+          break;
         case 'thenable':
           value.then(function(result) {
             resolvedData[key] = result;

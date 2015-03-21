@@ -3,97 +3,97 @@
 	"start": "1,1",
 	"tiles": [
 	  {
-	    "$ref": "./0,0.json",
+	    "tileid": "0,0",
 	    "type": "abyss",
 	    "x": 0,
 	    "y": 0
 	  },
 	  {
-	    "$ref": "./1,0.json",
+	    "tileid": "1,0",
 	    "type": "abyss",
 	    "x": 1,
 	    "y": 0
 	  },
 	  {
-	    "$ref": "./2,0.json",
+	    "tileid": "2,0",
 	    "type": "abyss",
 	    "x": 2,
 	    "y": 0
 	  },
 	  {
-	    "$ref": "./3,0.json",
+	    "tileid": "3,0",
 	    "type": "abyss",
 	    "x": 3,
 	    "y": 0
 	  },
 	  {
-	    "$ref": "./0,1.json",
+	    "tileid": "0,1",
 	    "type": "abyss",
 	    "x": 0,
 	    "y": 1
 	  },
 	  {
-	    "$ref": "./1,1.json",
+	    "tileid": "1,1",
 	    "type": "mountains",
 	    "x": 1,
 	    "y": 1
 	  },
 	  {
-	    "$ref": "./2,1.json",
+	    "tileid": "2,1",
 	    "type": "mountains",
 	    "x": 2,
 	    "y": 1
 	  },
 	  {
-	    "$ref": "./3,1.json",
+	    "tileid": "3,1",
 	    "type": "abyss",
 	    "x": 3,
 	    "y": 1
 	  },
 	  {
-	    "$ref": "./0,2.json",
+	    "tileid": "0,2",
 	    "type": "abyss",
 	    "x": 0,
 	    "y": 2
 	  },
 	  {
-	    "$ref": "./1,2.json",
+	    "tileid": "1,2",
 	    "type": "mountains",
 	    "x": 1,
 	    "y": 2
 	  },
 	  {
-	    "$ref": "./2,2.json",
+	    "tileid": "2,2",
 	    "type": "plains",
 	    "x": 2,
 	    "y": 2
 	  },
 	  {
-	    "$ref": "./3,2.json",
+	    "tileid": "3,2",
 	    "type": "plains",
 	    "x": 3,
 	    "y": 2
 	  },
 	  {
-	    "$ref": "./0,3.json",
+	    "tileid": "0,3",
 	    "type": "abyss",
 	    "x": 0,
 	    "y": 3
 	  },
 	  {
-	    "$ref": "./1,3.json",
+	    "tileid": "1,3",
 	    "type": "abyss",
 	    "x": 1,
 	    "y": 3
 	  },
 	  {
-	    "$ref": "./2,3.json",
+	    "tileid": "2,3",
 	    "type": "abyss",
 	    "x": 2,
 	    "y": 3
 	  },
 	  {
-	    "$ref": "./3,3.json",
+	    "tileid": "3,3",
 	    "type": "abyss",
 	    "x": 3,
 	    "y": 3

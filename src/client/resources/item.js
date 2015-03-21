@@ -6,7 +6,10 @@ define(['lib/util'], function(util) {
 
   return {
     fillDefaults: function(itemData) {
-      return util.create(itemDefaults, itemData);
+      if (!itemData.name) {
+        itemData.name = itemData.id;
+      }
+      return itemData;
     }
   };
 

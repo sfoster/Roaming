@@ -7,35 +7,25 @@
   <script src="./config.js"></script>
 
   <script type="text/javascript">
-    (function(){
-      // pull config from querystring
-      var expectedKeys = { region: true };
-
-      var queryStr = location.search.substring(1);
-      var pairs, nameValue, params = {};
-      if(queryStr){
-        pairs = queryStr.split('&');
-        for(var i=0; i<pairs.length; i++) {
-          nameValue = pairs[i].split('=');
-          if(nameValue[0] && (nameValue[0] in expectedKeys)){
-            config[ nameValue[0] ] = nameValue[1];
-          }
-        }
-      }
-    })();
-
     var regionId = config.region || 'test';
 
     require([
       'lib/util',
-      'resources/template',
-      'plugins/resource!region/'+regionId+'/index',
-      'models/Location'
-    ],function(util, template, region, Location) {
+      'lib/resolve',
+      'resources/location',
+      'resources/item',
+      'resources/encounter',
+      'resources/template'
+    ],function(util, resolve, Tile, Item, Encounter, template) {
 
       function trim(str) {
         // TODO: make sure we have a shim
         return str.trim();
+      }
+      function pluck(ar, p) {
+        return ar.map(function(item){
+          return item[p];
+        });
       }
 
       var colors = {
@@ -49,43 +39,22 @@
         'default': 'rgba(51,51,155,1)'
       };
 
-      function pluck(ar, p) {
-        return ar.map(function(item){
-          return item[p];
-        });
-      }
-
       var TILE_SIZE = 20,
-          REGION_WIDTH = TILE_SIZE * (1+pluck(region.tiles, 'x').reduce(function(a, b){
-            return Math.max(a, b);
-          })),
-          REGION_HEIGHT = TILE_SIZE * (1+pluck(region.tiles, 'y').reduce(function(a, b){
-            return Math.max(a, b);
-          }));
-      console.log("REGION_WIDTH: %s, REGION_HEIGHT: %s", REGION_WIDTH, REGION_HEIGHT);
-
-      var canvasNode = document.getElementById('mapCanvas');
-      canvasNode.width = REGION_WIDTH;
-      canvasNode.height = REGION_HEIGHT;
-      canvasNode.style.width = REGION_WIDTH+'px';
-      canvasNode.style.height = REGION_HEIGHT+'px';
-
-      console.log("REGION_WIDTH", REGION_WIDTH);
-      console.log("REGION_HEIGHT", REGION_HEIGHT);
+          regionWidth, regionHeight;
 
       function drawAxes() {
         var layer = [
           { assign: 'fillStyle', value: 'rgba(51,51,51,0.5)' },
           // top top x axis
-          { call: 'fillRect', value: [0, 0, REGION_WIDTH, 12] },
-          { call: 'fillRect', value: [0, 0, 12, REGION_HEIGHT] },
+          { call: 'fillRect', value: [0, 0, regionWidth, 12] },
+          { call: 'fillRect', value: [0, 0, 12, regionHeight] },
           { assign: 'fillStyle', value: "#fff" },
           { assign: 'font', value: 'normal 8px sans-serif' },
         ];
-        for(var i=0; i<=REGION_WIDTH/TILE_SIZE; i++) {
+        for(var i=0; i<=regionWidth/TILE_SIZE; i++) {
           layer.push({ call: 'fillText', value: [ i, i*TILE_SIZE, 0, TILE_SIZE ] });
         }
-        for(var i=1; i<=REGION_HEIGHT/TILE_SIZE; i++) {
+        for(var i=1; i<=regionHeight/TILE_SIZE; i++) {
           layer.push({ call: 'fillText', value: [ i, 0, i*TILE_SIZE, TILE_SIZE ] });
         }
         return layer;
@@ -100,7 +69,7 @@
            ];
 
       var terrainMap = [
-        { call: 'clearRect', value: [0, 0,  REGION_WIDTH, REGION_HEIGHT]},
+        { call: 'clearRect', value: [0, 0,  regionWidth, regionHeight]},
         { assign: 'textBaseline', value: 'top' },
         { assign: 'font', value: 'normal 9px sans-serif' },
         { assign: 'strokeStyle', value: '#000' },
@@ -108,19 +77,21 @@
       ];
 
       var ui = {
-        id: region.id,
         tiles: [],
         mapRenderlayers: [
           loadingLabel
         ],
-        init: function() {
-          var tiles = this.tiles = region.tiles.map(function(stub){
+        init: function(region) {
+          var regionId = this.id = region.id;
+          console.log('init with region: ', region);
+          var stubs = region.tiles.map(function(stub){
             stub.id = stub.x+','+stub.y;
             stub.terrain = stub.type;
-            return new Location(stub);
+            stub.regionId = regionId;
+            return stub;
           });
 
-          tiles.forEach(function(tile){
+          stubs.forEach(function(tile){
             var scale = TILE_SIZE, x = scale*tile.x, y = scale*tile.y;
             console.assert(tile.terrain && tile.terrain in colors, tile.terrain + " is a valid color");
             terrainMap.push(
@@ -133,9 +104,31 @@
           });
 
           this.registerEvents();
-
+          this.setupCanvas(region);
           this.updateMapRenderLayers([ terrainMap, drawAxes() ]);
-          this.updateTiles();
+
+          Promise.all(stubs.map(function(stub) {
+            // resolve stub to actual location entity
+            var resourceId = 'location/' + regionId + '/' + stub.tileid;
+            return resolve.resolveResource(resourceId).then(function(locn) {
+              // console.log('resolve location: ', resourceId, locn);
+              locn = util.mixin(stub, locn);
+              locn = Tile.fillDefaults(locn);
+              locn.here.forEach(function(item) {
+                Item.fillDefaults(item);
+              });
+              locn.encounters.forEach(function(item) {
+                Encounter.fillDefaults(item);
+              });
+              return locn;
+              // locn.npcs.forEach(function(item) {
+              //   Item.fillDefaults(item);
+              // });
+            });
+          })).then(function(locations, idx) {
+            this.tiles = locations;
+            this.updateTiles();
+          }.bind(this));
         },
         registerEvents: function() {
           document.getElementById('mapCanvas')
@@ -148,6 +141,21 @@
                 return this.onMapClick(ui, evt);
             }
           }
+        },
+        setupCanvas: function (region) {
+          regionWidth = TILE_SIZE * (1+pluck(region.tiles, 'x').reduce(function(a, b){
+            return Math.max(a, b);
+          })),
+          regionHeight = TILE_SIZE * (1+pluck(region.tiles, 'y').reduce(function(a, b){
+            return Math.max(a, b);
+          }));
+          console.log("regionWidth: %s, regionHeight: %s", regionWidth, regionHeight);
+
+          var canvasNode = document.getElementById('mapCanvas');
+          canvasNode.width = regionWidth;
+          canvasNode.height = regionHeight;
+          canvasNode.style.width = regionWidth+'px';
+          canvasNode.style.height = regionHeight+'px';
         },
         onMapClick: function(vm, evt){
           console.log("Click: ", evt);
@@ -194,7 +202,7 @@
             var viewModel = util.create(tile, {
               parentId: this.id,
               hereListHTML: hereHTMLs.join('\n'),
-              encountersListHTML: hereHTMLs.join('\n'),
+              encountersListHTML: encounterHTMLs.join('\n'),
             });
             var tileHTML = tileTemplate(viewModel);
             return tileHTML;
@@ -203,18 +211,21 @@
         }
       };
 
+      resolve.resolveResource('location/' + regionId + '/index').then(function(regionData) {
+        console.log('loaded region: ', regionId);
+        ui.init(regionData);
+
+        setTimeout(function(){
+          console.log("showing #main");
+          document.getElementById("main").style.display = "block";
+          console.log("/showing #main");
+        }, 0);
+      });
+
       // region.loadTiles(ids).then(function(tiles){
       //   // sanity check that all tiles look good
       //   console.assert(0 === missingIds.length, "Tiles without ids: ", missingIds);
       // });
-
-      ui.init();
-
-      setTimeout(function(){
-        console.log("showing #main");
-        document.getElementById("main").style.display = "block";
-        console.log("/showing #main");
-      }, 0);
     });
   </script>
 </head>
