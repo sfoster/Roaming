@@ -1,3 +1,27 @@
+TODO:
+* work out lazy loading of map and its entities
+* load 8 squares around player/"camera" - the current tile
+* tiles may make reference to stuff going on in other tiles that requires us to pull them in too
+* enable unloading/freezing of tiles as they leave the 9
+* components:
+*   encounter
+*   actor/player
+* tile thaw/init/activate:
+*   thaw out anything in its items
+*   process any encounters/scripts
+*   npc scripts?
+* tile enter
+*   process encounters/scripts
+*   describe/render scene
+*   play out actions from encounters
+*   update, re-render/describe
+* tile leave
+*   process encounters/scripts
+* tile freeze/deactivate
+*   tear down, clean up encounters/scripts
+*   clean up, persist any entities, prepare to be unloaded
+
+--
 observers/models overcooked. Refocus on the game!
 
 I think there's still value in the loader though -

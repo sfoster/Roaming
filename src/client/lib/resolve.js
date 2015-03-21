@@ -152,6 +152,10 @@ define([
     var resourceRefId = data.$resource;
     var resourceId = resourceRefId;
     var params = data.params;
+    var paramNames;
+    if (params) {
+      paramNames = Object.keys(params).join(',');
+    }
     delete data.params;
     // delete data.$resource;
     var resourceData;
@@ -175,6 +179,9 @@ define([
           // put the resource data into place
           if(suffix && !('id' in resourceData)) {
             resourceData.id = (suffix.split('#'))[1];
+          }
+          if (paramNames) {
+            resourceData._paramNames = paramNames;
           }
           walkObject(resourceData).then(function(result) {
             if (params) {

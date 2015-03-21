@@ -1,11 +1,7 @@
 define([
   'lib/util',
-  'lib/event',
-  'lib/clone',
-  'models/Encounter',
-  'models/NPCEncounter',
   'resources/npc'
-], function(util, Evented, sanitizedClone, Encounter, NPCEncounter, npc){
+], function(util, npc){
 
   var encounters = {};
 
@@ -19,10 +15,9 @@ define([
 
   encounters.npc = {
     firstVisit: [
-      'Your adventure starts here',
-      'You dont quite know what you need to do, but you seem to be on the right track'
+      'You are not alone'
     ],
-    reVisit: ['Your adventure started here. You have a long way to go still']
+    reVisit: ['You\'ve passed this way before']
   };
 
   return encounters;

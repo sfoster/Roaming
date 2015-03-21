@@ -12,7 +12,7 @@
   "terrain": "plains",
   "encounters": [
     {
-      "type": "NPCEncounter",
+      "$resource": "resources/encounters#npc",
       "params": {
         "difficulty": 1,
         "grouptype": "trolls"

@@ -81,10 +81,11 @@
     'lib/resolve',
     'resources/player',
     'resources/item',
+    'resources/encounter',
     'text!resources/templates/player.html',
     'resources/weapons',
     'resources/items'
-  ], function(template, util, resolve, Player, Item, playerTemplate,
+  ], function(template, util, resolve, Player, Item, Encounter, playerTemplate,
               weapons, items){
 
     var viewModel = window.viewModel = {};
@@ -128,10 +129,21 @@
       loadResource: function(resourceId) {
         resolve.resolveResource(resourceId).then(function(resourceData) {
           console.log('required: ', resourceData, 'resourceId: ', resourceId);
-          // var resourceData = fragmentId ?
-          //         util.getObject(fragmentId.substring(1), resp) : resp;
-          // resourceData._resourceId = resourceId;
-          this.renderLoadedThing(resourceData);
+          var type = resourceData.type ||
+                     resourceId.substring(0, resourceId.indexOf('/'));
+          switch (type) {
+            case 'player':
+              console.log('got player entity: ', resourceData);
+              this.renderLoadedThing(resourceData);
+              break;
+            case 'location':
+              console.log('got location entity: ', resourceData);
+              this.renderLoadedThing(resourceData);
+              break;
+            default:
+              this.renderLoadedThing(resourceData);
+              break;
+          }
           this.outputContainer.classList.remove('loading');
 
         }.bind(this), function(err) {
