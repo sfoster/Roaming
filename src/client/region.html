@@ -40,6 +40,7 @@
       };
 
       var TILE_SIZE = 20,
+          APRON_SIZE = 1,
           regionWidth, regionHeight;
 
       function drawAxes() {
@@ -76,38 +77,100 @@
         { assign: 'lineWidth', value: 1 }
       ];
 
+      function createGridFromTilesArray(tiles) {
+        console.assert(tiles.length, 'empty tile stubs array passed to createGridFromTilesArray');
+        var grid = tiles.slice(0);
+        // get col and row counts
+        var colCount, rowCount;
+        var currY = grid[0].y;
+        for(var idx=0; idx<grid.length; idx++) {
+          if(grid[idx].y > currY) {
+            // we wrapped to next line
+            colCount = idx;
+            break;
+          }
+        }
+        console.assert(grid.length % colCount == 0,
+                      'tiles appear to be uneven grid based on '+colCount+' columns');
+        grid.colCount = colCount;
+        grid.rowCount = grid.length / colCount;
+
+        grid.atXY = function(x, y) {
+          return this[this.colCount * y] + x;
+        };
+
+        return grid;
+      }
+
       var ui = {
         tiles: [],
         mapRenderlayers: [
           loadingLabel
         ],
+        getSimulatedTilesFromGrid: function(grid, centerX, centerY, apronSize) {
+          var minX = Math.max(0, centerX - apronSize),
+              minY = Math.max(0, centerY - apronSize);
+          var maxX = Math.min(centerX + apronSize, grid.colCount -1);
+          var maxY = Math.min(centerY + apronSize, grid.rowCount -1);
+          var sliceSize = 1 + (2 * apronSize);
+
+          var simIDs = [];
+          // grab the surrounding tiles
+          for(var y=minY; y<=maxY; y++) {
+            for(var x=minX; x<=maxX; x++) {
+              simIDs.push(grid[y * grid.colCount + x]);
+            }
+          }
+          return simIDs;
+        },
         init: function(region) {
           var regionId = this.id = region.id;
-          console.log('init with region: ', region);
+          var tileid = config.tileid || '1,1';
+          var xy = tileid.split(',').map(function(val) {
+            return parseInt(val);
+          });
+          var currX = xy[0], currY = xy[1];
+          console.log('init with region: ', region, 'tileid: ', tileid);
           var stubs = region.tiles.map(function(stub){
             stub.id = stub.x+','+stub.y;
             stub.terrain = stub.type;
             stub.regionId = regionId;
             return stub;
           });
+          var grid = this.grid = createGridFromTilesArray(stubs);
+          var simTiles = createGridFromTilesArray(
+                this.getSimulatedTilesFromGrid(grid, currX, currY, APRON_SIZE)
+              );
 
-          stubs.forEach(function(tile){
+          grid.forEach(function(tile){
             var scale = TILE_SIZE, x = scale*tile.x, y = scale*tile.y;
             console.assert(tile.terrain && tile.terrain in colors, tile.terrain + " is a valid color");
+
             terrainMap.push(
+              { assign: 'strokeStyle', value: '#000' },
               { assign: 'fillStyle', value: colors[tile.terrain] || colors[tile['default']] },
               { call: 'fillRect', value: [x, y, scale, scale] },
               { call: 'strokeRect', value: [x, y, scale, scale] }
               // { assign: 'fillStyle', value: "#fff" },
               // { call: 'fillText', value: [ tile.id + ': ' + tile.terrain, 3+x, 3+y ] }
             );
+            if (simTiles.indexOf(tile) > -1) {
+              terrainMap.push(
+                {
+                  assign: 'fillStyle',
+                  value: (currX == tile.x && currY == tile.y) ?
+                         'rgba(255,51,51,1)' : 'rgba(255,204,102,1)'
+                },
+                { call: 'fillRect', value: [x + 0.5*TILE_SIZE, y + 0.5*TILE_SIZE, 3, 3] }
+              )
+            }
           });
 
           this.registerEvents();
           this.setupCanvas(region);
           this.updateMapRenderLayers([ terrainMap, drawAxes() ]);
 
-          Promise.all(stubs.map(function(stub) {
+          Promise.all(simTiles.map(function(stub) {
             // resolve stub to actual location entity
             var resourceId = 'location/' + regionId + '/' + stub.tileid;
             return resolve.resolveResource(resourceId).then(function(locn) {
