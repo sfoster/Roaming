@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Test</title>
+  <title>Region Test</title>
 
   <script src="./vendor/require.js"></script>
   <script src="./config.js"></script>
@@ -79,26 +79,25 @@
 
       function createGridFromTilesArray(tiles) {
         console.assert(tiles.length, 'empty tile stubs array passed to createGridFromTilesArray');
-        var grid = tiles.slice(0);
-        // get col and row counts
-        var colCount, rowCount;
-        var currY = grid[0].y;
-        for(var idx=0; idx<grid.length; idx++) {
-          if(grid[idx].y > currY) {
-            // we wrapped to next line
-            colCount = idx;
-            break;
+        var grid = {};
+        var columnCount, rowCount;
+        var rows = [], currRow, currY;
+        tiles.forEach(function(tile) {
+          grid[tile.id] = tile;
+          if (tile.y !== currY) {
+            currRow = [];
+            currY = tile.y;
+            rows.push(currRow);
           }
-        }
-        console.assert(grid.length % colCount == 0,
-                      'tiles appear to be uneven grid based on '+colCount+' columns');
-        grid.colCount = colCount;
-        grid.rowCount = grid.length / colCount;
-
-        grid.atXY = function(x, y) {
-          return this[this.colCount * y] + x;
-        };
-
+          currRow.push(tile);
+        });
+        Object.defineProperty(grid, "tiles", { value: tiles, enumerable: false });
+        Object.defineProperty(grid, "rows", { value: rows });
+        Object.defineProperty(grid, 'rowCount', { value: rows.length });
+        Object.defineProperty(grid, 'columnCount', { value: rows[0].length });
+        Object.defineProperty(grid, 'length', { value: tiles.length })
+        console.assert(grid.length % grid.columnCount == 0,
+                      'tiles appear to be uneven grid based on '+grid.columnCount+' columns');
         return grid;
       }
 
@@ -110,7 +109,7 @@
         getSimulatedTilesFromGrid: function(grid, centerX, centerY, apronSize) {
           var minX = Math.max(0, centerX - apronSize),
               minY = Math.max(0, centerY - apronSize);
-          var maxX = Math.min(centerX + apronSize, grid.colCount -1);
+          var maxX = Math.min(centerX + apronSize, grid.columnCount -1);
           var maxY = Math.min(centerY + apronSize, grid.rowCount -1);
           var sliceSize = 1 + (2 * apronSize);
 
@@ -118,7 +117,7 @@
           // grab the surrounding tiles
           for(var y=minY; y<=maxY; y++) {
             for(var x=minX; x<=maxX; x++) {
-              simIDs.push(grid[y * grid.colCount + x]);
+              simIDs.push(grid.tiles[y * grid.columnCount + x]);
             }
           }
           return simIDs;
@@ -138,11 +137,12 @@
             return stub;
           });
           var grid = this.grid = createGridFromTilesArray(stubs);
-          var simTiles = createGridFromTilesArray(
-                this.getSimulatedTilesFromGrid(grid, currX, currY, APRON_SIZE)
-              );
+          console.log('got grid: ', grid);
+          var simGrid = createGridFromTilesArray(
+            this.getSimulatedTilesFromGrid(grid, currX, currY, APRON_SIZE)
+          );
 
-          grid.forEach(function(tile){
+          grid.tiles.forEach(function(tile){
             var scale = TILE_SIZE, x = scale*tile.x, y = scale*tile.y;
             console.assert(tile.terrain && tile.terrain in colors, tile.terrain + " is a valid color");
 
@@ -154,7 +154,7 @@
               // { assign: 'fillStyle', value: "#fff" },
               // { call: 'fillText', value: [ tile.id + ': ' + tile.terrain, 3+x, 3+y ] }
             );
-            if (simTiles.indexOf(tile) > -1) {
+            if (simGrid[tile.id]) {
               terrainMap.push(
                 {
                   assign: 'fillStyle',
@@ -170,7 +170,7 @@
           this.setupCanvas(region);
           this.updateMapRenderLayers([ terrainMap, drawAxes() ]);
 
-          Promise.all(simTiles.map(function(stub) {
+          Promise.all(simGrid.tiles.map(function(stub) {
             // resolve stub to actual location entity
             var resourceId = 'location/' + regionId + '/' + stub.tileid;
             return resolve.resolveResource(resourceId).then(function(locn) {
