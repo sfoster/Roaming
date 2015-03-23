@@ -28,7 +28,7 @@
       }
     },
     {
-      "resource": "resources/npc#trollElder",
+      "$resource": "resources/npc#trollElder",
       "params": {
         "type": "npc",
         "count": 2

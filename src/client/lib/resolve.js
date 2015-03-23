@@ -60,10 +60,11 @@ define([
       loaderPrefix = 'plugins/vendor/json!';
     }
 
+    console.log('resolve, requiring resource at path: ' + loaderPrefix+resourceId+suffix);
     var promise = new Promise(function(resolve, reject) {
       // load via the property plugin if the repl.start(prompt, source, eval, useGlobal, ignoreUndefined);d has a fragment identifier
       require([loaderPrefix+resourceId+suffix], function(result){
-        // console.log('resolve, ' + loaderPrefix+resourceId+suffix + ' loaded data: ', result);
+        console.log('resolve, ' + loaderPrefix+resourceId+suffix + ' loaded data: ', result);
         var expandedResult = resolveObjectProperties(result);
         expandedResult.then(function(result) {
           result._resourceId = resourceRefId;
@@ -87,26 +88,24 @@ define([
       var value = resourceData[key];
       var valueType = util.getType(value);
       var resourceId;
+      var resultPromise;
       switch (valueType) {
         case 'object':
         case 'objectish':
           if(value.$resource) {
             resourceId = value.$resource;
-            console.log('walkObject, resourceId: ', resourceId);
             // treat value as a reference: resource: { }
             // TODO: keep track of depth to avoid recursion errors?
-            return resolveObjectProperties(value).then(function(result) {
+            resultPromise = resolveObjectProperties(value).then(function(result) {
               // console.log('walkObject, resolved, ', valueAsString, result);
               result._resourceId = resourceId;
-              resolvedData[key] = result;
+              return result;
             }, function(err) {
               console.warn('walkObject: Error resolving key, value: ', key, value);
               throw err;
             });
           } else {
-            return walkObject(value).then(function(result) {
-              resolvedData[key] = result;
-            }, function(err) {
+            resultPromise = walkObject(value).then(null, function(err) {
               console.warn('walkObject: Error resolving key, value: ', key, value);
               throw err;
             });
@@ -114,39 +113,44 @@ define([
           break;
         case 'array':
         case 'arraylike':
-          resolvedData[key] = [];
           var eventualItems = value.map(function(item, idx) {
-            if(item.$resource) {
-              var resourceId = item.$resource;
-              // treat item as a reference: resource: { }
-              return resolveObjectProperties(item).then(function(result) {
-                // console.log('walkObject, resolved, ', itemAsString, result);
-                result._resourceId = resourceId;
-                return result;
-              }, function(err) {
-                console.warn('walkObject: Error resolving key, item: ', key, item);
-                throw err;
-              });
+            if (typeof item == 'object') {
+              if(item.$resource) {
+                var resourceId = item.$resource;
+                // treat item as a reference: resource: { }
+                return resolveObjectProperties(item).then(function(result) {
+                  // console.log('walkObject, resolved, ', itemAsString, result);
+                  result._resourceId = resourceId;
+                  return result;
+                }, function(err) {
+                  console.warn('walkObject: Error resolving key, item: ', key, item);
+                  throw err;
+                });
+              } else {
+                return walkObject(item);
+              }
             } else {
               return item;
             }
           });
-          return Promise.all(eventualItems).then(function(items) {
-            resolvedData[key] = items;
+          resultPromise = Promise.all(eventualItems).then(null, function(err) {
+            console.warn('walkObject: Error resolving array items: ', err);
           });
           break;
         case 'thenable':
-          value.then(function(result) {
-            resolvedData[key] = result;
-          });
-          return value;
+          resultPromise = value;
+          break;
         default:
-          resolvedData[key] = value;
-          return value;
+          resultPromise = Promise.resolve(value);
       }
+      return resultPromise.then(function(result) {
+        return (resolvedData[key] = result);
+      });
     });
-    return Promise.all(eventualResults).then(function() {
+    return Promise.all(eventualResults).then(function(result) {
       return resolvedData;
+    }, function(err) {
+      console.warn('walkObject: Error resolving eventualResults: ', err);
     });
   }
 
@@ -189,10 +193,7 @@ define([
           if (paramNames) {
             resourceData._paramNames = paramNames;
           }
-          walkObject(resourceData).then(function(result) {
-            if (params) {
-              util.mixin(result, params);
-            }
+          promisedResult = walkObject(resourceData).then(function(result) {
             resolve(result);
           }, function(err) {
             console.err('resolveObjectProperties: Error attempting to walk object', err);
@@ -201,10 +202,15 @@ define([
         });
       });
     } else {
-      // plain value, nothing to resolve
+      // plain value, nothing to resolve at top level, walk it
       promisedResult = walkObject(data);
     }
-    return promisedResult;
+    return promisedResult.then(function(result) {
+      if (params) {
+        util.mixin(result, params);
+      }
+      return result;
+    });
   }
 
   return {

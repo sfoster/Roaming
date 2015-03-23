@@ -82,55 +82,68 @@
   <script src="./config.js"></script>
 
   <script type="text/javascript">
-    (function(){
-      // pull config from querystring
-      var expectedKeys = { location: true };
-
-      function populate(queryStr, config) {
-        var pairs, nameValue;
-        pairs = queryStr.split('&');
-        for(var i=0; i<pairs.length; i++) {
-          nameValue = pairs[i].split('=');
-          if(nameValue[0] && (nameValue[0] in expectedKeys)){
-            config[ nameValue[0] ] = nameValue[1];
-          }
-        }
-      }
-      var queryStr = location.search.substring(1);
-      if(queryStr){
-        populate(queryStr, config)
-      }
-    })();
-
     var locn = config.location || 'test/3,3';
+    console.log('config: ', config);
     var regionId = locn.split('/').shift();
     require([
       'lib/util',
+      'lib/resolve',
       'resources/template',
-      'plugins/vendor/json!location/'+locn+'.json',
-      'plugins/resource!location/'+locn
-    ],function(util, template, tileData, tile) {
+      'resources/location',
+      'resources/item',
+      'resources/npc',
+      'resources/encounter',
+      'plugins/vendor/json!location/'+locn+'.json'
+    ],function(util, resolve, template,
+               Tile, Item, Npc, Encounter, tileData) {
       //run tests
-      console.log("Loaded location tileData", !!tileData);
-      console.log("Loaded location instance: ", tile);
+      // console.log("Loaded location instance: ", tile);
+      window.tileData = tileData = Tile.fillDefaults(tileData);
+      resolve.resolveObjectProperties(tileData).then(function(tile) {
+        console.log("Loaded location tileData", tile);
+        window.tileData = tile;
 
-      window.tileData = tileData;
+        Tile.fillDefaults(tile);
+
+        ['here', 'npcs', 'encounters'].forEach(function(key) {
+          var coln = tile[key] || (tile[key] = []);
+          if (coln.length) {
+            coln.forEach(function(item) {
+              switch (key) {
+                case 'here':
+                  Item.fillDefaults(item);
+                  break;
+                case 'npcs':
+                  Npc.fillDefaults(item);
+                  break;
+                case 'encounters':
+                  Encounter.fillDefaults(item);
+                  break;
+              }
+            })
+          }
+        })
+        ui.updateLocation(tile);
+      }, function(err) {
+        console.warn("Error resolving tileData:", tileData);
+      });
       var ui = window.locationUI = {
         init: function() {
           this.registerEvents();
-          this.updateLocation(tile);
+          this.updateLocation(tileData);
         },
         updateLocation: function(tileData) {
           function trim(str) {
             // TODO: make sure we have a shim
             return str.trim();
           }
+          console.log('updateLocation with tileData: ', tileData);
           var tileTemplate = trim(document.getElementById('location-template').innerHTML);
           tileTemplate = template(tileTemplate);
           var itemTemplate = trim(document.getElementById('itemTemplate').innerHTML);
           itemTemplate = template(itemTemplate);
 
-          var viewModel = util.mixin(tileData, {
+          var viewModel = util.create(tileData, {
             locationId: tileData.id,
             regionId: regionId,
             hereListHTML: (tileData.here || []).map(function(item) {
@@ -148,10 +161,10 @@
         registerEvents: function() {},
         handleEvent: function(evt) {},
       }
-      window.onhashchange = function(evt){
-        ui.init();
-      };
-      window.onhashchange();
+      // window.onhashchange = function(evt){
+      //   ui.init();
+      // };
+      // window.onhashchange();
     });
   </script>
 </head>

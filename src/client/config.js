@@ -30,7 +30,8 @@ var config = {
 
 (function(){
   // pull config from querystring
-  var expectedKeys = { playerid: true, tileid: true, region: true, resourceid: true };
+  var expectedKeys = { playerid: true, tileid: true,
+                       region: true, location: true, resourceid: true };
 
   var queryStr = location.search.substring(1);
   var pairs, nameValue, params = {};

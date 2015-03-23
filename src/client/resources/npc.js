@@ -1,9 +1,9 @@
 define([], function(){
-  
+
   var npc = {};
-  // available terrain: 
+  // available terrain:
   // ["clear", "barren", "desert", "marsh", "mountains", "plains", "water", "abyss", "sand", "forest", "ice"]
-  
+
   npc.goblin = {
     name: 'Goblin',
     icon: 'resources/graphics/GoblinIcon.png',
@@ -196,7 +196,7 @@ npc.juvinileTroll = {
     range: 'short',
     evasion: 28,
     terrain: ["marsh", "forest"]
-    
+
   };
   npc.bear = {
     name: 'Bear',
@@ -244,7 +244,7 @@ npc.juvinileTroll = {
     hp: 60,
     mp: 0,
     range: 'short',
-    evasion: 20  
+    evasion: 20
   };
   npc.lion = {
     name: 'Lion',
@@ -296,7 +296,7 @@ npc.juvinileTroll = {
     hp: 75,
     mp: 0,
     range: 'short',
-    evasion: 1, 
+    evasion: 1,
     terrain: ["mountains", "barren"]
   };
   npc.minotaur = {
@@ -305,7 +305,7 @@ npc.juvinileTroll = {
     hp: 100,
     mp: 0,
     weapon: 'weaponclass:medium range, weaponclass:shortrange',
-    evasion: 1, 
+    evasion: 1,
     terrain: ["mountains", "barren"]
   };
   npc.humanSoldier = {
@@ -369,7 +369,7 @@ npc.juvinileTroll = {
     hp: 300,
     mp: 0,
     range: 'short',
-    evasion: 0, 
+    evasion: 0,
     terrain: ["mountains", "ice", "barren", "forest"]
   };
   npc.juggernaut = {
@@ -378,7 +378,7 @@ npc.juvinileTroll = {
     hp: 1000,
     mp: 0,
     weapon: 'weapons.maul',
-    evasion: 0, 
+    evasion: 0,
     terrain: ["desert"]
   };
   npc.hdyra = {
@@ -387,7 +387,7 @@ npc.juvinileTroll = {
     hp: 300,
     mp: 50,
     range: 'short, medium',
-    evasion: 15, 
+    evasion: 15,
     terrain: ["desert", "sand", "forest"]
     // Hydra has Venom Spit ability
     // (same as Venom, but medium range)
@@ -400,7 +400,7 @@ npc.juvinileTroll = {
     hp: 200,
     mp: 0,
     range: 'short, medium, long',
-    evasion: 2, 
+    evasion: 2,
     terrain: ["desert", "sand", "barren", "mountains"]
   };
 
@@ -410,7 +410,7 @@ npc.juvinileTroll = {
     hp: 500,
     mp: 50,
     range: 'short, medium, long',
-    evasion: 25, 
+    evasion: 25,
     terrain: ["mountains"]
     // Dragon has Flame Breath abilty
   // (medium+long range attack, causes burning( half damage reccurs for 2-3 turns after attack))
@@ -421,12 +421,39 @@ npc.juvinileTroll = {
     hp: 500,
     mp: 0,
     range: 'short, medium',
-    evasion: 20, 
+    evasion: 20,
     terrain: ["mountains"]
   };
-  
-  
+
+
   // All spells cost 10 mp per cast
-  // dmg=strength x wpn dmg divided by 5(?) 
+  // dmg=strength x wpn dmg divided by 5(?)
+
+  var npcDefaults = {
+    type: "npc",
+    name: "NPC", // by default
+    level: 1,
+    luck: 10/100,
+    icon: "./resources/graphics/BaddieIcon.png",
+    currentWeapon: 'claws', // by default
+    // stats
+    level: 1,
+    health: 4,
+    strength: 6,
+    mana: 0
+  };
+
+  Object.defineProperty(npc, 'fillDefaults', { get: function() {
+    return function(npcData) {
+      for(var i in npcDefaults) {
+        if(!npcData.hasOwnProperty(i)) {
+           npcData[i] = npcDefaults[i];
+        }
+      }
+      return npcData;
+    }
+  }});
+  npc.defaults = npcDefaults;
+
   return npc;
 });
