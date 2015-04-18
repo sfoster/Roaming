@@ -10,8 +10,6 @@ define([
     if (!thing) throw message || "assertion failure";
   }
 
-  var ArraySlice = function () {
-    Array.prototype.slice
   function ElementView(config) {
     /* represent stuff
      * and receive input

@@ -6,6 +6,36 @@
   <script src="./vendor/require.js"></script>
   <script src="./config.js"></script>
 
+  <style type="text/css">
+    #region-id {
+      font-style: italic;
+      vertical-align: text-top;
+      cursor: pointer;
+    }
+    #region-id:before {
+      display: inline-block;
+      content: "\25B6";
+      font-size: 0.5em;
+      vertical-align: middle;
+      padding: 0 0.5em 0.3em;
+    }
+    #region-id.showing:before {
+      content: "\25BC";
+    }
+    #region-raw-data {
+      display: none;
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      overflow: auto;
+      padding: 5px 10px;
+      background-color: #eee;
+      font-family: monospace;
+    }
+    #region-raw-data.showing {
+      display: block;
+    }
+  </style>
   <script type="text/javascript">
     var regionId = config.region || 'test';
 
@@ -124,6 +154,9 @@
         },
         init: function(region) {
           var regionId = this.id = region.id;
+          document.getElementById('region-id').innerHTML = regionId;
+          document.getElementById('region-id').addEventListener('click', this);
+
           var tileid = config.tileid || '1,1';
           var xy = tileid.split(',').map(function(val) {
             return parseInt(val);
@@ -154,6 +187,7 @@
               // { assign: 'fillStyle', value: "#fff" },
               // { call: 'fillText', value: [ tile.id + ': ' + tile.terrain, 3+x, 3+y ] }
             );
+            // TODO: also, load the image indicated and paint that in
             if (simGrid[tile.id]) {
               terrainMap.push(
                 {
@@ -172,7 +206,7 @@
 
           Promise.all(simGrid.tiles.map(function(stub) {
             // resolve stub to actual location entity
-            var resourceId = 'location/' + regionId + '/' + stub.tileid;
+            var resourceId = 'location/' + regionId + '/' + stub.id;
             return resolve.resolveResource(resourceId).then(function(locn) {
               // console.log('resolve location: ', resourceId, locn);
               locn = util.mixin(stub, locn);
@@ -202,6 +236,8 @@
             switch(evt.target.id) {
               case 'mapCanvas':
                 return this.onMapClick(ui, evt);
+              case 'region-id':
+                return this.toggleRawData(ui, evt);
             }
           }
         },
@@ -271,11 +307,17 @@
             return tileHTML;
           }, this);
           container.innerHTML = tilesHTMLs.join('\n');
+        },
+        toggleRawData: function(evt) {
+          document.getElementById('region-raw-data').classList.toggle('showing');
+          document.getElementById('region-id').classList.toggle('showing');
         }
       };
 
       resolve.resolveResource('location/' + regionId + '/index').then(function(regionData) {
         console.log('loaded region: ', regionId);
+        document.getElementById('region-raw-data').innerHTML = '<pre>'
+          + JSON.stringify(regionData, null, 1) + '</pre>';
         ui.init(regionData);
 
         setTimeout(function(){
@@ -298,8 +340,8 @@
     <canvas id="mapCanvas" width="400" height="400" data-bind="click: onMapClick" style="width:400px; height: 400px"></canvas>
   </section>
   <section id="main" class="panel" style="display:none">
-    <h2>Region: <span data-bind="text: id"></span></h2>
-    <a href="#12,12">12,12</a>
+    <h2>Region: <span id="region-id"></span></h2>
+    <div id="region-raw-data"></div>
     <ul></ul>
     <script type="text/template" id="itemTemplate">
       <li><span>{name}</span> (<span>{type}</span>)</li>
@@ -307,7 +349,7 @@
     <script type="text/template" id="tileTemplate">
       <li>
         <h2>Location:
-          <a id="jump_{id}" href="location.html?location={parentId}/{id}#edit">{id}</a></h2>
+          <a id="jump_{id}" href="location.html?location={parentId}/{id}">{id}</a></h2>
         <dl>
           <dt>Region:</dt>
           <dd>{regionId}</dd>
