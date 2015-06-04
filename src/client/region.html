@@ -7,6 +7,19 @@
   <script src="./config.js"></script>
 
   <style type="text/css">
+    html, body {
+      margin: 0; padding: 0 20px;
+      height: 100%;
+      overflow: hidden;
+    }
+    #map {
+      height: 80px;
+      padding: 10px;
+    }
+    #main {
+      height: calc(100% - 100px);
+      overflow: auto;
+    }
     #region-id {
       font-style: italic;
       vertical-align: text-top;
@@ -131,12 +144,17 @@
         return grid;
       }
 
-      var ui = {
+      function isTileStub(tile) {
+        return !tile.hasOwnProperty('here');
+      }
+      var ui = window.regionUI = {
         tiles: [],
         mapRenderlayers: [
           loadingLabel
         ],
         getSimulatedTilesFromGrid: function(grid, centerX, centerY, apronSize) {
+          console.log('getSimulatedTilesFromGrid: centerX: %s, centerY: %s, apronSize: %s',
+                      centerX, centerY, apronSize);
           var minX = Math.max(0, centerX - apronSize),
               minY = Math.max(0, centerY - apronSize);
           var maxX = Math.min(centerX + apronSize, grid.columnCount -1);
@@ -150,31 +168,42 @@
               simIDs.push(grid.tiles[y * grid.columnCount + x]);
             }
           }
+          console.log('getSimulatedTilesFromGrid, returning simIDs: ', simIDs.map((obj) => obj.id));
           return simIDs;
         },
         init: function(region) {
+          this.region = region;
           var regionId = this.id = region.id;
           document.getElementById('region-id').innerHTML = regionId;
           document.getElementById('region-id').addEventListener('click', this);
 
           var tileid = config.tileid || '1,1';
-          var xy = tileid.split(',').map(function(val) {
-            return parseInt(val);
-          });
-          var currX = xy[0], currY = xy[1];
-          console.log('init with region: ', region, 'tileid: ', tileid);
-          var stubs = region.tiles.map(function(stub){
+          console.log('init with region: ', this.region, 'tileid: ', tileid);
+
+          this.tileStubs = this.region.tiles.map(function(stub){
             stub.id = stub.x+','+stub.y;
             stub.terrain = stub.type;
             stub.regionId = regionId;
             return stub;
           });
-          var grid = this.grid = createGridFromTilesArray(stubs);
+          // create the grid structure for the whole region,
+          // using the stub data we get from the region/index.
+          this.regionGrid = createGridFromTilesArray(this.tileStubs);
+          this.centerOnTile(tileid);
+        },
+        centerOnTile: function(tileid) {
+          console.log('centerOnTile: %s', tileid);
+          var xy = tileid.split(',').map(function(val) {
+            return parseInt(val);
+          });
+          var currX = xy[0], currY = xy[1];
+          var grid = this.regionGrid;
           console.log('got grid: ', grid);
           var simGrid = createGridFromTilesArray(
             this.getSimulatedTilesFromGrid(grid, currX, currY, APRON_SIZE)
           );
 
+          // render the grid to the map canvas
           grid.tiles.forEach(function(tile){
             var scale = TILE_SIZE, x = scale*tile.x, y = scale*tile.y;
             console.assert(tile.terrain && tile.terrain in colors, tile.terrain + " is a valid color");
@@ -201,28 +230,47 @@
           });
 
           this.registerEvents();
-          this.setupCanvas(region);
+          this.setupCanvas(this.region);
           this.updateMapRenderLayers([ terrainMap, drawAxes() ]);
 
-          Promise.all(simGrid.tiles.map(function(stub) {
-            // resolve stub to actual location entity
-            var resourceId = 'location/' + regionId + '/' + stub.id;
-            return resolve.resolveResource(resourceId).then(function(locn) {
-              // console.log('resolve location: ', resourceId, locn);
-              locn = util.mixin(stub, locn);
-              locn = Tile.fillDefaults(locn);
-              locn.here.forEach(function(item) {
-                Item.fillDefaults(item);
-              });
-              locn.encounters.forEach(function(item) {
-                Encounter.fillDefaults(item);
-              });
-              return locn;
-              // locn.npcs.forEach(function(item) {
-              //   Item.fillDefaults(item);
-              // });
-            });
-          })).then(function(locations, idx) {
+          var loadPromises = [];
+          grid.tiles.forEach(function(stub) {
+            if (simGrid[stub.id]) {
+              if (isTileStub(stub)) {
+                // resolve stub to actual location entity
+                console.log('tile %s in sim area, needs loading');
+                var resourceId = 'location/' + regionId + '/' + stub.id;
+                var promise = resolve.resolveResource(resourceId).then(function(locn) {
+                  // console.log('resolve location: ', resourceId, locn);
+                  locn = util.mixin(stub, locn);
+                  locn = Tile.fillDefaults(locn);
+                  locn.here.forEach(function(item) {
+                    Item.fillDefaults(item);
+                  });
+                  locn.encounters.forEach(function(item) {
+                    Encounter.fillDefaults(item);
+                  });
+                  return locn;
+                  // locn.npcs.forEach(function(item) {
+                  //   Item.fillDefaults(item);
+                  // });
+                });
+                loadPromises.push(promise);
+              } else {
+                // already loaded, leave it
+                console.log('tile %s in sim area, but is already loaded', stub);
+              }
+            } else {
+              if (isTileStub(stub)) {
+                console.log('tile %s outside sim area, is stub', stub);
+                // leave it
+              } else {
+                // freeze it
+                console.log('tile %s loaded but outside sim area', stub);
+              }
+            }
+          });
+          Promise.all(loadPromises).then(function(locations, idx) {
             this.tiles = locations;
             this.updateTiles();
           }.bind(this));
@@ -258,16 +306,20 @@
         },
         onMapClick: function(vm, evt){
           console.log("Click: ", evt);
-          var x = evt.pageX - evt.target.offsetLeft,
-              y = evt.pageY - evt.target.offsetTop;
+          var mapRect = evt.target.getBoundingClientRect();
+          var x = evt.pageX - mapRect.x,
+              y = evt.pageY - mapRect.y;
           var tile_x = Math.floor(x / TILE_SIZE),
               tile_y = Math.floor(y / TILE_SIZE);
           console.log("tile size: %s, x: %s, y: %s, tile x: %s, tile y: %s", TILE_SIZE, x, y, tile_x, tile_y);
 
-          var hn = document.getElementById('jump_' + tile_x+','+tile_y);
+          var tileid = tile_x+','+tile_y;
+          var hn = document.getElementById('jump_' + tileid);
           if(hn){
             hn.scrollIntoView();
           }
+          this.centerOnTile(tileid);
+
           // location.href = '?location='+region.id+'/'+tile_x+','+tile_y;
         },
         updateMapRenderLayers: function(layers) {
@@ -338,7 +390,8 @@
 <body>
   <section id="map">
     <canvas id="mapCanvas" width="400" height="400" data-bind="click: onMapClick" style="width:400px; height: 400px"></canvas>
-  </section>
+    <!-- canvas id="terrainCanvas" width="400" height="400" data-bind="click: onMapClick" style="width:400px; height: 400px"></canvas -->
+ </section>
   <section id="main" class="panel" style="display:none">
     <h2>Region: <span id="region-id"></span></h2>
     <div id="region-raw-data"></div>

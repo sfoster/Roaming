@@ -60,11 +60,11 @@ define([
       loaderPrefix = 'plugins/vendor/json!';
     }
 
-    console.log('resolve, requiring resource at path: ' + loaderPrefix+resourceId+suffix);
+    // console.log('resolve, requiring resource at path: ' + loaderPrefix+resourceId+suffix);
     var promise = new Promise(function(resolve, reject) {
       // load via the property plugin if the repl.start(prompt, source, eval, useGlobal, ignoreUndefined);d has a fragment identifier
       require([loaderPrefix+resourceId+suffix], function(result){
-        console.log('resolve, ' + loaderPrefix+resourceId+suffix + ' loaded data: ', result);
+        // console.log('resolve, ' + loaderPrefix+resourceId+suffix + ' loaded data: ', result);
         var expandedResult = resolveObjectProperties(result);
         expandedResult.then(function(result) {
           result._resourceId = resourceRefId;
