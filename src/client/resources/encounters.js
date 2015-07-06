@@ -6,6 +6,7 @@ define([
   var encounters = {};
 
   encounters.beginning = {
+    startScript: 'beginningStart',
     firstVisit: [
       'Your adventure starts here',
       'You dont quite know what you need to do, but you seem to be on the right track'
@@ -14,6 +15,8 @@ define([
   };
 
   encounters.npc = {
+    startScript: 'npcStart',
+    endScript: 'npcEnd',
     firstVisit: [
       'You are not alone'
     ],

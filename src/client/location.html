@@ -85,21 +85,39 @@
     var locn = config.location || 'test/3,3';
     console.log('config: ', config);
     var regionId = locn.split('/').shift();
+    var exports = window.exports = {};
     require([
       'lib/util',
       'lib/resolve',
       'resources/template',
       'resources/location',
       'resources/item',
+      'resources/player',
       'resources/npc',
       'resources/encounter',
-      'plugins/vendor/json!location/'+locn+'.json'
+      'plugins/vendor/json!location/'+locn+'.json',
+      'plugins/vendor/json!player/'+(config.playerid || 'guest') + '.json'
     ],function(util, resolve, template,
-               Tile, Item, Npc, Encounter, tileData) {
+               Tile, Item, Player, Npc, Encounter, tileData, playerData) {
       //run tests
       // console.log("Loaded location instance: ", tile);
-      window.tileData = tileData = Tile.fillDefaults(tileData);
-      resolve.resolveObjectProperties(tileData).then(function(tile) {
+      var tile, player, game;
+
+      Promise.all([
+        resolve.resolveObjectProperties(Tile.fillDefaults(tileData)).then(function(resolvedTile) {
+          tile = window.tile = resolvedTile;
+        }, function(err) {
+          console.warn("Error resolving tileData:", tileData);
+        }),
+        resolve.resolveObjectProperties(Player.fillDefaults(playerData)).then(function(resolvedPlayer) {
+          console.log('resolved player: ', player);
+          player = window.player = resolvedPlayer;
+        })
+      ]).then(function () {
+        exports.enterLocation(player, tile, game);
+      });
+
+      exports.enterLocation = function(player, tile, game) {
         console.log("Loaded location tileData", tile);
         window.tileData = tile;
 
@@ -124,13 +142,17 @@
           }
         })
         ui.updateLocation(tile);
-      }, function(err) {
-        console.warn("Error resolving tileData:", tileData);
-      });
+        if (tile.encounters && tile.encounters.length) {
+          tile.encounters.forEach(function(encounter) {
+            Encounter.startEncounter(encounter, window.player || {}, tile, window.game || {});
+          })
+        }
+      };
+
       var ui = window.locationUI = {
         init: function() {
           this.registerEvents();
-          this.updateLocation(tileData);
+          this.updateLocation(tile);
         },
         updateLocation: function(tileData) {
           function trim(str) {

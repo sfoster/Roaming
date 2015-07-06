@@ -30,7 +30,8 @@ define([
         filled.description = "You enter an area of " + filled.terrain
       }
       return filled;
-    }
+    },
+    // freeze/thaw
   };
 
 });
