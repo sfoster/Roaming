@@ -238,7 +238,7 @@
             if (simGrid[stub.id]) {
               if (isTileStub(stub)) {
                 // resolve stub to actual location entity
-                console.log('tile %s in sim area, needs loading');
+                console.log('tile %s in sim area, needs loading', stub.id);
                 var resourceId = 'location/' + regionId + '/' + stub.id;
                 var promise = resolve.resolveResource(resourceId).then(function(locn) {
                   // console.log('resolve location: ', resourceId, locn);
@@ -258,15 +258,15 @@
                 loadPromises.push(promise);
               } else {
                 // already loaded, leave it
-                console.log('tile %s in sim area, but is already loaded', stub);
+                console.log('tile %s in sim area, but is already loaded', stub.id);
               }
             } else {
               if (isTileStub(stub)) {
-                console.log('tile %s outside sim area, is stub', stub);
+                console.log('tile %s outside sim area, is stub', stub.id);
                 // leave it
               } else {
                 // freeze it
-                console.log('tile %s loaded but outside sim area', stub);
+                console.log('tile %s loaded but outside sim area', stub.id);
               }
             }
           });

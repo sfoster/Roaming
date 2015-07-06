@@ -37,12 +37,16 @@ define([
   /*
    * returns Promise
    */
-  function resolveResource(resourceId) {
+  function resolveResource(resourceId, params) {
     var loaderPrefix = '',
         suffix = '',
         fragmentMatch = resourceId.match(/^([^#]+)(#.+)/),
         isJson = false;
     var resourceRefId = resourceId;
+    var paramNames;
+    if (params) {
+      paramNames = Object.keys(params).join(',');
+    }
 
     if(fragmentMatch) {
       loaderPrefix = 'plugins/property!';
@@ -67,6 +71,16 @@ define([
         // console.log('resolve, ' + loaderPrefix+resourceId+suffix + ' loaded data: ', result);
         var expandedResult = resolveObjectProperties(result);
         expandedResult.then(function(result) {
+          // put the resource data into place
+          if(suffix && !('id' in result)) {
+            result.id = (suffix.split('#'))[1];
+          }
+          if (paramNames) {
+            result._paramNames = paramNames;
+            if (params) {
+              util.mixin(result, params);
+            }
+          }
           result._resourceId = resourceRefId;
           // console.log('resolveResource, got result: ', result);
           resolve(result);

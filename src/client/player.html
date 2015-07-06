@@ -38,6 +38,9 @@
   </div>
 </section>
 <section id="main" class="panel">
+  <section style="background:#ccc; padding: 6px">
+    <button onclick="player.score++;hud.updatePlayerInfo(player)">Score++</button>
+  </section>
   <h2>Inventory</h2>
   <script type="text/notes">
     fill this element with rendered items from the inventory collection
@@ -52,6 +55,17 @@
   </ul>
 </section>
 
+
+<script type="text/template" id="hereItemTemplate">
+  <li class="item" data-id="{id}">{name}
+    <button class="take">take</button>
+  </li>
+</script>
+<script type="text/template" id="inventoryItemTemplate">
+  <li class="item {equipped}" data-id="{id}">{name}
+    <button class="drop">drop</button>
+  </li>
+</script>
 <script type="text/template" id="itemTemplate">
   <li class="item {equipped}">{name}</li>
 </script>
@@ -66,26 +80,26 @@
 <script src="./config.js"></script>
 <script>
   require([
-    'resources/template',
     'lib/util',
+    'lib/resolve',
+    'resources/template',
     'resources/player',
     'resources/item',
     'plugins/vendor/json!player/'+(config.playerid || 'guest') + '.json',
     'text!resources/templates/player.html',
     'resources/weapons',
-    'resources/items',
-    'plugins/resource!resources/items#hagStone',
-  ], function(template, util, Player, Item, playerData, playerTemplate,
-              weapons, items, hagStone){
+    'resources/items'
+  ], function(util, resolve, template, Player, Item, playerData, playerTemplate,
+              weapons, items){
 
     window.player = playerData = Player.fillDefaults(playerData);
     window.tile = {};
+
     var hereItems = tile.here = [
-      hagStone
     ];
 
     var viewModel = window.viewModel = {
-      player: playerData,
+      player: window.player,
       here: hereItems
     };
 
@@ -105,7 +119,7 @@
     //    and render each item
     // render player current weapon
 
-    var hud = {
+    var hud = window.hud = {
       init: function() {
         this.element = document.getElementById('hud');
         this.registerEvents();
@@ -127,7 +141,7 @@
     function createTemplateFromScriptNode(node) {
       return template(node.innerHTML);
     }
-    var mainUI = {
+    var mainUI = window.mainUI = {
       init: function() {
 
         this.element = document.getElementById('main');
@@ -137,14 +151,58 @@
         this.updateHereItems(tile.here);
       },
       registerEvents: function() {
-
+        document.getElementById('hereItems').addEventListener('click', this);
+        document.getElementById('inventory').addEventListener('click', this);
       },
       handleEvent: function(evt) {
-
+        var id = evt.target.id,
+            cls = evt.target.className;
+        if (evt.type == 'click') {
+          switch (cls) {
+            case 'take':
+              var itemId = evt.target.parentNode.dataset.id;
+              this.takeItem(itemId);
+              break;
+            case 'drop':
+              var itemId = evt.target.parentNode.dataset.id;
+              this.dropItem(itemId);
+              break;
+          }
+        }
+      },
+      takeItem: function(id) {
+        var fromCollection = hereItems;
+        var toCollection = player.inventory;
+        for(var idx = fromCollection.length -1; idx >= 0; idx--) {
+          if (fromCollection[idx].id === id) {
+            break;
+          }
+        }
+        if (idx >= -1) {
+          toCollection.push(fromCollection[idx]);
+          fromCollection.splice(idx, 1);
+        }
+        this.updateInventory(player.inventory);
+        this.updateHereItems(hereItems);
+      },
+      dropItem: function(id) {
+        var fromCollection = player.inventory;
+        var toCollection = hereItems;
+        for(var idx = fromCollection.length -1; idx >= 0; idx--) {
+          if (fromCollection[idx].id === id) {
+            break;
+          }
+        }
+        if (idx >= -1) {
+          toCollection.push(fromCollection[idx]);
+          fromCollection.splice(idx, 1);
+        }
+        this.updateInventory(player.inventory);
+        this.updateHereItems(hereItems);
       },
       updateInventory: function(inventory) {
         var itemTemplate = createTemplateFromScriptNode(
-          document.getElementById('itemTemplate')
+          document.getElementById('inventoryItemTemplate')
         );
         var container = document.getElementById('inventory');
         var itemHTMLs = inventory.map(function(item) {
@@ -169,11 +227,10 @@
       },
       updateHereItems: function(items) {
         var itemTemplate = createTemplateFromScriptNode(
-          document.getElementById('itemTemplate')
+          document.getElementById('hereItemTemplate')
         );
         var container = document.getElementById('hereItems');
         var itemHTMLs = items.map(function(item, index) {
-          console.log('item: ', item)
           var html = itemTemplate(util.create(item, {
             equipped: false,
             index: index
@@ -183,9 +240,23 @@
         container.innerHTML = itemHTMLs.join('\n');
       }
     };
-
-    hud.init();
-    mainUI.init();
+    var promises = [
+      resolve.resolveObjectProperties(window.player).then(function(player) {
+        console.log('resolved player: ', player);
+        window.player = viewModel.player = player;
+      }, function(err) {
+        console.warn('Error resolving player: ', err);
+      }),
+      resolve.resolveResource('resources/items#hagStone', { everUsed: false }).then(function(hagStone) {
+        console.log('resolved hagStone: ', hagStone);
+        hereItems.push(hagStone);
+      })
+    ];
+    Promise.all(promises).then(function() {
+      console.log('All promises resolved');
+      hud.init();
+      mainUI.init();
+    });
 
     // viewModel.here.subscribe(function(change){
     //   tile.here = ko.mapping.toJS(viewModel.here);
