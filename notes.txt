@@ -9,6 +9,17 @@ TODO:
 [.] components:
 [x]   encounter: entity has optional startScript/endScript properties, which point at implementations in Encounter.
       these methods get passed player(s), tile, game (see location.html)
+      simple encounter:
+        waypoint: get some score, some bonus for making it here by some time.
+          log stuff, display some extra message based on some conditions
+        discovery: if player has some information, they spot some extra feature here
+          put up announcement message with maybe image + description.
+          log the discovery
+          place something in inventory/special items?
+        npc:
+          determine if hostile, start dialog/add message/start combat
+
+
 [.]   actor/player
 [.] tile thaw/init/activate:
 [.]   thaw out anything in its items

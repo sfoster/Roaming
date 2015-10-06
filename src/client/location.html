@@ -88,7 +88,9 @@
     var exports = window.exports = {};
     require([
       'lib/util',
+      'lib/event',
       'lib/resolve',
+      'lib/gameUtil',
       'resources/template',
       'resources/location',
       'resources/item',
@@ -97,12 +99,36 @@
       'resources/encounter',
       'plugins/vendor/json!location/'+locn+'.json',
       'plugins/vendor/json!player/'+(config.playerid || 'guest') + '.json'
-    ],function(util, resolve, template,
+    ],function(util, Evented, resolve, gameUtil, template,
                Tile, Item, Player, Npc, Encounter, tileData, playerData) {
       //run tests
       // console.log("Loaded location instance: ", tile);
-      var tile, player, game;
+      var tile, player;
+      var game = window.game = util.mixin({
+        ui: ui,
+        now: function(){
+          // game timestamp, second units
+          return Math.floor( Date.now() / 1000 );
+        },
+        random: function() {
+          return Math.random();
+        },
+        pushMessage: function(message, options) {
+          options = options || {};
+          switch (options.type) {
+            default:
+              alert(message);
+              break;
+          }
+        }
+      }, Evented );
 
+      game.on('startingpoint-enter', function(evt) {
+        console.log('on startingpoint-enter:', evt);
+        // var lastVisited = gameUtil.lastLocationVisit()
+      });
+
+      console.log('playerData:', playerData);
       Promise.all([
         resolve.resolveObjectProperties(Tile.fillDefaults(tileData)).then(function(resolvedTile) {
           tile = window.tile = resolvedTile;
@@ -110,8 +136,8 @@
           console.warn("Error resolving tileData:", tileData);
         }),
         resolve.resolveObjectProperties(Player.fillDefaults(playerData)).then(function(resolvedPlayer) {
-          console.log('resolved player: ', player);
           player = window.player = resolvedPlayer;
+          console.log('resolved player: ', player);
         })
       ]).then(function () {
         exports.enterLocation(player, tile, game);
