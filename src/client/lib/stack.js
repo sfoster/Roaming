@@ -4,17 +4,29 @@ define([], function() {
     get stackLength() {
       return this.__states ? this.__states.length : undefined;
     },
-    pushState: function(state){
+    pushState: function(state, transition){
       this.__states.push(state);
-      state.enter(this);
+      if (transition) {
+        return transition().then(function() {
+          state.enter(this);
+        }.bind(this))
+      } else {
+        return Promise.resolve(state.enter(this));
+      }
     },
-    popState: function(){
+    popState: function(transition){
       var state = this.__states.pop();
-      state.exit(this);
+      if (transition) {
+        return transition().then(function() {
+          state.exit(this);
+        }.bind(this))
+      } else {
+        return Promise.resolve(state.exit(this));
+      }
     },
-    replaceState: function(state, args) {
-      this.pop();
-      this.push(state);
+    replaceState: function(state, transition) {
+      this.popState();
+      return this.push(state, transition);
     },
     getStateAtIndex: function(idx){
       return this.__states[idx];

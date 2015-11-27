@@ -12,17 +12,46 @@
       height: 100%;
       overflow: hidden;
     }
+    #main {
+      position: absolute;
+      top: 0; bottom: 0; left: 0; right: 0;
+      background-color: #eee;
+    }
+    #curtain {
+      position: absolute;
+      top: 0; bottom: 0; left: 0; right: 0;
+      background-color: #eee;
+      transform: translateY(0);
+      background-color: rgba(153,0,0,0.6);
+    }
+    #curtain.up {
+      transform: translateY(-100%);
+      transition: transform 1s ease;
+    }
+    #dialog {
+      position: absolute;
+      top: 0; bottom: 0; left: 0; right: 0;
+      background-color: #fff;
+      padding: 25px;
+      transform: translateX(-100%);
+      transition: transform 0.5s ease;
+    }
+    #dialog.active {
+      transform: translateX(0);
+      transition: transform .3s ease;
+    }
   </style>
   <script type="text/javascript">
     require([
       'lib/util',
       'lib/stack',
       'lib/event',
+      'lib/domEvent',
       'resources/location',
       'resources/item',
       'resources/encounter',
       'resources/template'
-    ],function(util, Stack, Evented, Tile, Item, Encounter, template) {
+    ],function(util, Stack, Evented, domEvent, Tile, Item, Encounter, template) {
       // setup the game object as:
       // * an event sink and emitter
       // * a stack of states
@@ -56,22 +85,43 @@
       var mainMenu = new TestState('mainMenu');
       var region = new TestState('the region');
       var dialogue = new TestState('dialogue');
+
+      function curtainUpTransition() {
+        var curtain = document.getElementById('curtain');
+        curtain.classList.add('up');
+        return domEvent.waitForEvent(curtain, 'transitionend');
+      }
+      function showDialogTransition() {
+        var layer = document.getElementById('dialog');
+        layer.classList.add('active');
+        return domEvent.waitForEvent(layer, 'transitionend');
+      }
+      function hideDialogTransition() {
+        var layer = document.getElementById('dialog');
+        layer.classList.remove('active');
+        return domEvent.waitForEvent(layer, 'transitionend');
+      }
       dialogue.enter = function() {
         console.log('dialogue begins. Blah blah');
         setTimeout(function() {
-          game.popState();
+          game.popState(hideDialogTransition);
         }, 2000);
       };
+
       var tile = new TestState('the tile');
       tile.enter = function(game) {
         // trigger some dialogue or other state
         console.log('enter state: ', this.name, ''+game, ''+game.player);
-        game.pushState(dialogue);
+        return game.pushState(dialogue, showDialogTransition);
       };
 
-      game.pushState(mainMenu);
-      game.pushState(region);
-      game.pushState(tile);
+      game.pushState(mainMenu)
+      .then(function() {
+        return game.pushState(region, curtainUpTransition);
+      })
+      .then(function() {
+        return game.pushState(tile);
+      });
 
     });
   </script>
@@ -80,6 +130,8 @@
 <body>
   <section id="main" class="panel">
     <h2>States test</h2>
+    <div id="curtain"></div>
+    <div id="dialog"><p>Some stuff gets said</p></div>
   </section>
 
 </body>
