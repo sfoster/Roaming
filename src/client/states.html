@@ -28,11 +28,12 @@
       // * a stack of states
       var game = window.game = util.mixin({
         ui: {},
+        valueOf: function() { return '[Game]'; },
         now: function(){
           // game timestamp, second units
           return Math.floor( Date.now() / 1000 );
         },
-        player: { name: 'some player' },
+        player: { name: 'some player', valueOf: function() { return '[Player]'; } },
         tile: {},
         region: {}
       }, Evented, Stack );
@@ -42,10 +43,13 @@
       };
       TestState.prototype = {
         enter: function(game, player) {
-          console.log('enter state: ', this.name, game, game.player);
+          console.log('enter state: ', this.name, ''+game, ''+game.player);
         },
         exit: function(game, player) {
-          console.log('exit state: ', this.name, game, game.player);
+          console.log('exit state: ', this.name, ''+game, ''+game.player);
+        },
+        valueOf: function() {
+          return '[' + this.name + ']';
         }
       }
 
@@ -61,7 +65,7 @@
       var tile = new TestState('the tile');
       tile.enter = function(game) {
         // trigger some dialogue or other state
-        console.log('enter state: ', this.name, game, game.player);
+        console.log('enter state: ', this.name, ''+game, ''+game.player);
         game.pushState(dialogue);
       };
 
