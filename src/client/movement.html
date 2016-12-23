@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
+  <meta charset="utf-8">
+  <title>Movement test</title>
+
+  <style type="text/css">
+    html, body {
+      margin: 0; padding: 0 20px;
+      height: 100%;
+      overflow: hidden;
+    }
+    #main {
+      position: absolute;
+      top: 0; bottom: 0; left: 0; right: 0;
+      background-color: #eee;
+    }
+    #actor {
+      position: absolute;
+      top: 0; left: 0;
+      width: 20px; height: 20px;
+      border-radius: 4px;
+      background-color: rgba(153,0,0,1.0);
+      visibility: hidden;
+    }
+    #actor.inplay {
+      visibility: visible;
+      /*transition: opacity 0.2s ease;*/
+    }
+    #stats {
+      position: absolute;
+      top: 0; right: 0;
+      width: 200px; height: 24px;
+      background-color: #000;
+      color: #fff;
+      z-index: 1;
+    }
+  </style>
+  <script type="text/javascript" defer>
+    (function(exports) {
+      var pool = [];
+      var _primingPool = true;
+
+      var Vector2 = function (x,y) {
+        this.x = x || 0;
+        this.y = y || 0;
+      };
+      Vector2.create = function(x, y) {
+        x = x || 0;
+        y = y || 0;
+        var v = pool.pop();
+        if (v) {
+          v.x = x;
+          v.y = y;
+        } else {
+          if (!_primingPool) {
+            console.log('pool empty, creating new Vector2');
+          }
+          v = new Vector2(x, y);
+        }
+        return v;
+      }
+      Vector2.prototype = {
+        reset: function ( x, y ) {
+          this.x = x;
+          this.y = y;
+          return this;
+        },
+        release: function() {
+          this.reset(0,0);
+          pool.push(this);
+        },
+        plusEq : function (v) {
+          this.x+=v.x;
+          this.y+=v.y;
+
+          return this;
+        }
+      };
+      // populate the pool
+      for(var i=0; i<100; i++) {
+        pool.push(new Vector2(0,0));
+      }
+      _primingPool = false;
+
+      exports.Vector2 = Vector2;
+    })(window);
+
+    (function(exports) {
+      var util = exports.util = {
+        clamp: function clamp(value, lbound, ubound) {
+          if (typeof lbound === 'number') {
+            value = Math.max(value, lbound);
+          }
+          if (typeof ubound === 'number') {
+            value = Math.min(value, ubound);
+          }
+          return value;
+        },
+        snapToZero: function(value, threshold) {
+          if (value < threshold) {
+            return 0;
+          }
+          return value;
+        },
+        sign: function (value) {
+         return value >= 0 ? 1 : -1;
+        }
+      };
+    })(window);
+
+    var frameClock = {
+      deltaSeconds: 0,
+      frameCount: 0,
+      lastFrameTime: 0
+    };
+
+    function stop() {
+      frameClock.running = false;
+      document.removeEventListener('keydown', keyboard)
+      document.removeEventListener('keyup', keyboard)
+    }
+
+    var actorNode, statsNode, statsCtx;
+
+    function start() {
+      stop();
+      document.addEventListener('keydown', keyboard)
+      document.addEventListener('keyup', keyboard)
+      window.keyboard.reset();
+
+      actorNode = document.getElementById('actor');
+      statsNode = document.getElementById('stats');
+      statsCtx = statsNode.getContext('2d');
+      statsCtx.font = '10px monospace';
+      statsCtx.textBaseline = 'bottom';
+      statsCtx.fillStyle = '#fff';
+
+      frameClock.running = true;
+      console.log('start loop at: ', Date.now());
+      frameTick(0);
+    }
+
+    function frameTick(time){
+      if (!time) {
+        frameClock.lastFrameTime = time = 0;
+      }
+      // fractions of a second since last update
+      frameClock.deltaSeconds = (time - frameClock.lastFrameTime)/1000;
+      frameClock.lastFrameTime = time;
+      if (frameClock.running) {
+        if (frameClock.deltaSeconds < 0.3) {
+          window.update(frameClock.deltaSeconds);
+          window.render();
+          frameClock.frameCount++;
+        }
+        requestAnimationFrame(frameTick);
+      } else {
+        stop();
+      }
+    };
+
+    (function(exports) {
+      // var Vector2 = v2.Vector2;
+      var player = exports.player = {
+        position: Vector2.create(1, 1),
+        velocity: Vector2.create(0, 0),
+       // dimensions in world meter units
+        width: 0.5,
+        height: 0.5,
+        name: 'some player', valueOf: function() { return '[Player]'; }
+      };
+      var pixelsToMeters = 50;
+      var spriteHeight = player.height * pixelsToMeters,
+          spriteWidth = player.width * pixelsToMeters;
+      var worldHeightInPx = window.innerHeight - 5;
+      var worldWidthInPx = window.innerWidth;
+      var world = {
+        height: Math.floor((worldHeightInPx / pixelsToMeters) * 10) / 10,
+        width: Math.floor((worldWidthInPx / pixelsToMeters) * 10) / 10
+      }
+      var renderCoord = { left: 0, top: 0 };
+      var velocityText = '';
+      var accelText = '';
+
+      exports.render = function() {
+        renderCoord.left = pixelsToMeters * player.position.x;
+        renderCoord.top = worldHeightInPx - spriteHeight - (pixelsToMeters * player.position.y);
+        // console.log('render x: %s, left: %s', player.position.x, left);
+        actorNode.style.transform = 'translate('+renderCoord.left+'px,'+renderCoord.top+'px)';
+        if (!actorNode.classList.contains('inplay')) {
+          actorNode.classList.add('inplay');
+        }
+        velocityText = player.velocity.x.toFixed(2) + '/' + player.velocity.y.toFixed(2);
+        accelText = player.accel.x.toFixed(2) + '/' +  player.accel.y.toFixed(2);
+        statsCtx.clearRect(0,0,200,24);
+        statsCtx.fillText('v:'+ (velocityText) + ', a:' + (accelText), 1, 18);
+      };
+
+      var airFriction = Vector2.create(-1, -1);
+      var surfaceFriction = Vector2.create(-5, -1);
+      var gravity = Vector2.create(0, -9);
+      var arrowAccel = Vector2.create(0, 0);
+      var keyBoost = 20;
+      var accel, p, v, friction;
+
+      exports.update = function(dt) {
+        accel = Vector2.create(0, 0);
+        p = player.position;
+        v = player.velocity;
+
+        arrowAccel.x = keyboard.LEFT ? -keyBoost : keyboard.RIGHT ? keyBoost : 0;
+        arrowAccel.y = keyboard.UP ? keyBoost : keyboard.DOWN ? -keyBoost : 0;
+        accel.plusEq(arrowAccel);
+        if (p.y > 0) {
+          accel.plusEq(gravity);
+        }
+        friction = p.y > 0.2 ? airFriction : surfaceFriction;
+        accel.x += friction.x * v.x;
+        accel.y += friction.y * v.y;
+
+        // newPosition = 1/2(a * deltat^2) + (v * deltat) + p
+        v.x += (accel.x * dt);
+        v.y += (accel.y * dt);
+        v.x = util.sign(v.x) * util.snapToZero(util.clamp(Math.abs(v.x), 0, 10), 0.15);
+        v.y = util.sign(v.y) * util.snapToZero(util.clamp(Math.abs(v.y), 0, 10), 0.15);
+
+        p.x += (v.x * dt);
+        p.y += (v.y * dt);
+
+        // check bounds
+        var bounds = {
+          y: { max: world.height - player.height, min: 0 },
+          x: { max: world.width - player.width, min: 0 }
+        };
+        ['x', 'y'].forEach(function(axis) {
+          if (p[axis] < bounds[axis].min) {
+            p[axis] = bounds[axis].min;
+            v[axis] = v[axis] * -0.3;
+            accel[axis] = 0;
+          }
+          if (p[axis] >= bounds[axis].max) {
+            p[axis] = bounds[axis].max;
+            v[axis] = v[axis] * -0.3;
+            accel[axis] = 0;
+          }
+        });
+        if (player.accel) {
+          player.accel.release();
+        }
+        player.accel = accel;
+      };
+
+      var keyboard = exports.keyboard = {
+        reset: function() {
+          this.LEFT = this.RIGHT = this.UP = this.DOWN = false;
+        },
+        handleEvent: function(evt) {
+          if (evt.keyCode > 40 || evt.keyCode < 37) return;
+          switch (evt.keyCode) {
+            case 37:
+              this.LEFT = evt.type === 'keydown';
+              break;
+            case 38:
+              this.UP = evt.type === 'keydown';
+              break;
+            case 39:
+              this.RIGHT = evt.type === 'keydown';
+              break;
+            case 40:
+              this.DOWN = evt.type === 'keydown';
+              break;
+            default:
+              return;
+          }
+          evt.stopPropagation();
+          evt.preventDefault();
+        }
+      };
+    })(window);
+    document.addEventListener('DOMContentLoaded',  start);
+  </script>
+</head>
+
+<body>
+  <section id="main" class="panel">
+    <h2>Movement update/render test</h2>
+    <p>
+      Use Arrow keys to move/jump
+    </p>
+    <div id="actor"></div>
+    <canvas id="stats" width=200 height=24></canvas>
+  </section>
+</body>
+</html>

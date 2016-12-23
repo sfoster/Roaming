@@ -1,3 +1,17 @@
+2016-11-06
+- Started rearranging things in region.html to remove need for array of tiles and always have by-id lookup
+- regionGrid becomes primary data structure, region.tiles is just source data.
+- "unload" location tiles as they fall out of the simulated area by persisting only those properties that need it?
+  - need to cancel any listeners and "freeze" to just capture state. Should be able to persist to disk and just replace with stub data.
+  - need game save file /strategy for this. Need sparse index of tiles with non-default state that can be thawed out when that tile becomes a part of a simulated area
+
+states: main menu -> world -> region -> tile/location -> combat/dialogue/examine
+paused/playing
+combat, dialogue,
+local map, world map
+menu
+turns?
+
 TODO:
 [x] work out lazy loading of map region and its entities (done, in region.html)
 [x] load 8 squares around player/"camera" - the current tile (done, in region.html)
@@ -18,6 +32,7 @@ TODO:
           place something in inventory/special items?
         npc:
           determine if hostile, start dialog/add message/start combat
+          we need combat system, we need npcs.
 
 
 [.]   actor/player

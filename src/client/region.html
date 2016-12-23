@@ -120,24 +120,51 @@
         { assign: 'lineWidth', value: 1 }
       ];
 
-      function createGridFromTilesArray(tiles) {
-        console.assert(tiles.length, 'empty tile stubs array passed to createGridFromTilesArray');
+      function createSimGrid() {}
+      function createRegionGridFromTilesArray(stubs) {
+        console.assert(stubs.length, 'empty tile stubs array passed to createGridFromTilesArray');
+
         var grid = {};
+        var tiles = grid.tiles = stubs.map(function(stub) {
+          if (!stub.id) {
+            stub.id = stub.x+','+stub.y;
+            stub.terrain = stub.type;
+            stub.regionId = regionId;
+          }
+          return stub;
+        });
+      });
+
+      function Grid() {
+
+      };
+      Grid.prototype = Object.create(Object.prototype);
+      Grid.prototype.constructor = Grid;
+      Grid.prototype.empty = function() {
+        Object.keys(this).forEach(function() {
+          this[i] = null;
+          delete this[i];
+        }, this);
+      }
+      Grid.prototype.updateFromArray = function(tiles) {
+        var self = this;
         var columnCount, rowCount;
         var rows = [], currRow, currY;
+
         tiles.forEach(function(tile) {
-          grid[tile.id] = tile;
           if (tile.y !== currY) {
             currRow = [];
             currY = tile.y;
             rows.push(currRow);
           }
+          self[tile.id] = tile;
           currRow.push(tile);
         });
-        Object.defineProperty(grid, "tiles", { value: tiles, enumerable: false });
+      };
+      Grid.prototype.rows =
         Object.defineProperty(grid, "rows", { value: rows });
-        Object.defineProperty(grid, 'rowCount', { value: rows.length });
-        Object.defineProperty(grid, 'columnCount', { value: rows[0].length });
+        Object.defineProperty(grid, 'rowCount', { value: this.rows.length });
+        Object.defineProperty(grid, 'columnCount', { value: this.rows[0].length });
         Object.defineProperty(grid, 'length', { value: tiles.length })
         console.assert(grid.length % grid.columnCount == 0,
                       'tiles appear to be uneven grid based on '+grid.columnCount+' columns');
@@ -168,6 +195,7 @@
               simIDs.push(grid.tiles[y * grid.columnCount + x]);
             }
           }
+
           console.log('getSimulatedTilesFromGrid, returning simIDs: ', simIDs.map((obj) => obj.id));
           return simIDs;
         },
@@ -180,16 +208,12 @@
           var tileid = config.tileid || '1,1';
           console.log('init with region: ', this.region, 'tileid: ', tileid);
 
-          this.tileStubs = this.region.tiles.map(function(stub){
-            stub.id = stub.x+','+stub.y;
-            stub.terrain = stub.type;
-            stub.regionId = regionId;
-            return stub;
-          });
           // create the grid structure for the whole region,
           // using the stub data we get from the region/index.
-          this.regionGrid = createGridFromTilesArray(this.tileStubs);
+          this.regionGrid = region.grid;
+          this.setupCanvas(this.region);
           this.centerOnTile(tileid);
+          this.registerEvents();
         },
         centerOnTile: function(tileid) {
           console.log('centerOnTile: %s', tileid);
@@ -199,11 +223,12 @@
           var currX = xy[0], currY = xy[1];
           var grid = this.regionGrid;
           console.log('got grid: ', grid);
-          var simGrid = createGridFromTilesArray(
+          var simGrid = this.simGrid = createGridFromTilesArray(
             this.getSimulatedTilesFromGrid(grid, currX, currY, APRON_SIZE)
           );
 
           // render the grid to the map canvas
+          console.log('centerOnTile: grid.tiles.length', grid.tiles.length);
           grid.tiles.forEach(function(tile){
             var scale = TILE_SIZE, x = scale*tile.x, y = scale*tile.y;
             console.assert(tile.terrain && tile.terrain in colors, tile.terrain + " is a valid color");
@@ -229,12 +254,10 @@
             }
           });
 
-          this.registerEvents();
-          this.setupCanvas(this.region);
           this.updateMapRenderLayers([ terrainMap, drawAxes() ]);
 
           var loadPromises = [];
-          grid.tiles.forEach(function(stub) {
+          grid.tiles.forEach(function(stub, idx) {
             if (simGrid[stub.id]) {
               if (isTileStub(stub)) {
                 // resolve stub to actual location entity
@@ -242,7 +265,10 @@
                 var resourceId = 'location/' + regionId + '/' + stub.id;
                 var promise = resolve.resolveResource(resourceId).then(function(locn) {
                   // console.log('resolve location: ', resourceId, locn);
-                  locn = util.mixin(stub, locn);
+                  console.log('Save stub: ', stub.id, stub);
+                  locn = util.mixin({
+                    _stub: stub
+                  }, stub, locn);
                   locn = Tile.fillDefaults(locn);
                   locn.here.forEach(function(item) {
                     Item.fillDefaults(item);
@@ -250,6 +276,7 @@
                   locn.encounters.forEach(function(item) {
                     Encounter.fillDefaults(item);
                   });
+                  simGrid[stub.id] = locn;
                   return locn;
                   // locn.npcs.forEach(function(item) {
                   //   Item.fillDefaults(item);
@@ -266,12 +293,12 @@
                 // leave it
               } else {
                 // freeze it
-                console.log('tile %s loaded but outside sim area', stub.id);
+                console.log('tile %s loaded but now falls outside sim area', stub.id, stub._stub);
+                grid.tiles[idx] = stub._stub;
               }
             }
           });
           Promise.all(loadPromises).then(function(locations, idx) {
-            this.tiles = locations;
             this.updateTiles();
           }.bind(this));
         },
@@ -336,7 +363,11 @@
           });
         },
         updateTiles: function() {
-          var tiles = this.tiles;
+          var grid = this.simGrid;
+          console.log('updateTiles: ', grid.tiles);
+          var tiles = grid.tiles.filter(function(tile) {
+            return (tile.id in grid);
+          });
           var itemTemplate = trim(document.getElementById('itemTemplate').innerHTML);
           itemTemplate = template(itemTemplate);
           var tileTemplate = trim(document.getElementById('tileTemplate').innerHTML);
@@ -370,6 +401,7 @@
         console.log('loaded region: ', regionId);
         document.getElementById('region-raw-data').innerHTML = '<pre>'
           + JSON.stringify(regionData, null, 1) + '</pre>';
+        initRegion(regionData);
         ui.init(regionData);
 
         setTimeout(function(){
@@ -379,6 +411,9 @@
         }, 0);
       });
 
+      function initRegion(region) {
+        region.grid = createRegionGridFromTilesArray(region.tiles);
+      }
       // region.loadTiles(ids).then(function(tiles){
       //   // sanity check that all tiles look good
       //   console.assert(0 === missingIds.length, "Tiles without ids: ", missingIds);

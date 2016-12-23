@@ -79,6 +79,7 @@
 <script src="./vendor/require.js"></script>
 <script src="./config.js"></script>
 <script>
+  var exports = window.exports = {};
   require([
     'lib/util',
     'lib/resolve',
@@ -258,15 +259,6 @@
       mainUI.init();
     });
 
-    // viewModel.here.subscribe(function(change){
-    //   tile.here = ko.mapping.toJS(viewModel.here);
-    //   console.log("tile.here: ", tile.here);
-    // });
-
-    // viewModel.player.inventory.subscribe(function(newValue){
-    //   player.inventory = ko.mapping.toJS(viewModel.player.inventory);
-    //   console.log("inventory change: ", player.inventory);
-    // });
   });
 </script>
 </body>
