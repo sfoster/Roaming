@@ -35,7 +35,7 @@ define(function(util){
         name = name.replace(trimRe, '$1');
         if(!(name in obj)){
           // TODO: here would be a good place to instrument for error logging
-          console.warn("Missing template property "+ name + " in data: ", obj, " from template: ", tmpl);
+          console.warn("Missing template property '"+ name + "' in data: ", obj); // , " from template: ", tmpl);
         }
         switch(filter){
           case '{':
