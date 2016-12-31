@@ -1,12 +1,9 @@
 console.log('loading region-ui');
 define([
   'lib/util',
-  'lib/resolve',
-  'resources/location',
-  'resources/item',
-  'resources/encounter',
+  'resources/region',
   'resources/template'
-], function(util, resolve, Tile, Item, Encounter, template) {
+], function(util, Region, template) {
 
   function trim(str) {
     // TODO: make sure we have a shim
@@ -16,10 +13,6 @@ define([
     return ar.map(function(item){
       return item[p];
     });
-  }
-
-  function isTileStub(tile) {
-    return !tile.hasOwnProperty('here');
   }
 
   function drawAxes(opts) {
@@ -48,39 +41,6 @@ define([
         this.opts[key] = opts[key];
       }
     },
-    isTileStub: isTileStub,
-    unloadTile: function(tile) {
-      if (typeof tile === 'string') {
-        tile = this.regionGrid.byId(tile)
-      }
-      if (!this.isTileStub(tile)) {
-        console.log('unloadTile: unloading %s', tile.id);
-        // TODO: signal that we're unloading the tile?
-        this.regionGrid.update(tile.id, tile._stub);
-      }
-    },
-    getSimulatedTileIdMap: function(grid, centerX, centerY, apronSize) {
-     console.log('getSimulatedTileIdMap: centerX: %s, centerY: %s, apronSize: %s',
-                  centerX, centerY, apronSize);
-      var minX = Math.max(0, centerX - apronSize),
-          minY = Math.max(0, centerY - apronSize);
-      var maxX = Math.min(centerX + apronSize, grid.columnCount -1);
-      var maxY = Math.min(centerY + apronSize, grid.rowCount -1);
-      var sliceSize = 1 + (2 * apronSize);
-
-      var simTiles = {};
-      var tile;
-      var tileRows = grid.rows;
-      // grab the surrounding tiles
-      for(var y=minY; y<=maxY; y++) {
-        for(var x=minX; x<=maxX; x++) {
-          tile = grid.atXY(x,y);
-          console.assert(tile, 'found tile at '+x+','+y);
-          simTiles[tile.id] = tile;
-        }
-      }
-      return simTiles;
-    },
     init: function(region) {
       this.region = region;
       var regionId = this.id = region.id;
@@ -104,8 +64,10 @@ define([
       });
       var currX = xy[0], currY = xy[1];
       var regionGrid = this.regionGrid;
-      var simLookup = this.getSimulatedTileIdMap(regionGrid, currX, currY, this.opts.APRON_SIZE);
-      this.simLookup = simLookup;
+
+      Region.updateSimulationAreaAtCoords(this.region, currX, currY, this.opts.APRON_SIZE);
+      var simLookup = this.region.simLookup;
+
       var tileSize = this.opts.TILE_SIZE;
       var colors = this.opts.colors;
       var terrainMap = this.opts.terrainMap;
@@ -140,52 +102,9 @@ define([
 
       this.updateMapRenderLayers([ terrainMap, drawAxes(this.opts) ]);
 
-      var loadPromises = [];
-      regionTiles.forEach((stub, idx) => {
-        if (stub.id in simLookup) {
-          console.log('centerOnTile: tile %s in sim area, needs loading?', stub.id, isTileStub(stub));
-          if (isTileStub(stub)) {
-            // resolve stub to actual location entity
-            var resourceId = 'location/' + regionId + '/' + stub.id;
-            var promise = resolve.resolveResource(resourceId).then(function(locn) {
-              // console.log('resolve location: ', resourceId, locn);
-              var tile = util.mixin({
-                _stub: stub
-              }, stub, locn);
-              Tile.fillDefaults(tile);
-              tile.here.forEach(function(item) {
-                Item.fillDefaults(item);
-              });
-              tile.encounters.forEach(function(item) {
-                Encounter.fillDefaults(item);
-              });
-              regionGrid.update(tile.id, tile);
-              console.log('Replaced tile stub: ', tile.id, tile);
-              // locn.npcs.forEach(function(item) {
-              //   Item.fillDefaults(item);
-              // });
-              return tile;
-            });
-            loadPromises.push(promise);
-          } else {
-            // already loaded, leave it
-            console.log('tile %s in sim area, but is already loaded', stub.id);
-          }
-        } else {
-          console.log('centerOnTile: tile %s outside sim area, is stub?', isTileStub(stub.id), stub);
-          if (isTileStub(stub)) {
-            console.log('leave tile %s as-is', stub.id);
-            // leave it
-          } else {
-            // freeze it
-            console.log('tile %s loaded but now falls outside sim area', stub.id, stub._stub);
-            this.unloadTile(stub.id);
-          }
-        }
-      });
-      Promise.all(loadPromises).then(function(locations, idx) {
+      Region.updateSimulatedTiles(this.region).then((locations, idx) => {
         this.updateTiles();
-      }.bind(this));
+      });
     },
     registerEvents: function() {
       document.getElementById('mapCanvas')
@@ -248,7 +167,7 @@ define([
       });
     },
     updateTiles: function() {
-      var simLookup = this.simLookup;
+      var simLookup = this.region.simLookup;
       console.log('updateTiles: ', simLookup);
       var simTiles = Object.keys(simLookup).map(id => this.regionGrid.byId(id));
       var itemTemplate = trim(document.getElementById('itemTemplate').innerHTML);
