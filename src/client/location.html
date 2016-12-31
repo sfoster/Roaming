@@ -131,12 +131,12 @@
       console.log('playerData:', playerData);
       Promise.all([
         resolve.resolveObjectProperties(Tile.fillDefaults(tileData)).then(function(resolvedTile) {
-          tile = window.tile = resolvedTile;
+          tile = window.currentTile = resolvedTile;
         }, function(err) {
           console.warn("Error resolving tileData:", tileData);
         }),
         resolve.resolveObjectProperties(Player.fillDefaults(playerData)).then(function(resolvedPlayer) {
-          player = window.player = resolvedPlayer;
+          player = window.thePlayer = resolvedPlayer;
           console.log('resolved player: ', player);
         })
       ]).then(function () {
@@ -170,7 +170,7 @@
         ui.updateLocation(tile);
         if (tile.encounters && tile.encounters.length) {
           tile.encounters.forEach(function(encounter) {
-            Encounter.startEncounter(encounter, window.player || {}, tile, window.game || {});
+            Encounter.startEncounter(encounter, player, tile, game);
           })
         }
       };

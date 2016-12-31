@@ -1,6 +1,7 @@
 define([
-  'lib/util'
-], function(util){
+  'lib/util',
+  'resources/player'
+], function(util, Player){
 
   var encounter = {
     fillDefaults: function(data) {
@@ -37,10 +38,15 @@ define([
       npcStart: function(encounter, player, tile, game) {
         var npcs = tile.npcs;
         console.log('npc encounter start, this: ', encounter);
-        if (player.enemyOf(npcs)) {
-          game.beginCombat()
+        if (npcs.some(npc => {
+          return Player.areEnemies(player, npc);
+        }))
+        {
+          console.log('enemies present:', npcs);
+          // game.beginCombat()
+        } else {
+          alert(npcs.length + ' ' + encounter.grouptype + ' are present');
         }
-        alert(npcs.length + ' ' + encounter.grouptype + ' are present');
       },
       npcEnd: function(encounter, player, tile, game) {
         var npcs = tile.npcs;

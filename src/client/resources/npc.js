@@ -7,6 +7,7 @@ define([], function(){
   npc.goblin = {
     name: 'Goblin',
     icon: 'resources/graphics/GoblinIcon.png',
+    affinity: 'monster',
     strength: 4,
     hp: 10,
     mp: 0,
@@ -16,6 +17,7 @@ define([], function(){
   };
   npc.goblinChamp = {
     name: 'Goblin Champion',
+    affinity: 'monster',
     strength: 6,
     hp: 20,
     mp: 0,
@@ -25,6 +27,7 @@ define([], function(){
   };
   npc.goblinShaman = {
     name: 'Goblin Shaman',
+    affinity: 'monster',
     strength: 2,
     hp: 5,
     mp: 10,
@@ -36,6 +39,7 @@ define([], function(){
   };
   npc.goblinWarlord = {
     name: 'Goblin Warlord',
+    affinity: 'monster',
     strength: 8,
     hp: 30,
     mp: 0,
@@ -45,6 +49,7 @@ define([], function(){
   };
 npc.juvinileTroll = {
     name: 'Juvenile Troll',
+    affinity: 'monster',
     strength: 10,
     hp: 50,
     mp: 0,
@@ -53,16 +58,18 @@ npc.juvinileTroll = {
     terrain: ["marsh", "mountains", "plains", "forest", "barren"]
   };
   npc.troll = {
-      name: 'troll',
-      strength: 16,
-      hp: 60,
-      mp: 0,
-      range: 'short',
-      evasion: 2,
-      terrain: ["marsh", "mountains", "plains", "forest", "barren"]
+    name: 'troll',
+    affinity: 'monster',
+    strength: 16,
+    hp: 60,
+    mp: 0,
+    range: 'short',
+    evasion: 2,
+    terrain: ["marsh", "mountains", "plains", "forest", "barren"]
   };
   npc.trollElder = {
     name: 'Troll Elder',
+    affinity: 'monster',
     strength: 4,
     hp: 25,
     mp: 20,
@@ -75,6 +82,7 @@ npc.juvinileTroll = {
 
   npc.trollHulk = {
     name: 'Troll Hulk',
+    affinity: 'monster',
     strength: 20,
     hp: 80,
     mp: 0,
@@ -84,6 +92,7 @@ npc.juvinileTroll = {
   };
   npc.hugeRat = {
     name: 'Huge Rat',
+    affinity: 'monster',
     strength: 4,
     hp: 10,
     mp: 0,
@@ -93,6 +102,7 @@ npc.juvinileTroll = {
   };
   npc.giantRat = {
     name: 'Giant Rat',
+    affinity: 'monster',
     strength: 6,
     hp: 20,
     mp: 0,
@@ -102,6 +112,7 @@ npc.juvinileTroll = {
   };
   npc.mutantRat = {
     name: 'Mutant Rat',
+    affinity: 'monster',
     strength: 2,
     hp: 5,
     mp: 10,
@@ -113,6 +124,7 @@ npc.juvinileTroll = {
   };
   npc.ratLord = {
     name: 'Rat Lord',
+    affinity: 'monster',
     strength: 8,
     hp: 30,
     mp: 0,
@@ -122,6 +134,7 @@ npc.juvinileTroll = {
   };
   npc.anaconda = {
     name: 'Anaconda',
+    affinity: 'wildlife',
     strength: 18,
     hp: 50,
     mp: 0,
@@ -131,6 +144,7 @@ npc.juvinileTroll = {
   };
   npc.gaintAdder = {
     name: 'Gaint Adder',
+    affinity: 'monster',
     strength: 6,
     hp: 15,
     mp: 20,
@@ -141,8 +155,9 @@ npc.juvinileTroll = {
     // Giant Adder has Strong Venom ability
     // ( damage reccurs for 3-4 turns after attack )
   };
-  npc.gaintCobra= {
+  npc.gaintCobra = {
     name: 'Gaint Cobra',
+    affinity: 'monster',
     strength: 22,
     hp: 70,
     mp: 10,
@@ -154,6 +169,7 @@ npc.juvinileTroll = {
   };
   npc.wildcat = {
     name: 'Wildcat',
+    affinity: 'wildlife',
     strength: 8,
     hp: 30,
     mp: 0,
@@ -163,6 +179,7 @@ npc.juvinileTroll = {
   };
   npc.angryDog = {
     name: 'Angry Dog',
+    affinity: 'monster',
     strength: 10,
     hp: 35,
     mp: 0,
@@ -172,6 +189,7 @@ npc.juvinileTroll = {
   };
   npc.cheetah = {
     name: 'Cheetah',
+    affinity: 'wildlife',
     strength: 10,
     hp: 35,
     mp: 0,
@@ -181,6 +199,7 @@ npc.juvinileTroll = {
   };
   npc.angryWolf = {
     name: 'Angry Wolf',
+    affinity: 'monster',
     strength: 12,
     hp: 40,
     mp: 0,
@@ -190,16 +209,17 @@ npc.juvinileTroll = {
   };
   npc.tiger = {
     name: 'Tiger',
+    affinity: 'wildlife',
     strength: 14,
     hp: 40,
     mp: 0,
     range: 'short',
     evasion: 28,
     terrain: ["marsh", "forest"]
-
   };
   npc.bear = {
     name: 'Bear',
+    affinity: 'wildlife',
     strength: 20,
     hp: 50,
     mp: 0,
@@ -209,6 +229,7 @@ npc.juvinileTroll = {
   };
   npc.sickCat = {
     name: 'Sick Cat',
+    affinity: 'monster',
     strength: 4,
     hp: 10,
     mp: 50,
@@ -220,6 +241,7 @@ npc.juvinileTroll = {
   };
  npc.rabidDog = {
     name: 'Rabid Dog',
+    affinity: 'monster',
     strength: 10,
     hp: 35,
     mp: 50,
@@ -231,6 +253,7 @@ npc.juvinileTroll = {
   };
   npc.lioness = {
     name: 'Lioness',
+    affinity: 'wildlife',
     strength: 20,
     hp: 50,
     mp: 0,
@@ -240,6 +263,7 @@ npc.juvinileTroll = {
   };
    npc.horse = {
     name: 'Horse',
+    affinity: 'wildlife',
     strength: 14,
     hp: 60,
     mp: 0,
@@ -248,6 +272,7 @@ npc.juvinileTroll = {
   };
   npc.lion = {
     name: 'Lion',
+    affinity: 'wildlife',
     strength: 15,
     hp: 60,
     mp: 0,
@@ -257,6 +282,7 @@ npc.juvinileTroll = {
   };
   npc.chimpanzee = {
     name: 'Chimpanzee',
+    affinity: 'wildlife',
     strength: 18,
     hp: 40,
     mp: 0,
@@ -265,6 +291,7 @@ npc.juvinileTroll = {
   };
   npc.gorrila = {
     name: 'Gorrila',
+    affinity: 'wildlife',
     strength: 22,
     hp: 60,
     mp: 0,
@@ -274,6 +301,7 @@ npc.juvinileTroll = {
   };
   npc.centaur = {
     name: 'Centaur',
+    affinity: 'wildlife',
     strength: 16,
     hp: 50,
     mp: 0,
@@ -283,6 +311,7 @@ npc.juvinileTroll = {
   };
   npc.orc = {
     name: 'Orc',
+    affinity: 'monster',
     strength: 26,
     hp: 90,
     mp: 0,
@@ -292,6 +321,7 @@ npc.juvinileTroll = {
   };
   npc.bull = {
     name: 'Bull',
+    affinity: 'wildlife',
     strength: 30,
     hp: 75,
     mp: 0,
@@ -301,6 +331,7 @@ npc.juvinileTroll = {
   };
   npc.minotaur = {
     name: 'Minotaur',
+    affinity: 'monster',
     strength: 40,
     hp: 100,
     mp: 0,
@@ -310,6 +341,7 @@ npc.juvinileTroll = {
   };
   npc.humanSoldier = {
     name: 'Soldier',
+    affinity: 'indigene',
     strength: 8,
     hp: 25,
     mp: 0,
@@ -319,6 +351,7 @@ npc.juvinileTroll = {
   };
   npc.humanLongbowman = {
     name: 'Longbowman',
+    affinity: 'indigene',
     strength: 10,
     hp: 20,
     mp: 0,
@@ -328,6 +361,7 @@ npc.juvinileTroll = {
   };
   npc.humanKnight = {
     name: 'Knight',
+    affinity: 'indigene',
     strength: 20,
     hp: 60,
     mp: 0,
@@ -337,6 +371,7 @@ npc.juvinileTroll = {
   };
   npc.humanElite = {
     name: 'Elite Warrior',
+    affinity: 'indigene',
     strength: 30,
     hp: 75,
     mp: 30,
@@ -347,6 +382,7 @@ npc.juvinileTroll = {
 
   npc.harpy = {
     name: 'Harpy',
+    affinity: 'monster',
     strength: 15,
     hp: 15,
     mp: 0,
@@ -356,6 +392,7 @@ npc.juvinileTroll = {
   };
    npc.mammoth = {
     name: 'Mammoth',
+    affinity: 'wildlife',
     strength: 60,
     hp: 300,
     mp: 0,
@@ -364,7 +401,8 @@ npc.juvinileTroll = {
     terrain: ["ice", "mountains"]
   };
    npc.giant = {
-    name: 'Gaint',
+    name: 'Giant',
+    affinity: 'monster',
     strength: 50,
     hp: 300,
     mp: 0,
@@ -374,6 +412,7 @@ npc.juvinileTroll = {
   };
   npc.juggernaut = {
     name: 'Juggernaut',
+    affinity: 'monster',
     strength: 100,
     hp: 1000,
     mp: 0,
@@ -383,6 +422,7 @@ npc.juvinileTroll = {
   };
   npc.hdyra = {
     name: 'Hydra',
+    affinity: 'monster',
     strength: 120,
     hp: 300,
     mp: 50,
@@ -396,6 +436,7 @@ npc.juvinileTroll = {
   };
   npc.cyclop = {
     name: 'Cyclop',
+    affinity: 'monster',
     strength: 130,
     hp: 200,
     mp: 0,
@@ -406,6 +447,7 @@ npc.juvinileTroll = {
 
   npc.dragon = {
     name: 'Dragon',
+    affinity: 'monster',
     strength: 80,
     hp: 500,
     mp: 50,
@@ -417,6 +459,7 @@ npc.juvinileTroll = {
   };
   npc.theRoc = {
     name: 'The Roc',
+    affinity: 'monster',
     strength: 150,
     hp: 500,
     mp: 0,
@@ -433,6 +476,7 @@ npc.juvinileTroll = {
     type: "npc",
     name: "NPC", // by default
     level: 1,
+    affinity: 'monster',
     luck: 10/100,
     icon: "./resources/graphics/BaddieIcon.png",
     currentWeapon: 'claws', // by default
@@ -443,8 +487,8 @@ npc.juvinileTroll = {
     mana: 0
   };
 
-  Object.defineProperty(npc, 'fillDefaults', { get: function() {
-    return function(npcData) {
+  Object.defineProperty(npc, 'fillDefaults', {
+    value: function(npcData) {
       for(var i in npcDefaults) {
         if(!npcData.hasOwnProperty(i)) {
            npcData[i] = npcDefaults[i];
@@ -452,7 +496,7 @@ npc.juvinileTroll = {
       }
       return npcData;
     }
-  }});
+  });
   npc.defaults = npcDefaults;
 
   return npc;
