@@ -55,12 +55,14 @@
     require([
       'lib/util',
       'lib/resolve',
+      'lib/cellgrid',
       'resources/location',
       'resources/item',
       'resources/encounter',
       'resources/template'
-    ],function(util, resolve, Tile, Item, Encounter, template) {
-
+    ],function(util, resolve, CellGrid, Tile, Item, Encounter, template) {
+      window.CellGrid = CellGrid;
+      console.log('require callback, CellGrid: ', CellGrid);
       function trim(str) {
         // TODO: make sure we have a shim
         return str.trim();
@@ -131,91 +133,12 @@
           }
           return stub;
         });
-        var grid = new Grid(tiles);
+        console.log('createRegionGridFromTileStubsArray, CellGrid: ', CellGrid);
+        var grid = new CellGrid(tiles);
         console.log('createRegionGridFromTileStubsArray, created grid: ', grid);
         return grid;
       }
 
-      function Grid(cells) {
-        this.updateFromArray(cells);
-        console.assert(this.length % this.columnCount == 0,
-                      'cells appear to be uneven grid based on '+this.columnCount+' columns');
-      };
-      Grid.prototype = Object.create(Object.prototype, {
-        'rows' : {
-          get: function() { return this._rows; }
-        },
-        'rowCount': {
-          get: function() { return this._rows.length; }
-        },
-        'columnCount': {
-          get: function() {
-            return this._rows.length ? this._rows[0].length : -1;
-          }
-        },
-        'length': {
-          get: function() {
-            return this._rows.reduce(function(result, cols) {
-              return result + cols.length;
-            }, 0);
-          }
-        },
-        ids: {
-          get: function() {
-            return Object.keys(this._byId);
-          }
-        }
-      });
-      Grid.prototype.constructor = Grid;
-      Grid.prototype.empty = function() {
-        Object.keys(this).forEach(function(pname) {
-          this[pname] = null;
-          delete this[pname];
-        }, this);
-        return this;
-      };
-      Grid.prototype.updateFromArray = function(cells) {
-        var self = this;
-        var rows = this._rows = [];
-        var byId = this._byId = {};
-        var currRow, currY;
-        var offsetX = cells.length;
-        var offsetY = offsetX;
-
-        cells.forEach(function(cell) {
-          if (cell.x < offsetX) {
-            offsetX = cell.x;
-          }
-          if (cell.y < offsetY) {
-            offsetY = cell.y;
-          }
-        });
-        this.offsetX = offsetX;
-        this.offsetY = offsetY;
-
-        cells.forEach(function(cell) {
-          if (cell.y !== currY) {
-            currY = cell.y;
-            currRow = rows[currY-offsetY] = [];
-          }
-          // for by-id lookup
-          self._byId[cell.id] = cell;
-          currRow[cell.x-offsetX] = cell;
-        });
-      };
-      Grid.prototype.flatten = function() {
-        var cells = [];
-        this._rows.forEach(row => {
-          cells.push.apply(cells, row);
-        });
-        return cells;
-      };
-      Grid.prototype.byId = function(id) {
-        return this._byId[id];
-      };
-      Grid.prototype.update = function(id, cellValue) {
-        return (this._byId[id] = cellValue);
-      };
 
       function isTileStub(tile) {
         return !tile.hasOwnProperty('here');
@@ -225,8 +148,9 @@
         mapRenderlayers: [
           loadingLabel
         ],
-        createSimulatedTileGrid: function(grid, centerX, centerY, apronSize) {
-         console.log('createSimulatedTileGrid: centerX: %s, centerY: %s, apronSize: %s',
+        isTileStub: isTileStub,
+        getSimulatedTileIdMap: function(grid, centerX, centerY, apronSize) {
+         console.log('getSimulatedTileIdMap: centerX: %s, centerY: %s, apronSize: %s',
                       centerX, centerY, apronSize);
           var minX = Math.max(0, centerX - apronSize),
               minY = Math.max(0, centerY - apronSize);
@@ -234,16 +158,18 @@
           var maxY = Math.min(centerY + apronSize, grid.rowCount -1);
           var sliceSize = 1 + (2 * apronSize);
 
-          var simTiles = [];
+          var simTiles = {};
+          var tile;
+          var tileRows = grid.rows;
           // grab the surrounding tiles
           for(var y=minY; y<=maxY; y++) {
             for(var x=minX; x<=maxX; x++) {
-              simTiles.push(grid.rows[y][x]);
+              tile = grid.atXY(x,y);
+              console.assert(tile, 'found tile at '+x+','+y);
+              simTiles[tile.id] = tile;
             }
           }
-          console.log('createSimulatedTileGrid, using sim IDs: ', simTiles.map(tile => tile.id));
-          var simGrid = new Grid(simTiles);
-          return simGrid;
+          return simTiles;
         },
         init: function(region) {
           this.region = region;
@@ -268,8 +194,8 @@
           });
           var currX = xy[0], currY = xy[1];
           var regionGrid = this.regionGrid;
-          var simGrid = this.createSimulatedTileGrid(regionGrid, currX, currY, APRON_SIZE);
-          this.simGrid = simGrid;
+          var simLookup = this.getSimulatedTileIdMap(regionGrid, currX, currY, APRON_SIZE);
+          this.simLookup = simLookup;
 
           // render the grid to the map canvas
           console.log('centerOnTile: regionGrid.length', regionGrid.length);
@@ -287,7 +213,7 @@
               // { call: 'fillText', value: [ tile.id + ': ' + tile.terrain, 3+x, 3+y ] }
             );
             // TODO: also, load the image indicated and paint that in
-            if (simGrid.byId(tile.id)) {
+            if (tile.id in simLookup) {
               terrainMap.push(
                 {
                   assign: 'fillStyle',
@@ -303,10 +229,10 @@
 
           var loadPromises = [];
           regionTiles.forEach((stub, idx) => {
-            if (simGrid.byId(stub.id)) {
+            if (stub.id in simLookup) {
+              console.log('centerOnTile: tile %s in sim area, needs loading?', stub.id, isTileStub(stub));
               if (isTileStub(stub)) {
                 // resolve stub to actual location entity
-                console.log('tile %s in sim area, needs loading', stub.id);
                 var resourceId = 'location/' + regionId + '/' + stub.id;
                 var promise = resolve.resolveResource(resourceId).then(function(locn) {
                   // console.log('resolve location: ', resourceId, locn);
@@ -333,8 +259,12 @@
                 console.log('tile %s in sim area, but is already loaded', stub.id);
               }
             } else {
+              console.log('centerOnTile: tile %s outside sim area, is stub?', stub.id,
+                          isTileStub(regionUI.regionGrid.byId(stub.id)), stub);
+              console.log('centerOnTile: stub == regionUI.regionGrid.byId(stub.id)?',
+                          stub === regionUI.regionGrid.byId(stub.id));
               if (isTileStub(stub)) {
-                console.log('tile %s outside sim area, is stub', stub.id);
+                console.log('leave tile %s as-is', stub.id);
                 // leave it
               } else {
                 // freeze it
@@ -343,7 +273,11 @@
               }
             }
           });
+          console.log('centerOnTile, end gather load promised loop, 0,0 is stub?',
+                      regionUI.isTileStub(regionUI.regionGrid.byId('0,0')));
           Promise.all(loadPromises).then(function(locations, idx) {
+            console.log('centerOnTile, load promises callback',
+                      regionUI.isTileStub(regionUI.regionGrid.byId('0,0')));
             this.updateTiles();
           }.bind(this));
         },
@@ -408,9 +342,9 @@
           });
         },
         updateTiles: function() {
-          var simGrid = this.simGrid;
-          console.log('updateTiles: ', simGrid);
-          var simTiles = simGrid.ids.map(id => this.regionGrid.byId(id));
+          var simLookup = this.simLookup;
+          console.log('updateTiles: ', simLookup);
+          var simTiles = Object.keys(simLookup).map(id => this.regionGrid.byId(id));
           var itemTemplate = trim(document.getElementById('itemTemplate').innerHTML);
           itemTemplate = template(itemTemplate);
           var tileTemplate = trim(document.getElementById('tileTemplate').innerHTML);
