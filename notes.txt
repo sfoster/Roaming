@@ -1,3 +1,16 @@
+2016-12-30
+- region.html pretty much hooked up so you can get an overview of a region
+- location.html hooked up to detail whats at a given location/coordinate. It will start any encounters currently
+- combat.html not yet touched, todo:
+  - init/resolve a couple of npcs
+  - init a player
+  - need a mock location to save results to?
+  - refactor what's there to use library/helper approach rather than OO.
+  - need events emitted at each round, at each combat moment
+  - need example hooks for those events to update UI
+  - is combat automatic? Or directed. Maybe just offer a continue/flee at each round? That tests interupting a sequence
+  - combat completion
+
 2016-11-06
 - Started rearranging things in region.html to remove need for array of tiles and always have by-id lookup
 - regionGrid becomes primary data structure, region.tiles is just source data.

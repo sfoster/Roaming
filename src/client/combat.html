@@ -219,7 +219,12 @@
 <script src="./vendor/require.js"></script>
 <script type="text/javascript" src="./config.js"></script>
 <script>
-  require(['dollar', 'resources/npc', 'models/Player', 'models/npc'], function($, npc, Player, Npc){
+  require([
+    'lib/resolve',
+    'resources/npc',
+    'models/Player',
+    'models/npc'
+  ], function(resolve, npc, Player, Npc){
 
     var player = new Player({
      inventory: Player.initialInventory
