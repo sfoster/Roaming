@@ -99,15 +99,14 @@ define(function(){
       // update the entry in-place with new values.
       // return: the matched entry
       var entry = this.byId(newEntry.id);
-      var key;
       console.assert(entry, 'Attempt to update non-existent entry');
       console.assert(entry.id === newEntry.id, 'Attempt to update entry with mis-matching id');
-      for(key in entry) {
+      for(let key in entry) {
         if (!(key in newEntry)) {
           delete entry[key];
         }
       }
-      for(key in newEntry) {
+      for(let key in newEntry) {
         entry[key] = newEntry[key];
       }
       return entry;

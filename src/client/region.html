@@ -13,8 +13,8 @@
       overflow: hidden;
     }
     #map {
-      height: 80px;
       padding: 10px;
+      float: right;
     }
     #main {
       height: calc(100% - 100px);
@@ -146,6 +146,7 @@
         mapRenderlayers: [
           loadingLabel
         ],
+        isTileStub: isTileStub,
         getSimulatedTilesFromGrid: function(grid, centerX, centerY, apronSize) {
           console.log('getSimulatedTilesFromGrid: centerX: %s, centerY: %s, apronSize: %s',
                       centerX, centerY, apronSize);
@@ -229,12 +230,11 @@
                 // resolve stub to actual location entity
                 console.log('tile %s in sim area, needs loading', stub.id);
                 var resourceId = 'location/' + regionId + '/' + stub.id;
+                var frozenStub = JSON.stringify(stub);
                 var promise = resolve.resolveResource(resourceId).then(function(locn) {
                   // console.log('resolve location: ', resourceId, locn);
                   console.log('Save stub: ', stub.id, stub);
-                  locn = util.mixin({
-                    _stub: stub
-                  }, stub, locn);
+                  locn._stub = frozenStub;
                   locn = Tile.fillDefaults(locn);
                   locn.here.forEach(function(item) {
                     Item.fillDefaults(item);
@@ -258,9 +258,10 @@
                 console.log('tile %s outside sim area, is stub', stub.id);
                 // leave it
               } else {
-                // freeze it
+                // unload it and restore the stub
                 console.log('tile %s loaded but now falls outside sim area', stub.id, stub._stub);
-                grid.entries[idx] = stub._stub;
+                grid.updateEntry(JSON.parse(stub._stub));
+                console.log('updated grid entry:', grid.byId(stub.id));
               }
             }
           });
@@ -349,6 +350,7 @@
             });
             var viewModel = util.mixin({
               parentId: this.id,
+              regionId: this.id,
               hereListHTML: hereHTMLs.join('\n'),
               encountersListHTML: encounterHTMLs.join('\n'),
             }, tile);
