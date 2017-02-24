@@ -3,7 +3,7 @@
   "afar": "A flat plateau",
   "here": [
     {
-      "resource": "resources/items#edibleMushroom"
+      "$resource": "resources/items#edibleMushroom"
     }
   ],
   "id": "6,4",

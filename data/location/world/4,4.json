@@ -5,7 +5,7 @@
   "terrain": "mountains",
   "here": [
     {
-      "resource": "resources/items#rope"
+      "$resource": "resources/items#rope"
     }
   ]
 }

@@ -9,16 +9,16 @@
   "strength": 32,
   "mana": 64,
   "inventory": [
-    { "resource": "resources/weapons#fishingSpear" },
-    { "resource": "resources/items#boots" },
-    { "resource": "resources/items#cloak" },
-    { "resource": "resources/items#edibleMushroom" },
-    { "resource": "resources/items#lantern" }
+    { "$resource": "resources/weapons#fishingSpear" },
+    { "$resource": "resources/items#boots" },
+    { "$resource": "resources/items#cloak" },
+    { "$resource": "resources/items#edibleMushroom" },
+    { "$resource": "resources/items#lantern" }
   ],
   "equipped": {
     "boots": 1,
     "cloak": 1
 	},
-  "currentWeapon": { "resource": "resources/weapons#fishingSpear" },
+  "currentWeapon": { "$resource": "resources/weapons#fishingSpear" },
   "visits": []
 }

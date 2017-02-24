@@ -3,7 +3,7 @@
   "afar": "A flat plateau",
   "here": [
     {
-      "resource": "resources/items#hagStone"
+      "$resource": "resources/items#hagStone"
     }
   ],
   "npcs": [],
