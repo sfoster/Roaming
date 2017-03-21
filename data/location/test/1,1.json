@@ -9,8 +9,7 @@
   "encounters": [
     {
       "$resource": "resources/encounters#beginning",
-      "params": {
-      }
+      "params": {}
     }
   ]
 }

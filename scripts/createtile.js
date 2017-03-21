@@ -16,7 +16,7 @@ var delegate = function(proto, props){
 };
 
 function mixin(o, props){
-	for(var i in props) 
+	for(var i in props)
 	  o[i] = props[i];
 	return o;
 }
@@ -44,7 +44,7 @@ var tileDefaults = {
   "y": 2,
   "here": [],
   "id": "",
-  "type": "abyss"
+  "terrain": "abyss"
 };
 
 function update(obj, from) {
@@ -62,20 +62,20 @@ exports.setDirectory = function(toPath) {
 };
 
 exports.createTile = function createTile(params, callback) {
-  
+
   // modify region (e.g. to create new resource)
   // handle data as static files for now
   var coords, x, y;
   if(params.id) {
     var coords = params.id.split(',');
-    x = coords[0]; 
-    y = coords[1]; 
+    x = coords[0];
+    y = coords[1];
   } else if(('x' in params) && ('y' in params)) {
     params.id = params.x + ',' + params.y;
   }
   var id = params.id;
   assert(id);
-  
+
   var resourcePath = dir + '/' + id + '.json';
 
   var fileData;
@@ -90,7 +90,7 @@ exports.createTile = function createTile(params, callback) {
         if(callback) callback(null, fileData);
       }
     });
-    
+
   }
   if(fs.existsSync(resourcePath)) {
     try {
@@ -104,7 +104,7 @@ exports.createTile = function createTile(params, callback) {
       })
     } catch(e) {
       console.log("Bad data in " + resourcePath);
-      fileData = {};      
+      fileData = {};
     }
   } else {
     updateFile(fileData);

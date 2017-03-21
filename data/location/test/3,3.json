@@ -9,7 +9,7 @@
   "id": "3,3",
   "x": 3,
   "y": 3,
-  "terrain": "plains",
+  "terrain": "abyss",
   "encounters": [
     {
       "$resource": "resources/encounters#npc",

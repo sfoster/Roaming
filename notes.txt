@@ -1,3 +1,8 @@
+2017-02
+- Got the coord grid in to region.html, using it for region and simulated area
+- As tiles fall out of the sim area, they are unloaded and replaced with stub data
+- The basic lifecyle for tiles is still working, with behaviours/components lifecycle methods getting fired as we enter/leave a tile
+
 2016-11-06
 - Started rearranging things in region.html to remove need for array of tiles and always have by-id lookup
 - regionGrid becomes primary data structure, region.tiles is just source data.
@@ -16,7 +21,7 @@ TODO:
 [x] work out lazy loading of map region and its entities (done, in region.html)
 [x] load 8 squares around player/"camera" - the current tile (done, in region.html)
 [.] tiles may make reference to stuff going on in other tiles that requires us to pull them in too
-[.] enable unloading/freezing of tiles as they leave the 9
+[x] enable unloading/freezing of tiles as they leave the 9
     currently just using resolve.resolveResource(),
     need to use the region object to maintain state and stash these resolved tiles
     then freeze/thaw them as they move in/out of the simulation area

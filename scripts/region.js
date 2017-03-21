@@ -10,7 +10,7 @@ function createStubs(region) {
   var dir = path.join(__dirname, '..', 'data', 'location', region);
   var tile = require('./createtile');
       tile.setDirectory(dir);
-      
+
   var indexFile = path.join(dir, 'index.json');
   var jobs = [];
   jobs.start = jobs.next = function(){
@@ -19,12 +19,12 @@ function createStubs(region) {
       fn();
     }
   };
-  
+
   if(fs.existsSync(indexFile)) {
     fs.readFile(indexFile, function(err, contents){
       if(err) throw err;
       var tiles = JSON.parse(contents).tiles;
-      
+
       tiles.forEach(function(stub){
         jobs.push(function(){
           delete stub['$ref'];
@@ -34,14 +34,14 @@ function createStubs(region) {
           });
         });
       });
-      
+
       jobs.start();
       // console.log("tiles: ", tiles);
     });
   } else {
     console.log("No region index file at: ", indexFile);
   }
-  
+
   // var dir = path.join(_)
 }
 if(require.main === module){
