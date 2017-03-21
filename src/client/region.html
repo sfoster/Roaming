@@ -130,7 +130,6 @@
         var tiles = stubs.map(function(stub) {
           if (!stub.id) {
             stub.id = stub.x+','+stub.y;
-            stub.terrain = stub.type;
             stub.regionId = regionId;
           }
           return stub;
@@ -183,49 +182,19 @@
           this.centerOnTile(tileid);
           this.registerEvents();
         },
-        centerOnTile: function(tileid) {
-          console.log('centerOnTile: %s', tileid);
-          var xy = tileid.split(',').map(function(val) {
-            return parseInt(val);
-          });
-          var currX = xy[0], currY = xy[1];
+        update: function() {
           var grid = this.regionGrid;
-          console.log('got grid: ', grid);
+          var currX = this._currentTile.x,
+              currY = this._currentTile.y;
           var simTiles = this.getSimulatedTilesFromGrid(grid, currX, currY, APRON_SIZE)
           var simGrid = this.simGrid = new CoordGrid(simTiles);
 
-          // render the grid to the map canvas
-          console.log('centerOnTile: grid.length', grid.length);
-          grid.entries.forEach(function(tile){
-            var scale = TILE_SIZE, x = scale*tile.x, y = scale*tile.y;
-            console.assert(tile.terrain && tile.terrain in colors, tile.terrain + " is a valid color");
-
-            terrainMap.push(
-              { assign: 'strokeStyle', value: '#000' },
-              { assign: 'fillStyle', value: colors[tile.terrain] || colors[tile['default']] },
-              { call: 'fillRect', value: [x, y, scale, scale] },
-              { call: 'strokeRect', value: [x, y, scale, scale] }
-              // { assign: 'fillStyle', value: "#fff" },
-              // { call: 'fillText', value: [ tile.id + ': ' + tile.terrain, 3+x, 3+y ] }
-            );
-            // TODO: also, load the image indicated and paint that in
-            if (simGrid.byId(tile.id)) {
-              terrainMap.push(
-                {
-                  assign: 'fillStyle',
-                  value: (currX == tile.x && currY == tile.y) ?
-                         'rgba(255,51,51,1)' : 'rgba(255,204,102,1)'
-                },
-                { call: 'fillRect', value: [x + 0.5*TILE_SIZE, y + 0.5*TILE_SIZE, 3, 3] }
-              )
-            }
-          });
-
-          this.updateMapRenderLayers([ terrainMap, drawAxes() ]);
-
+          var simGrid = this.simGrid;
           var loadPromises = [];
+          console.log('update entries loop');
           grid.entries.forEach(function(stub, idx) {
             if (simGrid.byId(stub.id)) {
+              console.log('update entries loop, sim id: %s, is stub? %s', stub.id, isTileStub(stub));
               if (isTileStub(stub)) {
                 // resolve stub to actual location entity
                 console.log('tile %s in sim area, needs loading', stub.id);
@@ -233,7 +202,7 @@
                 var frozenStub = JSON.stringify(stub);
                 var promise = resolve.resolveResource(resourceId).then(function(locn) {
                   // console.log('resolve location: ', resourceId, locn);
-                  console.log('Save stub: ', stub.id, stub);
+                  console.log('update entries loop, stub loaded, save frozen stub: ', stub.id, stub);
                   locn._stub = frozenStub;
                   locn = Tile.fillDefaults(locn);
                   locn.here.forEach(function(item) {
@@ -265,10 +234,65 @@
               }
             }
           });
-          Promise.all(loadPromises).then(function(locations, idx) {
-            this.updateTiles();
+          return Promise.all(loadPromises);
+        },
+
+        render: function() {
+          // render the grid to the map canvas
+          var grid = this.regionGrid;
+          var simGrid = this.simGrid;
+          var currX = this._currentTile.x,
+              currY = this._currentTile.y;
+
+
+          console.log('render: grid.length', grid.length);
+
+          grid.entries.forEach(function(tile){
+            var scale = TILE_SIZE, x = scale*tile.x, y = scale*tile.y;
+            console.assert(tile.terrain && tile.terrain in colors, tile.terrain + " is a valid color");
+
+            terrainMap.push(
+              { assign: 'strokeStyle', value: '#000' },
+              { assign: 'fillStyle', value: colors[tile.terrain] || colors[tile['default']] },
+              { call: 'fillRect', value: [x, y, scale, scale] },
+              { call: 'strokeRect', value: [x, y, scale, scale] }
+              // { assign: 'fillStyle', value: "#fff" },
+              // { call: 'fillText', value: [ tile.id + ': ' + tile.terrain, 3+x, 3+y ] }
+            );
+            // TODO: also, load the image indicated and paint that in
+            if (simGrid.byId(tile.id)) {
+              terrainMap.push(
+                {
+                  assign: 'fillStyle',
+                  value: (currX == tile.x && currY == tile.y) ?
+                         'rgba(255,51,51,1)' : 'rgba(255,204,102,1)'
+                },
+                { call: 'fillRect', value: [x + 0.5*TILE_SIZE, y + 0.5*TILE_SIZE, 3, 3] }
+              )
+            }
+          });
+
+          this.updateMapRenderLayers([ terrainMap, drawAxes() ]);
+          this.updateTiles();
+        },
+
+        centerOnTile: function(tileid) {
+          console.log('centerOnTile: %s', tileid);
+          var xy = tileid.split(',').map(function(val) {
+            return parseInt(val);
+          });
+          var currX = xy[0], currY = xy[1];
+          var grid = this.regionGrid;
+          console.log('got grid: ', grid);
+          this._currentTile = { x: xy[0], y: xy[1] };
+
+          var loaded = this.update();
+          this.render();
+          loaded.then(function() {
+            this.render();
           }.bind(this));
         },
+
         registerEvents: function() {
           document.getElementById('mapCanvas')
             .addEventListener('click', this);
@@ -313,7 +337,6 @@
             hn.scrollIntoView();
           }
           this.centerOnTile(tileid);
-
           // location.href = '?location='+region.id+'/'+tile_x+','+tile_y;
         },
         updateMapRenderLayers: function(layers) {
@@ -342,22 +365,37 @@
 
           var container = document.querySelector('#main > ul');
           var tilesHTMLs = tiles.map(function(tile) {
-            var hereHTMLs = (tile.here || []).map(function(item) {
-              return itemTemplate(item);
-            });
-            var encounterHTMLs = (tile.encounters || []).map(function(item) {
-              return itemTemplate(item);
-            });
-            var viewModel = util.mixin({
-              parentId: this.id,
-              regionId: this.id,
-              hereListHTML: hereHTMLs.join('\n'),
-              encountersListHTML: encounterHTMLs.join('\n'),
-            }, tile);
+            var viewModel;
+            if (this.isTileStub(tile)) {
+              viewModel = this.getTileStubViewModel(tile);
+            } else {
+              var hereHTMLs = (tile.here || []).map(function(item) {
+                return itemTemplate(item);
+              });
+              var encounterHTMLs = (tile.encounters || []).map(function(item) {
+                return itemTemplate(item);
+              });
+              viewModel = util.mixin({
+                parentId: this.id,
+                regionId: this.id,
+                hereListHTML: hereHTMLs.join('\n'),
+                encountersListHTML: encounterHTMLs.join('\n'),
+              }, tile);
+            }
             var tileHTML = tileTemplate(viewModel);
             return tileHTML;
           }, this);
           container.innerHTML = tilesHTMLs.join('\n');
+        },
+        getTileStubViewModel: function(tile) {
+          return util.mixin({
+            parentId: this.id,
+            regionId: this.id,
+            terrain: 'stub',
+            description: 'stub',
+            hereListHTML: '',
+            encountersListHTML: '',
+          }, tile);
         },
         toggleRawData: function(evt) {
           document.getElementById('region-raw-data').classList.toggle('showing');
