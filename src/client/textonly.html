@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Region Test</title>
+
+  <script src="./vendor/require.js"></script>
+  <script src="./config.js"></script>
+
+  <script type="text/javascript">
+  "use strict";
+    var locn = config.location || 'test/3,3';
+    console.log('config: ', config);
+    var [regionId, startTileId] = locn.split('/');
+    var APRON_SIZE = 1;
+    var VERBOSE = false;
+    require([
+      'lib/util',
+      'lib/resolve',
+      'lib/grid',
+      'resources/location',
+      'resources/item',
+      'resources/encounter',
+      'resources/player',
+      'resources/template',
+    ],function(util, resolve,
+               CoordGrid, Tile, Item, Encounter, Player, template) {
+
+      window.gPlayer = null;
+      window.gRegion = null;
+
+      Promise.all([
+        resolve.resolveResource('location/' + regionId + '/index'),
+        resolve.resolveResource('location/' + regionId + '/' + startTileId ),
+        resolve.resolveResource('player/' + (config.playerid || 'guest')).then(function(playerData) {
+          return resolve.resolveObjectProperties(Player.fillDefaults(playerData));
+        })
+      ]).then(function(results) {
+        let [regionData, tileData, player] = results;
+        gPlayer = player;
+        console.log('loaded region: ', regionId);
+        window._rawRegionData = regionData;
+        var region = gRegion = initRegion(regionData);
+        console.log('loaded player: ', player);
+        if (config.location) {
+          player.currentCoord = startTileId;
+          player.currentRegion = regionId;
+        }
+        ui.init(region, tileData, player);
+      });
+      // 'plugins/vendor/json!player/'+(config.playerid || 'guest') + '.json'
+
+      function createSimGrid(tiles) {
+        return new CoordGrid(tiles);
+      }
+      function createRegionGridFromTilesArray(stubs) {
+        console.assert(stubs.length, 'empty tile stubs array passed to createRegionGridFromTilesArray');
+
+        var tiles = stubs.map(function(stub) {
+          if (!stub.id) {
+            stub.id = stub.x+','+stub.y;
+            stub.regionId = regionId;
+          }
+          return stub;
+        });
+        return new CoordGrid(tiles);
+      };
+
+      function isTileStub(tile) {
+        return !tile.hasOwnProperty('here');
+      }
+      var ui = window.regionUI = {
+        tiles: [],
+        isTileStub: isTileStub,
+        getSimulatedTilesFromGrid: function(grid, centerX, centerY, apronSize) {
+          console.log('getSimulatedTilesFromGrid: centerX: %s, centerY: %s, apronSize: %s',
+                      centerX, centerY, apronSize);
+          var minX = Math.max(0, centerX - apronSize),
+              minY = Math.max(0, centerY - apronSize);
+          var maxX = Math.min(centerX + apronSize, grid.columnCount -1);
+          var maxY = Math.min(centerY + apronSize, grid.rowCount -1);
+          var sliceSize = 1 + (2 * apronSize);
+
+          var simIDs = [];
+          // grab the surrounding tiles
+          for(var y=minY; y<=maxY; y++) {
+            for(var x=minX; x<=maxX; x++) {
+              simIDs.push(grid.atXY(x, y));
+            }
+          }
+
+          console.log('getSimulatedTilesFromGrid, returning simIDs: ', simIDs.map((obj) => obj.id));
+          return simIDs;
+        },
+        init: function(region, tileData, player) {
+          this.region = region;
+          var regionId = this.id = player.currentRegion || region.id;
+
+          var tileid = player.currentCoord || '1,1';
+          console.log('init with region: ', this.region, 'tileid: ', tileid);
+
+          var tileTemplate = document.getElementById('tileTemplate').innerHTML.trim();
+          this.templates = {};
+          this.templates.tile = template(tileTemplate);
+          console.log('defined templates.tile: ', this.templates.tile);
+          // create the grid structure for the whole region,
+          // using the stub data we get from the region/index.
+          this.regionGrid = region.grid;
+          this.player = player;
+          this.player.currentRegion = regionId;
+          this.centerOnTile(tileid);
+          this.registerEvents();
+        },
+        update: function() {
+          var grid = this.regionGrid;
+          var currX = this._currentTile.x,
+              currY = this._currentTile.y;
+          var simTiles = this.getSimulatedTilesFromGrid(grid, currX, currY, APRON_SIZE)
+          var simGrid = this.simGrid = new CoordGrid(simTiles);
+
+          var simGrid = this.simGrid;
+          var loadPromises = [];
+          VERBOSE && console.log('update entries loop');
+          grid.entries.forEach(function(stub, idx) {
+            if (simGrid.byId(stub.id)) {
+              VERBOSE && console.log('update entries loop, sim id: %s, is stub? %s', stub.id, isTileStub(stub));
+              if (isTileStub(stub)) {
+                // resolve stub to actual location entity
+                VERBOSE && console.log('tile %s in sim area, needs loading', stub.id);
+                var resourceId = 'location/' + regionId + '/' + stub.id;
+                var frozenStub = JSON.stringify(stub);
+                var promise = resolve.resolveResource(resourceId).then(function(locn) {
+                  // console.log('resolve location: ', resourceId, locn);
+                  VERBOSE && console.log('update entries loop, stub loaded, save frozen stub: ', stub.id, stub);
+                  locn._stub = frozenStub;
+                  locn = Tile.fillDefaults(locn);
+                  locn.here.forEach(function(item) {
+                    Item.fillDefaults(item);
+                  });
+                  locn.encounters.forEach(function(item) {
+                    Encounter.fillDefaults(item);
+                  });
+                  locn = simGrid.updateEntry(locn);
+                  return locn;
+                  // locn.npcs.forEach(function(item) {
+                  //   Item.fillDefaults(item);
+                  // });
+                });
+                loadPromises.push(promise);
+              } else {
+                // already loaded, leave it
+                VERBOSE && console.log('tile %s in sim area, but is already loaded', stub.id);
+              }
+            } else {
+              if (isTileStub(stub)) {
+                VERBOSE && console.log('tile %s outside sim area, is stub', stub.id);
+                // leave it
+              } else {
+                // unload it and restore the stub
+                VERBOSE && console.log('tile %s loaded but now falls outside sim area', stub.id, stub._stub);
+                grid.updateEntry(JSON.parse(stub._stub));
+                console.log('updated grid entry:', grid.byId(stub.id));
+              }
+            }
+          });
+          return Promise.all(loadPromises);
+        },
+
+        render: function() {
+          // render the grid to the map canvas
+          var grid = this.regionGrid;
+          var simGrid = this.simGrid;
+          var currX = this._currentTile.x,
+              currY = this._currentTile.y;
+          var tileid = currX+','+currY;
+          var tileHtml = this.getTileRendering(tileid);
+          document.querySelector('body > section').innerHTML = tileHtml;
+          // output something...
+        },
+        getTileRendering: function(id) {
+          var tile = this.regionGrid.byId(id);
+          console.log('getTileRendering: templates.tile: ', this.templates.tile);
+          if (!tile) {
+            throw "no tile at: " + id;
+          }
+          var viewModel;
+          if (this.isTileStub(tile)) {
+            viewModel = this.getTileStubViewModel(tile);
+          } else {
+            viewModel = util.mixin({
+              parentId: this.id,
+              regionId: this.id,
+              hereListHTML: '(todo: whats here)',
+              encountersListHTML: '(todo: whats going on)',
+            }, tile);
+            console.log('getTileRendering, viewModel: ', viewModel);
+
+            var  tileHTML = this.templates.tile(viewModel);
+            return tileHTML;
+          }
+        },
+        centerOnTile: function(tileid) {
+          console.log('centerOnTile: %s', tileid);
+          var xy = tileid.split(',').map(function(val) {
+            return parseInt(val);
+          });
+          var currX = xy[0], currY = xy[1];
+          var grid = this.regionGrid;
+          console.log('got grid: ', grid);
+          this._currentTile = { x: xy[0], y: xy[1] };
+          this.player.currentCoord = this._currentTile;
+          console.log('centerOnTile, updated currentCoord: ', this.player.currentCoord);
+
+          var loaded = this.update();
+          this.render();
+          loaded.then(function() {
+            this.render();
+          }.bind(this));
+        },
+
+        registerEvents: function() {
+        },
+        handleEvent: function(evt) {
+        },
+        updateTiles: function() {
+        },
+        getTileStubViewModel: function(tile) {
+          return util.mixin({
+            parentId: this.id,
+            regionId: this.id,
+            terrain: 'stub',
+            description: 'stub',
+            hereListHTML: '',
+            encountersListHTML: '',
+          }, tile);
+        },
+      };
+
+      var actions = window.actions = {
+        _goTo: function(deltaX, deltaY) {
+          var nextId = [
+            gPlayer.currentCoord.x + deltaX,
+            gPlayer.currentCoord.y + deltaY
+          ].join(',');
+          var nextTile = gRegion.grid.byId(nextId);
+          if (nextTile) {
+            ui.centerOnTile(nextTile.id);
+          } else {
+            console.warn('Cant go to: ', nextId);
+          }
+        },
+        goNorth: function() {
+          this._goTo(0, -1);
+        },
+        goEast: function() {
+          this._goTo(1, 0);
+        },
+        goWest: function() {
+          this._goTo(-1, 0);
+        },
+        goSouth: function() {
+          this._goTo(0, 1);
+        }
+      };
+      function initRegion(region) {
+        region.grid = createRegionGridFromTilesArray(region.tiles);
+        return region;
+      }
+    });
+  </script>
+</head>
+
+<body>
+  <section>
+    <h2>Region: <span id="region-id"></span></h2>
+    <div id="region-raw-data"></div>
+  </section>
+  <script type="text/template" id="tileTemplate">
+    <li>
+      <h2>Location:
+        <a id="jump_{id}" href="location.html?location={parentId}/{id}">{parentId} : {id}</a></h2>
+      <dl>
+        <dt>Region:</dt>
+        <dd>{regionId}</dd>
+        <dt>Terrain:</dt>
+        <dd>{terrain}</dd>
+        <dt>Description:</dt>
+        <dd>{description}</dd>
+      </dl>
+
+      <h2>Here</h2>
+      <ul data-from="here">
+        {hereListHTML}
+      </ul>
+      <h2>Encounters</h2>
+      <ul data-from="encounters">
+        {encountersListHTML}
+      </ul>
+    </li>
+  </script>
+
+</body>
+</html>
