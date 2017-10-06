@@ -1,3 +1,8 @@
+2017-03
+- Get the region index.json, tile data, region, createtile and fixtile scripts to agree that type is for the resource type, terrain is the short name for type of terrain.
+- see if centerOnTile will fit into an update/render structure
+-
+
 2017-02
 - Got the coord grid in to region.html, using it for region and simulated area
 - As tiles fall out of the sim area, they are unloaded and replaced with stub data

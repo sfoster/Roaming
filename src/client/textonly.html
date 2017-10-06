@@ -13,6 +13,11 @@
     var [regionId, startTileId] = locn.split('/');
     var APRON_SIZE = 1;
     var VERBOSE = false;
+
+    function coordToId(coord) {
+      return `${coord.x},${coord.y}`;
+    }
+
     require([
       'lib/util',
       'lib/resolve',
@@ -107,8 +112,17 @@
           this.regionGrid = region.grid;
           this.player = player;
           this.player.currentRegion = regionId;
-          this.centerOnTile(tileid);
-          this.registerEvents();
+          this.centerOnTile(tileid).then(() => {
+            this.registerEvents();
+            this.help();
+          });
+        },
+        help: function() {
+          console.info('Available actions: ');
+          for (let i in actions) {
+            if (i.startsWith('_')) continue;
+            console.info(`actions.${i}()`);
+          }
         },
         update: function() {
           var grid = this.regionGrid;
@@ -212,7 +226,7 @@
 
           var loaded = this.update();
           this.render();
-          loaded.then(function() {
+          return loaded.then(function() {
             this.render();
           }.bind(this));
         },
@@ -247,6 +261,16 @@
           } else {
             console.warn('Cant go to: ', nextId);
           }
+        },
+        inspectTile: function(id) {
+          id = id || coordToId(ui.player.currentCoord);
+          var tile = ui.simGrid.byId(id);
+          if (tile) {
+            console.log("tile %s is simulated:", id, tile);
+          } else {
+            console.log("tile %s is not simulated:", id, ui.regionGrid.byId(id));
+          }
+          console.log( id ? ui.regionGrid[id] : ui.player.currentCoord);
         },
         goNorth: function() {
           this._goTo(0, -1);
