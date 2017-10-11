@@ -19,6 +19,7 @@
     }
 
     require([
+      'lib/vue',
       'lib/util',
       'lib/resolve',
       'lib/grid',
@@ -27,7 +28,7 @@
       'resources/encounter',
       'resources/player',
       'resources/template',
-    ],function(util, resolve,
+    ],function(Vue, util, resolve,
                CoordGrid, Tile, Item, Encounter, Player, template) {
 
       window.gPlayer = null;
@@ -287,6 +288,16 @@
       };
       function initRegion(region) {
         region.grid = createRegionGridFromTilesArray(region.tiles);
+        // register
+        Vue.component('my-component', {
+          template: '<div>A custom component!</div>'
+        });
+        window.Vue = Vue;
+        // create a root instance
+        let frag = document.createDocumentFragment();
+        new Vue({
+          el: frag
+        });
         return region;
       }
     });
@@ -298,6 +309,10 @@
     <h2>Region: <span id="region-id"></span></h2>
     <div id="region-raw-data"></div>
   </section>
+  <div id="vue-stuff">
+    <my-component></my-component>
+  </div>
+
   <script type="text/template" id="tileTemplate">
     <li>
       <h2>Location:
