@@ -27,9 +27,8 @@
       'resources/item',
       'resources/encounter',
       'resources/player',
-      'resources/template',
     ],function(Vue, util, resolve,
-               CoordGrid, Tile, Item, Encounter, Player, template) {
+               CoordGrid, Tile, Item, Encounter, Player) {
 
       window.gPlayer = null;
       window.gRegion = null;
@@ -104,10 +103,45 @@
           var tileid = player.currentCoord || '1,1';
           console.log('init with region: ', this.region, 'tileid: ', tileid);
 
-          var tileTemplate = document.getElementById('tileTemplate').innerHTML.trim();
-          this.templates = {};
-          this.templates.tile = template(tileTemplate);
-          console.log('defined templates.tile: ', this.templates.tile);
+          this.components = {};
+          this.components.header = Vue.component("rm-header", {
+            template: '<h2>Region: <span id="region-id">{{regionId}}</span></h2>',
+            props: ['regionId'],
+          });
+
+          // register the tile components
+          this.components.tile = Vue.component("rm-tile", {
+            template: '#tileTemplate',
+            props: [
+              'regionId',
+              'tile',
+              // 'id',
+              // 'parentId',
+              // 'terrain', 'description',
+              // 'hereListHTML', 'encountersListHTML'
+            ],
+            computed: {
+              tileHref: function() {
+                return `location.html?location=${this.parentId}/${this.id}`;
+              },
+              jumpId: function() {
+                return 'jump_' + this.id;
+              }
+            },
+            // data: function() {
+            //   console.log('tile component, this: ', this.tile, this);
+            //   return {
+            //     id: this.tile.id,
+            //     parentId: this.tile.parentId,
+            //     terrain: this.tile.terrain,
+            //     description: this.tile.description,
+            //     hereListHTML: this.tile.hereListHTML,
+            //     encountersListHTML: this.tile.encountersListHTML,
+            //   };
+            // }
+          });
+          console.log('defined components.tile: ', this.components.tile);
+
           // create the grid structure for the whole region,
           // using the stub data we get from the region/index.
           this.regionGrid = region.grid;
@@ -187,13 +221,19 @@
           var currX = this._currentTile.x,
               currY = this._currentTile.y;
           var tileid = currX+','+currY;
-          var tileHtml = this.getTileRendering(tileid);
-          document.querySelector('body > section').innerHTML = tileHtml;
-          // output something...
+          // create Vue instance at the root of our view
+          // it will parse it for registered components
+          // and bind their view-models to the DOM
+          var tileViewModel = this.getTileViewModel(tileid);
+          console.log('getTileViewModel returned: ', tileViewModel);
+          window.vm = new Vue({
+            el: '#view-root',
+            data: { regionId, tile: tileViewModel }
+          });
         },
-        getTileRendering: function(id) {
+        getTileViewModel: function(id) {
           var tile = this.regionGrid.byId(id);
-          console.log('getTileRendering: templates.tile: ', this.templates.tile);
+          console.log('getTileRendering: components.tile: ', this.components.tile);
           if (!tile) {
             throw "no tile at: " + id;
           }
@@ -208,10 +248,8 @@
               encountersListHTML: '(todo: whats going on)',
             }, tile);
             console.log('getTileRendering, viewModel: ', viewModel);
-
-            var  tileHTML = this.templates.tile(viewModel);
-            return tileHTML;
           }
+          return viewModel;
         },
         centerOnTile: function(tileid) {
           console.log('centerOnTile: %s', tileid);
@@ -288,16 +326,7 @@
       };
       function initRegion(region) {
         region.grid = createRegionGridFromTilesArray(region.tiles);
-        // register
-        Vue.component('my-component', {
-          template: '<div>A custom component!</div>'
-        });
         window.Vue = Vue;
-        // create a root instance
-        let frag = document.createDocumentFragment();
-        new Vue({
-          el: frag
-        });
         return region;
       }
     });
@@ -305,34 +334,32 @@
 </head>
 
 <body>
-  <section>
-    <h2>Region: <span id="region-id"></span></h2>
+  <section id="view-root">
+    <h2 is="rm-header"></h2>
     <div id="region-raw-data"></div>
+    <div is="rm-tile" v-bind="tile"></div>
   </section>
-  <div id="vue-stuff">
-    <my-component></my-component>
-  </div>
 
-  <script type="text/template" id="tileTemplate">
+  <script type="text/x-template" id="tileTemplate">
     <li>
       <h2>Location:
-        <a id="jump_{id}" href="location.html?location={parentId}/{id}">{parentId} : {id}</a></h2>
+        <a v-bind:id="jumpId" v-bind:href="tileHref">{{parentId}} : {{id}}</a></h2>
       <dl>
         <dt>Region:</dt>
-        <dd>{regionId}</dd>
+        <dd>{{regionId}}</dd>
         <dt>Terrain:</dt>
-        <dd>{terrain}</dd>
+        <dd>{{terrain}}</dd>
         <dt>Description:</dt>
-        <dd>{description}</dd>
+        <dd>{{description}}</dd>
       </dl>
 
       <h2>Here</h2>
       <ul data-from="here">
-        {hereListHTML}
+        {{hereListHTML}}
       </ul>
       <h2>Encounters</h2>
       <ul data-from="encounters">
-        {encountersListHTML}
+        {{encountersListHTML}}
       </ul>
     </li>
   </script>
