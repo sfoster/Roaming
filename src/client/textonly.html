@@ -22,16 +22,18 @@
       'lib/vue',
       'lib/util',
       'lib/resolve',
+      'lib/event',
       'lib/grid',
       'resources/location',
       'resources/item',
       'resources/encounter',
       'resources/player',
-    ],function(Vue, util, resolve,
+    ],function(Vue, util, resolve, Evented,
                CoordGrid, Tile, Item, Encounter, Player) {
 
       window.gPlayer = null;
       window.gRegion = null;
+      window.Evented = Evented;
 
       Promise.all([
         resolve.resolveResource('location/' + regionId + '/index'),
@@ -98,66 +100,141 @@
         },
         init: function(region, tileData, player) {
           this.region = region;
-          var regionId = this.id = player.currentRegion || region.id;
+          var regionId = player.currentRegion || region.id;
 
           var tileid = player.currentCoord || '1,1';
-          console.log('init with region: ', this.region, 'tileid: ', tileid);
+          console.log('init with region: ' + this.region, 'tileid: ' + tileid);
+
+          function getVMData(tile, extraProps) {
+            let res = {};
+            for (let key in tile) {
+              if (key.startsWith('_')) continue;
+              if (key.startsWith('$')) continue;
+              if (key == "type") {
+                res["tiletype"] = tile[key];
+              } else if (key == "id") {
+                res["tileid"] = tile[key];
+              } else {
+                res[key] = tile[key];
+              }
+            };
+            Object.assign(res, extraProps);
+            console.log("prepared vmdata: ", res);
+            return res;
+          }
 
           this.components = {};
-          this.components.header = Vue.component("rm-header", {
-            template: '<h2>Region: <span id="region-id">{{regionId}}</span></h2>',
-            props: ['regionId'],
+          this.components.pageheader = Vue.component("pageheader", {
+            beforeCreate: function() {
+              console.log("beforeCreate, this: ", this);
+            },
+            template: '<h2>{{region}} / <span id="tile-coord">{{coord}}</span>, {{terrain}}</h2>',
+            props: {
+              regionId: String
+            },
+            computed: {
+              region: function() {
+                return this.$parent.regionId;
+              },
+              coord: function() {
+                return this.$parent.id;
+              },
+              terrain: function() {
+                return this.$parent.terrain;
+              },
+              description: function() {
+                return this.$parent.description;
+              }
+            },
+            created: function() {
+              Evented && Evented.on("tilechange", this.tileChange);
+            },
+            methods: {
+              tileChange: function(event) {
+                let tile = event.data;
+                console.log("header regionChange handler:", event);
+                for (let key in this._data) {
+                  if (tile.hasOwnProperty(key)) {
+                    this[key] = tile[key];
+                    console.log("updated " + key, this[key]);
+                  }
+                }
+              }
+            }
           });
+          console.log("Defined pageheader");
 
           // register the tile components
-          this.components.tile = Vue.component("rm-tile", {
+          this.components.tile = Vue.component("tile", {
             template: '#tileTemplate',
-            props: [
-              'regionId',
-              'tile',
-              // 'id',
-              // 'parentId',
-              // 'terrain', 'description',
-              // 'hereListHTML', 'encountersListHTML'
-            ],
+            props: {
+                'tileid' : String,
+                'tiletype' : String,
+                'regionId' : String,
+                'terrain': { type: String, required: false, default: 'not defined' },
+                'description': { type: String, required: false, default: 'not defined' },
+            },
+            data: function() {
+              return { parentId: this.regionId }
+            },
+            created: function() {
+              console.log("tile instance created: ", this);
+            },
+            methods: {
+              update: function() {
+                this.parentId = "Updated parentId";
+                this.id = "Updated id";
+              }
+            },
             computed: {
               tileHref: function() {
-                return `location.html?location=${this.parentId}/${this.id}`;
+                return `location.html?location=${this.regionId}/${this.id}`;
               },
               jumpId: function() {
                 return 'jump_' + this.id;
               }
             },
-            // data: function() {
-            //   console.log('tile component, this: ', this.tile, this);
-            //   return {
-            //     id: this.tile.id,
-            //     parentId: this.tile.parentId,
-            //     terrain: this.tile.terrain,
-            //     description: this.tile.description,
-            //     hereListHTML: this.tile.hereListHTML,
-            //     encountersListHTML: this.tile.encountersListHTML,
-            //   };
-            // }
           });
           console.log('defined components.tile: ', this.components.tile);
 
-          // create the grid structure for the whole region,
+         // create the grid structure for the whole region,
           // using the stub data we get from the region/index.
           this.regionGrid = region.grid;
           this.player = player;
           this.player.currentRegion = regionId;
+
+          var tile = this.regionGrid.byId(tileid);
+          if (!tile) {
+            throw new Error("No tile at: " + tileid);
+          }
+
+          let { headerComponent, tileComponent } = this.components;
+          window.vm = new Vue({
+            name: 'App',
+            el: '#view-root',
+            components: { headerComponent, tileComponent },
+            data: getVMData(tile, { regionId }),
+            created: function() {
+              console.log("root vue: ", this);
+            },
+            methods: {
+              help: function() {
+                console.info('Available actions: ');
+                for (let i in actions) {
+                  if (i.startsWith('_')) continue;
+                  console.info(`actions.${i}()`);
+                }
+              },
+            }
+          });
+
+          // TODO: this is effectively our route entry point
+          // it takes a string tileid (route)
+          // loads it (calls update()) and then renders the resulting state
           this.centerOnTile(tileid).then(() => {
             this.registerEvents();
-            this.help();
+            window.vm.help();
           });
-        },
-        help: function() {
-          console.info('Available actions: ');
-          for (let i in actions) {
-            if (i.startsWith('_')) continue;
-            console.info(`actions.${i}()`);
-          }
         },
         update: function() {
           var grid = this.regionGrid;
@@ -216,40 +293,13 @@
 
         render: function() {
           // render the grid to the map canvas
+          console.log('render');
           var grid = this.regionGrid;
           var simGrid = this.simGrid;
           var currX = this._currentTile.x,
               currY = this._currentTile.y;
           var tileid = currX+','+currY;
-          // create Vue instance at the root of our view
-          // it will parse it for registered components
-          // and bind their view-models to the DOM
-          var tileViewModel = this.getTileViewModel(tileid);
-          console.log('getTileViewModel returned: ', tileViewModel);
-          window.vm = new Vue({
-            el: '#view-root',
-            data: { regionId, tile: tileViewModel }
-          });
-        },
-        getTileViewModel: function(id) {
-          var tile = this.regionGrid.byId(id);
-          console.log('getTileRendering: components.tile: ', this.components.tile);
-          if (!tile) {
-            throw "no tile at: " + id;
-          }
-          var viewModel;
-          if (this.isTileStub(tile)) {
-            viewModel = this.getTileStubViewModel(tile);
-          } else {
-            viewModel = util.mixin({
-              parentId: this.id,
-              regionId: this.id,
-              hereListHTML: '(todo: whats here)',
-              encountersListHTML: '(todo: whats going on)',
-            }, tile);
-            console.log('getTileRendering, viewModel: ', viewModel);
-          }
-          return viewModel;
+          // TODO: update top vm with current tile data
         },
         centerOnTile: function(tileid) {
           console.log('centerOnTile: %s', tileid);
@@ -264,9 +314,12 @@
           console.log('centerOnTile, updated currentCoord: ', this.player.currentCoord);
 
           var loaded = this.update();
+          console.log("call initial render");
           this.render();
           return loaded.then(function() {
+            console.log("call loaded render");
             this.render();
+            vm.help();
           }.bind(this));
         },
 
@@ -275,16 +328,6 @@
         handleEvent: function(evt) {
         },
         updateTiles: function() {
-        },
-        getTileStubViewModel: function(tile) {
-          return util.mixin({
-            parentId: this.id,
-            regionId: this.id,
-            terrain: 'stub',
-            description: 'stub',
-            hereListHTML: '',
-            encountersListHTML: '',
-          }, tile);
         },
       };
 
@@ -335,32 +378,28 @@
 
 <body>
   <section id="view-root">
-    <h2 is="rm-header"></h2>
+    <h2 is="pageheader" ref="theHeader"></h2>
     <div id="region-raw-data"></div>
-    <div is="rm-tile" v-bind="tile"></div>
+    <div is="tile" ref="theTile"
+      v-bind:region-id="regionId"
+      v-bind:tileid="tileid"
+      v-bind:tiletype="tileid"
+      v-bind:terrain="terrain"
+      v-bind:description="description"
+      ></div>
+    <div></div><!--  is="rm-tile" v-bind="tile" -->
   </section>
 
   <script type="text/x-template" id="tileTemplate">
     <li>
       <h2>Location:
-        <a v-bind:id="jumpId" v-bind:href="tileHref">{{parentId}} : {{id}}</a></h2>
+        <a v-bind:id="jumpId" v-bind:href="tileHref">{{regionId}} : {{tileid}}</a></h2>
       <dl>
-        <dt>Region:</dt>
-        <dd>{{regionId}}</dd>
-        <dt>Terrain:</dt>
+        <dt>Terrain: </dt>
         <dd>{{terrain}}</dd>
-        <dt>Description:</dt>
-        <dd>{{description}}</dd>
+        <dt>Type: </dt>
+        <dd>{{tiletype}}</dd>
       </dl>
-
-      <h2>Here</h2>
-      <ul data-from="here">
-        {{hereListHTML}}
-      </ul>
-      <h2>Encounters</h2>
-      <ul data-from="encounters">
-        {{encountersListHTML}}
-      </ul>
     </li>
   </script>
 
