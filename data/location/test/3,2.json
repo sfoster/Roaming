@@ -1,7 +1,10 @@
 {
   "x": 3,
   "y": 2,
-  "description": "",
   "id": "3,2",
-  "terrain": "plains"
+  "afar": "A lot of grass",
+  "description": "You see broad rolling plains.",
+  "terrain": "plains",
+  "encounters": [],
+  "npcs": []
 }

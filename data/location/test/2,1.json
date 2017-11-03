@@ -1,6 +1,38 @@
 {
+  "description": "You see bleak slopes and snow-capped peaks",
+  "afar": "Tall mountains rise up in the distance",
+  "here": [
+    {
+      "$resource": "resources/items#edibleMushroom"
+    }
+  ],
+  "id": "2,1",
   "x": 2,
   "y": 1,
-  "id": "2,1",
-  "terrain": "mountains"
+  "terrain": "mountains",
+  "encounters": [
+    {
+      "$resource": "resources/encounters#npc",
+      "params": {
+        "difficulty": 1,
+        "grouptype": "trolls"
+      }
+    }
+  ],
+  "npcs": [
+    {
+      "$resource": "resources/npc#troll",
+      "params": {
+        "type": "npc",
+        "count": 3
+      }
+    },
+    {
+      "$resource": "resources/npc#trollElder",
+      "params": {
+        "type": "npc",
+        "count": 2
+      }
+    }
+  ]
 }
