@@ -3,6 +3,48 @@
 <head>
   <title>Region Test</title>
 
+  <style>
+    body, html {
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+    }
+    #view-root {
+      flex: 1 1 auto;
+      display: flex;
+      justify-content: center;
+    }
+    .theTile {
+      flex: 1 1 auto;
+      padding: 10px;
+      text-shadow: 0 0 .4em white;
+      background-size: contain;
+    }
+    .theTile > dl {
+      max-width: 45em;
+      background-color: rgba(255,255,255,0.5);
+      border-radius: 10px;
+    }
+    .theTile > dl > dt {
+      margin: 0 0.5em;
+      padding: 0.75em 1em;
+    }
+    .theTile > dl > dd {
+      margin: 0;
+      padding: 0.1em 0 0.5em 2.5em;
+    }
+    .loading {
+      opacity: 0.6;
+    }
+    #loading-message {
+      display: none;
+    }
+    .loading > #loading-message {
+      display: block;
+    }
+  </style>
   <script src="./vendor/require.js"></script>
   <script src="./config.js"></script>
 
@@ -28,8 +70,9 @@
       'resources/item',
       'resources/encounter',
       'resources/player',
+      'resources/terrain',
     ],function(Vue, util, resolve, Evented,
-               CoordGrid, Tile, Item, Encounter, Player) {
+               CoordGrid, Tile, Item, Encounter, Player, Terrain) {
 
       window.gPlayer = null;
       window.gRegion = null;
@@ -75,6 +118,109 @@
       function isTileStub(tile) {
         return !tile.hasOwnProperty('here');
       }
+
+      var pageheaderComponent = Vue.component("pageheader", {
+        beforeCreate: function() {
+          console.log("beforeCreate, this: ", this);
+        },
+        template: '<h2>{{regionId}} / <span id="tile-coord">{{coord}}</span></h2>',
+        props: {},
+        computed: {
+          regionId: function() {
+            return this.$parent.currentRegionId;
+          },
+          coord: function() {
+            return this.$parent.currentCoord;
+          },
+          description: function() {
+            return this.$parent.description;
+          }
+        },
+        created: function() {
+          Evented && Evented.on("tilechange", this.tileChange);
+          console.log("pageheader created, $parent: ", this.$parent);
+        },
+        mounted: function() {
+          console.log("pageheader mounted, $parent: ", this.$parent);
+        },
+        methods: {
+          tileChange: function(event) {
+            let tile = event.data;
+            console.log("header regionChange handler:", event);
+            for (let key in this._data) {
+              if (tile.hasOwnProperty(key)) {
+                this[key] = tile[key];
+                console.log("updated " + key, this[key]);
+              }
+            }
+          }
+        }
+      });
+      console.log("Defined pageheader");
+
+      // register the tile components
+      var tileComponent = Vue.component("tile", {
+        template: '#tileTemplate',
+        props: { tile: Object, regionId: String },
+        data: function() {
+          return {};
+        },
+        beforeCreate: function() {
+          console.log("tile instance beforeCreate: ", this);
+        },
+        created: function() {
+          console.log("tile instance created: ", this);
+        },
+        watch: {
+          "tile": function(val, oldVal) {
+            console.log("tile instance had its tile property changed: ", val, oldVal);
+          }
+        },
+        methods: {
+          update: function() {
+            this.parentId = "Updated parentId";
+            this.id = "Updated id";
+          }
+        },
+        computed: {
+          id: function() {
+            return this.tile && this.tile.id;
+          },
+          terrain: function() {
+            return this.tile ? this.tile.terrain : '';
+          },
+          tileStyle: function() {
+            let terrain = this.terrain;
+            if (!terrain) {
+              return {
+                background: 'transparent'
+              };
+            }
+            console.log("tileTyle computed, terrain:",this.terrain, this.tile);
+            let imgSrc = Terrain[this.terrain].backdrop.replace(/^image\!/, '');
+            let tile = this.tile;
+            console.log(`tileStyle, terrain: ${tile.terrain}, backdrop: ${Terrain[tile.terrain].backdrop}`);
+            return {
+              backgroundImage: `url("${imgSrc}")`,
+              backgroundRepeat: 'no-repeat'
+            };
+          },
+          description: function() {
+            return this.tile.description || "no description";
+          },
+          tileHref: function() {
+            return `location.html?location=${this.regionId}/${this.id}`;
+          },
+          jumpId: function() {
+            return 'jump_' + this.id;
+          },
+        },
+        created: function() {
+          console.log("tile created, this: ", this);
+        }
+      });
+      console.log('defined components.tile: ', tileComponent);
+
       var ui = window.regionUI = {
         tiles: [],
         isTileStub: isTileStub,
@@ -100,102 +246,9 @@
         },
         init: function(region, tileData, player) {
           this.region = region;
-          var regionId = player.currentRegion || region.id;
-
+          var regionId = this.currentRegionId = player.currentRegion || region.id;
           var tileid = player.currentCoord || '1,1';
           console.log('init with region: ' + this.region, 'tileid: ' + tileid);
-
-          function getVMData(tile, extraProps) {
-            let res = {};
-            for (let key in tile) {
-              if (key.startsWith('_')) continue;
-              if (key.startsWith('$')) continue;
-              if (key == "type") {
-                res["tiletype"] = tile[key];
-              } else if (key == "id") {
-                res["tileid"] = tile[key];
-              } else {
-                res[key] = tile[key];
-              }
-            };
-            Object.assign(res, extraProps);
-            console.log("prepared vmdata: ", res);
-            return res;
-          }
-
-          this.components = {};
-          this.components.pageheader = Vue.component("pageheader", {
-            beforeCreate: function() {
-              console.log("beforeCreate, this: ", this);
-            },
-            template: '<h2>{{region}} / <span id="tile-coord">{{coord}}</span>, {{terrain}}</h2>',
-            props: {
-              regionId: String
-            },
-            computed: {
-              region: function() {
-                return this.$parent.regionId;
-              },
-              coord: function() {
-                return this.$parent.id;
-              },
-              terrain: function() {
-                return this.$parent.terrain;
-              },
-              description: function() {
-                return this.$parent.description;
-              }
-            },
-            created: function() {
-              Evented && Evented.on("tilechange", this.tileChange);
-            },
-            methods: {
-              tileChange: function(event) {
-                let tile = event.data;
-                console.log("header regionChange handler:", event);
-                for (let key in this._data) {
-                  if (tile.hasOwnProperty(key)) {
-                    this[key] = tile[key];
-                    console.log("updated " + key, this[key]);
-                  }
-                }
-              }
-            }
-          });
-          console.log("Defined pageheader");
-
-          // register the tile components
-          this.components.tile = Vue.component("tile", {
-            template: '#tileTemplate',
-            props: {
-                'tileid' : String,
-                'tiletype' : String,
-                'regionId' : String,
-                'terrain': { type: String, required: false, default: 'not defined' },
-                'description': { type: String, required: false, default: 'not defined' },
-            },
-            data: function() {
-              return { parentId: this.regionId }
-            },
-            created: function() {
-              console.log("tile instance created: ", this);
-            },
-            methods: {
-              update: function() {
-                this.parentId = "Updated parentId";
-                this.id = "Updated id";
-              }
-            },
-            computed: {
-              tileHref: function() {
-                return `location.html?location=${this.regionId}/${this.id}`;
-              },
-              jumpId: function() {
-                return 'jump_' + this.id;
-              }
-            },
-          });
-          console.log('defined components.tile: ', this.components.tile);
 
          // create the grid structure for the whole region,
           // using the stub data we get from the region/index.
@@ -207,15 +260,62 @@
           if (!tile) {
             throw new Error("No tile at: " + tileid);
           }
+          this._initRendering();
+          console.log("/_initRendering");
+          // TODO: this is effectively our route entry point
+          // it takes a string tileid (route)
+          // loads it (calls update()) and then renders the resulting state
+          this.centerOnTile(tileid).then(() => {
+            this.registerEvents();
+            this._viewModel.help();
+          });
+        },
 
-          let { headerComponent, tileComponent } = this.components;
-          window.vm = new Vue({
+        _initRendering: function() {
+          console.log("ui._initRendering");
+          window.vm = this._viewModel = new Vue({
             name: 'App',
             el: '#view-root',
-            components: { headerComponent, tileComponent },
-            data: getVMData(tile, { regionId }),
+            components: { pageheaderComponent, tileComponent },
+            data: {
+              currentTile: {},
+              currentRegionId: ui.currentRegionId,
+              tileId: "",
+            },
+            computed: {
+              loaded: function() {
+                return (this.currentTile && this.currentTile.id);
+              },
+              coord: function() {
+                if (this.currentTile) {
+                  return this.currentTile.id;
+                }
+                return "-";
+              },
+              description: function() {
+                if (this.currentTile) {
+                  return this.currentTile.description;
+                }
+                return "no description";
+              }
+            },
             created: function() {
               console.log("root vue: ", this);
+            },
+            methods: {
+              help: function() {
+                console.info('some help');
+              },
+            },
+            watch: {
+              tileId: function(value, oldValue) {
+                console.log("tileId changed: ", value, oldValue);
+                this.currentTile = gNextTile;
+              }
+            },
+            mounted: function() {
+              console.log("root instance mounted: ", this);
+              this.$el.classList.add("mounted");
             },
             methods: {
               help: function() {
@@ -227,15 +327,8 @@
               },
             }
           });
-
-          // TODO: this is effectively our route entry point
-          // it takes a string tileid (route)
-          // loads it (calls update()) and then renders the resulting state
-          this.centerOnTile(tileid).then(() => {
-            this.registerEvents();
-            window.vm.help();
-          });
         },
+
         update: function() {
           var grid = this.regionGrid;
           var currX = this._currentTile.x,
@@ -293,13 +386,15 @@
 
         render: function() {
           // render the grid to the map canvas
-          console.log('render');
-          var grid = this.regionGrid;
+          console.log('render, vm: ', this._viewModel);
+          // var grid = this.regionGrid;
           var simGrid = this.simGrid;
           var currX = this._currentTile.x,
               currY = this._currentTile.y;
           var tileid = currX+','+currY;
-          // TODO: update top vm with current tile data
+          console.log("updating viewModel with tile, regionId", this._currentTile, ui.currentRegionId);
+          this._viewModel.currentTile = simGrid.byId(tileid);
+          this._viewModel.currentRegionId = ui.currentRegionId;
         },
         centerOnTile: function(tileid) {
           console.log('centerOnTile: %s', tileid);
@@ -314,13 +409,10 @@
           console.log('centerOnTile, updated currentCoord: ', this.player.currentCoord);
 
           var loaded = this.update();
-          console.log("call initial render");
-          this.render();
-          return loaded.then(function() {
+          return loaded.then(() => {
             console.log("call loaded render");
             this.render();
-            vm.help();
-          }.bind(this));
+          });
         },
 
         registerEvents: function() {
@@ -377,30 +469,31 @@
 </head>
 
 <body>
-  <section id="view-root">
-    <h2 is="pageheader" ref="theHeader"></h2>
+  <section id="view-root" v-bind:class="{ loading: !loaded }">
+    <h2 was="pageheader" ref="theHeader"></h2>
     <div id="region-raw-data"></div>
-    <div is="tile" ref="theTile"
-      v-bind:region-id="regionId"
-      v-bind:tileid="tileid"
-      v-bind:tiletype="tileid"
-      v-bind:terrain="terrain"
-      v-bind:description="description"
+    <template v-bind:if="loaded">
+      <div is="tile" ref="theTile"
+           v-bind:tile="currentTile"
+           v-bind:region-id="currentRegionId"
       ></div>
-    <div></div><!--  is="rm-tile" v-bind="tile" -->
+    </template>
+    <h2 id="loading-message">Loading...</h2>
+    <template v-bind:if="!(currentTile && currentTile.id)">
+    </template>
   </section>
 
   <script type="text/x-template" id="tileTemplate">
-    <li>
+    <section class="theTile" v-bind:style="tileStyle" v-bind:id="'tile-' + id">
       <h2>Location:
-        <a v-bind:id="jumpId" v-bind:href="tileHref">{{regionId}} : {{tileid}}</a></h2>
+        <a v-bind:id="jumpId" v-bind:href="tileHref">{{regionId}} : {{id}}</a></h2>
       <dl>
         <dt>Terrain: </dt>
         <dd>{{terrain}}</dd>
-        <dt>Type: </dt>
-        <dd>{{tiletype}}</dd>
+        <dt>Description: </dt>
+        <dd>{{description}}</dd>
       </dl>
-    </li>
+    </section>
   </script>
 
 </body>
