@@ -66,14 +66,10 @@
       'lib/resolve',
       'lib/event',
       'lib/grid',
-      'resources/location',
-      'resources/item',
-      'resources/encounter',
-      'resources/player',
-      'resources/terrain',
-    ],function(Vue, util, resolve, Evented,
-               CoordGrid, Tile, Item, Encounter, Player, Terrain) {
+      'level',
+    ],function(Vue, util, resolve, Evented, CoordGrid, Level) {
 
+      let {Tile, Item, Encounter, Player, Terrain} = Level.resources;
       window.gPlayer = null;
       window.gRegion = null;
       window.Evented = Evented;
@@ -119,106 +115,11 @@
         return !tile.hasOwnProperty('here');
       }
 
-      var pageheaderComponent = Vue.component("pageheader", {
-        beforeCreate: function() {
-          console.log("beforeCreate, this: ", this);
-        },
-        template: '<h2>{{regionId}} / <span id="tile-coord">{{coord}}</span></h2>',
-        props: {},
-        computed: {
-          regionId: function() {
-            return this.$parent.currentRegionId;
-          },
-          coord: function() {
-            return this.$parent.currentCoord;
-          },
-          description: function() {
-            return this.$parent.description;
-          }
-        },
-        created: function() {
-          Evented && Evented.on("tilechange", this.tileChange);
-          console.log("pageheader created, $parent: ", this.$parent);
-        },
-        mounted: function() {
-          console.log("pageheader mounted, $parent: ", this.$parent);
-        },
-        methods: {
-          tileChange: function(event) {
-            let tile = event.data;
-            console.log("header regionChange handler:", event);
-            for (let key in this._data) {
-              if (tile.hasOwnProperty(key)) {
-                this[key] = tile[key];
-                console.log("updated " + key, this[key]);
-              }
-            }
-          }
-        }
-      });
+      var pageheaderComponent = Vue.component("pageheader", Level.components.screenHeader);
       console.log("Defined pageheader");
 
       // register the tile components
-      var tileComponent = Vue.component("tile", {
-        template: '#tileTemplate',
-        props: { tile: Object, regionId: String },
-        data: function() {
-          return {};
-        },
-        beforeCreate: function() {
-          console.log("tile instance beforeCreate: ", this);
-        },
-        created: function() {
-          console.log("tile instance created: ", this);
-        },
-        watch: {
-          "tile": function(val, oldVal) {
-            console.log("tile instance had its tile property changed: ", val, oldVal);
-          }
-        },
-        methods: {
-          update: function() {
-            this.parentId = "Updated parentId";
-            this.id = "Updated id";
-          }
-        },
-        computed: {
-          id: function() {
-            return this.tile && this.tile.id;
-          },
-          terrain: function() {
-            return this.tile ? this.tile.terrain : '';
-          },
-          tileStyle: function() {
-            let terrain = this.terrain;
-            if (!terrain) {
-              return {
-                background: 'transparent'
-              };
-            }
-            console.log("tileTyle computed, terrain:",this.terrain, this.tile);
-            let imgSrc = Terrain[this.terrain].backdrop.replace(/^image\!/, '');
-            let tile = this.tile;
-            console.log(`tileStyle, terrain: ${tile.terrain}, backdrop: ${Terrain[tile.terrain].backdrop}`);
-            return {
-              backgroundImage: `url("${imgSrc}")`,
-              backgroundRepeat: 'no-repeat'
-            };
-          },
-          description: function() {
-            return this.tile.description || "no description";
-          },
-          tileHref: function() {
-            return `location.html?location=${this.regionId}/${this.id}`;
-          },
-          jumpId: function() {
-            return 'jump_' + this.id;
-          },
-        },
-        created: function() {
-          console.log("tile created, this: ", this);
-        }
-      });
+      var tileComponent = Vue.component("tile", Level.components.tileSummary);
       console.log('defined components.tile: ', tileComponent);
 
       var ui = window.regionUI = {
