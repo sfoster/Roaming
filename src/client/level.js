@@ -4,15 +4,17 @@ define([
       'resources/encounter',
       'resources/player',
       'resources/terrain',
-      'components/tile-summary.js',
-      'components/screen-header.js',
+      'components/tile-summary',
+      'components/screen-header',
+      'components/player-summary',
 ], function(Tile, Item, Encounter, Player, Terrain,
-            tileSummary, screenHeader) {
+            tileSummary, screenHeader, playerSummary) {
   'use strict';
   var Level = {
     components: {
       tileSummary,
       screenHeader,
+      playerSummary,
     },
     resources: {
       Tile,

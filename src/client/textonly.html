@@ -14,10 +14,27 @@
     #view-root {
       flex: 1 1 auto;
       display: flex;
+    }
+    #view-root > header {
+
+    }
+    #view-root > section {
+      flex: 1 1 auto;
+      display: flex;
       justify-content: center;
     }
-    .theTile {
+    .player {
       flex: 1 1 auto;
+      padding: 10px;
+    }
+    .player > .avatar {
+      width: 10em;
+    }
+    .player > .stats > li > span:first-child::after {
+      content: ":"
+    }
+    .theTile {
+      flex: 5 1 auto;
       padding: 10px;
       text-shadow: 0 0 .4em white;
       background-size: contain;
@@ -51,6 +68,7 @@
   <script type="text/javascript">
   "use strict";
     var locn = config.location || 'test/3,3';
+    var playerid = config.playerid || 'aragon'; // or 'guest'
     console.log('config: ', config);
     var [regionId, startTileId] = locn.split('/');
     var APRON_SIZE = 1;
@@ -77,27 +95,21 @@
       Promise.all([
         resolve.resolveResource('location/' + regionId + '/index'),
         resolve.resolveResource('location/' + regionId + '/' + startTileId ),
-        resolve.resolveResource('player/' + (config.playerid || 'guest')).then(function(playerData) {
+        resolve.resolveResource('player/' + playerid).then(function(playerData) {
           return resolve.resolveObjectProperties(Player.fillDefaults(playerData));
         })
       ]).then(function(results) {
         let [regionData, tileData, player] = results;
         gPlayer = player;
-        console.log('loaded region: ', regionId);
         window._rawRegionData = regionData;
         var region = gRegion = initRegion(regionData);
-        console.log('loaded player: ', player);
         if (config.location) {
           player.currentCoord = startTileId;
           player.currentRegion = regionId;
         }
         ui.init(region, tileData, player);
       });
-      // 'plugins/vendor/json!player/'+(config.playerid || 'guest') + '.json'
 
-      function createSimGrid(tiles) {
-        return new CoordGrid(tiles);
-      }
       function createRegionGridFromTilesArray(stubs) {
         console.assert(stubs.length, 'empty tile stubs array passed to createRegionGridFromTilesArray');
 
@@ -115,11 +127,13 @@
         return !tile.hasOwnProperty('here');
       }
 
-      var pageheaderComponent = Vue.component("pageheader", Level.components.screenHeader);
-      console.log("Defined pageheader");
-
-      // register the tile components
-      var tileComponent = Vue.component("tile", Level.components.tileSummary);
+      // register the Vue components
+      var pageheaderComponent = Vue.component(
+        "pageheader", Level.components.screenHeader);
+      var tileComponent = Vue.component(
+        "tile", Level.components.tileSummary);
+      var playerSummaryComponent = Vue.component(
+        "player", Level.components.playerSummary);
       console.log('defined components.tile: ', tileComponent);
 
       var ui = window.regionUI = {
@@ -162,7 +176,6 @@
             throw new Error("No tile at: " + tileid);
           }
           this._initRendering();
-          console.log("/_initRendering");
           // TODO: this is effectively our route entry point
           // it takes a string tileid (route)
           // loads it (calls update()) and then renders the resulting state
@@ -173,15 +186,20 @@
         },
 
         _initRendering: function() {
-          console.log("ui._initRendering");
+          console.log("ui._initRendering, player: ", this.player);
           window.vm = this._viewModel = new Vue({
             name: 'App',
             el: '#view-root',
-            components: { pageheaderComponent, tileComponent },
+            components: {
+              pageheaderComponent,
+              tileComponent,
+              playerSummaryComponent
+            },
             data: {
               currentTile: {},
               currentRegionId: ui.currentRegionId,
               tileId: "",
+              player: {}
             },
             computed: {
               loaded: function() {
@@ -209,13 +227,11 @@
               },
             },
             watch: {
-              tileId: function(value, oldValue) {
-                console.log("tileId changed: ", value, oldValue);
-                this.currentTile = gNextTile;
-              }
+              // someKey: function(value, oldValue) {
+              //   console.log("someKey changed: ", value, oldValue);
+              // }
             },
             mounted: function() {
-              console.log("root instance mounted: ", this);
               this.$el.classList.add("mounted");
             },
             methods: {
@@ -294,8 +310,12 @@
               currY = this._currentTile.y;
           var tileid = currX+','+currY;
           console.log("updating viewModel with tile, regionId", this._currentTile, ui.currentRegionId);
-          this._viewModel.currentTile = simGrid.byId(tileid);
-          this._viewModel.currentRegionId = ui.currentRegionId;
+          var vm = this._viewModel;
+          vm.currentTile = simGrid.byId(tileid);
+          vm.currentRegionId = ui.currentRegionId;
+          if (!(vm.player && vm.player.name)) {
+            vm.player = this.player;
+          }
         },
         centerOnTile: function(tileid) {
           console.log('centerOnTile: %s', tileid);
@@ -371,17 +391,25 @@
 
 <body>
   <section id="view-root" v-bind:class="{ loading: !loaded }">
-    <h2 was="pageheader" ref="theHeader"></h2>
+    <header>
+      <h2 was="pageheader" ref="theHeader"></h2>
+    </header>
+    <section>
+      <section is="player" ref="thePlayer"
+             v-bind:player="player"
+             class="player"
+      ></section>
+      <template v-bind:if="loaded">
+        <div is="tile" ref="theTile"
+             v-bind:tile="currentTile"
+             v-bind:region-id="currentRegionId"
+        ></div>
+      </template>
+      <h2 id="loading-message">Loading...</h2>
+      <template v-bind:if="!(currentTile && currentTile.id)">
+      </template>
+    </section>
     <div id="region-raw-data"></div>
-    <template v-bind:if="loaded">
-      <div is="tile" ref="theTile"
-           v-bind:tile="currentTile"
-           v-bind:region-id="currentRegionId"
-      ></div>
-    </template>
-    <h2 id="loading-message">Loading...</h2>
-    <template v-bind:if="!(currentTile && currentTile.id)">
-    </template>
   </section>
 
   <script type="text/x-template" id="tileTemplate">

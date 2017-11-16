@@ -4,19 +4,18 @@ define(['lib/util'], function(util) {
     declaredClass: "Player",
     type: "player",
     name: "You", // by default
-    level: 1,
-    luck: 50/100,
     icon: "./resources/graphics/HeroIcon.png",
     currentWeapon: 'fishingSpear', // by default
     history: null,
-    score: 0,
+    visits: null,
+    equipped: null,
     // stats
     level: 1,
+    luck: 50/100,
+    score: 0,
     health: 12,
     strength: 12,
     mana: 5,
-    visits: null,
-    equipped: null,
   };
 
   var Player = {

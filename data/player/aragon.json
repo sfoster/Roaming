@@ -1,6 +1,7 @@
 {
   "id": "aragon",
   "name": "Aragon",
+  "icon": "./resources/graphics/hero.svg",
   "score": 1202,
   "position": "world/7,8",
   "elapsed": 0,
