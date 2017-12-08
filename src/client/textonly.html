@@ -181,6 +181,7 @@
           // loads it (calls update()) and then renders the resulting state
           this.centerOnTile(tileid).then(() => {
             this.registerEvents();
+            // begin tile entry
             this._viewModel.help();
           });
         },

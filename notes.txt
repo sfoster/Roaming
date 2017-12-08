@@ -1,3 +1,77 @@
+might need different scene graphs, different stacks for different systems. So one data structure doesnt need to fit all system and component requirements.
+
+gameobject: has an entity id, and a components list.
+all possible objects in the game in a flat table.
+systems will slice and filter this to only act on applicable game objects as needed.
+
+component: a behavior/trait
+system: rendering: queries for entities that are renderable, and draws them
+system: collision: all entities with physical/collidable component, generates collision events
+system: food: all entities with eats component, listens for time elapsed events, foodchange events
+system: food: all entities with eats component, listens for time elapsed events, foodchange events
+each system registers the components an entity must have for it to apply
+
+
+systems participate in update/render loop.
+  they'll loop through their components, and call update on them
+Component update will do stuff to each entity
+
+--
+the scene has a current stack, it tracks the current region, tile, encounter, combat state, dialog etc.
+components register themselves as event publishers and receivers on the scene?
+i.e. the scene *is* the event hub
+the scene is a window onto the game, its the freeze-frame that is the current state for a particular player.
+
+could there be other scenes? Seems like the scene is the thing we freeze/thaw. I.e. there's a player.scene, which is all the current moment in time.
+there could be player.history which is a sparse timeline
+
+encounters are components which have a enter/leave listener
+the tile/location entity will have encounter property(s)
+the encounter component might pull in/register other components, like dialog, like actors
+
+the stack looks something like:
+region enter
+  location enter
+    encounter enter
+      combat enter
+      dialogue enter
+      trade enter
+
+location ontick
+location onenter
+location onexit
+
+encounter ontick
+encounter onenter
+encounter onexit
+
+
+
+2017-11
+- Define a series of events for tile entry
+- Probably need a means of cancelling proper entry, to allow player to skip through a tile in some future mode or other
+- Notify when an encounter happens
+- Notify on tile 'here' properties
+
+
+ui == vm?
+what role would redux play?
+  each actor or loadable resource would be a unique store
+  reducers would handle changes to those values
+  the store could be bound to Vue instances
+    i.e. playerStore, tileStore, (sim)regionStore
+    So there's indirection, any action dispatches on the store (rather than mutating it directly)
+    store.dispatch({ type: "damage", value: -2 });
+    statsReducer(state = {}, action))
+      switch action.type {
+        case "damage":
+        state.actors[action.targetIdentity]
+      }
+
+What are the moving parts?
+- player state: stats, current tile, inventory, dialog? combat state (current action / intended (next) action)
+
+--
 2017-03
 - Get the region index.json, tile data, region, createtile and fixtile scripts to agree that type is for the resource type, terrain is the short name for type of terrain.
 - see if centerOnTile will fit into an update/render structure
